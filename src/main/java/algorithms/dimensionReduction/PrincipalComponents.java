@@ -81,6 +81,8 @@ public class PrincipalComponents {
      *    variables, a.k.a. dimensions.
      *    x should be zero-centered (mean=0) OR standardized to unit normalization (which is mean=0, stdev=1).
      *    If the variance and scale of the variables are different, then unit standard normalization should be used.
+     Note that using "zero mean centered" x is equivalent to pca on the covariance matrix,
+      *        while using "unit standard norm: x is equivalent to pca on the correlation matrix.
      @param nComponents the number of principal components to return.
      @return the principal axes, the principal components, and
      a few statistics of the CUR decomposition of A, up to the
@@ -117,6 +119,8 @@ public class PrincipalComponents {
      *    variables, a.k.a. dimensions.
      *    x should be zero-centered (mean=0) OR standardized to unit normalization (which is mean=0, stdev=1).
      *    If the variance and scale of the variables are different, then unit standard normalization should be used.
+     *    Note that using "zero mean centered" x is equivalent to pca on the covariance matrix,
+     *        while using "unit standard norm: x is equivalent to pca on the correlation matrix.
      @param useEVProp if true, uses the cumulative fraction of eigenvalues in combination with the
      proportion prop to determine the number of principal components to calculate, else if false,
      uses the cumulative fraction of singular values in combination with the proportaion prop to
@@ -266,6 +270,8 @@ public class PrincipalComponents {
      *    variables, a.k.a. dimensions.
      *    x should be zero-centered (mean=0) OR standardized to unit normalization (which is mean=0, stdev=1).
      *    If the variance and scale of the variables are different, then unit standard normalization should be used.
+     *         Note that using "zero mean centered" x is equivalent to pca on the covariance matrix,
+      *      *        while using "unit standard norm: x is equivalent to pca on the correlation matrix.
      @param nComponents the number of principal components to return.
      @param useCUR if true, uses CUR decomposition instead of Singular Value Decomposition.  CUR decomposition
      is useful for very large datasets.

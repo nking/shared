@@ -9,7 +9,7 @@ import java.util.Arrays;
 /**
  * calculates the square of the unbiased distance covariance and correlation 
    between univariate vectors x and y as
-   "a weighted  distance between the joint characteristic function and 
+   a weighted  distance between the joint characteristic function and 
    the product of marginal distributions following algorithms in
    <pre>
       "A fast algorithm for computing distance correlation"
@@ -56,13 +56,13 @@ public class UnivariateDistance {
      * Runtime is O(n * lg_2(n)) where n is the number of points in x which is
      * the same as the number in y.
      * 
-     * NOTE: redundant points are possible in the rankings as "ties" are handled
+     * NOTE: redundant points are possible in the rankings because "ties" are handled
      * in the algorithm.  This is one advantage over the similar
      * algorithm of Huo and Szekely (2016).
-     **
+     *
      @param x sample of univariate observations of a variable
      @param y second sample of univariate observations (can be of another variable).  the length of y must be the
-     *          same as the length of x.
+          same as the length of x.
      @return covariance of X and Y along with intermediate data.  
      */
     public static DCov fastDCov(double[] x, double[] y) {
@@ -186,7 +186,7 @@ public class UnivariateDistance {
                     tempv[z][zz] = v[idx_r[z] - 1][zz];
                 }
             }
-            //cumulative sum along columns: tempcs [1][nw]
+            //cumulative sum along columns: tempcs [n][nw]
             tempcs = MiscMath0.cumulativeSumAlongColumns(tempv);
             //csumv [n+1][nw];
             Arrays.fill(csumv[0], 0);
@@ -211,6 +211,7 @@ public class UnivariateDistance {
 
             //for j = 1:gap:n;
             for (j = 1; j <= n; j += gap) {
+                // starts and ends of comparison intervals
                 st1 = j;
                 e1 = Math.min(st1 + i - 1, n);
                 st2 = j + i;
@@ -223,6 +224,7 @@ public class UnivariateDistance {
 
                 while ((st1 <= e1) && (st2 <= e2)) {
                     k++;
+                    //starting indexes from latest sorted order
                     idx1 = idx_r[st1 - 1];
                     idx2 = idx_r[st2 - 1];
 
@@ -243,10 +245,16 @@ public class UnivariateDistance {
                         idx[k - 1][idx_s - 1] = idx1;
                         st1++;
                     } else {
+
                         //System.out.printf("    *idx[%d][%d] =%d,  INCR iv1:iv4\n", k - 1, idx_s - 1, idx2);
                         idx[k - 1][idx_s - 1] = idx2;
                         st2++;
+
+                        // an inversion pair is y[idx1], y[idx2]
+                        //   which is (csumv[e1 + 1 - 1][1] - csumv[st1 - 1][1]), (csumv[e2 + 1 - 1][1] - csumv[st2 - 1][1])
+
                         iv1[idx2 - 1] += (e1 - st1 + 1);
+                        // use of csumv is similar to use of Summed Area Tables
                         iv2[idx2 - 1] += (csumv[e1 + 1 - 1][0] - csumv[st1 - 1][0]);
                         iv3[idx2 - 1] += (csumv[e1 + 1 - 1][1] - csumv[st1 - 1][1]);
                         iv4[idx2 - 1] += (csumv[e1 + 1 - 1][2] - csumv[st1 - 1][2]);
@@ -264,9 +272,7 @@ public class UnivariateDistance {
                     int c = st1;
                     for (z = (k + 1); z <= kf; ++z) {
                         idx[z - 1][idx_s - 1] = idx_r[c - 1];
-
                         //System.out.printf("    *idx[%d][%d]=idx_r[%d] = %d, \n", z - 1, idx_s - 1, c - 1, idx_r[c - 1]);
-
                         c++;
                     }
                     k = kf;
@@ -276,9 +282,7 @@ public class UnivariateDistance {
                     int c = st2;
                     for (z = (k + 1); z <= kf; ++z) {
                         idx[z - 1][idx_s - 1] = idx_r[c - 1];
-
                         //System.out.printf("    *idx[%d][%d]=idx_r[%d] = %d, \n", z - 1, idx_s - 1, c - 1, idx_r[c - 1]);
-
                         c++;
                     }
                     k = kf;
@@ -315,18 +319,27 @@ public class UnivariateDistance {
         double[] v3 = new double[n];
         double c2 = 0;
         for (z = 0; z < n; ++z) {
-            v3[z] = v[z][2];
-            c2 += iv4[z];
+            v3[z] = v[z][2]; //x.*y
+            c2 += iv4[z];    //sum(inversion pairs of x*y)
         }
 
-        double c1 = MatrixUtil.innerProduct(iv1, v3);
-        double c3 = MatrixUtil.innerProduct(iv2, y);
-        double c4 = MatrixUtil.innerProduct(iv3, x);
+        double c1 = MatrixUtil.innerProduct(iv1, v3); //sum(x.*y)
+                                                      // c2 is sum(inversion pairs  x dot y)
+        double c3 = MatrixUtil.innerProduct(iv2, y);  //(sum(inversion pairs  x)) dot y
+        double c4 = MatrixUtil.innerProduct(iv3, x);  //(sum(inversion pairs  y)) dot x
 
         // d = 4∗( ( c1 + c2 ) − ( c3 + c4 ) ) − 2∗ covterm;
         final double d = (4. * ((c1 + c2) - (c3 + c4))) - 2. * covtermXY;
 
         double[] b_y = _calcB(y, idx, n, r);
+
+        // extract the indexes for sorting y w.r.t. original indexes
+        int[] indexesToSortY = new int[n];
+        int c = 0;
+        for (z = n; z >= 1; z--) {
+            indexesToSortY[c] = indexes[ idx[z - 1][r - 1] - 1 ];
+            ++c;
+        }
 
         //NOTE: minor edits to nsq, ncb, and nq to make the covariance
         // unbiased following equation 2.5 of
@@ -381,9 +394,8 @@ public class UnivariateDistance {
         DCov dcov = new DCov();
         dcov.covsq = covsq;
         dcov.d = d;
-        dcov.indexes = indexes;
-        dcov.sortedX = x;
-        dcov.sortedY = y;
+        dcov.indexesToSortX = indexes;
+        dcov.indexesToSortY = indexesToSortY;
         dcov.aDotDot = a_dot_dot;
         dcov.bDotDot = b_dot_dot;
         dcov.ai = a_x;
@@ -507,20 +519,10 @@ public class UnivariateDistance {
         
         // x and y sorted:
         int[] indexes = MiscSorter.mergeBy1stArgThen2nd(x, y);
-         
-        int nw = 3;
-        
-        double[][] v = new double[n][nw];
-        v[0] = Arrays.copyOf(x, n);
-        v[1] = Arrays.copyOf(y, n);
-        v[2] = Arrays.copyOf(x, n);
-        for (int row = 0; row < n; ++row) {
-            v[2][row] *= y[row];
-        }
-        
+
         //% The columns of idx are buffers to store sort indices and output buffer
         //%of merge-sort
-        //%we alternate between them and avoid uneccessary copying
+        //%we alternate between them and avoid unnecessary copying
         int[][] idx = new int[n][2];
         for (int i = 0; i < n; ++i) {
             idx[i] = new int[2];
@@ -553,10 +555,14 @@ public class UnivariateDistance {
               e1 = Math.min(st1 + i - 1, n);
               st2 = j + i; 
               e2 = Math.min(st2 + i - 1, n);
+             // System.out.printf("i=%d, j=%d, gap=%d, st1=%d, st2=%d, e1=%d, e2=%d\n", i, j, gap, st1, st2, e1, e2);
               while (( st1 <= e1 ) && ( st2 <= e2 ) ) {
                  k++;
                  idx1 = idx_r[st1-1];
                  idx2 = idx_r[st2-1];
+                 //System.out.printf("k=%d, idx1=%d, idx2=%d, st1=%d, st2=%d, y[idx1-1]=%.3e, y[idx2-1]=%.3e\n",
+                 //        k, idx1, idx2, st1, st2, y[idx1-1], y[idx2-1]);
+                 //System.out.printf("compare y[%d] to y[%d]\n", idx1-1, idx2-1);
                  if (y[idx1-1] >= y[idx2-1]) {                 
                     idx[k-1][idx_s-1] = idx1;
                     st1++;
@@ -592,7 +598,19 @@ public class UnivariateDistance {
            idx_s = 3 - idx_s;  //2;  3-2=1 // 3-1=2
            
         }
-        
+
+       // System.out.printf("indexes=\n%s\n", Arrays.toString(indexes));
+       // System.out.printf("idx=\n%s\n", FormatArray.toString(idx, "%d"));
+       // System.out.printf("last col used in idx was %d\n", (idx_s == 2) ? /*1-1*/0 : /*2-1*/1);
+       // System.out.printf("i=%d, r=%d, idx_s=%d\n", i, r, idx_s);
+        //System.out.printf("idx_r=\n%s\n", FormatArray.toString(idx_r, "%d"));
+       // System.out.printf("after x=\n%s\n", FormatArray.toString(x, "%.3e"));
+       // System.out.printf("after y=\n%s\n", FormatArray.toString(y, "%.3e"));
+
+        // the indexes for the sorting of y after sorted by x:
+        // lastCol = (idx_s == 2) ? /*1-1*/0 : /*2-1*/1;
+        // idx[*][lastCol]
+
         double[][] sorted = new double[2][x.length];
         sorted[0] = x;
         sorted[1] = y;
@@ -606,7 +624,7 @@ public class UnivariateDistance {
         System.out.printf("idx[0]=%s\n", Arrays.toString(idx[0]));
         System.out.printf("idx[1]=%s\n", Arrays.toString(idx[1]));
         */
-                    
+
         double[] ySorted = new double[n];
 
         //% b_y is the vector of row sums of distance matrix of y
@@ -668,14 +686,14 @@ public class UnivariateDistance {
      * and Szekely (2016).
      *
      * NOTE: that this method follows Algorithm 1 in the paper which stops at
-     * the intermediate steps to show the merge steps clearly. The complete
-     * algorithm is present as fastDcov.
+     * the intermediate steps to show the merge steps clearly.
+     * The complete algorithm is in the method fastDCov().
      *
      @param x
      @param y
      @return
      */
-    public static DCov _univariateCovariance(double[] x, double[] y) {
+    static DCov _univariateCovariance(double[] x, double[] y) {
 
         if (x.length != y.length) {
             throw new IllegalArgumentException("length of x must equal length of y");
@@ -709,7 +727,7 @@ public class UnivariateDistance {
 
             System.arraycopy(idx[r - 1], 0, idx_r, 0, n);
 
-            //csumT = cusum(y[idx r]); 
+            //csumT = cusum(y[idx r]);
             //csumT = (0, csumT );
             csumT[0] = 0;
             for (z = 0; z < n; ++z) {
@@ -731,6 +749,8 @@ public class UnivariateDistance {
                     k++;
                     idx1 = idx_r[st1 - 1];
                     idx2 = idx_r[st2 - 1];
+                    //NOTE: we're comparing x here to compare to the paper's results in a unit test.
+                    // in fastDCov() we compare y because x is already sorted
                     if (x[idx1 - 1] >= x[idx2 - 1]) {
                         idx[idx_s - 1][k - 1] = idx1;
                         st1++;
@@ -769,22 +789,16 @@ public class UnivariateDistance {
             idx_s = 3 - idx_s;
         } // end while i
 
-        double[] sortedX = new double[n];
-        double[] sortedY = new double[n];
         int[] indexes = new int[n];
         double[] sortedD = new double[n];
         for (z = 0; z < n; ++z) {
             indexes[z] = idx[r - 1][z] - 1;
-            sortedX[z] = x[indexes[z]];
-            sortedY[z] = y[indexes[z]];
             sortedD[z] = d[indexes[z]];
         }
 
         DCov dcov = new DCov();
         dcov.iv3 = sortedD;
-        dcov.indexes = indexes;
-        dcov.sortedX = sortedX;
-        dcov.sortedY = sortedY;
+        dcov.indexesToSortX = indexes;
 
         return dcov;
     }
@@ -856,9 +870,8 @@ public class UnivariateDistance {
          *
          */
         public double d;
-        int[] indexes;
-        double[] sortedX;
-        double[] sortedY;
+        int[] indexesToSortX;
+        int[] indexesToSortY;
         
         /**
          * this is a.. of eqn (2) of the paper.
@@ -926,14 +939,11 @@ public class UnivariateDistance {
             StringBuilder sb = new StringBuilder();
             sb.append("d=").append(d).append("\n");
             sb.append("covsq=").append(covsq).append("\n");
-            if (indexes != null) {
-                sb.append("indexes=").append(Arrays.toString(indexes)).append("\n");
+            if (indexesToSortX != null) {
+                sb.append("indexesToSortX=").append(Arrays.toString(indexesToSortX)).append("\n");
             }
-            if (sortedX != null) {
-                sb.append("sortedX=").append(FormatArray.toString(sortedX, "%.3f")).append("\n");
-            }
-            if (sortedY != null) {
-                sb.append("sortedY=").append(FormatArray.toString(sortedY, "%.3f")).append("\n");
+            if (indexesToSortY != null) {
+                sb.append("indexesToSortY=").append(Arrays.toString(indexesToSortY)).append("\n");
             }
             if (ai != null) {
                 sb.append("ai=").append(FormatArray.toString(ai, "%.3f")).append("\n");

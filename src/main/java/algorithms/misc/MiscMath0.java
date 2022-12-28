@@ -1,6 +1,7 @@
 package algorithms.misc;
 
 import algorithms.SubsetChooser;
+import algorithms.matrix.MatrixUtil;
 import algorithms.sort.CountingSort;
 import algorithms.util.PairInt;
 import algorithms.util.PairIntArray;
@@ -1360,16 +1361,22 @@ public class MiscMath0 {
     }
     
     /**
-     *
-     @param a
-     @return
+     * calculate cumulative sums along columns.
+     <pre>
+     e.g. a = | 1  2  3 |
+              | 4  5  6 |
+              | 7  8  9 |
+     cumulative sum along columns =
+              | 1   2   3  |
+              | 5   7   9  |
+              | 12  15  18 |
+     </pre>
+     @param a matrix
+     @return matrix holding cumulative sums along columns of a
      */
     public static double[][] cumulativeSumAlongColumns(double[][] a) {
         
-        double[][] s = new double[a.length][a[0].length];
-        for (int i = 0; i < a.length; ++i) {
-            s[i] = Arrays.copyOf(a[i], a[i].length);
-        }
+        double[][] s = MatrixUtil.copy(a);
         
         for (int row = 1; row < a.length; ++row) {
             for (int col = 0; col < a[0].length; ++col) {

@@ -1,5 +1,7 @@
 package algorithms.sort;
 
+import algorithms.util.FormatArray;
+
 import java.util.Arrays;
 
 /**
@@ -57,7 +59,216 @@ public class MiscSorter {
         
         return indexes;
     }
-   
+
+    /**
+     * ascending sort array a by non-recursive merge-sort.
+     * It has O(n*lg(n)) runtime complexity and O(n) space complexity where
+     * n is a.length;
+     * @param y array to be ascending sorted
+     */
+    public static void nonRecursiveMergeSort(double[] y) {
+        int n = y.length;
+
+        // adapted from https://www.baeldung.com/cs/non-recursive-merge-sort
+        // and Chaudhuri & Wu 2018
+
+        double[] t = new double[n];
+        int idxT;
+        int gap;
+        int st1, e1, st2, e2;
+        for (int len = 1; len < n; len*=2) {
+            gap = 2*len;
+            for (int j = 0; j < n; j+=gap) {
+                st1 = j;
+                e1 = Math.min(j + len - 1, n);
+                st2 = j + len;
+                e2 = Math.min(j + 2*len - 1, n-1);
+                if (st2 >= n) {
+                    break;
+                }
+                //if (e2 >= n) {
+                //    e2 = n - 1;
+                //}
+                // temp length minimum size is 1, maximum size is n
+                // -- begin merge.
+                idxT = 0;
+                while (st1 <= e1 && st2 <= e2) {
+                    if (y[st1] <= y[st2]) {
+                        t[idxT] = y[st1];
+                        ++st1;
+                    } else {
+                        // inversion: a pair is a[st1], a[st2]
+                        //System.out.printf("inversion idxL1=%d idxL2=%d (%.3e,%.3e)\n", idxL1, idxL2, a[idxL1], a[idxL2]);
+                        t[idxT] = y[st2];
+                        ++st2;
+                    }
+                    ++idxT;
+                }
+                while (st1 <= e1) {
+                    t[idxT] = y[st1];
+                    ++st1;
+                    ++idxT;
+                }
+                while (st2 <= e2) {
+                    t[idxT] = y[st2];
+                    ++st2;
+                    ++idxT;
+                }
+                // -- end merge.
+                for (int j2 = 0; j2 <= (e2 - st1 + 1); ++j2) {
+                    y[j+j2] = t[j2];
+                }
+            }
+        }
+    }
+
+    /**
+     * calculate the order of indexes of y for ascending sort.  The method does not sort y, and returns
+     * the indexes of y which put it in an acending sorted order.
+     * The method has O(n*lg(n)) runtime complexity and O(n) space complexity where
+     * n is y.length;
+     * @param y array
+     * @return the sorted index numbers of y
+     */
+    public static int[] nonRecursiveMergeSortIndexes(double[] y) {
+        int n = y.length;
+
+        // adapted from https://www.baeldung.com/cs/non-recursive-merge-sort
+        // and Chaudhuri & Wu 2018
+
+        //% The columns of idx are buffers to store sort indices and output buffer
+        //%of merge-sort
+        //%we alternate between them and avoid unnecessary copying
+        int col = 0;
+        int[][] idxN2 = new int[n][2];
+        for (int i = 0; i < n; ++i) {
+            idxN2[i] = new int[2];
+            idxN2[i][col] = i;
+        }
+        int[] idxN = new int[n];
+
+        int gap;
+        int st1, e1, st2, e2;
+        int idx1, idx2;
+        int colS = 1;
+        int k, kf;
+        for (int len = 1; len < n; len*=2) {
+            gap = 2*len;
+            for (int z = 0; z < idxN2.length; ++z) {
+                idxN[z] = idxN2[z][col];
+            }
+            k = 0;
+
+            for (int j = 0; j < n; j+=gap) {
+                st1 = j;
+                e1 = Math.min(j + len - 1, n);
+                st2 = j + len;
+                e2 = Math.min(j + 2*len - 1, n-1);
+                if (st2 >= n) {
+                    break;
+                }
+
+                // -- begin merge.
+                while (st1 <= e1 && st2 <= e2) {
+                    k++;
+                    idx1 = idxN[st1];
+                    idx2 = idxN[st2];
+                    if (y[idx1] <= y[idx2]) {
+                        idxN2[k-1][colS] = idx1;
+                        ++st1;
+                    } else {
+                        // an inversion pair is y[idx1], y[idx2]
+                        //System.out.printf("inversion idxL1=%d idxL2=%d (%.3e,%.3e)\n", idx1, idx2, y[idx1], y[idx2]);
+                        idxN2[k-1][colS] = idx2;
+                        ++st2;
+                    }
+                }
+                if (st1 <= e1) {
+                    kf = k + e1 - st1 + 1;
+                    int c = st1;
+                    for (int z = k; z < kf; ++z) {
+                        idxN2[z][colS] = idxN[c];
+                        c++;
+                    }
+                    k = kf;
+                } else if (st2 <= e2) {
+                    kf = k + e2 - st2 + 1;
+                    //idx( ( k+1):kf, s ) = idx_r( st2 : e2, : );
+                    int c = st2;
+                    for (int z = k; z < kf; ++z) {
+                        idxN2[z][colS] = idxN[c];
+                        c++;
+                    }
+                    k = kf;
+                }
+            }// end for j=
+
+            col ^= 1;
+            colS ^= 1;
+        } // end for len=
+
+        int lastCol = colS^1;
+
+        System.out.printf("idxN2=\n%s\n", FormatArray.toString(idxN2, "%d"));
+        System.out.printf("last col used = %d\n", lastCol);
+
+        // file idxN and return it
+        for (int i = 0; i < n; ++i) {
+            idxN[i] = idxN2[i][lastCol];
+        }
+        return idxN;
+    }
+    /**
+     * sort array a by the order given in the values of indexes.
+     * @param a the array to be sorted
+     * @param indexes array holding the indexes for the sort order
+     */
+    public static void sortByIndexes(double[] a, int[] indexes) {
+        int n = a.length;
+        if (indexes.length != a.length) {
+            throw new IllegalArgumentException("a.length must equal indexes.length");
+        }
+        double[] s = new double[n];
+        for (int i = 0; i < n; ++i) {
+            s[i] = a[indexes[i]];
+        }
+        System.arraycopy(s, 0, a, 0, n);
+    }
+    /**
+     * sort array a by the order given in the values of indexes.
+     * @param a the array to be sorted
+     * @param indexes array holding the indexes for the sort order
+     */
+    public static void sortByIndexes(float[] a, int[] indexes) {
+        int n = a.length;
+        if (indexes.length != a.length) {
+            throw new IllegalArgumentException("a.length must equal indexes.length");
+        }
+        float[] s = new float[n];
+        for (int i = 0; i < n; ++i) {
+            s[i] = a[indexes[i]];
+        }
+        System.arraycopy(s, 0, a, 0, n);
+    }
+
+    /**
+     * sort array a by the order given in the values of indexes.
+     * @param a the array to be sorted
+     * @param indexes array holding the indexes for the sort order
+     * @return the sorted values of a
+     */
+    public static void sortByIndexes(int[] a, int[] indexes) {
+        int n = a.length;
+        if (indexes.length != a.length) {
+            throw new IllegalArgumentException("a.length must equal indexes.length");
+        }
+        int[] s = new int[n];
+        for (int i = 0; i < n; ++i) {
+            s[i] = a[indexes[i]];
+        }
+        System.arraycopy(s, 0, a, 0, n);
+    }
+
     /**
      * use merge sort to sort a1 and a2 by a1 in ascending order, breaking ties 
      * by a2 and return the indexes of the original indexes 

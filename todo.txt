@@ -20,9 +20,13 @@
 
 -- consider cache oblivious funnel sort
 
+-- explore google scholar search results for
+   algorithm SAS Institute Inc Chaudhuri
+
 -- for multidimensional fast efficient KDE: the fastKDE github project
    LBL-EESA by O'Brien T.A. et al. 2014, 2016.  it uses non-uniform FFT
    and the silverman kernel method.  the code language is python.
+-- explore https://www.cs.toronto.edu/~duvenaud/cookbook/
 
 -- Bayes estimate of GEV:
    -- a conjugate prior and likelihood is nearly intractable,

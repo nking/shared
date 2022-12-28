@@ -2,6 +2,8 @@ package algorithms.sort;
 
 import java.security.SecureRandom;
 import java.util.Arrays;
+
+import algorithms.util.FormatArray;
 import junit.framework.TestCase;
 
 /**
@@ -565,6 +567,41 @@ public class MiscSorterTest extends TestCase {
                 assertTrue(diff < tol);
                 prev = a1[i];
             }
+        }
+    }
+
+    public void testNonRecursiveMergeSort() {
+        System.out.println("testNonRecursiveMergeSort");
+        double[] a = new double[]{5, 7, 9, 6, 8, 10};
+
+        MiscSorter.nonRecursiveMergeSort(a);
+
+        double[] expected = new double[]{5, 6, 7, 9, 8, 10};
+        double tol = 1E-7;
+        assertEquals(expected.length, a.length);
+        for (int i = 0; i < expected.length; ++i) {
+            assertTrue(Math.abs(expected[i] - a[i]) < tol);
+        }
+    }
+
+    public void testNonRecursiveMergeSort2() {
+        System.out.println("testNonRecursiveMergeSort2");
+        double[] a = new double[]{5, 7, 9, 6, 8, 10};
+
+        int[] indexes = MiscSorter.nonRecursiveMergeSortIndexes(a);
+        int[] expectedI = new int[]{0, 3, 1, 4, 2, 5};
+
+        assertEquals(expectedI.length, a.length);
+        for (int i = 0; i < expectedI.length; ++i) {
+            assertEquals(expectedI[i], indexes[i]);
+        }
+
+        MiscSorter.sortByIndexes(a, indexes);
+        double[] expected = new double[]{5, 6, 7, 9, 8, 10};
+        double tol = 1E-7;
+        assertEquals(expected.length, a.length);
+        for (int i = 0; i < expected.length; ++i) {
+            assertTrue(Math.abs(expected[i] - a[i]) < tol);
         }
     }
 }

@@ -4298,7 +4298,7 @@ public class MatrixUtil {
     }
 
     /**
-     * pointwise multiplication
+     * pointwise multiplication (a.k.a. Hadamard product, entrywise product, and Schur product)
      @param a matrix a
      @param b matrix b
      @return element-wise multiplication of elements in a and b
@@ -4323,7 +4323,7 @@ public class MatrixUtil {
     }
 
     /**
-     * pointwise multiplication
+     * pointwise multiplication (a.k.a. Hadamard product, entrywise product, and Schur product)
      @param a matrix a
      @param b matrix b
      @return element-wise multiplication of elements in a and b
@@ -4471,7 +4471,7 @@ public class MatrixUtil {
     }
 
     /**
-     * pointwise multiplication
+     * pointwise multiplication (a.k.a. Hadamard product, entrywise product, and Schur product)
      @param a matrix
      @param b matrix
      @return  element-wise multiplication of elements in a and b
