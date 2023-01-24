@@ -1,6 +1,8 @@
 =================
 BLAS information:
 ------------------
+https://netlib.org/blas/faq.html
+
 https://techpubs.jurassic.nl/manuals/linux/enduser/SCSL_UG/sgi_html/ch02.html
 
 The BLAS routines use the following data types:
