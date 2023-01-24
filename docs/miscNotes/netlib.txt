@@ -1,0 +1,229 @@
+=================
+BLAS information:
+------------------
+https://techpubs.jurassic.nl/manuals/linux/enduser/SCSL_UG/sgi_html/ch02.html
+
+The BLAS routines use the following data types:
+
+    Single precision: Fortran “real” data types, C/C++ “float” data types, 32-bit
+        floating point. These routine names begin with S.
+
+    Single precision complex: Fortran “complex” data type, C/C++ “scsl_complex”
+        data type (defined in <scsl_blas.h>), C++ STL “complex<float>” data type
+        (defined in <complex.h>), two 32-bit floating point reals. These routine names
+    begin with C.
+
+    Double precision: Fortran “double precision” data type, C/C++ “double” data
+        type, 64-bit floating point. These routine names begin with D.
+
+    Double precision complex: Fortran “double complex” data type, C/C++
+        “scsl_zomplex” data type (defined in < scsl_blas.h>), C++ STL “complex<double>”
+        data type (defined in <complex.h>), two 64-bit floating point doubles. These
+        routine names begin with Z.
+
+    Integer is used too, but possibly not wrapped in netlib.
+
+There are three 'levels' of BLAS routines:
+
+    Level 1: these routines perform vector-vector operations such as dot-product
+    and the adding of a multiple of one vector to another.
+
+    Level 2: these routines perform matrix-vector operations that occur frequently
+    in the implementation of many of the most common linear algebra algorithms.
+    Note that algorithms that use Level 2 BLAS can be very efficient on vector
+    computers, but are not well suite to computers with a hierarchy of memory (that
+    is, cache memory).
+
+    Level 3: these routines are used for matrix-matrix operations.
+
+BLAS uses column-major order from Fortran history.
+
+methods inherited from com.github.fommil.netlib.BLAS
+
+BLAS methods available with mjt's netlib BLAS.getInstrance()
+
+dasum, dasum, daxpy, daxpy, dcopy, dcopy, ddot, ddot, dgbmv, dgbmv, dgemm,
+dgemm, dgemv, dgemv, dger, dger, dnrm2, dnrm2, drot, drot, drotg, drotm, drotm,
+drotmg, drotmg, dsbmv, dsbmv, dscal, dscal, dspmv, dspmv, dspr, dspr, dspr2,
+dspr2, dswap, dswap, dsymm, dsymm, dsymv, dsymv, dsyr, dsyr, dsyr2, dsyr2,
+dsyr2k, dsyr2k, dsyrk, dsyrk, dtbmv, dtbmv, dtbsv, dtbsv, dtpmv, dtpmv, dtpsv,
+dtpsv, dtrmm, dtrmm, dtrmv, dtrmv, dtrsm, dtrsm, dtrsv, dtrsv, idamax, idamax,
+isamax, isamax, lsame, sasum, sasum, saxpy, saxpy, scopy, scopy, sdot, sdot,
+sdsdot, sdsdot, sgbmv, sgbmv, sgemm, sgemm, sgemv, sgemv, sger, sger, snrm2,
+snrm2, srot, srot, srotg, srotm, srotm, srotmg, srotmg, ssbmv, ssbmv, sscal,
+sscal, sspmv, sspmv, sspr, sspr, sspr2, sspr2, sswap, sswap, ssymm, ssymm,
+ssymv, ssymv, ssyr, ssyr, ssyr2, ssyr2, ssyr2k, ssyr2k, ssyrk, ssyrk, stbmv,
+stbmv, stbsv, stbsv, stpmv, stpmv, stpsv, stpsv, strmm, strmm, strmv, strmv,
+strsm, strsm, strsv, strsv
+
+LAPack:
+
+LAPACK.getInstance():
+
+Methods inherited from class com.github.fommil.netlib.LAPACK
+dbdsdc, dbdsdc, dbdsqr, dbdsqr, ddisna, ddisna, dgbbrd, dgbbrd, dgbcon, dgbcon,
+dgbequ, dgbequ, dgbrfs, dgbrfs, dgbsv, dgbsv, dgbsvx, dgbsvx, dgbtf2, dgbtf2,
+dgbtrf, dgbtrf, dgbtrs, dgbtrs, dgebak, dgebak, dgebal, dgebal, dgebd2, dgebd2,
+dgebrd, dgebrd, dgecon, dgecon, dgeequ, dgeequ, dgees, dgees, dgeesx, dgeesx,
+dgeev, dgeev, dgeevx, dgeevx, dgegs, dgegs, dgegv, dgegv, dgehd2, dgehd2,
+dgehrd, dgehrd, dgelq2, dgelq2, dgelqf, dgelqf, dgels, dgels, dgelsd, dgelsd,
+dgelss, dgelss, dgelsx, dgelsx, dgelsy, dgelsy, dgeql2, dgeql2, dgeqlf, dgeqlf,
+dgeqp3, dgeqp3, dgeqpf, dgeqpf, dgeqr2, dgeqr2, dgeqrf, dgeqrf, dgerfs, dgerfs,
+dgerq2, dgerq2, dgerqf, dgerqf, dgesc2, dgesc2, dgesdd, dgesdd, dgesv, dgesv,
+dgesvd, dgesvd, dgesvx, dgesvx, dgetc2, dgetc2, dgetf2, dgetf2, dgetrf, dgetrf,
+dgetri, dgetri, dgetrs, dgetrs, dggbak, dggbak, dggbal, dggbal, dgges, dgges,
+dggesx, dggesx, dggev, dggev, dggevx, dggevx, dggglm, dggglm, dgghrd, dgghrd,
+dgglse, dgglse, dggqrf, dggqrf, dggrqf, dggrqf, dggsvd, dggsvd, dggsvp, dggsvp,
+dgtcon, dgtcon, dgtrfs, dgtrfs, dgtsv, dgtsv, dgtsvx, dgtsvx, dgttrf, dgttrf,
+dgttrs, dgttrs, dgtts2, dgtts2, dhgeqz, dhgeqz, dhsein, dhsein, dhseqr, dhseqr,
+disnan, dlabad, dlabrd, dlabrd, dlacn2, dlacn2, dlacon, dlacon, dlacpy, dlacpy,
+dladiv, dlae2, dlaebz, dlaebz, dlaed0, dlaed0, dlaed1, dlaed1, dlaed2, dlaed2,
+dlaed3, dlaed3, dlaed4, dlaed4, dlaed5, dlaed5, dlaed6, dlaed6, dlaed7, dlaed7,
+dlaed8, dlaed8, dlaed9, dlaed9, dlaeda, dlaeda, dlaein, dlaein, dlaev2, dlaexc,
+dlaexc, dlag2, dlag2, dlag2s, dlag2s, dlags2, dlagtf, dlagtf, dlagtm, dlagtm,
+dlagts, dlagts, dlagv2, dlagv2, dlahqr, dlahqr, dlahr2, dlahr2, dlahrd, dlahrd,
+dlaic1, dlaic1, dlaisnan, dlaln2, dlaln2, dlals0, dlals0, dlalsa, dlalsa,
+dlalsd, dlalsd, dlamc1, dlamc2, dlamc3, dlamc4, dlamc5, dlamch, dlamrg, dlamrg,
+dlaneg, dlaneg, dlangb, dlangb, dlange, dlange, dlangt, dlangt, dlanhs, dlanhs,
+dlansb, dlansb, dlansp, dlansp, dlanst, dlanst, dlansy, dlansy, dlantb, dlantb,
+dlantp, dlantp, dlantr, dlantr, dlanv2, dlapll, dlapll, dlapmt, dlapmt, dlapy2,
+dlapy3, dlaqgb, dlaqgb, dlaqge, dlaqge, dlaqp2, dlaqp2, dlaqps, dlaqps, dlaqr0,
+dlaqr0, dlaqr1, dlaqr1, dlaqr2, dlaqr2, dlaqr3, dlaqr3, dlaqr4, dlaqr4, dlaqr5,
+dlaqr5, dlaqsb, dlaqsb, dlaqsp, dlaqsp, dlaqsy, dlaqsy, dlaqtr, dlaqtr, dlar1v,
+dlar1v, dlar2v, dlar2v, dlarf, dlarf, dlarfb, dlarfb, dlarfg, dlarfg, dlarft,
+dlarft, dlarfx, dlarfx, dlargv, dlargv, dlarnv, dlarnv, dlarra, dlarra, dlarrb,
+dlarrb, dlarrc, dlarrc, dlarrd, dlarrd, dlarre, dlarre, dlarrf, dlarrf, dlarrj,
+dlarrj, dlarrk, dlarrk, dlarrr, dlarrr, dlarrv, dlarrv, dlartg, dlartv, dlartv,
+dlaruv, dlaruv, dlarz, dlarz, dlarzb, dlarzb, dlarzt, dlarzt, dlas2, dlascl,
+dlascl, dlasd0, dlasd0, dlasd1, dlasd1, dlasd2, dlasd2, dlasd3, dlasd3, dlasd4,
+dlasd4, dlasd5, dlasd5, dlasd6, dlasd6, dlasd7, dlasd7, dlasd8, dlasd8, dlasda,
+dlasda, dlasdq, dlasdq, dlasdt, dlasdt, dlaset, dlaset, dlasq1, dlasq1, dlasq2,
+dlasq2, dlasq3, dlasq3, dlasq4, dlasq4, dlasq5, dlasq5, dlasq6, dlasq6, dlasr,
+dlasr, dlasrt, dlasrt, dlassq, dlassq, dlasv2, dlaswp, dlaswp, dlasy2, dlasy2,
+dlasyf, dlasyf, dlatbs, dlatbs, dlatdf, dlatdf, dlatps, dlatps, dlatrd, dlatrd,
+dlatrs, dlatrs, dlatrz, dlatrz, dlatzm, dlatzm, dlauu2, dlauu2, dlauum, dlauum,
+dlazq3, dlazq3, dlazq4, dlazq4, dopgtr, dopgtr, dopmtr, dopmtr, dorg2l, dorg2l,
+dorg2r, dorg2r, dorgbr, dorgbr, dorghr, dorghr, dorgl2, dorgl2, dorglq, dorglq,
+dorgql, dorgql, dorgqr, dorgqr, dorgr2, dorgr2, dorgrq, dorgrq, dorgtr, dorgtr,
+dorm2l, dorm2l, dorm2r, dorm2r, dormbr, dormbr, dormhr, dormhr, dorml2, dorml2,
+dormlq, dormlq, dormql, dormql, dormqr, dormqr, dormr2, dormr2, dormr3, dormr3,
+dormrq, dormrq, dormrz, dormrz, dormtr, dormtr, dpbcon, dpbcon, dpbequ, dpbequ,
+dpbrfs, dpbrfs, dpbstf, dpbstf, dpbsv, dpbsv, dpbsvx, dpbsvx, dpbtf2, dpbtf2,
+dpbtrf, dpbtrf, dpbtrs, dpbtrs, dpocon, dpocon, dpoequ, dpoequ, dporfs, dporfs,
+dposv, dposv, dposvx, dposvx, dpotf2, dpotf2, dpotrf, dpotrf, dpotri, dpotri,
+dpotrs, dpotrs, dppcon, dppcon, dppequ, dppequ, dpprfs, dpprfs, dppsv, dppsv,
+dppsvx, dppsvx, dpptrf, dpptrf, dpptri, dpptri, dpptrs, dpptrs, dptcon, dptcon,
+dpteqr, dpteqr, dptrfs, dptrfs, dptsv, dptsv, dptsvx, dptsvx, dpttrf, dpttrf,
+dpttrs, dpttrs, dptts2, dptts2, drscl, drscl, dsbev, dsbev, dsbevd, dsbevd,
+dsbevx, dsbevx, dsbgst, dsbgst, dsbgv, dsbgv, dsbgvd, dsbgvd, dsbgvx, dsbgvx,
+dsbtrd, dsbtrd, dsecnd, dsgesv, dsgesv, dspcon, dspcon, dspev, dspev, dspevd,
+dspevd, dspevx, dspevx, dspgst, dspgst, dspgv, dspgv, dspgvd, dspgvd, dspgvx,
+dspgvx, dsprfs, dsprfs, dspsv, dspsv, dspsvx, dspsvx, dsptrd, dsptrd, dsptrf,
+dsptrf, dsptri, dsptri, dsptrs, dsptrs, dstebz, dstebz, dstedc, dstedc, dstegr,
+dstegr, dstein, dstein, dstemr, dstemr, dsteqr, dsteqr, dsterf, dsterf, dstev,
+dstev, dstevd, dstevd, dstevr, dstevr, dstevx, dstevx, dsycon, dsycon, dsyev,
+dsyev, dsyevd, dsyevd, dsyevr, dsyevr, dsyevx, dsyevx, dsygs2, dsygs2, dsygst,
+dsygst, dsygv, dsygv, dsygvd, dsygvd, dsygvx, dsygvx, dsyrfs, dsyrfs, dsysv,
+dsysv, dsysvx, dsysvx, dsytd2, dsytd2, dsytf2, dsytf2, dsytrd, dsytrd, dsytrf,
+dsytrf, dsytri, dsytri, dsytrs, dsytrs, dtbcon, dtbcon, dtbrfs, dtbrfs, dtbtrs,
+dtbtrs, dtgevc, dtgevc, dtgex2, dtgex2, dtgexc, dtgexc, dtgsen, dtgsen, dtgsja,
+dtgsja, dtgsna, dtgsna, dtgsy2, dtgsy2, dtgsyl, dtgsyl, dtpcon, dtpcon, dtprfs,
+dtprfs, dtptri, dtptri, dtptrs, dtptrs, dtrcon, dtrcon, dtrevc, dtrevc, dtrexc,
+dtrexc, dtrrfs, dtrrfs, dtrsen, dtrsen, dtrsna, dtrsna, dtrsyl, dtrsyl, dtrti2,
+dtrti2, dtrtri, dtrtri, dtrtrs, dtrtrs, dtzrqf, dtzrqf, dtzrzf, dtzrzf, ieeeck,
+ilaenv, ilaver, iparmq, lsame, lsamen, sbdsdc, sbdsdc, sbdsqr, sbdsqr, sdisna,
+sdisna, second, sgbbrd, sgbbrd, sgbcon, sgbcon, sgbequ, sgbequ, sgbrfs, sgbrfs,
+sgbsv, sgbsv, sgbsvx, sgbsvx, sgbtf2, sgbtf2, sgbtrf, sgbtrf, sgbtrs, sgbtrs,
+sgebak, sgebak, sgebal, sgebal, sgebd2, sgebd2, sgebrd, sgebrd, sgecon, sgecon,
+sgeequ, sgeequ, sgees, sgees, sgeesx, sgeesx, sgeev, sgeev, sgeevx, sgeevx,
+sgegs, sgegs, sgegv, sgegv, sgehd2, sgehd2, sgehrd, sgehrd, sgelq2, sgelq2,
+sgelqf, sgelqf, sgels, sgels, sgelsd, sgelsd, sgelss, sgelss, sgelsx, sgelsx,
+sgelsy, sgelsy, sgeql2, sgeql2, sgeqlf, sgeqlf, sgeqp3, sgeqp3, sgeqpf, sgeqpf,
+sgeqr2, sgeqr2, sgeqrf, sgeqrf, sgerfs, sgerfs, sgerq2, sgerq2, sgerqf, sgerqf,
+sgesc2, sgesc2, sgesdd, sgesdd, sgesv, sgesv, sgesvd, sgesvd, sgesvx, sgesvx,
+sgetc2, sgetc2, sgetf2, sgetf2, sgetrf, sgetrf, sgetri, sgetri, sgetrs, sgetrs,
+sggbak, sggbak, sggbal, sggbal, sgges, sgges, sggesx, sggesx, sggev, sggev,
+sggevx, sggevx, sggglm, sggglm, sgghrd, sgghrd, sgglse, sgglse, sggqrf, sggqrf,
+sggrqf, sggrqf, sggsvd, sggsvd, sggsvp, sggsvp, sgtcon, sgtcon, sgtrfs, sgtrfs,
+sgtsv, sgtsv, sgtsvx, sgtsvx, sgttrf, sgttrf, sgttrs, sgttrs, sgtts2, sgtts2,
+shgeqz, shgeqz, shsein, shsein, shseqr, shseqr, sisnan, slabad, slabrd, slabrd,
+slacn2, slacn2, slacon, slacon, slacpy, slacpy, sladiv, slae2, slaebz, slaebz,
+slaed0, slaed0, slaed1, slaed1, slaed2, slaed2, slaed3, slaed3, slaed4, slaed4,
+slaed5, slaed5, slaed6, slaed6, slaed7, slaed7, slaed8, slaed8, slaed9, slaed9,
+slaeda, slaeda, slaein, slaein, slaev2, slaexc, slaexc, slag2, slag2, slag2d,
+slag2d, slags2, slagtf, slagtf, slagtm, slagtm, slagts, slagts, slagv2, slagv2,
+slahqr, slahqr, slahr2, slahr2, slahrd, slahrd, slaic1, slaic1, slaisnan,
+slaln2, slaln2, slals0, slals0, slalsa, slalsa, slalsd, slalsd, slamc1, slamc2,
+slamc3, slamc4, slamc5, slamch, slamrg, slamrg, slaneg, slaneg, slangb, slangb,
+slange, slange, slangt, slangt, slanhs, slanhs, slansb, slansb, slansp, slansp,
+slanst, slanst, slansy, slansy, slantb, slantb, slantp, slantp, slantr, slantr,
+slanv2, slapll, slapll, slapmt, slapmt, slapy2, slapy3, slaqgb, slaqgb, slaqge,
+slaqge, slaqp2, slaqp2, slaqps, slaqps, slaqr0, slaqr0, slaqr1, slaqr1, slaqr2,
+slaqr2, slaqr3, slaqr3, slaqr4, slaqr4, slaqr5, slaqr5, slaqsb, slaqsb, slaqsp,
+slaqsp, slaqsy, slaqsy, slaqtr, slaqtr, slar1v, slar1v, slar2v, slar2v, slarf,
+slarf, slarfb, slarfb, slarfg, slarfg, slarft, slarft, slarfx, slarfx, slargv,
+slargv, slarnv, slarnv, slarra, slarra, slarrb, slarrb, slarrc, slarrc, slarrd,
+slarrd, slarre, slarre, slarrf, slarrf, slarrj, slarrj, slarrk, slarrk, slarrr,
+slarrr, slarrv, slarrv, slartg, slartv, slartv, slaruv, slaruv, slarz, slarz,
+slarzb, slarzb, slarzt, slarzt, slas2, slascl, slascl, slasd0, slasd0, slasd1,
+slasd1, slasd2, slasd2, slasd3, slasd3, slasd4, slasd4, slasd5, slasd5, slasd6,
+slasd6, slasd7, slasd7, slasd8, slasd8, slasda, slasda, slasdq, slasdq, slasdt,
+slasdt, slaset, slaset, slasq1, slasq1, slasq2, slasq2, slasq3, slasq3, slasq4,
+slasq4, slasq5, slasq5, slasq6, slasq6, slasr, slasr, slasrt, slasrt, slassq,
+slassq, slasv2, slaswp, slaswp, slasy2, slasy2, slasyf, slasyf, slatbs, slatbs,
+slatdf, slatdf, slatps, slatps, slatrd, slatrd, slatrs, slatrs, slatrz, slatrz,
+slatzm, slatzm, slauu2, slauu2, slauum, slauum, slazq3, slazq3, slazq4, slazq4,
+sopgtr, sopgtr, sopmtr, sopmtr, sorg2l, sorg2l, sorg2r, sorg2r, sorgbr, sorgbr,
+sorghr, sorghr, sorgl2, sorgl2, sorglq, sorglq, sorgql, sorgql, sorgqr, sorgqr,
+sorgr2, sorgr2, sorgrq, sorgrq, sorgtr, sorgtr, sorm2l, sorm2l, sorm2r, sorm2r,
+sormbr, sormbr, sormhr, sormhr, sorml2, sorml2, sormlq, sormlq, sormql, sormql,
+sormqr, sormqr, sormr2, sormr2, sormr3, sormr3, sormrq, sormrq, sormrz, sormrz,
+sormtr, sormtr, spbcon, spbcon, spbequ, spbequ, spbrfs, spbrfs, spbstf, spbstf,
+spbsv, spbsv, spbsvx, spbsvx, spbtf2, spbtf2, spbtrf, spbtrf, spbtrs, spbtrs,
+spocon, spocon, spoequ, spoequ, sporfs, sporfs, sposv, sposv, sposvx, sposvx,
+spotf2, spotf2, spotrf, spotrf, spotri, spotri, spotrs, spotrs, sppcon, sppcon,
+sppequ, sppequ, spprfs, spprfs, sppsv, sppsv, sppsvx, sppsvx, spptrf, spptrf,
+spptri, spptri, spptrs, spptrs, sptcon, sptcon, spteqr, spteqr, sptrfs, sptrfs,
+sptsv, sptsv, sptsvx, sptsvx, spttrf, spttrf, spttrs, spttrs, sptts2, sptts2,
+srscl, srscl, ssbev, ssbev, ssbevd, ssbevd, ssbevx, ssbevx, ssbgst, ssbgst,
+ssbgv, ssbgv, ssbgvd, ssbgvd, ssbgvx, ssbgvx, ssbtrd, ssbtrd, sspcon, sspcon,
+sspev, sspev, sspevd, sspevd, sspevx, sspevx, sspgst, sspgst, sspgv, sspgv,
+sspgvd, sspgvd, sspgvx, sspgvx, ssprfs, ssprfs, sspsv, sspsv, sspsvx, sspsvx,
+ssptrd, ssptrd, ssptrf, ssptrf, ssptri, ssptri, ssptrs, ssptrs, sstebz, sstebz,
+sstedc, sstedc, sstegr, sstegr, sstein, sstein, sstemr, sstemr, ssteqr, ssteqr,
+ssterf, ssterf, sstev, sstev, sstevd, sstevd, sstevr, sstevr, sstevx, sstevx,
+ssycon, ssycon, ssyev, ssyev, ssyevd, ssyevd, ssyevr, ssyevr, ssyevx, ssyevx,
+ssygs2, ssygs2, ssygst, ssygst, ssygv, ssygv, ssygvd, ssygvd, ssygvx, ssygvx,
+ssyrfs, ssyrfs, ssysv, ssysv, ssysvx, ssysvx, ssytd2, ssytd2, ssytf2, ssytf2,
+ssytrd, ssytrd, ssytrf, ssytrf, ssytri, ssytri, ssytrs, ssytrs, stbcon, stbcon,
+stbrfs, stbrfs, stbtrs, stbtrs, stgevc, stgevc, stgex2, stgex2, stgexc, stgexc,
+stgsen, stgsen, stgsja, stgsja, stgsna, stgsna, stgsy2, stgsy2, stgsyl, stgsyl,
+stpcon, stpcon, stprfs, stprfs, stptri, stptri, stptrs, stptrs, strcon, strcon,
+strevc, strevc, strexc, strexc, strrfs, strrfs, strsen, strsen, strsna, strsna,
+strsyl, strsyl, strti2, strti2, strtri, strtri, strtrs, strtrs, stzrqf, stzrqf,
+stzrzf, stzrzf
+
+ARPACK.getInstance():
+dgetv0, dgetv0, dlaqrb, dlaqrb, dmout, dmout, dnaitr, dnaitr, dnapps, dnapps,
+dnaup2, dnaup2, dnaupd, dnaupd, dnconv, dnconv, dneigh, dneigh, dneupd, dneupd,
+dngets, dngets, dsaitr, dsaitr, dsapps, dsapps, dsaup2, dsaup2, dsaupd, dsaupd,
+dsconv, dsconv, dseigt, dseigt, dsesrt, dsesrt, dseupd, dseupd, dsgets, dsgets,
+dsortc, dsortc, dsortr, dsortr, dstatn, dstats, dstqrb, dstqrb, dvout, dvout,
+icnteq, icnteq, icopy, icopy, iset, iset, iswap, iswap, ivout, ivout, second,
+sgetv0, sgetv0, slaqrb, slaqrb, smout, smout, snaitr, snaitr, snapps, snapps,
+snaup2, snaup2, snaupd, snaupd, snconv, snconv, sneigh, sneigh, sneupd, sneupd,
+sngets, sngets, ssaitr, ssaitr, ssapps, ssapps, ssaup2, ssaup2, ssaupd, ssaupd,
+ssconv, ssconv, sseigt, sseigt, ssesrt, ssesrt, sseupd, sseupd, ssgets, ssgets,
+ssortc, ssortc, ssortr, ssortr, sstatn, sstats, sstqrb, sstqrb, svout, svout
+
+====================
+LAPACK
+
+LAPACK routines can solve systems of linear equations, linear least squares
+problems, eigenvalue problems, and singular value problems. LAPACK routines can
+also handle many associated computations such as matrix factorizations and
+estimating condition numbers. Dense and banded matrices are provided for, but
+not general sparse matrices.
+
+
+
