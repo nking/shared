@@ -15,24 +15,14 @@
     - numpy, octave and R support vectorization
     - kotlin based multik
     - la4j library http://la4j.org/
-    - 
-   
--- hould be using the MTJ matrix methods with large matrices because
-   it uses netlib-java which uses machine-optimized native methods
-   when available. 
+    - intel, amd, and many other processor companies have pages w/ linear alg and vectorization
+      tips and/or apis.
+      e.g. https://www.intel.com/content/www/us/en/develop/documentation/advisor-user-guide/top/reference/recommendation-reference/vectorization-recommendations-for-c.html
 
-(1) create small eigen eyes test example for principal components
-(2) follow up on replicating a kaggle notebook and data 
-    to AWS sagemaker:
-    /Users/nichole/Downloads/lung_disease_dataset_kaggle/README.txt
-    Amazon SageMaker is available for free, for 2 months, as part of the AWS Free Tier program. Users can get access to 250 hours per month of ml.t3.medium notebooks usage with the Free Tier.
-    ** because the 2 month clock starts w/ creation of account,
-       I should find a reccomendation engine example too to replicate and explore,
-       and a search example,
-       and another image processing -> comp vis preferably.
-   for the examples, see https://www.kaggle.com/ seciont "Browse inspiring data and code"
+-- more ML libraries to explore:
+   https://anywhere.epam.com/business/c-plus-plus-ml-libraries
 
-
+-- amazon sage and google's kaggle
 
 -- browse https://github.com/GPflow/GPflow
 
