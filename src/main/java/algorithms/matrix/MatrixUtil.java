@@ -428,8 +428,8 @@ public class MatrixUtil {
     
     /**
      * multiply matrix m by matrix n
-     @param m two dimensional array in row major format
-     @param n two dimensional array in row major format
+     @param m two-dimensional array in row major format
+     @param n two-dimensional array in row major format
      @return multiplication of m by n.  resulting matrix is size mrows X ncols.
      */
     public static double[][] multiply(double[][] m, double[][] n) {
@@ -547,8 +547,8 @@ public class MatrixUtil {
     
     /**
      * multiply matrix m by matrix n
-     @param m tow dimensional array in row major format
-     @param n two dimensional array in row major format
+     @param m two-dimensional array in row major format
+     @param n two-dimensional array in row major format
      @param out the results of multiplication of m by n.  the matrix should be size mrows X ncols.
      */
     public static void multiply(double[][] m, double[][] n, double[][] out) {
@@ -1657,7 +1657,7 @@ public class MatrixUtil {
      @param a
      @return
      */
-    public static double[][] convertToRowMajor(AbstractMatrix a) {
+    public static double[][] convertToRowMajor(Matrix a) {
         int nc = a.numColumns();
         int nr = a.numRows();
         double[][] out = new double[nr][];
