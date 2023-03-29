@@ -642,6 +642,8 @@ public class Histogram {
      * actually determined from all bins, so the error in a bin with a value of
      * zero is a positive number less than infinity and is due to all errors of
      * points that go into making the histogram.
+       TODO: here can add explanation of "Additive Smoothing" a.k.a. Laplace Smoothing a.k.a. Lidstone smoothing,
+       and more specifically, "add-one smoothing".   
      *
      * For each bin:
      *   (sigma)^2 = (ave sigma_from_all)^2 + (sigma from all points in bin, in function that reduces it by the number of points)
