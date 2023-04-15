@@ -368,7 +368,7 @@ public class Misc {
      * given one machine and n tasks (where n = duration.length and the task properties
      * are duration, deadline and profit v) find a schedule which maximizes the summed
      * profits v.  A profit v_i is only received for a task finished before its deadline,
-     * else there is not a penalty but no sum is added to the total profit,
+     * else there is not a penalty for lateness but no sum is added to the total profit,
      * so all tasks should be scheduled if possible.  The machine can only process one task at a time
      * and without interruption (no preemption).
 
@@ -386,7 +386,7 @@ public class Misc {
      "Introduction to Algorithms", fourth edition
 
      * @param duration non-negative amount of times to complete each task
-     * @param deadline non-negative deadlines
+     * @param deadline non-negative deadlines for each task
      * @param v non-negative profits for each task completed before its deadline.
      * @param outputSchedule output array of length n to be populated by this algorithm with the order for scheduling tasks.
      * @param outLastOnTimeIdx output array of length 1 holding the index of outputSchedule which
@@ -432,6 +432,8 @@ public class Misc {
         TIntObjectMap<TIntSet> fMap = new TIntObjectHashMap<TIntSet>();
 
         // populating memo and fMap is at worst 2*(2^n))
+
+        // dynamic programming using maps instead of dense matrix
 
         int i;
         int f;
@@ -520,7 +522,7 @@ public class Misc {
             }
         }
 
-        // recover indexes for schedule
+        // recover indexes for schedule with backtracking
         f = maxF;
         p = maxP;
         TIntList sched = new TIntArrayList();
