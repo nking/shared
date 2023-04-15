@@ -14,19 +14,22 @@ import java.util.concurrent.Semaphore;
         Sedgewick, Robert. "a talk on Permutation Generation Algorithms
         http://www.cs.princeton.edu/~rs/talks/perms.pdf
    
-   The semaphore model is adapted from Chap 12.1 of "Java Concurrency in Practice"
+   I added the semaphore model in order to be able to iterate on demand through end of 
+   permutations.  In this way, the method does not return all permutations at once and
+   hence is not limiting the sequence length to avoid running out of memory.
+   This method can be used by different threads to each fetch unique permutations.
+
+   I adapted the semaphore model from Chap 12.1 of "Java Concurrency in Practice"
    by Goetz et al.
    </pre>
    <pre>
-   Example invocation and an outline of the internal use of the 2 semaphores and 1 AtomicBoolean:
+   Example usage:
        int[] seq = new int[]{1,2,3};
        int[] perm = new int[3];
        PermutationsWithAwait p = new PermutationsWithAwait(seq);
        p.getNext(perm);
    </pre>
 
- Note that the class has been made final because it starts a thread within the constructor and
- any subclass constructor would follow the started thread.
  */
 public final class PermutationsWithAwait {
 
@@ -49,16 +52,21 @@ public final class PermutationsWithAwait {
      * permute the given set of numbers in a thread that waits for the getNext()
      * invocation to calculate the next permutation.
 
-       <pre>
-       The permute code is adapted from 
-            from https://en.wikipedia.org/wiki/Heap%27s_algorithm
-       which further references:
-            Sedgewick, Robert. "a talk on Permutation Generation Algorithms
-            http://www.cs.princeton.edu/~rs/talks/perms.pdf
+   <pre>
+   The permute code is adapted from 
+        from https://en.wikipedia.org/wiki/Heap%27s_algorithm
+   which further references:
+        Sedgewick, Robert. "a talk on Permutation Generation Algorithms
+        http://www.cs.princeton.edu/~rs/talks/perms.pdf
+   
+   I added the semaphore model in order to be able to iterate on demand through end of 
+   permutations.  In this way, the method does not return all permutations at once and
+   hence is not limiting the sequence length to avoid running out of memory.
+   This method can be used by different threads to each fetch unique permutations.
 
-       The semaphore model is adapted from Chap 12.1 of "Java Concurrency in Practice"
-       by Goetz et al.
-       </pre>
+   I adapted the semaphore model from Chap 12.1 of "Java Concurrency in Practice"
+   by Goetz et al.
+   </pre>
        
      @param seq input sequence of numbers to permute
      * @throws java.lang.InterruptedException thrown if a thread is interrupted

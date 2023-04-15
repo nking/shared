@@ -24,7 +24,7 @@ public class Laplacian {
     //TODO: include normalizations and pre-weighted edges
 
     /**
-     * calculate L = D - A.
+     * calculate L = D - A where D is a diagonal matrix.
      * For L_i_j, D_i_i is the number of edges into node i and A_i_j is the adjacency of nodes i and j (== 1 if adjacent, else 0).
      @param g
      @return laplacian for D holding in-degrees.

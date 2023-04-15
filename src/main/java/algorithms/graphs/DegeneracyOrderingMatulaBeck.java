@@ -21,6 +21,9 @@ import java.util.TreeMap;
  * The degeneracy of a graph is a measure of how sparse it is, and is within 
  * a constant factor of other sparsity measures such as the arboricity of a 
  * graph.
+ *
+ * To see the degeneracy in a k-degenerate graph, remove all nodes
+ * that are k
  <pre>
  https://en.wikipedia.org/wiki/Degeneracy_(graph_theory)#Relation_to_other_graph_parameters
 </pre>

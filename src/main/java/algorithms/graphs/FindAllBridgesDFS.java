@@ -12,7 +12,7 @@ import java.util.Arrays;
  * that u is the parent of v) there is no back edge within v’s subtree that 
  * leads to a vertex whose discovery time is strictly smaller than v’s 
  * discovery time.
- * 
+
    definitions:
    Bridge is any edge whose removal results in a disconnected graph.
    tree edges connect a parent with its child in the DFS tree.
@@ -131,7 +131,7 @@ public class FindAllBridgesDFS {
     }
     
     /**
-     * alterative pattern for walking code
+     * alternative pattern for walking code
      @param vertexOrder
      */
     void _walk(int[] vertexOrder) {

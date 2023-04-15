@@ -69,4 +69,38 @@ public class DoublyLinkedListTest extends TestCase {
         assertFalse(linkedList.contains(nodes[2]));
     }
 
+    public void testInsertBefore() {
+        DoublyLinkedList<TNode> linkedList = new DoublyLinkedList<TNode>();
+        TNode empty = linkedList.peekFirst();
+
+        DoublyLinkedListTest.TNode node10 = new DoublyLinkedListTest.TNode(10);
+
+        linkedList.addBefore(node10, empty);
+        // l = [node10]
+
+        assertEquals(linkedList.peekFirst().data, node10.data);
+        assertTrue(linkedList.peekFirst().equals(node10));
+
+        DoublyLinkedListTest.TNode node2 = new DoublyLinkedListTest.TNode(2);
+
+        linkedList.addBefore(node2, linkedList.peekFirst());
+        // l = [node2, node10]
+
+        assertEquals(linkedList.peekFirst().data, node2.data);
+        assertTrue(linkedList.peekFirst().equals(node2));
+
+        DoublyLinkedListTest.TNode node3 = new DoublyLinkedListTest.TNode(3);
+        linkedList.addBefore(node3, node10);
+        // l = [node2, node3, node10]
+
+        assertEquals(linkedList.peekFirst().data, node2.data);
+        assertTrue(linkedList.peekFirst().equals(node2));
+
+        assertEquals(((DoublyLinkedListTest.TNode)linkedList.peekFirst().next).data, node3.data);
+        assertTrue(((DoublyLinkedListTest.TNode)linkedList.peekFirst().next).equals(node3));
+
+        assertEquals(linkedList.peekLast().data, node10.data);
+        assertTrue(linkedList.peekLast().equals(node10));
+    }
+
 }

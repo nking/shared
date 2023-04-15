@@ -12,11 +12,12 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import java.util.Arrays;
+import java.util.SortedMap;
 
 /**
  * In graph theory and theoretical computer science, the longest path problem 
  is the problem of finding a simple path of maximum length in a given graph. 
- A path is called simple if it does not have any repeated vertices; the length 
+ A path is called simple if it does not have any repeated vertices. The length
  of a path may either be measured by its number of edges, or (in weighted graphs) 
  by the sum of the weights of its edges.
 
@@ -165,7 +166,7 @@ public class LongestPath {
                 
                 nhbr = nhbr.getNext();
             }
-            
+
             distV = Double.NEGATIVE_INFINITY;
             set = prevMap.get(v);
             if (set != null) {

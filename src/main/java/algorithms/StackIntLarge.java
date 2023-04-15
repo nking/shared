@@ -48,16 +48,9 @@ public class StackIntLarge {
     public void push(int value) {
         
         expandIfNeeded();
-        
-        if (idxLast == -1) {
-            idxLast = 0;
-            a[idxLast] = value;
-            return;
-        }
-        
-        int idxNext = idxLast + 1;
-        assert(idxNext < a.length);
-        idxLast = idxNext;
+
+        ++idxLast;
+        assert(idxLast < a.length);
         a[idxLast] = value;
     }
     
@@ -69,11 +62,6 @@ public class StackIntLarge {
         
         if (idxLast == -1) {
             throw new IllegalStateException("stack is empty");
-        }
-        
-        if (idxLast == 0) {
-            idxLast = -1;
-            return a[0];
         }
 
         idxLast--;
@@ -124,7 +112,7 @@ public class StackIntLarge {
         
         assert(idxLast > -1);
         
-        // expand by 10 percent?
+        // expand by 10 percent
         int nAdd = (int)Math.ceil(sz * 0.1f);
         if (nAdd < 16) {
             nAdd = 16;

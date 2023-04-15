@@ -142,7 +142,7 @@ public class DFS {
                 predecessor[v] = u;
                 visit(v);
             } else if (predecessor[v] == -1) {
-                // visited, but no predecessor yet
+                // visited, but no predecessor yet.  this is a back edge
                 predecessor[v] = u;
             }
             next = next.getNext();

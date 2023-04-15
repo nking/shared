@@ -1,6 +1,8 @@
 package algorithms.sort;
 
 import java.util.Arrays;
+
+import algorithms.misc.MiscMath0;
 import algorithms.util.PairIntArray;
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -140,6 +142,25 @@ public class MultiArrayMergeSortTest extends TestCase {
     	int[] expectedA = new int[]{6, 5, 4, 3, 2, 1};
         int[] expectedB = new int[]{5, 4, 3, 2, 1, 0};
         
+        assertTrue(Arrays.equals(expectedA, a));
+        assertTrue(Arrays.equals(expectedB, b));
+    }
+
+    public void testSortByIncr() throws Exception {
+
+        int[] a = new int[]{1, 2, 3, 4, 5, 6};
+        int[] b = new int[]{0, 1, 2, 3, 4, 5};
+        MiscMath0.reverse(a);
+        MiscMath0.reverse(b);
+
+        MultiArrayMergeSort.sortByDecr(a, b);
+        assertTrue(a.length == b.length);
+
+        int[] expectedA = new int[]{6, 5, 4, 3, 2, 1};
+        int[] expectedB = new int[]{5, 4, 3, 2, 1, 0};
+        MiscMath0.reverse(expectedA);
+        MiscMath0.reverse(expectedB);
+
         assertTrue(Arrays.equals(expectedA, a));
         assertTrue(Arrays.equals(expectedB, b));
     }

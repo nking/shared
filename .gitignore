@@ -7,6 +7,7 @@ log
 data
 build
 bin
+out
 nbproject
 .project
 .classpath

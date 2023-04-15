@@ -17,14 +17,13 @@ package algorithms;
 public class Rotate {
     
     /**
-     * The solution is O(N) and uses the pattern flip top sub-array, flip bottom
-     * sub-array, then flip all of the array.
-     * The problem and suggested solution are from "Programming Pearls", 
-     * Chapter 2, Problem B.
-     * 
+     The solution is O(N) and uses the pattern flip top sub-array, flip bottom
+     sub-array, then flip all of the array.
+     The problem and suggested solution are from "Programming Pearls",
+     Chapter 2, Problem B.
      @param a array of numbers treated as a circular array.
      @param left the number of spaces for which to shift left the values 
-     * within array a. 
+     within array a.
      */
     public void rotate(int[] a, int left) {
         

@@ -48,16 +48,9 @@ public class StackLongLarge {
     public void push(long value) {
         
         expandIfNeeded();
-        
-        if (idxLast == -1) {
-            idxLast = 0;
-            a[idxLast] = value;
-            return;
-        }
-        
-        int idxNext = idxLast + 1;
-        assert(idxNext < a.length);
-        idxLast = idxNext;
+
+        idxLast++;
+        assert(idxLast < a.length);
         a[idxLast] = value;
     }
     
@@ -69,11 +62,6 @@ public class StackLongLarge {
         
         if (idxLast == -1) {
             throw new IllegalStateException("stack is empty");
-        }
-        
-        if (idxLast == 0) {
-            idxLast = -1;
-            return a[0];
         }
 
         idxLast--;

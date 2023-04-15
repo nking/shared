@@ -15,8 +15,9 @@
     - numpy, octave and R support vectorization
     - kotlin based multik
     - la4j library http://la4j.org/
-    - intel, amd, and many other processor companies have pages w/ linear alg and vectorization
+    - intel, amd, and many other processor vendors have pages w/ linear alg and vectorization
       tips and/or apis.
+      https://netlib.org/blas/faq.html
       e.g. https://www.intel.com/content/www/us/en/develop/documentation/advisor-user-guide/top/reference/recommendation-reference/vectorization-recommendations-for-c.html
 
 -- more ML libraries to explore:

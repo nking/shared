@@ -51,7 +51,7 @@ public final class VeryLongBitString {
    
     /**
      *
-     @param nBits
+     @param nBits the fixed capacity for this bitstring 
      */
     public VeryLongBitString(long nBits) {
         
@@ -70,9 +70,9 @@ public final class VeryLongBitString {
     
     /**
      *
-     @param bitstrings
-     @param nBits
-     @param nSetBits
+     @param bitstrings the bitstring to initialize this with
+     @param nBits the fixed capacity for this bitstring 
+     @param nSetBits the number of set bits in bitstrings.  a convenience to avoid counting the set bits.
      */
     protected VeryLongBitString(long[] bitstrings, long nBits, long 
         nSetBits) {

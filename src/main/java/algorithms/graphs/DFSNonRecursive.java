@@ -159,6 +159,7 @@ public class DFSNonRecursive {
                             continue;
                         } else if (predecessor[v] == -1) {
                             // in case the instance graph is not ordered top-down
+                            // this is a back edge.
                             predecessor[v] = current.node;
                         }
                     }
@@ -195,6 +196,7 @@ public class DFSNonRecursive {
   
                             continue;
                         } else if (predecessor[v] == -1) {
+                            //this is a back edge
                             predecessor[v] = current.node;
                         }
                         

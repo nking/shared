@@ -1,10 +1,13 @@
 package algorithms.scheduling;
 
 import algorithms.sort.MiscSorter;
+import gnu.trove.iterator.TIntDoubleIterator;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.TIntDoubleMap;
 import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntDoubleHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
@@ -21,7 +24,7 @@ public class Misc {
      * t_i and a deadline d_i. 
      * The objective is to schedule the tasks, no two overlapping in time, 
      * such that they are all completed before their deadline. 
-     * If this is not possible, define the lateness of the ith task to be amount 
+     * If this is not possible, define the lateness of the ith task to be the amount
      * by which its finish time exceeds its deadline. 
      * The objective is to minimize the maximum lateness over all the tasks.
      * 
@@ -34,7 +37,7 @@ public class Misc {
      * 
      * runtime complexity O(N * log_2(N)).
      * 
-     @param duration duration of task
+     @param duration duration of task. duration a.k.a. burst time a.k.a. execution time
      @param deadline deadline for task
      @param outputStart output array to hold start times for the resulting scheduled index order 
      @param outputLate output array to hold lateness for the resulting scheduled index order.
@@ -228,9 +231,9 @@ public class Misc {
        <pre>
          Roughly:
          
-           Thru these 2 short examples, one can see that a dynamic solution 
-           also avoiding exponential comparisons of every permutation by re-using
-           the answers from subproblems, should be possible.
+           Through these 2 short examples, one can see that a dynamic solution
+           avoiding exponential comparisons of every permutation through re-use
+           the answers from sub-problems, should be possible.
            
           First, sort tasks by finish time.
 
@@ -305,10 +308,11 @@ public class Misc {
         int n = f.length;
         
         // ascending order sort by f
-        // runtime complexity is O(log_2(n))
+        // runtime complexity is O(n*log_2(n))
         int[] origIndexes = sort2(f, s, v);
         //System.out.printf("sorted indexes=%s\n", Arrays.toString(origIndexes));
-        
+
+        // holds max values
         double[] memo = new double[n];
         TIntObjectMap<TIntSet> map = new TIntObjectHashMap<TIntSet>();
         
@@ -317,7 +321,7 @@ public class Misc {
         double max;
         int jMax;
         TIntSet set;
-        
+
         // runtime complexity is O(n^2)
         for (i = n - 1; i >= 0; --i) {
           max = Double.NEGATIVE_INFINITY;
@@ -329,7 +333,7 @@ public class Misc {
                 max = memo[j];
               }
             }
-          }
+          }// end loop over j
           set = new TIntHashSet();
           map.put(i, set);
           set.add(i);
@@ -339,7 +343,7 @@ public class Misc {
             memo[i] = v[i] + memo[jMax];
             set.add(jMax);
           }
-        }
+        }//end loop over i
         
         max = Double.NEGATIVE_INFINITY;
         jMax = -1;
@@ -358,6 +362,203 @@ public class Misc {
         Arrays.sort(sched);
         
         return sched;
+    }
+
+    /**
+     * given one machine and n tasks (where n = duration.length and the task properties
+     * are duration, deadline and profit v) find a schedule which maximizes the summed
+     * profits v.  A profit v_i is only received for a task finished before its deadline,
+     * else there is not a penalty but no sum is added to the total profit,
+     * so all tasks should be scheduled if possible.  The machine can only process one task at a time
+     * and without interruption (no preemption).
+
+     The runtime complexity for worse case is O(2^n), though the n may be less than the number of tasks
+     when tasks cannot be scheduled before their deadlines.
+
+     The algorithm is in NP-complete.
+     A proof can be extrapolated from SUBSET-SUM (or more difficultly with VERTEX-COVER) decision problem which
+     is already known to be NP-complete.
+
+     The VERTEX-COVER proof follows from the schedule being a maximal independent set and that
+     a vertex cover is the complement of the maximal independent set.
+
+     The algorithm arises from question 34-4 of Cormen, Leiserson, Rivest, and Stein,
+     "Introduction to Algorithms", fourth edition
+
+     * @param duration non-negative amount of times to complete each task
+     * @param deadline non-negative deadlines
+     * @param v non-negative profits for each task completed before its deadline.
+     * @param outputSchedule output array of length n to be populated by this algorithm with the order for scheduling tasks.
+     * @param outLastOnTimeIdx output array of length 1 holding the index of outputSchedule which
+     *                      is the last task in the schedule that completes before its deadline.
+     * @return the summed profits for the tasks scheduled which will complete on time.
+     */
+    public static double weightedOptimal(int[] duration, double[] deadline, double[] v, int[] outputSchedule, int[] outLastOnTimeIdx) {
+        int n = duration.length;
+        if (deadline.length != n) {
+            throw new IllegalArgumentException("deadline.length must equal duration.length");
+        }
+        if (v.length != n) {
+            throw new IllegalArgumentException("v.length must equal duration.length");
+        }
+        if (outputSchedule.length != n) {
+            throw new IllegalArgumentException("outputSchedule.length must equal duration.length");
+        }
+        if (outLastOnTimeIdx.length != 1) {
+            throw new IllegalArgumentException("outLastOnTimeIdx.length must equal 1");
+        }
+
+        duration = Arrays.copyOf(duration, n);
+        deadline = Arrays.copyOf(deadline, n);
+        v = Arrays.copyOf(v, n);
+
+        // ascending order sort by deadline
+        // runtime complexity is O(n*log_2(n))
+
+        int[] origIndexes = sort2(deadline, duration, v);
+        //System.out.printf("sorted indexes=%s\n", Arrays.toString(origIndexes));
+
+        // see notes on this algorithm at bottom of method
+
+        // interval [si, fi] of start and finish times
+        // where finish time f is calculated as time + duration of task.
+
+        // memo needs a composite key of index and f
+        // memo value is the summed profit
+        TIntObjectMap<TIntDoubleMap> memo = new TIntObjectHashMap<TIntDoubleMap>();
+
+        // fMap key is index, and value is set of fi values stored from evaluation at index.  the fi values are used
+        // to find summed profits in the memo map.
+        TIntObjectMap<TIntSet> fMap = new TIntObjectHashMap<TIntSet>();
+
+        // populating memo and fMap is at worst 2*(2^n))
+
+        int i;
+        int f;
+        double sumP;
+        TIntSet prevFMapSet, fMapSet;
+        TIntDoubleMap memoFPMap;
+
+        // init:
+        // include i=0 task
+        i = 0;
+        fMapSet = new TIntHashSet();
+        memoFPMap = new TIntDoubleHashMap();
+        if (duration[i] <= deadline[i]) {
+            f = duration[i];
+            sumP = v[i];
+            fMapSet.add(f);
+            memoFPMap.put(f, sumP);
+        }
+        // exclude i=0 task
+        f = 0;
+        sumP = 0;
+        fMapSet.add(f);
+        memoFPMap.put(f, sumP);
+
+        // update memo and fMap
+        memo.put(i, memoFPMap);
+        fMap.put(i, fMapSet);
+
+        TIntIterator iter;
+        int fPrev;
+        double pPrev;
+        for (i = 1; i < n; ++i) {
+            // get f's from prev index
+            prevFMapSet = fMapSet;
+            fMapSet = new TIntHashSet();
+            memoFPMap = new TIntDoubleHashMap();//int f, double v
+            memo.put(i, memoFPMap);
+            fMap.put(i, fMapSet);
+
+            iter = prevFMapSet.iterator();
+            while (iter.hasNext()) {
+                fPrev = iter.next();
+                pPrev = memo.get(i - 1).get(fPrev);
+                // tentative f
+                f = fPrev + duration[i];
+                if (f <= deadline[i]) {
+                    // === include task i ====
+                    sumP = pPrev + v[i];
+                    if (memoFPMap.containsKey(f)) {
+                        // if entry already exists, take max of this and that
+                        if (memoFPMap.get(f) < sumP) {
+                            memoFPMap.put(f, sumP);
+                        }
+                    } else {
+                        memoFPMap.put(f, sumP);
+                        fMapSet.add(f);
+                    }
+                }
+
+                // === exclude task i ====
+                // by storing fPrev and pPrev after a check for existing entry in current memo for i
+                if (memoFPMap.containsKey(fPrev)) {
+                    if (memoFPMap.get(fPrev) < pPrev) {
+                        memoFPMap.put(fPrev, pPrev);
+                    }
+                } else {
+                    memoFPMap.put(fPrev, pPrev);
+                    fMapSet.add(fPrev);
+                }
+            } // end loop over f
+        } // end loop over i
+
+        // get max of memo[n-1]
+        memoFPMap = memo.get(n - 1);
+        int maxF = -1;
+        double p;
+        double maxP = Double.NEGATIVE_INFINITY;
+        TIntDoubleIterator iter2 = memoFPMap.iterator();
+        while (iter2.hasNext()) {
+            iter2.advance();
+            f = iter2.key();
+            p = iter2.value();
+            if (p > maxP) {
+                maxP = p;
+                maxF = f;
+            }
+        }
+
+        // recover indexes for schedule
+        f = maxF;
+        p = maxP;
+        TIntList sched = new TIntArrayList();
+        for (i = n - 1; i >= 0; --i) {
+            if (p <= 0) {
+                break;
+            }
+            if ((i > 0) && p == memo.get(i-1).get(f)) {
+                continue;
+            } else {
+                sched.add(i);
+                p -= v[i];
+                f -= duration[i];
+            }
+        }
+        assert(f == 0);
+
+        sched.reverse();
+
+        outLastOnTimeIdx[0] = sched.size() - 1;
+
+        if (sched.size() < n) {
+            TIntSet schedSet = new TIntHashSet(sched);
+            // add the remaining tasks.  since they are ordered by deadline already,
+            // this will minimize the lateness
+            for (i = 0; i < n; ++i) {
+                if (!schedSet.contains(i)) {
+                    sched.add(i);
+                }
+            }
+        }
+
+        // transform to original indexes
+        for (i = 0; i < n; ++i) {
+            outputSchedule[i] = origIndexes[sched.get(i)];
+        }
+
+        return maxP;
     }
 
     // s and f are sorted by ascending order of f before passed to this method
@@ -422,7 +623,7 @@ public class Misc {
      * (2) create an optimal schedule having the tasks in A as its early tasks.
     
      @param deadlines values must be between 1 and numTasks, inclusive
-     @param penalties penalties for missing a dealine
+     @param penalties penalties for missing a deadline
      @return order of scheduled tasks
      */
     public int[] weightedGreedy(int[] deadlines, int[] penalties) {
@@ -433,7 +634,7 @@ public class Misc {
             Arrays.copyOf(penalties, penalties.length));
         //System.out.println("greedy algorithm resulting indexes=" + Arrays.toString(indexes2));
         
-        // rewrite d2 and p2 to be only the greedy results
+        // rewrite d2 and p2 to be only the greedy results.   indexes2.length is <= deadline.
         int[] d2 = new int[indexes2.length];
         int[] p2 = new int[indexes2.length];
         int[] i2 = new int[indexes2.length];
@@ -441,12 +642,12 @@ public class Misc {
         for (i = 0; i < d2.length; ++i) {
             d2[i] = deadlines[indexes2[i]];
             p2[i] = penalties[indexes2[i]];
-            i2[i] = indexes2[i];
+            i2[i] = indexes2[i]; // storing indexes2
         }
         
         // sort by increasing deadlines. O(N2 * log_2(N2))
         //these indexes are w.r.t. the truncated d2 and p2, that is, i2
-        indexes2 = mergesortIncreasingADecreasingB(d2, p2); 
+        indexes2 = mergesortIncreasingADecreasingB(d2, p2);
         
         int[] scheduled = new int[deadlines.length];
         TIntSet allI = new TIntHashSet();
@@ -473,7 +674,7 @@ public class Misc {
     }
   
     /**
-     * schedule largest penalties first if they fit before deadline (duration of
+     * schedule the largest penalties first if they fit before deadline (duration of
      * each task is a time unit of 1).
      * runtime complexity is O(N * log_2(N))
      @param deadlines deadlines of each task
@@ -481,10 +682,10 @@ public class Misc {
      @return task schedule order
      */
     private int[] greedy(int[] deadlines, int[] penalties) {
-               
+
         deadlines = Arrays.copyOf(deadlines, deadlines.length);
         penalties = Arrays.copyOf(penalties, penalties.length);
-        
+
         //O(N * log_2(N))
         // sort w, m into monotonically decreasing order by penalties w
         int[] origIndexes = sortDecr(penalties, deadlines);
@@ -519,14 +720,14 @@ public class Misc {
             }*/
         }
         // rewrite indexes in context of original array indexes:
-        int[] ao = a.toArray();
+        int[] ao = new int[a.size()];
         for (i = 0; i < ao.length; ++i) {
-            ao[i] = origIndexes[ao[i]];
+            ao[i] = origIndexes[a.get(i)];
         }
         return ao;
     }
 
-    private int[] sort2(double[] a, double[] b, double[] c) {
+    private static int[] sort2(double[] a, double[] b, double[] c) {
         int[] oIdxs = new int[a.length];
         int i;
         for (i = 0; i < a.length; ++i) {
@@ -544,8 +745,27 @@ public class Misc {
         System.arraycopy(t, 0, c, 0, c.length);
         return oIdxs;
     }
-    
-    private void mergesort(double[] a, int[] b, int idxLo, int idxHi) {
+
+    private static int[] sort2(double[] a, int[] b, double[] c) {
+
+        int[] oIdxs = MiscSorter.mergeSortIncreasing(a);
+        int i;
+        int[] tb = new int[b.length];
+        for (i = 0; i < a.length; ++i) {
+            tb[i] = b[oIdxs[i]];
+        }
+        System.arraycopy(tb, 0, b, 0, b.length);
+
+        double[] tc = new double[b.length];
+        for (i = 0; i < a.length; ++i) {
+            tc[i] = c[oIdxs[i]];
+        }
+        System.arraycopy(tc, 0, c, 0, c.length);
+
+        return oIdxs;
+    }
+
+    private static void mergesort(double[] a, int[] b, int idxLo, int idxHi) {
         if (idxLo < idxHi) {
             int idxMid = (idxLo + idxHi) >> 1;
             mergesort(a, b, idxLo, idxMid);           
@@ -554,7 +774,7 @@ public class Misc {
         }
     }
 
-    private void merge(double[] a, int[] b, int idxLo, int idxMid, int idxHi) {
+    private static void merge(double[] a, int[] b, int idxLo, int idxMid, int idxHi) {
         double[] aL = Arrays.copyOfRange(a, idxLo, idxMid + 2);
         double[] aR = Arrays.copyOfRange(a, idxMid + 1, idxHi + 2); 
         aL[aL.length - 1] = Double.POSITIVE_INFINITY;
@@ -694,6 +914,19 @@ public class Misc {
         return i + 1;
     }
 
+    /*
+    Note: can compare greedy interval partitioning algorithm to the left-edge algorithm which
+     * sorts by increasing finish times, then loops over each request
+     * to add all sequential non-conflicting requests to a resource, then
+     * start a new resource for a conflict.
+     * Then one attempts to merge resources, by visiting them in reverse order.
+     * After all requests have been placed in a resource, one attempts to
+     * merge the non-conflicting resources by visiting them in reverse order
+     * and comparing to the previous resource (that is, starting with the last resource
+     * created, and then the one before it, etc until the first is visited).
+     * The left-edge algorithm runtime is similar to this interval partitioning greedy algorithm.
+     */
+
     /**
     Interval Partitioning:
     Given an infinite number of possible exclusive resources to use, 
@@ -710,17 +943,7 @@ public class Misc {
     </pre>
 
      runtime complexity is O(n^2)
-     * 
-     * Note: can compare this algorithm to the left-edge algorithms which
-     * sorts by increasing finish times, then loops over each request
-     * to add all sequential non-conflicting requests to a resource, then
-     * start a new resource for a conflict.
-     * Then one attempts to merge resources, by visiting them in reverse order.
-     * After all requests have been placed in a resource, one attempts to
-     * merge the non-conflicting resources by visiting them in reverse order
-     * and comparing to the previous resource (that is, starting with the last resource
-     * created, and then the one before it, etc until the first is visited).
-     * The left-edge algorithm runtime is similar to this interval partitioning greedy algorithm.
+     *
      * 
      @param s start times
      @param f finish times

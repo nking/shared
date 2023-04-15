@@ -374,9 +374,9 @@ public class MaximalIndependentSets {
             }
         }
         
-        //TOOD: consider cases where bipartite doesn't produce MIS.
+        //TODO: consider cases where bipartite doesn't produce MIS.
         //      e.g. complete graphs?  every item in matrix would be infinity, so
-        //       one would need to either to put responsiblity onto the user of graph not
+        //       one would need to either to put responsibility onto the user of graph not
         //       being complete, or assert the condition at start of method, or let
         //       bipartite proceed and then check that each matched pair is
         //       an independent set.  the later is useful for all graphs and

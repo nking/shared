@@ -34,10 +34,18 @@ This paper solely focuses on the RCM algorithm [5] because,
 with careful algorithm design, it is amenable to 
 massive distributed-memory parallelism – the primary topic of interest of this paper.
 
+ [4] E. Cuthill and J. McKee, “Reducing the bandwidth of sparse symmetric matrices,” in Proc. of 24th national conference. ACM, 1969, pp. 157– 172.
+ [5] A.GeorgeandJ.W.-H.Liu,Computer Solution of Large Sparse Positive Definite Systems. Englewood Cliffs, New Jersey: Prentice-Hall Inc., 1981.
+ [6] S. Sloan, “An algorithm for profile and wavefront reduction of sparse matrices,” International Journal for Numerical Methods in Engineering, vol. 23, no. 2, pp. 239–251, 1986.
+
 TODO: consider implementing the distributed-memory version of Azadi et al. 2016.
+
+ see also skyline matrix storage
+ https://en.wikipedia.org/wiki/Skyline_matrix
+
 @author nichole
  */
-public class CuthillMcKee {
+public class ReverseCuthillMcKee {
     
     /**
      * given the adjacency map as pairs of edges, calculate the
@@ -47,8 +55,7 @@ public class CuthillMcKee {
      * once.
      * <pre>
      * references:
-     * 
-     * https://en.wikipedia.org/wiki/Cuthill%E2%80%93McKee_algorithm
+     *https://en.wikipedia.org/wiki/Cuthill%E2%80%93McKee_algorithm
      * 
      * The Reverse Cuthill-McKee Algorithm in Distributed-Memory 
        2016 Azad, Jacquelin, Buluc and Ng
@@ -70,6 +77,9 @@ public class CuthillMcKee {
      * runtime complexity is O(|V| + |E|*log_2(|E|) where |V| is the number
      * of vertices and |E| is the number of edges where an edge is counted
      * once.
+     *
+     * Reducing the bandwidth of a graph consists of ﬁnding a special labeling of vertices which minimizes the
+     * maximum absolute diﬀerence between the labels of adjacent vertices.
      * <pre>
      * references:
      * 
@@ -78,7 +88,9 @@ public class CuthillMcKee {
      * The Reverse Cuthill-McKee Algorithm in Distributed-Memory 
        2016 Azad, Jacquelin, Buluc and Ng
 
+     The Bandwidths of a Matrix. A Survey of Algorithms, 2014 Maftelu-Scai
      * </pre>
+     *
      @param gE undirected adjacency graph
      @return reverse Cuthill-McKee ordering
      */
@@ -89,8 +101,12 @@ public class CuthillMcKee {
         int[] c = cuthillMcKeeOrdering(adjMap);
        
         MiscMath0.reverse(c);
-        
-        return c;
+        int[] r = new int[c.length];
+        for (int i = 0; i < c.length; ++i) {
+            r[c[i]] = i;
+        }
+
+        return r;
     }
     
     /**
@@ -116,8 +132,12 @@ public class CuthillMcKee {
         int[] c = cuthillMcKeeOrdering(adjMap);
         
         MiscMath0.reverse(c);
+        int[] r = new int[c.length];
+        for (int i = 0; i < c.length; ++i) {
+            r[c[i]] = i;
+        }
         
-        return c;
+        return r;
     }
     
     /**
@@ -169,8 +189,7 @@ public class CuthillMcKee {
         TIntIterator iter;
         int nIdx, i;
         // runtime complexity is O(|V| + |E|*log_2(|E|)
-        while (!q.isEmpty() && outSet.size() < n) {
-            
+        while (outSet.size() < n) {
             if (q.isEmpty()) {
                 // find minimum degree vertex which is not in outSet
                 pIdx = findMinDegreeVertex(vertexDegreeMap, outSet);
@@ -238,8 +257,12 @@ public class CuthillMcKee {
         int[] c = cuthillMcKeeOrdering(adjMap);
         
         MiscMath0.reverse(c);
+        int[] r = new int[c.length];
+        for (int i = 0; i < c.length; ++i) {
+            r[c[i]] = i;
+        }
         
-        return c;
+        return r;
     }
     
     /**

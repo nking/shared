@@ -89,7 +89,7 @@ public class StronglyConnectedComponents2 {
         //                            leading up to the value node.
         //                           and select is extractMin which is O(log_2(w)) + O(w-l).
         // so if use a data size of 16 bits:
-        //     for n<20 use a list, else use a yfastrie
+        //     for n<20 use a list, else use a yfasttrie
         // if use a data size of 32 bits:
         //     for n<32 use a list, else use a yfasttrie
         

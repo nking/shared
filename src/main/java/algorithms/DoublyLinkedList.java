@@ -97,6 +97,41 @@ public class DoublyLinkedList<T extends DoublyLinkedNode> {
         }
         n++;
     }
+
+    /**
+     * insert before reference node refNode in doubly-linked list.
+     * runtime complexity is O(1).
+     @param node node to add to beginning of list
+     @param refNode, the node already in DoublyLinkedList that we insert node in front of.
+     If refNode is null, then we expect that this.head == null and then node becomes the this.head.
+     */
+    public void addBefore(T node, T refNode) {
+        if (refNode == null && head != null) {
+            throw new IllegalArgumentException("refNode is null, so expecting this.head==null too");
+        }
+        if (refNode == null && head == null) {
+            assert(tail == null);
+            head = node;
+            node.prev = null;
+            node.next = null;
+            tail = node;
+        } else {
+            // refNode is not null
+            T refNodePrev = (T)refNode.prev;
+            if (refNodePrev == null) {
+                //refNode == head.  inserting node makes node head.
+                refNode.prev = node;
+                head = node;
+                node.next = refNode;
+            } else {
+                refNodePrev.next = node;
+                refNode.prev = node;
+                node.next = refNode;
+                node.prev = refNodePrev;
+            }
+        }
+        n++;
+    }
     
     /**
      * unlink node from the doubly-linked list.

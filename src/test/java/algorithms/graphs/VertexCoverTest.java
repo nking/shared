@@ -78,6 +78,44 @@ public class VertexCoverTest extends TestCase {
         System.out.println();
         assertTrue(expected.isEmpty());
     }
+
+    public void testExact2() {
+
+        /*
+                                *0
+                         1                *2
+                 *3                     4
+             5    6   *7
+                      8
+        */
+
+        int n = 9;
+        NAryTreeNode[] nodes = new NAryTreeNode[n];
+        int i;
+        for (i = 0; i < n; ++i) {
+            nodes[i] = new NAryTreeNode(i);
+        }
+        nodes[0].addChild(nodes[1]);
+        nodes[0].addChild(nodes[2]);
+        nodes[1].addChild(nodes[3]);
+        nodes[2].addChild(nodes[4]);
+        nodes[3].addChild(nodes[5]);
+        nodes[3].addChild(nodes[6]);
+        nodes[3].addChild(nodes[7]);
+        nodes[7].addChild(nodes[8]);
+
+        TIntSet expected = new TIntHashSet(new int[]{7, 3, 2, 0});
+
+        VertexCover vc = new VertexCover();
+        System.out.println("vertex cover");
+        Set<NAryTreeNode> cover = vc.exact(nodes[0]);
+        for (NAryTreeNode node : cover) {
+            System.out.printf("%d ", node.getData());
+            assertTrue(expected.remove(node.getData()));
+        }
+        System.out.println();
+        assertTrue(expected.isEmpty());
+    }
     
     /**
      * test is from Fig. 35.1 of Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms".

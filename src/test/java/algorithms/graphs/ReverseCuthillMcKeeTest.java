@@ -11,13 +11,13 @@ import junit.framework.TestCase;
  *
  * @author nichole
  */
-public class CuthillMcKeeTest extends TestCase {
+public class ReverseCuthillMcKeeTest extends TestCase {
     
-    public CuthillMcKeeTest(String testName) {
+    public ReverseCuthillMcKeeTest(String testName) {
         super(testName);
     }
     
-    public void testRCM() {
+    public void estRCM() {
         Set<PairInt> gE = new HashSet<PairInt>();
         gE.add(new PairInt(0, 1));
         gE.add(new PairInt(1, 0));
@@ -46,7 +46,7 @@ public class CuthillMcKeeTest extends TestCase {
         MiscMath0.reverse(expRCM2);
         MiscMath0.reverse(expRCM3);
         
-        int[] rcmIdxs = CuthillMcKee.rcm(gE);
+        int[] rcmIdxs = ReverseCuthillMcKee.rcm(gE);
 
         assertTrue(Arrays.equals(expRCM0, rcmIdxs) ||
             Arrays.equals(expRCM1, rcmIdxs) || Arrays.equals(expRCM2, rcmIdxs)
@@ -69,7 +69,7 @@ public class CuthillMcKeeTest extends TestCase {
         a[5][2] = 1;
         a[4][5] = 1;
         a[5][4] = 1;
-        rcmIdxs = CuthillMcKee.rcm(gE);
+        rcmIdxs = ReverseCuthillMcKee.rcm(gE);
         
         assertTrue(Arrays.equals(expRCM0, rcmIdxs) ||
             Arrays.equals(expRCM1, rcmIdxs) || Arrays.equals(expRCM2, rcmIdxs)
@@ -93,6 +93,10 @@ public class CuthillMcKeeTest extends TestCase {
         gE.add(new PairInt(5,6));
         gE.add(new PairInt(5,7));
         gE.add(new PairInt(6,7));
+
+        int b0 = GraphUtil.measureBandwidth(gE);
+        //System.out.printf("bandwidth before = %d\n", b0);
+        assertEquals(8, b0);
         
         /*
         Sample Output
@@ -108,13 +112,22 @@ public class CuthillMcKeeTest extends TestCase {
             bandwidth: 4
         */
         
-        int[] expected = new int[]{0, 8, 5, 7, 3, 6, 2, 4, 1, 9};
+        //int[] expected = new int[]{0, 8, 5, 7, 3, 6, 2, 4, 1, 9};
+        int[] expected = new int[]{0, 8, 6, 4, 7, 2, 5, 3, 1, 9};
+
+        int[] rcmIdxs = ReverseCuthillMcKee.rcm(gE);
+        //          0, 8, 5, 7, 3, 6, 2, 4, 1, 9
+        //          0  1  2  3  4  5  6  7  8  9
+        // reverse: 0, 8, 6, 4, 7, 2, 5, 3, 1, 9
         
-        int[] rcmIdxs = CuthillMcKee.rcm(gE);
-        //        0, 8, 5, 7, 3, 6, 2, 4, 1, 9
-        
-        System.out.printf("r=%s\n", Arrays.toString(rcmIdxs));
+        //System.out.printf("r=%s\n", Arrays.toString(rcmIdxs));
         
         assertTrue(Arrays.equals(expected, rcmIdxs));
+
+        Set<PairInt> relabeledGE = GraphUtil.relabel(gE, rcmIdxs);
+
+        int b1 = GraphUtil.measureBandwidth(relabeledGE);
+        assertEquals(4, b1);
+
     }
 }

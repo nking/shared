@@ -146,6 +146,16 @@ public class DegeneracyOrderingMatulaBeckTest extends TestCase {
         int result = DegeneracyOrderingMatulaBeck.findDegeneracyOrder(g, out);
         
         System.out.printf("k=%d order=%s\n", result, Arrays.toString(out));
+        /*
+        maxDegree=3, n=6
+        k=2 order=[2, 0, 1, 4, 3, 5]
+                   3  1  2  5  4  6 <-- indexes in reference frame of wikipedia example
+
+                   index 6 has degree 1 which is smallest, so remove it.
+                   the graph at this point is k=2.
+                   removing index 4 (d=2), then index 5 (d=2), index 2 (d=2), index 1 (d=1), index 3 (d=0)
+
+         */
     }
     
 }

@@ -21,6 +21,7 @@ import java.util.logging.Logger;
  * The runtime complexity of Knapsack 0 or 1 is O(n*W) where W is the capacity.
  * But if W is as large as n!, a brute force approach is better.
  * the brute force approach tries every permutation so RT is O(2^n).
+ * n is the number of set items.
  *
  * Note that I adapted a version of the dynamic programming solution to use
  * intervals of weight equal the minimum weights instead of intervals of +1
@@ -33,6 +34,7 @@ import java.util.logging.Logger;
  v_i is value of each item
  W is the amount that the knapsack can hold.  (has to be an integer because
      it's used as a counter in code below.)
+ n is the number of set items.
 
  Goal is to create a set S of items maximizing the total v for total w less than capacity W
 
@@ -48,7 +50,7 @@ Variants of Knapsack:
      no restriction to the number of v_i copies
 
 
-  There is a  pseudo-polynomial sumValues using dynamic programming for 0-1 knapsack problem.
+  There is a  pseudo-polynomial sumValues approach using dynamic programming for the 0-1 knapsack problem.
   There are also branch-and-bound approaches.  There is a naive brute force approach which is unfortunately O(2^n).
 
   wikipedia page was helpful in finding solutions and also
@@ -56,20 +58,21 @@ Variants of Knapsack:
 
   Below is a dynamic programming solution for the 0-1 variant.
 
-  the solution for one space in the memo matrix is composed of the
+  The solution for one space in the memo matrix is composed of the
   memo from the (last weight bin - current item weight) plus potentially
   the addition of the current item value if it is larger current matrix space result.
 
 * The solution below has runtime complexity O(n*W).
 *
-* The W is a factor because W intervals of size 1 are used in the weight iteration.
+* The reason for runtime linear dependence on W is because W intervals of size 1 
+* are used in the weight iteration.
 
 * Note that if the capacity is very large, the user may want to renormalize
-* the data to a smaller capacity as long as the items are still
-* differentiable from one another.
+* the data to a smaller capacity as long as the items are still distinguishable
+* from one another.
 *
- * @author nichole
- */
+* @author nichole
+*/
 public class Knapsack01 {
 
     /**
@@ -85,6 +88,9 @@ public class Knapsack01 {
      * If the minimum value in the weights array is larger than 1, it is used
      * as an interval in summing up to the capacity, hence reduces the runtime
      * complexity by roughly that as a factor.
+     *
+     * NOTE: consider reducing weights and capacity by the Greatest Common Denominator
+     * between capacity and weights.
      * 
      @param values
      @param weights
@@ -110,7 +116,7 @@ public class Knapsack01 {
                 t = memo[i-1][wc];
                 if (wc >= weights[i-1]) { // to avoid exceeding capacity
                     c = memo[i-1][wc-weights[i-1]] + values[i-1];
-                    memo[i][wc] = Math.max( c, t);
+                    memo[i][wc] = Math.max(c, t);
                 } else {
                     memo[i][wc] = t;
                 }

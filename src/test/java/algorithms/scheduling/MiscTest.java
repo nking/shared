@@ -213,4 +213,43 @@ public class MiscTest extends TestCase {
         assertTrue(Arrays.equals(expected, resources) || 
             Arrays.equals(expected2, resources));
     }
+
+    public void testWeightedOptimal() {
+        System.out.println("testWeightedOptimal");
+
+        int[] duration;
+        double[] deadline;
+        double[] v;
+        int[] outputSchedule;
+        int[] outLastOnTimeIdx;
+        double p;
+        double pExp;
+        int[] sExp;
+        int n;
+
+        /*
+            t   d   p
+            2   3   2
+            2   2   3 <==
+            1   3   4 <==
+            5   5   5
+         */
+        duration = new int[]{2, 2, 1, 5};
+        n = duration.length;
+        deadline = new double[]{3,2,3,5};
+        v = new double[]{2, 3, 4, 5};
+        outputSchedule = new int[n];
+        outLastOnTimeIdx = new int[1];
+        pExp = 7.;
+        sExp = new int[]{1, 2};
+
+        p = Misc.weightedOptimal(duration, deadline, v, outputSchedule, outLastOnTimeIdx);
+
+        assertEquals(1, outLastOnTimeIdx[0]);
+        int i;
+        for (i = 0; i <= outLastOnTimeIdx[0]; ++i) {
+            assertEquals(sExp[i], outputSchedule[i]);
+        }
+        assertTrue(Math.abs(pExp - p) < 0.001);
+    }
 }

@@ -81,12 +81,14 @@ public class VertexCover {
                 if (node.getChildren().isEmpty() && !c.contains(node.getParent())) {
                     // this is a leaf node
                     
-                    // add it's parent to set C
+                    // add its parent to set C
                     c.add(node.getParent());
                     
                     //  remove node and parent from LinkedList (G)
                     revLevelOrder.unlink(node.getParent());
                     children = node.getParent().getChildren();
+                    // can remove all the children as leaves too because with the reverse level traversal, we
+                    // know that there are no nodes below this level left in the graph called revLevelOrder
                     for (NAryTreeNode child : children) {
                         if (!c.contains(child)) {
                             revLevelOrder.unlink(child);
@@ -112,7 +114,8 @@ public class VertexCover {
     
     /**
      * find a vertex cover that is 2-approximate, that is no more than 2 times
-     * as large as the optimal vertex cover.
+     * as large as the optimal vertex cover.  The input is an undirected graph unlike exact cover which
+     * was restricted to trees.
      *
      * A vertex cover is a subset of a graph's vertices which represents at least one vertex 
      * from every edge in the full graph.
@@ -124,7 +127,7 @@ public class VertexCover {
      *  from https://www.ics.uci.edu/~goodrich/teach/graph/notes/Approximation.pdf
      * Also see Section 35.1 of Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms".
      * </pre>
-     @param adjMap adjacency map for an undirected graph.
+     @param adjMap adjacency map for an undirected graph (that is, both edge u to v and v to u should be present)
      @return the vertex cover for undirected graph adjMap, no larger than twice that of optimal.
      */
     public TIntSet approx2(TIntObjectMap<TIntSet> adjMap) {
@@ -214,13 +217,13 @@ public class VertexCover {
      @return the minimum weighted vertex cover for graph G represented by adjMap with vertex weights.
      */
     public TIntSet approx2Weighted(TIntObjectMap<TIntSet> adjMap, double[] weights) {
-        
+
         /*
         for the linear program:
             minimize: 
-                summation_v_in_V( w(v)*x(v)
+                summation_v_in_V( w(v)*x(v) )
             subject to:
-                x(u) + x(v) >= 1 for each (u,v) in E
+                x(u) + x(v) >= 1 for each (u,v) in E --- one or both must be present
                 x(v) <= 1 for each v in V ----\
             non-negativity constraints:        \ these 2 rules are derived from x(v) ∈ [0,1]
                 x(v) >= 0 for each v in V ----/

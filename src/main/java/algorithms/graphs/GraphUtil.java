@@ -4,13 +4,14 @@ import algorithms.util.PairInt;
 import algorithms.util.SimpleLinkedListNode;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.iterator.TIntObjectIterator;
+import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 
-import java.util.Arrays;
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * miscellaneous graph methods.
@@ -181,4 +182,155 @@ public class GraphUtil {
         return g2;
     }
 
+    /**
+     * Find the bandwidth of the given graph as the maximum distance between 2 adjacent
+     * vertices where the distance is the absolute difference between the index
+     * numbers.
+     * @param adjMap
+     * @return the maximum difference between vertex numbers of adjacent vertexes.
+     * returns -1 for a map without edges.
+     */
+    public static int measureBandwidth(Map<Integer, Set<Integer>> adjMap) {
+
+        int max = -1;
+        Iterator<Map.Entry<Integer, Set<Integer>>> iter = adjMap.entrySet().iterator();
+        int u;
+        int b;
+        while (iter.hasNext()) {
+            Map.Entry<Integer, Set<Integer>> entry = iter.next();
+            u = entry.getKey();
+            for (int v  : entry.getValue()) {
+                b = Math.abs(u - v);
+                if (b > max) {
+                    max = b;
+                }
+            }
+        }
+        return max;
+    }
+
+    /**
+     * Find the bandwidth of the given graph as the maximum distance between 2 adjacent
+     * vertices where the distance is the absolute difference between the index
+     * numbers.
+     * @param adjList
+     *  @return the maximum difference between vertex numbers of adjacent vertexes.
+     *  returns -1 for a map without edges.
+     */
+    public static int measureBandwidth(SimpleLinkedListNode[] adjList) {
+        int max = -1;
+        int v;
+        int b;
+        SimpleLinkedListNode uNode;
+        SimpleLinkedListNode vNode;
+        for (int u = 0; u < adjList.length; ++u) {
+            uNode = adjList[u];
+            vNode = uNode.getNext();
+            if (vNode != null && vNode.getKey() != -1) {
+                v = vNode.getKey();
+                b = Math.abs(u - v);
+                if (b > max) {
+                    max = b;
+                }
+            }
+        }
+        return max;
+    }
+
+    /**
+     * Find the bandwidth of the given graph as the maximum distance between 2 adjacent
+     * vertices where the distance is the absolute difference between the index
+     * numbers.
+     * @param adjMap
+     * @return the maximum difference between vertex numbers of adjacent vertexes.
+     * returns -1 for a map without edges.
+     */
+    public static int measureBandwidth(TIntObjectMap<TIntSet> adjMap) {
+
+        int max = -1;
+        TIntObjectIterator<TIntSet> iter = adjMap.iterator();
+        int u, v;
+        int b;
+        TIntIterator iter2;
+        while (iter.hasNext()) {
+            iter.advance();
+            u = iter.key();
+            iter2 = iter.value().iterator();
+            while (iter2.hasNext()) {
+                v = iter2.next();
+                b = Math.abs(u - v);
+                if (b > max) {
+                    max = b;
+                }
+            }
+        }
+        return max;
+    }
+
+    /**
+     * Find the bandwidth of the given graph as the maximum distance between 2 adjacent
+     * vertices where the distance is the absolute difference between the index
+     * numbers.
+     * @param edges
+     * @return the maximum difference between vertex numbers of adjacent vertexes.
+     * returns -1 for a map without edges.
+     */
+    public static int measureBandwidth(Set<PairInt> edges) {
+
+        int max = -1;
+        int u, v;
+        int b;
+        for (PairInt edge : edges) {
+            b = Math.abs(edge.getX() - edge.getY());
+            if (b > max) {
+                max = b;
+            }
+        }
+        return max;
+    }
+
+    /**
+     * relabel the graph vertexes to use the numbers in rIdxs
+     * @param edges
+     * @param rIdxs
+     * @return relabeled graph
+     */
+    public static Set<PairInt> relabel(Set<PairInt> edges, int[] rIdxs) {
+        Set<PairInt> r = new HashSet<>();
+        for (PairInt edge : edges) {
+            r.add(new PairInt(rIdxs[edge.getX()], rIdxs[edge.getY()]));
+        }
+        return r;
+    }
+
+    /**
+     * relabel the graph vertexes to use the numbers in rIdxs as reverse indexes.
+     *
+     * @param edges
+     * @param rIdxs
+     * @return relabeled graph
+     */
+    public static Set<PairInt> relabelWithReverse(Set<PairInt> edges, int[] rIdxs) {
+        TIntIntMap iSet = new TIntIntHashMap();
+        for (int i = 0; i < rIdxs.length; ++i) {
+            iSet.put(rIdxs[i], i);
+        }
+        Set<PairInt> r = new HashSet<>();
+        for (PairInt edge : edges) {
+            r.add(new PairInt(iSet.get(edge.getX()), iSet.get(edge.getY())));
+        }
+        return r;
+    }
+
+    public static Map<Integer, Set<Integer>> copy(Map<Integer, Set<Integer>> adjMap) {
+        Map<Integer, Set<Integer>> c = new HashMap<Integer, Set<Integer>>();
+
+        Iterator<Map.Entry<Integer, Set<Integer>>> iter = adjMap.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry<Integer, Set<Integer>> entry = iter.next();
+            Set<Integer> set = new HashSet<Integer>(entry.getValue());
+            c.put(entry.getKey(), set);
+        }
+        return c;
+    }
 }
