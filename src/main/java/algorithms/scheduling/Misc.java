@@ -375,7 +375,7 @@ public class Misc {
      * and without interruption (no preemption).
 
      This algorithm uses dynamic programming.
-     The runtime complexity for worse case is O(2^n), though the n may be less than the number of tasks
+     The runtime complexity for worse case is (re-doing this...looks like n^2), though the n may be less than the number of tasks
      when tasks cannot be scheduled before their deadlines.
 
      The algorithm arises from question 34-4 of Cormen, Leiserson, Rivest, and Stein,
@@ -437,6 +437,8 @@ public class Misc {
         TIntSet prevFMapSet, fMapSet;
         TIntDoubleMap memoFPMap;
 
+        int count = 0;
+
         // init:
         // include i=0 task
         i = 0;
@@ -458,6 +460,8 @@ public class Misc {
         memo.put(i, memoFPMap);
         fMap.put(i, fMapSet);
 
+        count+=2;
+
         TIntIterator iter;
         int fPrev;
         double pPrev;
@@ -469,12 +473,17 @@ public class Misc {
             memo.put(i, memoFPMap);
             fMap.put(i, fMapSet);
 
+            ++count;
+
             iter = prevFMapSet.iterator();
             while (iter.hasNext()) {
                 fPrev = iter.next();
                 pPrev = memo.get(i - 1).get(fPrev);
                 // tentative f
                 f = fPrev + duration[i];
+
+                count++;
+
                 if (f <= deadline[i]) {
                     // === include task i ====
                     sumP = pPrev + v[i];
@@ -501,6 +510,8 @@ public class Misc {
                 }
             } // end loop over f
         } // end loop over i
+
+        System.out.printf("count=%d\n", count);
 
         // get max of memo[n-1]
         memoFPMap = memo.get(n - 1);
@@ -557,71 +568,6 @@ public class Misc {
         }
 
         return maxP;
-    }
-
-    /**
-     * given one machine and n tasks (where n = duration.length and the task properties
-     * are duration, deadline and profit v) find a schedule which maximizes the summed
-     * profits v.  A profit v_i is only received for a task finished before its deadline,
-     * else there is not a penalty for lateness but no sum is added to the total profit,
-     * so all tasks should be scheduled if possible.  The machine can only process one task at a time
-     * and without interruption (no preemption).
-
-     This algorithm uses a Uniform Cost Search pattern.
-     The runtime complexity for worse case is O(n^3), though the n may be less than the number of tasks
-     when tasks cannot be scheduled before their deadlines.
-
-     The algorithm arises from question 34-4 of Cormen, Leiserson, Rivest, and Stein,
-     "Introduction to Algorithms", fourth edition
-
-     * @param duration non-negative amount of times to complete each task
-     * @param deadline non-negative deadlines for each task
-     * @param v non-negative profits for each task completed before its deadline.
-     * @param outputSchedule output array of length n to be populated by this algorithm with the order for scheduling tasks.
-     * @param outLastOnTimeIdx output array of length 1 holding the index of outputSchedule which
-     *                      is the last task in the schedule that completes before its deadline.
-     * @return the summed profits for the tasks scheduled which will complete on time.
-     */
-    public static double weightedOptimalSingleResourceSearch(int[] duration, double[] deadline, double[] v,
-                                                             int[] outputSchedule, int[] outLastOnTimeIdx) {
-        int n = duration.length;
-        if (deadline.length != n) {
-            throw new IllegalArgumentException("deadline.length must equal duration.length");
-        }
-        if (v.length != n) {
-            throw new IllegalArgumentException("v.length must equal duration.length");
-        }
-        if (outputSchedule.length != n) {
-            throw new IllegalArgumentException("outputSchedule.length must equal duration.length");
-        }
-        if (outLastOnTimeIdx.length != 1) {
-            throw new IllegalArgumentException("outLastOnTimeIdx.length must equal 1");
-        }
-
-        /*
-        The algorithm uses a min heap priority queue with key being finish time.
-
-        Since the profit parameter prevents the immediate selection of a start index, we create n=|V| solutions,
-        each with the start vertex being i for i=0 to n-1.
-
-        The calculation of "neighboring vertexes" for each extracted heap min is all remaining vertexes that can be added
-        to the extracted nodes finish time and complete within the added nodes deadline.
-         */
-
-        duration = Arrays.copyOf(duration, n);
-        deadline = Arrays.copyOf(deadline, n);
-        v = Arrays.copyOf(v, n);
-
-        // ascending order sort by deadline
-        // runtime complexity is O(n*log_2(n))
-
-        int[] origIndexes = sort2(deadline, duration, v);
-        //System.out.printf("sorted indexes=%s\n", Arrays.toString(origIndexes));
-
-        // interval [si, fi] of start and finish times
-        // where finish time f is calculated as time + duration of task.
-
-        throw new UnsupportedOperationException("not yet finished");
     }
 
     // s and f are sorted by ascending order of f before passed to this method

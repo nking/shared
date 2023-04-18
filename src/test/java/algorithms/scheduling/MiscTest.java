@@ -206,7 +206,7 @@ public class MiscTest extends TestCase {
 
         Misc misc = new Misc();
         int[] resources = misc.intervalPartitionGreedy(s, f);
-        System.out.println("resources=" + Arrays.toString(resources));
+        //System.out.println("resources=" + Arrays.toString(resources));
         int cMax = MiscMath0.findMax(resources);
         double sPrev, fPrev;
         for (int c = 0; c < cMax; ++c) {
@@ -257,6 +257,8 @@ public class MiscTest extends TestCase {
 
         p = Misc.weightedOptimalSingleResourceDynamic(duration, deadline, v, outputSchedule, outLastOnTimeIdx);
 
+        System.out.printf("dynamic: p=%.3f, sched=%s\n", p, Arrays.toString(outputSchedule));
+
         assertEquals(1, outLastOnTimeIdx[0]);
         int i;
         for (i = 0; i <= outLastOnTimeIdx[0]; ++i) {
@@ -276,6 +278,28 @@ public class MiscTest extends TestCase {
         int[] schedule = Misc.intervalPartitionGreedySingleResource(s, f, isSortedByF);
 
         assertTrue(Arrays.equals(expected, schedule));
-        System.out.println(Arrays.toString(schedule));
+        //System.out.println(Arrays.toString(schedule));
+    }
+
+    public void test100() {
+        int n = 100;
+        int[] duration = new int[n];
+        Arrays.fill(duration, 1);
+
+        double[] p = new double[n];
+        Arrays.fill(p, 10);
+
+        int i;
+        double[] deadline = new double[n];
+        deadline[0] = duration[0];
+        for (i = 1; i < n; ++i) {
+            deadline[i] = duration[i] + deadline[i - 1];
+        }
+        int[] outputSchedule = new int[n];
+        int[] outLastOnTimeIdx = new int[1];
+
+        double sumP = Misc.weightedOptimalSingleResourceDynamic(
+                duration, deadline, p, outputSchedule, outLastOnTimeIdx);
+        System.out.printf("dynamic: p=%.3f, sched=%s\n", sumP, Arrays.toString(outputSchedule));
     }
 }
