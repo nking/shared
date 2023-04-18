@@ -20,7 +20,7 @@ import java.util.Arrays;
 public class Misc {
         
      /**
-     * schedule a set of n tasks where each task is associated with a execution time 
+     * For a single resource, schedule a set of n tasks where each task is associated with a execution time
      * t_i and a deadline d_i. 
      * The objective is to schedule the tasks, no two overlapping in time, 
      * such that they are all completed before their deadline. 
@@ -36,6 +36,7 @@ public class Misc {
      * </pre>
      * 
      * runtime complexity O(N * log_2(N)).
+      * The results are optimal in minimizing the maximum lateness.
      * 
      @param duration duration of task. duration a.k.a. burst time a.k.a. execution time
      @param deadline deadline for task
@@ -97,6 +98,7 @@ public class Misc {
      * </pre>
      * 
      * runtime complexity is O(N * log_2(N)).
+     * This is a greedy and optimal solution.
      * 
      @param s start times for tasks
      @param f finish times for tasks
@@ -372,15 +374,9 @@ public class Misc {
      * so all tasks should be scheduled if possible.  The machine can only process one task at a time
      * and without interruption (no preemption).
 
+     This algorithm uses dynamic programming.
      The runtime complexity for worse case is O(2^n), though the n may be less than the number of tasks
      when tasks cannot be scheduled before their deadlines.
-
-     The algorithm is in NP-complete.
-     A proof can be extrapolated from SUBSET-SUM (or more difficultly with VERTEX-COVER) decision problem which
-     is already known to be NP-complete.
-
-     The VERTEX-COVER proof follows from the schedule being a maximal independent set and that
-     a vertex cover is the complement of the maximal independent set.
 
      The algorithm arises from question 34-4 of Cormen, Leiserson, Rivest, and Stein,
      "Introduction to Algorithms", fourth edition
@@ -393,7 +389,7 @@ public class Misc {
      *                      is the last task in the schedule that completes before its deadline.
      * @return the summed profits for the tasks scheduled which will complete on time.
      */
-    public static double weightedOptimal(int[] duration, double[] deadline, double[] v, int[] outputSchedule, int[] outLastOnTimeIdx) {
+    public static double weightedOptimalSingleResourceDynamic(int[] duration, double[] deadline, double[] v, int[] outputSchedule, int[] outLastOnTimeIdx) {
         int n = duration.length;
         if (deadline.length != n) {
             throw new IllegalArgumentException("deadline.length must equal duration.length");
@@ -561,6 +557,71 @@ public class Misc {
         }
 
         return maxP;
+    }
+
+    /**
+     * given one machine and n tasks (where n = duration.length and the task properties
+     * are duration, deadline and profit v) find a schedule which maximizes the summed
+     * profits v.  A profit v_i is only received for a task finished before its deadline,
+     * else there is not a penalty for lateness but no sum is added to the total profit,
+     * so all tasks should be scheduled if possible.  The machine can only process one task at a time
+     * and without interruption (no preemption).
+
+     This algorithm uses a Uniform Cost Search pattern.
+     The runtime complexity for worse case is O(n^3), though the n may be less than the number of tasks
+     when tasks cannot be scheduled before their deadlines.
+
+     The algorithm arises from question 34-4 of Cormen, Leiserson, Rivest, and Stein,
+     "Introduction to Algorithms", fourth edition
+
+     * @param duration non-negative amount of times to complete each task
+     * @param deadline non-negative deadlines for each task
+     * @param v non-negative profits for each task completed before its deadline.
+     * @param outputSchedule output array of length n to be populated by this algorithm with the order for scheduling tasks.
+     * @param outLastOnTimeIdx output array of length 1 holding the index of outputSchedule which
+     *                      is the last task in the schedule that completes before its deadline.
+     * @return the summed profits for the tasks scheduled which will complete on time.
+     */
+    public static double weightedOptimalSingleResourceSearch(int[] duration, double[] deadline, double[] v,
+                                                             int[] outputSchedule, int[] outLastOnTimeIdx) {
+        int n = duration.length;
+        if (deadline.length != n) {
+            throw new IllegalArgumentException("deadline.length must equal duration.length");
+        }
+        if (v.length != n) {
+            throw new IllegalArgumentException("v.length must equal duration.length");
+        }
+        if (outputSchedule.length != n) {
+            throw new IllegalArgumentException("outputSchedule.length must equal duration.length");
+        }
+        if (outLastOnTimeIdx.length != 1) {
+            throw new IllegalArgumentException("outLastOnTimeIdx.length must equal 1");
+        }
+
+        /*
+        The algorithm uses a min heap priority queue with key being finish time.
+
+        Since the profit parameter prevents the immediate selection of a start index, we create n=|V| solutions,
+        each with the start vertex being i for i=0 to n-1.
+
+        The calculation of "neighboring vertexes" for each extracted heap min is all remaining vertexes that can be added
+        to the extracted nodes finish time and complete within the added nodes deadline.
+         */
+
+        duration = Arrays.copyOf(duration, n);
+        deadline = Arrays.copyOf(deadline, n);
+        v = Arrays.copyOf(v, n);
+
+        // ascending order sort by deadline
+        // runtime complexity is O(n*log_2(n))
+
+        int[] origIndexes = sort2(deadline, duration, v);
+        //System.out.printf("sorted indexes=%s\n", Arrays.toString(origIndexes));
+
+        // interval [si, fi] of start and finish times
+        // where finish time f is calculated as time + duration of task.
+
+        throw new UnsupportedOperationException("not yet finished");
     }
 
     // s and f are sorted by ascending order of f before passed to this method
@@ -944,8 +1005,16 @@ public class Misc {
     https://www.cs.umd.edu/class/fall2017/cmsc451-0101/Lects/lect07-greedy-sched.pdf
     </pre>
 
-     runtime complexity is O(n^2)
-     *
+     runtime complexity is O(n^2).
+     The approach is greedy but produces an optimal solution.
+
+     <pre>
+     https://en.wikipedia.org/wiki/Interval_scheduling
+     Interval scheduling is a class of problems in computer science, particularly in the area of
+     algorithm design. The problems consider a set of tasks. Each task is represented by an
+     interval describing the time in which it needs to be processed by some machine
+     (or, equivalently, scheduled on some resource).
+     </pre>
      * 
      @param s start times
      @param f finish times
@@ -975,11 +1044,11 @@ public class Misc {
         // a color for each request
         int[] c = new int[s.length];
         
-        TIntSet excl;        
+        TIntSet excl = new TIntHashSet();
         int color;
         // runtime complexity O(n*n/2)
         for (i = 0; i < f2.length; ++i) {
-            excl = new TIntHashSet();
+            excl.clear();
             for (j = 0; j < i; ++j) {
                 //j is always smaller than i so s[j] <= s[i].  
                 //  then order is (sj,fj)  (si,fi)
@@ -1003,10 +1072,83 @@ public class Misc {
             }
             c[i] = color;
         }
+
         //rewrite c in terms of original indexes of method argument's unsorted (s,f)
         int[] c2 = new int[f2.length];
         for (i = 0; i < f2.length; ++i) {
-            c2[indexes[i]] = c[i];
+            c2[i] = c[indexes[i]];
+        }
+        return c2;
+    }
+
+    /**
+     Given exclusive use of 1 resource, find the maximum size of mutually compatible activities
+     S = {a1, a2, ... an} where each activity has a start time si and finish time fi.
+     0 <= si < fi < inf.
+
+     References:
+     <pre>
+     Chap 15 of "Introduction to Algorithms", fourth edition
+     Cormen, Leiserson, Rivest, and Stein,
+     </pre>
+
+     runtime complexity is O(n) if already sorted, else O(n*log_2(n)).
+
+     <pre>
+     https://en.wikipedia.org/wiki/Interval_scheduling
+     Interval scheduling is a class of problems in computer science, particularly in the area of
+     algorithm design. The problems consider a set of tasks. Each task is represented by an
+     interval describing the time in which it needs to be processed by some machine
+     (or, equivalently, scheduled on some resource).
+     </pre>
+     *
+     @param s start times
+     @param f finish times
+     @param isSortedByF
+     @return indexes of resources to schedule the requests on.
+     */
+    public static int[] intervalPartitionGreedySingleResource(double[] s, double[] f, boolean isSortedByF) {
+        int n = f.length;
+        if (s.length != n) {
+            throw new IllegalArgumentException("s.length must equal f.length");
+        }
+
+        double[] s2;
+        double[] f2;
+        int[] indexes = null;
+        int i;
+        if (!isSortedByF) {
+            //sort by f ascending
+            f2 = Arrays.copyOf(f, n);
+            indexes = MiscSorter.mergeSortIncreasing(f2);
+
+            s2 = new double[n];
+            for (i = 0; i < f.length; ++i) {
+                s2[i] = s[indexes[i]];
+            }
+        } else {
+            f2 = Arrays.copyOf(f, n);
+            s2 = Arrays.copyOf(s, n);
+        }
+
+        TIntList a = new TIntArrayList();
+        a.add(0);
+        int j = 0;
+        for (i = 1; i < n ; ++i) {
+            if (s[i] >= f[j]) {
+                a.add(i);
+                j = i;
+            }
+        }
+
+        if (isSortedByF) {
+            return a.toArray();
+        }
+
+        //rewrite schedule in terms of original indexes of method argument's unsorted (s,f)
+        int[] c2 = new int[a.size()];
+        for (i = 0; i < a.size(); ++i) {
+            c2[i] = indexes[a.get(i)];
         }
         return c2;
     }
