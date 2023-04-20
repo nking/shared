@@ -160,7 +160,7 @@ public class MiscTest extends TestCase {
         int[] w = new int[]{70, 60, 50, 40, 30, 20, 10};
 
         Misc misc = new Misc();
-        int[] indexes = misc.weightedGreedy(d, w);
+        int[] indexes = misc.weightedGreedySingleResource(d, w);
 
         int[] expected = new int[]{1, 3, 0, 2, 6, 5, 4};
         /*
@@ -255,7 +255,7 @@ public class MiscTest extends TestCase {
         pExp = 7.;
         sExp = new int[]{1, 2};
 
-        p = Misc.weightedOptimalSingleResourceDynamic(duration, deadline, v, outputSchedule, outLastOnTimeIdx);
+        p = Misc.weightedDynamicSingleResource(duration, deadline, v, outputSchedule, outLastOnTimeIdx);
 
         System.out.printf("dynamic: p=%.3f, sched=%s\n", p, Arrays.toString(outputSchedule));
 
@@ -284,7 +284,7 @@ public class MiscTest extends TestCase {
     public void test100() {
         int n = 100;
         int[] duration = new int[n];
-        Arrays.fill(duration, 1);
+        Arrays.fill(duration, 2);
 
         double[] p = new double[n];
         Arrays.fill(p, 10);
@@ -298,7 +298,7 @@ public class MiscTest extends TestCase {
         int[] outputSchedule = new int[n];
         int[] outLastOnTimeIdx = new int[1];
 
-        double sumP = Misc.weightedOptimalSingleResourceDynamic(
+        double sumP = Misc.weightedDynamicSingleResource(
                 duration, deadline, p, outputSchedule, outLastOnTimeIdx);
         System.out.printf("dynamic: p=%.3f, sched=%s\n", sumP, Arrays.toString(outputSchedule));
     }

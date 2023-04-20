@@ -1,12 +1,16 @@
 package algorithms.graphs;
 
-import algorithms.matrix.MatrixUtil;
 import algorithms.util.SimpleLinkedListNode;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import junit.framework.TestCase;
+
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 public class GraphUtilTest extends TestCase {
 
@@ -78,5 +82,71 @@ public class GraphUtilTest extends TestCase {
         }
         assertEquals(1, set.size());
         assertTrue(set.contains(0));
+    }
+
+    public void testReverseMapping() {
+
+        Map<Integer, Set<Integer>> g, revG;
+        int u;
+        int nV;
+        g = GraphHelper.getGraph4();
+        nV = g.size();
+        revG = GraphUtil.createReverseMapping(g);
+
+        assertEquals(nV, revG.size());
+
+        Iterator<Map.Entry<Integer, Set<Integer>>> iter = g.entrySet().iterator();
+        Map.Entry<Integer, Set<Integer>> entry;
+        while (iter.hasNext()) {
+            entry = iter.next();
+            u = entry.getKey();
+            for (int v : entry.getValue()) {
+                assertTrue(revG.containsKey(v));
+                assertTrue(revG.get(v).contains(u));
+            }
+        }
+    }
+
+    public void testSubtractVertex() {
+
+        Map<Integer, Set<Integer>> g, revG;
+        int i;
+        int nV;
+        g = GraphHelper.getGraph4();
+        nV = g.size();
+        revG = GraphUtil.createReverseMapping(g);
+
+        for (i = 0; i < nV; ++i) {
+            GraphUtil.subtractVertex(i, g, revG);
+        }
+        assertEquals(0, g.size());
+        assertEquals(0, revG.size());
+    }
+
+    public void testDegrees() {
+
+        Map<Integer, Set<Integer>> g;
+        int i;
+        int nV;
+        g = GraphHelper.getGraph4();
+        nV = g.size();
+
+        Set<Integer> v = new HashSet<Integer>();
+        for (i = 0; i < nV; ++i) {
+            v.add(i);
+        }
+        Map<Integer, Integer> degreeMap = GraphUtil.createDegreeMapForVertices(v, g);
+        int d;
+        for (i = 0; i < nV; ++i) {
+            d = degreeMap.get(i);
+            if (i == 6) {
+                assertEquals(6, d);
+            } else {
+                assertEquals(3, d);
+            }
+        }
+
+        int vMax = GraphUtil.findMaxDegreeVertex(degreeMap);
+        assertEquals(6, vMax);
     }
 }

@@ -139,7 +139,7 @@ public class PrimsMinimumSpanningTree<T> {
         int v;
         int wUV;
         
-        // worse case O((|V| + |E|)*(lg_2 lg_2 (maxNBits)))
+        // worst case O((|V| + |E|)*(lg_2 lg_2 (maxNBits)))
         while (heap.getNumberOfNodes() > 0) {
             
             //essentially O(small constant of lg_2 lg_2 (maxNBits))

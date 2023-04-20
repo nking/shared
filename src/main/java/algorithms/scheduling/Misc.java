@@ -374,9 +374,9 @@ public class Misc {
      * so all tasks should be scheduled if possible.  The machine can only process one task at a time
      * and without interruption (no preemption).
 
+     The algorithm is optimal.
      This algorithm uses dynamic programming.
-     The runtime complexity for worse case is (re-doing this...looks like n^2), though the n may be less than the number of tasks
-     when tasks cannot be scheduled before their deadlines.
+     The runtime complexity is (n^2).
 
      The algorithm arises from question 34-4 of Cormen, Leiserson, Rivest, and Stein,
      "Introduction to Algorithms", fourth edition
@@ -389,7 +389,7 @@ public class Misc {
      *                      is the last task in the schedule that completes before its deadline.
      * @return the summed profits for the tasks scheduled which will complete on time.
      */
-    public static double weightedOptimalSingleResourceDynamic(int[] duration, double[] deadline, double[] v, int[] outputSchedule, int[] outLastOnTimeIdx) {
+    public static double weightedDynamicSingleResource(int[] duration, double[] deadline, double[] v, int[] outputSchedule, int[] outLastOnTimeIdx) {
         int n = duration.length;
         if (deadline.length != n) {
             throw new IllegalArgumentException("deadline.length must equal duration.length");
@@ -635,7 +635,7 @@ public class Misc {
      @param penalties penalties for missing a deadline
      @return order of scheduled tasks
      */
-    public int[] weightedGreedy(int[] deadlines, int[] penalties) {
+    public int[] weightedGreedySingleResource(int[] deadlines, int[] penalties) {
         
         //O(N * log_2(N))
         //System.out.println("starting greedy algorithm to find indep sets");

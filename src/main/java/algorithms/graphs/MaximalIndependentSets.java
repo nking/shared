@@ -29,8 +29,7 @@ public class MaximalIndependentSets {
     /**
      * Find a maximal independent set in graph G defined by the given adjacency map
      * using 
-     * 
-     * 
+     *
      * In graph theory, a maximal independent set (MIS) or maximal stable set is 
      * an independent set that is not a subset of any other independent set. 
      * In other words, there is no vertex outside the independent set that may 
@@ -206,7 +205,7 @@ public class MaximalIndependentSets {
             }
             */
             
-            //NOTE: this could be revised to use paralell spawn and sync comments
+            //NOTE: this could be revised to use parallel spawn and sync comments
             // or the parallel concurrency keyword in comments
             // as is used in the dynamic multithreading parallelism model.
             // (see Chap 27 of Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms" whose
@@ -272,7 +271,7 @@ public class MaximalIndependentSets {
      * An independent set, stable set, coclique or anticlique is a set of 
      * vertices in a graph, no two of which are adjacent.
      * 
-     * runtime complexity is O(log_2(|E|).
+     * runtime complexity is O(log_2(|E|)).
      * <pre>
       References:
      
@@ -437,6 +436,7 @@ public class MaximalIndependentSets {
             }
             matrix[p.getX()][p.getY()] = 1;
         }
+        // --- runtime complexity of graph complement is O(|V|^3) ---
         HungarianAlgorithm ha = new HungarianAlgorithm();
         int[][] matched = ha.computeAssignments(matrix);
         
@@ -464,7 +464,7 @@ public class MaximalIndependentSets {
      * The method internally builds a bipartite graph and then aggregates the
      * matching sets of vertices into independent sets of maximum size.
      * runtime complexity is:
-     @param s
+     @param s the sets of maximal independent sets
      @param adjMap directed graph G as an adjacency map
      @return returns a list of all maximum independent sets.  note that a
      * complete graph will return an empty list.

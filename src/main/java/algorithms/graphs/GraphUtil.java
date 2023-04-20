@@ -333,4 +333,181 @@ public class GraphUtil {
         }
         return c;
     }
+
+    /**
+     * find the vertex with the largest number of neighbors.
+     * @param adjMap an adjacency map with key = vertex index and values = adjacent vertexes
+     * @return the vertex index with the largest number of neighbors
+     */
+    public static int findMaxDegreeVertex(TIntObjectMap<TIntSet> adjMap) {
+        int max = Integer.MIN_VALUE;
+        int maxIdx = -1;
+
+        TIntObjectIterator<TIntSet> iter = adjMap.iterator();
+        while (iter.hasNext()) {
+            iter.advance();
+            if (iter.value().size() > max) {
+                max = iter.value().size();
+                maxIdx = iter.key();
+            }
+        }
+        return maxIdx;
+    }
+
+    public static Map<Integer, Integer> createDegreeMapForVertices(Set<Integer> vertices,
+                                                                   Map<Integer, Set<Integer>> adjMap) {
+        Map<Integer, Integer> degreeMap = new HashMap<Integer, Integer>();
+
+        int nA;
+        for (int v : vertices) {
+            if (!adjMap.containsKey(v)) {
+                nA = 0;
+            } else {
+                nA = adjMap.get(v).size();
+            }
+            degreeMap.put(v, nA);
+        }
+        return degreeMap;
+    }
+
+    /**
+     * given graph G=(v,E) as the adjacency map adjMap, subtract vertex v from the graph.
+     * Note that the vertexes adjacent to v are expected to still be present in the map as
+     * keys themselves.
+     * More specifically, this method removes v as key in adjMap and v in any values of adjMap.
+     * revAdjMap is also updated.
+     * @param adjMap
+     */
+    public static void subtractVertex(final int v, Map<Integer, Set<Integer>> adjMap, Map<Integer, Set<Integer>> revAdjMap) {
+
+        if (!adjMap.containsKey(v)) {
+            return;
+        }
+        Set<Integer> adjSet = adjMap.remove(v);
+        Set<Integer> revSet = revAdjMap.remove(v);
+        for (int x : adjSet) {
+            if (revAdjMap.containsKey(x)) {
+                revAdjMap.get(x).remove(v);
+                /*if (revAdjMap.get(x).isEmpty()) {// can remove if is in color map
+                    revAdjMap.remove(x);
+                }*/
+            }
+        }
+        for (int x : revSet) {
+            if (adjMap.containsKey(x)) {
+                adjMap.get(x).remove(v);
+                /*if (adjMap.get(x).isEmpty()) {// can remove if is in color map
+                    adjMap.remove(x);
+                }*/
+            }
+        }
+
+        /*
+        v = 2
+        adjMap: {1:{2, 3}, 2:{3}}
+        revMap: {2:{1}, 3:{1,2}}
+
+        adjSet = {3}
+        revSet = {1}
+
+        update revMap values using adjSet={3}: revMap: {2:{1}, 3:{1}}
+        remove key '2' in revMap: {3:{1}}
+        update adjMap values using revSet={1} : adjMap: {1:{3}, 2:{3}}
+        remove key '2' in adjMap: {1:{3}}
+        */
+
+    }
+
+    public static Map<Integer, Set<Integer>> createReverseMapping(Map<Integer, Set<Integer>> adjMap) {
+        //adj mapping: {1:{2,3}, 2:{3}}
+        //  1--> 2, 3
+        //  2--> 3
+        //rev mapping: {2:{1}, 3:{1,2}}
+        // 2 is a neighbor of 1
+        // 3 is a neighbor of 1 and 2
+
+        Map<Integer, Set<Integer>> revMapping = new HashMap<Integer, Set<Integer>>();
+
+        Iterator<Map.Entry<Integer, Set<Integer>>> iter = adjMap.entrySet().iterator();
+        int u;
+        Set<Integer> set;
+        Set<Integer> vSet;
+        Map.Entry<Integer, Set<Integer>> entry;
+        while (iter.hasNext()) {
+            entry = iter.next();
+            u = entry.getKey();
+            set = entry.getValue();
+            for (int v : set) {
+                vSet = revMapping.get(v);
+                if (vSet == null) {
+                    vSet = new HashSet<Integer>();
+                    revMapping.put(v, vSet);
+                }
+                vSet.add(u);
+            }
+        }
+        return revMapping;
+    }
+
+    /**
+     * given a degree map holding key=vertex, value=degree and a set of vertexes p,
+     * find the vertex in p that has the largest value in degreeMap
+     * @param p
+     * @param degreeMap
+     * @return the vertex in p that has the largest value in degreeMap. if no members of p are in degreeMap, a -1 is returned.
+     */
+    public static int findMaxDegreeVertex(Set<Integer> p, Map<Integer, Integer> degreeMap) {
+        int maxIdx = -1;
+        int max = -1;
+        int n;
+        for (int v : p) {
+            if (!degreeMap.containsKey(v)) {
+                continue;
+            }
+            n = degreeMap.get(v);
+            if (max < n) {
+                max = n;
+                maxIdx = v;
+            }
+        }
+        return maxIdx;
+    }
+
+    /**
+     * given degreeMap holding key=vertex, value=degree, return the vertex with largest value
+     * @param degreeMap
+     * @return the vertex with largest value
+     */
+    public static int findMaxDegreeVertex(Map<Integer, Integer> degreeMap) {
+        int maxIdx = -1;
+        int max = -1;
+        Iterator<Map.Entry<Integer, Integer>> iter = degreeMap.entrySet().iterator();
+        Map.Entry<Integer, Integer> entry;
+        int n;
+        while (iter.hasNext()) {
+            entry = iter.next();
+            n = entry.getValue();
+            if (max < n) {
+                max = n;
+                maxIdx = entry.getKey();
+            }
+        }
+        return maxIdx;
+    }
+
+    public static boolean addEdge(int v, int w, Map<Integer, Set<Integer>> adjMap) {
+        Set<Integer> set = adjMap.get(v);
+        if (set == null) {
+            set = new HashSet<Integer>();
+            adjMap.put(v, set);
+        }
+        return set.add(w);
+    }
+    public static boolean removeEdge(int v, int w, Map<Integer, Set<Integer>> adjMap) {
+        Set<Integer> set = adjMap.get(v);
+        if (set == null) {
+            return false;
+        }
+        return set.remove(w);
+    }
 }
