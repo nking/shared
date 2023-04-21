@@ -24,6 +24,12 @@ public class ColoringTest extends TestCase {
 
     }
 
+    public void testDS() {
+
+        ds(GraphHelper.getGraph4(), 3);
+
+    }
+
     private void rlf(Map<Integer, Set<Integer>> g, int nExpected) {
 
         Map<Integer, Integer> cMap = new HashMap<Integer, Integer>();
@@ -45,5 +51,25 @@ public class ColoringTest extends TestCase {
         }
     }
 
+    private void ds(Map<Integer, Set<Integer>> g, int nExpected) {
+
+        Map<Integer, Integer> cMap = new HashMap<Integer, Integer>();
+
+        int n = Coloring.dSatur(g, cMap);
+
+        assertEquals(nExpected, n);
+
+        // assert that connected vertexes have different colors
+        Iterator<Map.Entry<Integer, Set<Integer>>> iter = g.entrySet().iterator();
+        int u;
+        Map.Entry<Integer, Set<Integer>> entry;
+        while (iter.hasNext()) {
+            entry = iter.next();
+            u = entry.getKey();
+            for (int v : entry.getValue()) {
+                assertTrue(cMap.get(u) != cMap.get(v));
+            }
+        }
+    }
 
 }

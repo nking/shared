@@ -149,13 +149,115 @@ public class Coloring {
      * @param colorMap the output map having key=vertex, value= color where the range of color is [0, k)
      * @return the number of colors k.
      */
-    public static int dSatur(Map<Integer, Set<Integer>> adjMap, Map<Integer, Integer> colorMap) {
+    public static int dSatur(final Map<Integer, Set<Integer>> adjMap, final Map<Integer, Integer> colorMap) {
 
-        //https://en.m.wikipedia.org/wiki/DSatur
-        // Let the "degree of saturation" of a vertex be the number of different colours being used by its neighbors
+        if (colorMap == null) {
+            throw new IllegalArgumentException("colorMap cannot be null");
+        }
 
-        throw new UnsupportedOperationException("not yet implemented");
+        int n = adjMap.size();
 
+        // The edge chromatic number is never more than △(G)+1 where is the maximum degree of the graph.
+        Map<Integer, Integer> degreeMap = GraphUtil.createDegreeMapForVertices(adjMap.keySet(), adjMap);
+        int maxDegree = degreeMap.get(GraphUtil.findMaxDegreeVertex(degreeMap));
+
+        Map<Integer, Set<Integer>> adjColors = new HashMap<>();
+
+        SaturatedItem[] sItems = new SaturatedItem[n];
+
+        // current largest color used
+        int k = 0;
+
+        PriorityQueue<SaturatedItem> pQ = new PriorityQueue<>();
+
+        Iterator<Map.Entry<Integer, Set<Integer>>> iter = adjMap.entrySet().iterator();
+        Map.Entry<Integer, Set<Integer>> entry;
+        int i;
+        while (iter.hasNext()) {
+            entry = iter.next();
+            i = entry.getKey();
+
+            sItems[i] = new SaturatedItem(0, degreeMap.get(i), i);
+            pQ.offer(sItems[i]);
+
+            adjColors.put(i, new HashSet<>());
+        }
+
+        boolean[] used = new boolean[maxDegree + 1];
+
+        SaturatedItem s;
+        int u;
+        int c;
+        int d;
+        Set<Integer> uAdj;
+        while (!pQ.isEmpty()) {
+            s = pQ.poll();
+            u = s.vertex;
+
+            // get smallest feasible color, not used by adjacent vertexes
+            uAdj = adjMap.get(u);
+            c = 0;
+            if (uAdj != null) {
+                Arrays.fill(used, false);
+                for (int v : uAdj) {
+                    if (colorMap.containsKey(v)) {
+                        used[colorMap.get(v)] = true;
+                    }
+                }
+                for (i = 0; i < used.length; ++i) {
+                    if (!used[i]) {
+                        c = i;
+                        break;
+                    }
+                }
+            }
+            colorMap.put(u, c);
+            if (c > k) {
+                k = c;
+            }
+            if (uAdj != null) {
+                for (int v : uAdj) {
+                    if (!colorMap.containsKey(v)) {
+                        adjColors.get(v).add(c);
+                        d = degreeMap.get(v) - 1;
+                        degreeMap.put(v, d);
+                        // for priority queue to change order need to remove and insert again.
+                        //TODO: modify fibonacci heap to use a comparator including the decreaseKey method
+                        sItems[v].deg = d;
+                        pQ.remove(sItems[v]);
+                        pQ.add(sItems[v]);
+                    }
+                }
+            }
+        }
+
+        return k + 1;
+
+        /*
+        adapted from pseudocode in
+        https://en.m.wikipedia.org/wiki/DSatur
+        and the DSatur implementation by R. M. R. Lewis, School of Mathematics, Cardiff University, Wales
+        http://rhydlewis.eu/gcol/
+        http://rhydlewis.eu/resources/gCol.zip
+        Lewis, R. (2021) A Guide to Graph Colouring: Algorithms and Applications (second ed.).
+        Springer, isbn: 978-3-030-81053-5, doi: 10.1007/978-3-030-81054-2
+        The copyright on the web page http://rhydlewis.eu/gcol/   follows:
+        <pre>
+        8.   Copyright Notice
+         Redistribution and use in source and binary forms, with or without modification, of the code associated with
+         this document are permitted provided that a citation is made to the publication given at the start of this
+         document. Neither the name of the University nor the names of its contributors may be used to endorse or
+         promote products derived from this software without specific prior written permission. This software is
+         provided by the contributors “as is”' and any express or implied warranties, including, but not limited to,
+         the implied warranties of merchantability and fitness for a particular purpose are disclaimed. In no event
+         shall the contributors be liable for any direct, indirect, incidental, special, exemplary, or consequential
+         damages (including, but not limited to, procurement of substitute goods or services; loss of use, data, or
+         profits; or business interruption) however caused and on any theory of liability, whether in contract, strict
+         liability, or tort (including negligence or otherwise) arising in any way out of the use of this software,
+         even if advised of the possibility of such damage. This software is supplied without any support services.
+        </pre>
+
+         */
     }
 
     // NOTE:  A stable set is also known as an independent set, coclique or anticliqu.
@@ -237,5 +339,36 @@ public class Coloring {
             degreeMap.put(v, nA);
         }
         return degreeMap;
+    }
+
+    private static class SaturatedItem implements Comparable<SaturatedItem> {
+        int sat;
+        int deg;
+        int vertex;
+        public SaturatedItem(int saturation, int degree, int vertex) {
+            this.sat = saturation;
+            this.deg = degree;
+            this.vertex = vertex;
+        }
+        @Override
+        public int compareTo(SaturatedItem other) {
+            if (sat > other.sat) {
+                return 1;
+            }
+            if (sat < other.sat) {
+                return -1;
+            }
+            if (deg > other.deg) {
+                return 1;
+            }
+            if (deg < other.deg) {
+                return -1;
+            }
+            // they're equal, so pick one
+            if (vertex > other.vertex) {
+                return 1;
+            }
+            return 0;
+        }
     }
 }
