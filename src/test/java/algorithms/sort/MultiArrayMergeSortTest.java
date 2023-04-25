@@ -146,21 +146,24 @@ public class MultiArrayMergeSortTest extends TestCase {
         assertTrue(Arrays.equals(expectedB, b));
     }
 
-    public void testSortByIncr() throws Exception {
+    public void test() throws Exception {
 
         int[] a = new int[]{1, 2, 3, 4, 5, 6};
         int[] b = new int[]{0, 1, 2, 3, 4, 5};
         MiscMath0.reverse(a);
         MiscMath0.reverse(b);
+        int[] expectedA = new int[]{6, 5, 4, 3, 2, 1};
+        int[] expectedB = new int[]{5, 4, 3, 2, 1, 0};
+        assertTrue(Arrays.equals(expectedA, a));
+        assertTrue(Arrays.equals(expectedB, b));
+
+        MultiArrayMergeSort.sortByIncr(a, b);
+        assertTrue(a.length == b.length);
+        assertTrue(Arrays.equals(new int[]{1, 2, 3, 4, 5, 6}, a));
+        assertTrue(Arrays.equals(new int[]{0, 1, 2, 3, 4, 5}, b));
 
         MultiArrayMergeSort.sortByDecr(a, b);
         assertTrue(a.length == b.length);
-
-        int[] expectedA = new int[]{6, 5, 4, 3, 2, 1};
-        int[] expectedB = new int[]{5, 4, 3, 2, 1, 0};
-        MiscMath0.reverse(expectedA);
-        MiscMath0.reverse(expectedB);
-
         assertTrue(Arrays.equals(expectedA, a));
         assertTrue(Arrays.equals(expectedB, b));
     }
