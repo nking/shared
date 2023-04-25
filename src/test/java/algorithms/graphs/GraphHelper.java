@@ -165,7 +165,7 @@ public class GraphHelper {
     /**
      * second example graph from edge-coloring wikipedia
      * https://en.m.wikipedia.org/wiki/Misra_%26_Gries_edge_coloring_algorithm
-     * @return graph with  edge colors
+     * @return graph with  5 edge colors
      */
     public static Map<Integer, Set<Integer>> getGraph6() {
         // https://en.m.wikipedia.org/wiki/Misra_%26_Gries_edge_coloring_algorithm
@@ -182,7 +182,7 @@ public class GraphHelper {
         adj.get(2).add(0); adj.get(2).add(4); adj.get(2).add(6);
         adj.get(3).add(1); adj.get(3).add(5); adj.get(3).add(6);
         adj.get(4).add(2); adj.get(4).add(5); adj.get(4).add(6);
-        adj.get(5).add(3); adj.get(5).add(4); adj.get(5).add(6);
+        adj.get(5).add(3); adj.get(5).add(4);
         adj.get(6).add(1); adj.get(6).add(2); adj.get(6).add(3); adj.get(6).add(4);
 
         return adj;

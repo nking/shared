@@ -528,7 +528,7 @@ public class Coloring {
         TIntList xiAdj;
         for (i = 0; i < vAdj.size(); ++i) {
             xii = vAdj.get(i);
-            if (inF.contains(xii) || (xii < xi)) {
+            if (inF.contains(xii)) {
                 continue;
             }
             // add xii if the color (v, xii) is not present in edges of xi

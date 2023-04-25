@@ -176,4 +176,10 @@ public class GraphUtilTest extends TestCase {
             }
         }
     }
+
+    public void textExtractEdgesUsingOrder() {
+        Map<Integer, Set<Integer>> adjMap = GraphHelper.getGraph6();
+        Set<PairInt> edges = GraphUtil.extractEdgesUsingLexicographicOrder(adjMap);
+        assertEquals(10, edges.size());
+    }
 }

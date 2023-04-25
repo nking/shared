@@ -73,16 +73,50 @@ public class ColoringTest extends TestCase {
         }
     }
 
-    public void testEdgeColoring() {
+    public void testEdgeColoring5() {
 
         Map<Integer, Set<Integer>> adjMap = GraphHelper.getGraph5();
 
         Map<PairInt, Integer> colorMap = new HashMap<PairInt, Integer>();
-
         int k = Coloring.edgeColoringMisraGies(adjMap, colorMap);
 
         assertEquals(4, k);
+        assertEdgeColoring(adjMap, colorMap);
 
-        //TODO: finish tests
+    }
+
+    public void testEdgeColoring6() {
+
+        Map<Integer, Set<Integer>> adjMap = GraphHelper.getGraph6();
+
+        Map<PairInt, Integer> colorMap = new HashMap<PairInt, Integer>();
+        int k = Coloring.edgeColoringMisraGies(adjMap, colorMap);
+
+        assertEquals(5, k);
+        assertEdgeColoring(adjMap, colorMap);
+    }
+
+    private void assertEdgeColoring(Map<Integer, Set<Integer>> adjMap, Map<PairInt, Integer> colorMap) {
+        Iterator<Map.Entry<Integer, Set<Integer>>> iter = adjMap.entrySet().iterator();
+        Set<Integer> chk = new HashSet<>();
+        Map.Entry<Integer, Set<Integer>> entry;
+        int u;
+        PairInt edge;
+        int c;
+        while (iter.hasNext()) {
+            entry = iter.next();
+            u = entry.getKey();
+            chk.clear();
+            for (int v : entry.getValue()) {
+                if (u <= v) {
+                    edge = new PairInt(u, v);
+                } else {
+                    edge = new PairInt(v, u);
+                }
+                assertTrue(colorMap.containsKey(edge));
+                c = colorMap.get(edge);
+                assertTrue(chk.add(c));
+            }
+        }
     }
 }
