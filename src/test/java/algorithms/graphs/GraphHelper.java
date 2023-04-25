@@ -129,4 +129,62 @@ public class GraphHelper {
 
         return adj;
     }
+
+    /**
+     * first example graph from edge-coloring wikipedia
+     * https://en.m.wikipedia.org/wiki/Misra_%26_Gries_edge_coloring_algorithm
+     * @return graph with 4 edge colors
+     */
+    public static Map<Integer, Set<Integer>> getGraph5() {
+        // https://en.m.wikipedia.org/wiki/Misra_%26_Gries_edge_coloring_algorithm
+        Map<Integer, Set<Integer>> adj = new HashMap<Integer, Set<Integer>>();
+
+        int n = 12;
+        int i;
+        for (i = 0; i < n; ++i) {
+            adj.put(i, new HashSet<Integer>());
+        }
+
+        adj.get(0).add(1); adj.get(0).add(2); adj.get(0).add(3);
+        adj.get(1).add(0); adj.get(1).add(4); adj.get(1).add(5); adj.get(1).add(6);
+        adj.get(2).add(0); adj.get(2).add(7); adj.get(2).add(8); adj.get(2).add(9);
+        adj.get(3).add(0); adj.get(3).add(10); adj.get(3).add(11);
+        for (i = 4; i <= 6; ++i) {
+            adj.get(i).add(1);
+        }
+        for (i = 7; i <= 9; ++i) {
+            adj.get(i).add(2);
+        }
+        for (i = 10; i <=11; ++i) {
+            adj.get(i).add(3);
+        }
+
+        return adj;
+    }
+
+    /**
+     * second example graph from edge-coloring wikipedia
+     * https://en.m.wikipedia.org/wiki/Misra_%26_Gries_edge_coloring_algorithm
+     * @return graph with  edge colors
+     */
+    public static Map<Integer, Set<Integer>> getGraph6() {
+        // https://en.m.wikipedia.org/wiki/Misra_%26_Gries_edge_coloring_algorithm
+        Map<Integer, Set<Integer>> adj = new HashMap<Integer, Set<Integer>>();
+
+        int n = 7;
+        int i;
+        for (i = 0; i < n; ++i) {
+            adj.put(i, new HashSet<Integer>());
+        }
+
+        adj.get(0).add(1); adj.get(0).add(2);
+        adj.get(1).add(0); adj.get(1).add(3); adj.get(1).add(6);
+        adj.get(2).add(0); adj.get(2).add(4); adj.get(2).add(6);
+        adj.get(3).add(1); adj.get(3).add(5); adj.get(3).add(6);
+        adj.get(4).add(2); adj.get(4).add(5); adj.get(4).add(6);
+        adj.get(5).add(3); adj.get(5).add(4); adj.get(5).add(6);
+        adj.get(6).add(1); adj.get(6).add(2); adj.get(6).add(3); adj.get(6).add(4);
+
+        return adj;
+    }
 }

@@ -1,5 +1,6 @@
 package algorithms.graphs;
 
+import algorithms.util.PairInt;
 import junit.framework.TestCase;
 
 import java.util.*;
@@ -72,4 +73,16 @@ public class ColoringTest extends TestCase {
         }
     }
 
+    public void testEdgeColoring() {
+
+        Map<Integer, Set<Integer>> adjMap = GraphHelper.getGraph5();
+
+        Map<PairInt, Integer> colorMap = new HashMap<PairInt, Integer>();
+
+        int k = Coloring.edgeColoringMisraGies(adjMap, colorMap);
+
+        assertEquals(4, k);
+
+        //TODO: finish tests
+    }
 }

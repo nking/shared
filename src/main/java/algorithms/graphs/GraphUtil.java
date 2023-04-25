@@ -4,6 +4,8 @@ import algorithms.util.PairInt;
 import algorithms.util.SimpleLinkedListNode;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.iterator.TIntObjectIterator;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntIntHashMap;
@@ -337,9 +339,9 @@ public class GraphUtil {
     /**
      * find the vertex with the largest number of neighbors.
      * @param adjMap an adjacency map with key = vertex index and values = adjacent vertexes
-     * @return the vertex index with the largest number of neighbors
+     * @return the vertex index with the largest number of neighbors and the degree
      */
-    public static int findMaxDegreeVertex(TIntObjectMap<TIntSet> adjMap) {
+    public static int[] findMaxDegreeVertex(TIntObjectMap<TIntSet> adjMap) {
         int max = Integer.MIN_VALUE;
         int maxIdx = -1;
 
@@ -351,7 +353,7 @@ public class GraphUtil {
                 maxIdx = iter.key();
             }
         }
-        return maxIdx;
+        return new int[]{maxIdx, max};
     }
 
     public static Map<Integer, Integer> createDegreeMapForVertices(Set<Integer> vertices,
@@ -509,5 +511,66 @@ public class GraphUtil {
             return false;
         }
         return set.remove(w);
+    }
+
+    /**
+     * runtime complexity is O(N*log_2(N)) because it sorts the adjacency list if sort=true
+     * @param adjMap
+     * @return
+     */
+    public static TIntObjectMap<TIntList> copyToOrderedAdjMap(Map<Integer, Set<Integer>> adjMap, boolean sort) {
+        TIntObjectMap<TIntList> map = new TIntObjectHashMap<TIntList>();
+        Iterator<Map.Entry<Integer, Set<Integer>>> iter = adjMap.entrySet().iterator();
+        Set<Integer> set;
+        TIntList list;
+        int u;
+        Map.Entry<Integer, Set<Integer>> entry;
+        while (iter.hasNext()) {
+            entry = iter.next();
+            u = entry.getKey();
+            set = entry.getValue();
+            list = new TIntArrayList();
+            for (int v : set) {
+                list.add(v);
+            }
+            if (sort) {
+                list.sort();
+            }
+            map.put(u, list);
+        }
+        return map;
+    }
+
+    public static Set<PairInt> extractEdges(Map<Integer, Set<Integer>> adjMap) {
+        Set<PairInt> edges = new HashSet<PairInt>();
+        Iterator<Map.Entry<Integer, Set<Integer>>> iter = adjMap.entrySet().iterator();
+        int u;
+        Map.Entry<Integer, Set<Integer>> entry;
+        while (iter.hasNext()) {
+            entry = iter.next();
+            u = entry.getKey();
+            for (int v : entry.getValue()) {
+                edges.add(new PairInt(u, v));
+            }
+        }
+        return edges;
+    }
+    public static Set<PairInt> extractEdgesUsingLexicographicOrder(Map<Integer, Set<Integer>> adjMap) {
+        Set<PairInt> edges = new HashSet<PairInt>();
+        Iterator<Map.Entry<Integer, Set<Integer>>> iter = adjMap.entrySet().iterator();
+        int u;
+        Map.Entry<Integer, Set<Integer>> entry;
+        while (iter.hasNext()) {
+            entry = iter.next();
+            u = entry.getKey();
+            for (int v : entry.getValue()) {
+                if (u <= v) {
+                    edges.add(new PairInt(u, v));
+                } else {
+                    edges.add(new PairInt(v, u));
+                }
+            }
+        }
+        return edges;
     }
 }

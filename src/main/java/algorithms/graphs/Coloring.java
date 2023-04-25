@@ -1,5 +1,15 @@
 package algorithms.graphs;
 
+import algorithms.util.PairInt;
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.iterator.TIntObjectIterator;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.list.linked.TIntLinkedList;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+
 import java.util.*;
 
 /**
@@ -26,7 +36,7 @@ by Marco Chiarandini, Giulia Galbiati, and Stefano Gualandi,
 public class Coloring {
 
     /**
-     * A polynomial time constructive algorithm to solve heuristically the graph coloring problem
+     * A polynomial time constructive algorithm to solve heuristically the graph coloring problem for vertexes.
      * It doesn't exhibit guaranteed approximation ratios but is very fast and produces good solutions in practice.
      * These features make them very appealing in practical applications.
      * Recursive Largest First (RLF) algorithm has a strategy to sequentially color stable sets,
@@ -128,7 +138,7 @@ public class Coloring {
     }
 
     /**
-     * A polynomial time constructive algorithm to solve heuristically the graph coloring problem
+     * A polynomial time constructive algorithm to solve heuristically the graph coloring problem for vertexes.
      * It doesn't exhibit guaranteed approximation ratios but is very fast and produces good solutions in practice.
      * These features make them very appealing in practical applications.
      * DSATUR [2] uses a dynamic order of the vertices,
@@ -143,6 +153,11 @@ public class Coloring {
      paper "Efficiency issues in the RLF heuristic for graph coloring"
      by Marco Chiarandini, Giulia Galbiati, and Stefano Gualandi,
      MIC 2011: The IX Metaheuristics International Conference S1-47–1
+
+     Other references used in implementing the algorithm:
+         https://en.m.wikipedia.org/wiki/DSatur
+         and the DSatur implementation by R. M. R. Lewis, School of Mathematics, Cardiff University, Wales
+         http://rhydlewis.eu/gcol/
      </pre>
      NOTE: dSatur is a good algorithm to learn whether a graph is bipartite in O(n^2).
      * @param adjMap the graph represented as an adjacency map
@@ -211,6 +226,7 @@ public class Coloring {
                     }
                 }
             }
+
             colorMap.put(u, c);
             if (c > k) {
                 k = c;
@@ -258,6 +274,313 @@ public class Coloring {
         </pre>
 
          */
+    }
+
+    /**
+     Find a nearly optimal edge coloring using the Misra & Gries 1992 algorithm.
+     It uses at most one color more than the optimal and has a runtime complexity O(|V|*|E|).
+     In contrast, the optimal edge coloring, in general, is NP-complete.
+     <pre>
+     references used in implementing the algorithm:
+         https://en.m.wikipedia.org/wiki/Misra_%26_Gries_edge_coloring_algorithm
+         https://en.wikipedia.org/wiki/Vizing%27s_theorem
+     and
+         Liang, Shen and Hu 1996
+         "Parallel Algorithms for the Edge-Coloring and Edge-Coloring Update Problems"
+         JOURNAL OF PARALLEL AND DISTRIBUTED COMPUTING 32, 66–73 (1996) ARTICLE NO. 0005
+     and
+         https://www.boost.org/doc/libs/1_67_0/boost/graph/edge_coloring.hpp
+         which uses Boost Software License - Version 1.0 - August 17th, 2003
+     </pre>
+     * @param adjMap adjacency map for a simple undirected graph (no self-loops and no more than 1 edge between same vertices).
+     *               It is expected that the invoker has already handled the bi-directional mappings in adjMap for edges (u,v) and (v,u).
+     * @param colorMap output map of edge colorings where key=edge vertexes and value is the color assigned to the edge
+     * @return the number of colors assigned to edges
+     */
+    public static int edgeColoringMisraGies(final Map<Integer, Set<Integer>> adjMap, final Map<PairInt, Integer> colorMap) {
+
+        //For building the "fans" we need a fixed ordering of the edges, presumably by label = vertex number which are integers here.
+
+        // key = vertex
+        // value = adjacent vertexes
+        TIntObjectMap<TIntList> adjMapOrdered = GraphUtil.copyToOrderedAdjMap(adjMap, true);
+
+        int maxDegreeP1 = findMaxDegree(adjMapOrdered) + 1;
+
+        Set<PairInt> edges = GraphUtil.extractEdgesUsingLexicographicOrder(adjMap);
+
+        /*
+        https://en.m.wikipedia.org/wiki/Misra_%26_Gries_edge_coloring_algorithm
+        U = edges
+        while U ≠ ∅ do
+            Let (u, v) be any edge in U.
+            Let F[1:k] be a maximal fan of u starting at F[1] = v.
+            Let c be a color that is free on u and d be a color that is free on F[k].
+            Invert the cdu path
+            Let w ∈ V(G) be such that w ∈ F, F' = [F[1]...w] is a fan and d is free on w.
+            Rotate F' and set c(u, w) = d.
+            U := U − {(u, v)}
+        end while
+         */
+        int j;
+        int maxColors = -1;
+        PairInt edge;
+        int u;
+        int k;
+        int colorC;
+        int colorD;
+        while (!edges.isEmpty()) {
+
+            edge = edges.iterator().next();
+
+            TIntList f = findMaximalFan(edge, adjMapOrdered, colorMap);
+            int w;
+            assert(!f.isEmpty());
+            u = edge.getX();
+            k = f.get(f.size() - 1);
+
+            // for x.adj, find first missing colors in 0:max
+            colorC = findFreeColor(u, adjMapOrdered, colorMap, maxDegreeP1);
+            // for k.adj, find first missing colors in 0:max
+            colorD = findFreeColor(k, adjMapOrdered, colorMap, maxDegreeP1);
+
+            // invert cd path.  does nothing if no colors are set yet
+            invertCDPath(u, colorC, colorD, adjMapOrdered, colorMap, maxDegreeP1);
+
+            // find the first member of f which has no adjacent vertexes of color colorD
+            w = -1;
+            for (j = 0; j < f.size(); ++j) {
+                w = f.get(j);
+                if (isFree(w, colorD, adjMapOrdered, colorMap)) {
+                    // w.adjacent colors are not colorD
+                    break;
+                }
+            }
+            if (w > -1) {
+                // does nothing if f.get(0) == w
+                rotateFan(u, f.get(0), w, adjMapOrdered, colorMap);
+
+                // assign color d to edge (u, w)
+                colorMap.put(new PairInt(u, w), colorD);
+            }
+
+            maxColors = Math.max(maxColors, Math.max(colorC, colorD));
+
+            edges.remove(edge);
+        }
+
+        return maxColors + 1;
+    }
+
+    private static int findFreeColor(int vertex, TIntObjectMap<TIntList> adjMapOrdered, Map<PairInt, Integer> colorMap,
+                                     int maxC) {
+        int c = 0;
+        while (c < maxC && !isFree(vertex, c, adjMapOrdered, colorMap)) {
+            c++;
+        }
+        return c;
+    }
+
+    private static int findMaxDegree(TIntObjectMap<TIntList> adjMapOrdered) {
+        if (adjMapOrdered == null) {
+            throw new IllegalArgumentException("adjMapOrdered cannot be null");
+        }
+        int max = 0;
+        int s;
+        TIntObjectIterator<TIntList> iter = adjMapOrdered.iterator();
+        while (iter.hasNext()) {
+            iter.advance();
+            s = iter.value().size();
+            if (s > max) {
+                max = s;
+            }
+        }
+        return max;
+    }
+
+    private static void rotateFan(int vertex, int f0, int f1, TIntObjectMap<TIntList> adjMapOrdered,
+      Map<PairInt, Integer> colorMap) {
+        if (f0 == f1) {
+            return;
+        }
+        // f0 and f1 are adjacent to vertex
+        PairInt previous = new PairInt(vertex, f0);
+        PairInt current;
+        int color;
+        PairInt chk;
+        for (int b = f0 + 1; b < f1; ++b) {
+            current = new PairInt(vertex, b);
+            if (vertex <= b) {
+                chk = new PairInt(vertex, b);
+            } else {
+                chk = new PairInt(b, vertex);
+            }
+            assert(colorMap.containsKey(chk));
+            color = colorMap.get(chk);
+            // assign color to previous
+            if (previous.getX() <= previous.getY()) {
+                colorMap.put(previous, color);
+            } else {
+                colorMap.put(new PairInt(previous.getY(), previous.getX()), color);
+            }
+        }
+    }
+
+    private static void invertCDPath(int vertex, int colorC, int colorD,
+         TIntObjectMap<TIntList> adjMapOrdered, Map<PairInt, Integer> colorMap, int maxColors) {
+
+        TIntList adj = adjMapOrdered.get(vertex);
+        if (adj == null) {
+            return;
+        }
+        int v;
+        PairInt edge;
+        PairInt chk;
+        for (int i = 0; i < adj.size(); ++i) {
+            v = adj.get(i);
+            edge = new PairInt(vertex, v);
+            if (vertex <= v) {
+                chk = new PairInt(vertex, v);
+            } else {
+                chk = new PairInt(v, vertex);
+            }
+            if (colorMap.containsKey(chk) && colorMap.get(chk) == colorD) {
+                invertCDPathRecursive(edge, colorD, colorC, adjMapOrdered, colorMap);
+                return;
+            }
+        }
+    }
+
+    /**
+     * @param edge
+     * @param colorC
+     * @param colorD
+     * @param adjMapOrdered
+     * @param colorMap
+     */
+    private static void invertCDPathRecursive(PairInt edge, int colorC, int colorD,
+         TIntObjectMap<TIntList> adjMapOrdered, Map<PairInt, Integer> colorMap) {
+
+        int x = edge.getX();
+        int v = edge.getY();
+
+        // assign color d to edge
+        PairInt chk;
+        if (x <= v) {
+            chk = new PairInt(x, v);
+        } else {
+            chk = new PairInt(v, x);
+        }
+        colorMap.put(chk, colorD);
+
+        TIntList adj = adjMapOrdered.get(v);
+        if (adj == null) {
+            return;
+        }
+        int v2;
+        PairInt edge2;
+        PairInt chk2;
+        for (int i = 0; i < adj.size(); ++i) {
+            v2 = adj.get(i);
+            edge2 = new PairInt(v, v2);
+            if (v <= v2) {
+                chk2 = new PairInt(v, v2);
+            } else {
+                chk2 = new PairInt(v2, v);
+            }
+            if (!chk.equals(chk2) && colorMap.containsKey(chk2) && colorMap.get(chk2) == colorD) {
+                invertCDPathRecursive(edge2, colorD, colorC, adjMapOrdered, colorMap);
+                return;
+            }
+        }
+    }
+
+    /**
+     Given an uncolored edge (u, v), the following procedure constructs a fan f of u
+     that is maximal in that it cannot be extended.
+     * @param edge
+     * @param adjMapOrdered map w/ key = vertex, value= adjacent vertexes
+     * @param cMap
+     * @return
+     */
+    private static TIntList findMaximalFan(PairInt edge, TIntObjectMap<TIntList> adjMapOrdered, Map<PairInt, Integer> cMap) {
+
+        if (cMap.containsKey(edge)) {
+            throw new IllegalArgumentException("edge has already been colored");
+        }
+
+        int v = edge.getX();
+
+        TIntSet inF = new TIntHashSet();
+        TIntList f = new TIntArrayList();
+
+        int xi = edge.getY();
+        inF.add(xi);
+        f.add(xi);
+
+        TIntList vAdj = adjMapOrdered.get(v);
+        if (vAdj == null || vAdj.isEmpty()) {
+            return f;
+        }
+        int xii;
+        int i;
+        int cVXii;
+        TIntList xiAdj;
+        for (i = 0; i < vAdj.size(); ++i) {
+            xii = vAdj.get(i);
+            if (inF.contains(xii) || (xii < xi)) {
+                continue;
+            }
+            // add xii if the color (v, xii) is not present in edges of xi
+            // set xi = xii
+
+            xiAdj = adjMapOrdered.get(xi);
+            if (xiAdj == null) {
+                f.add(xii);
+                xi = xii;
+                continue;
+            }
+
+            PairInt chk;
+            if (v <= xii) {
+                chk = new PairInt(v, xii);
+            } else {
+                chk = new PairInt(xii, v);
+            }
+            if (!cMap.containsKey(chk)) {
+                break;
+            }
+
+            cVXii = cMap.get(chk);
+
+            //if xi edges do not have color of edge (v, xii), add xii
+            if (isFree(xi, cVXii, adjMapOrdered, cMap)) {
+                f.add(xii);
+                xi = xii;
+            }
+        }
+        return f;
+    }
+
+    private static boolean isFree(int u, int color, TIntObjectMap<TIntList> adjMapOrdered, Map<PairInt, Integer> cMap) {
+        TIntList adj = adjMapOrdered.get(u);
+        if (adj == null) {
+            return true;
+        }
+        PairInt e;
+        int v;
+        for (int i = 0; i < adj.size(); ++i) {
+            v = adj.get(i);
+            if (u <= v) {
+                e = new PairInt(u, v);
+            } else {
+                e = new PairInt(v, u);
+            }
+            if (cMap.containsKey(e) && (cMap.get(e) == color)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     // NOTE:  A stable set is also known as an independent set, coclique or anticliqu.

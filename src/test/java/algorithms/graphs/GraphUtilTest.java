@@ -1,16 +1,16 @@
 package algorithms.graphs;
 
+import algorithms.util.PairInt;
 import algorithms.util.SimpleLinkedListNode;
+import gnu.trove.iterator.TIntObjectIterator;
+import gnu.trove.list.TIntList;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import junit.framework.TestCase;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class GraphUtilTest extends TestCase {
 
@@ -148,5 +148,32 @@ public class GraphUtilTest extends TestCase {
 
         int vMax = GraphUtil.findMaxDegreeVertex(degreeMap);
         assertEquals(6, vMax);
+    }
+
+    public void testCopyToOrderedAdjMap() {
+        Map<Integer, Set<Integer>> g = new HashMap<Integer, Set<Integer>>();
+        int n = 5;
+        int i;
+        for (i = 0; i < n; ++i) {
+            g.put(i, new HashSet<Integer>());
+            for (int j = 0; j < i; ++j) {
+                g.get(i).add(j);
+            }
+        }
+
+        TIntObjectMap<TIntList> adjList = GraphUtil.copyToOrderedAdjMap(g, false);
+        assertEquals(n, adjList.size());
+        for (i = 0; i < n; ++i) {
+            assertEquals(i, adjList.get(i).size());
+        }
+
+        Set<PairInt> edges = GraphUtil.extractEdges(g);
+        PairInt edge;
+        for (i = 0; i < n; ++i) {
+            for (int j = 0; j < i; ++j) {
+                edge = new PairInt(i, j);
+                assertTrue(edges.contains(edge));
+            }
+        }
     }
 }
