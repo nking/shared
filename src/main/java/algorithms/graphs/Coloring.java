@@ -372,6 +372,13 @@ public class Coloring {
         return maxColors + 1;
     }
 
+    private static PairInt makeOrderedNode(int u, int v) {
+        if (u <= v) {
+            return new PairInt(u, v);
+        }
+        return new PairInt(v, u);
+    }
+
     private static int findFreeColor(int vertex, TIntObjectMap<TIntList> adjMapOrdered, Map<PairInt, Integer> colorMap,
                                      int maxC) {
         int c = 0;
@@ -404,25 +411,19 @@ public class Coloring {
             return;
         }
         // f0 and f1 are adjacent to vertex
-        PairInt previous = new PairInt(vertex, f0);
+        PairInt previous = makeOrderedNode(vertex, f0);
         PairInt current;
         int color;
         PairInt chk;
         for (int b = f0 + 1; b < f1; ++b) {
             current = new PairInt(vertex, b);
-            if (vertex <= b) {
-                chk = new PairInt(vertex, b);
-            } else {
-                chk = new PairInt(b, vertex);
-            }
+
+            chk = makeOrderedNode(vertex, b);
             assert(colorMap.containsKey(chk));
             color = colorMap.get(chk);
+
             // assign color to previous
-            if (previous.getX() <= previous.getY()) {
-                colorMap.put(previous, color);
-            } else {
-                colorMap.put(new PairInt(previous.getY(), previous.getX()), color);
-            }
+            colorMap.put(previous, color);
         }
     }
 
@@ -439,11 +440,8 @@ public class Coloring {
         for (int i = 0; i < adj.size(); ++i) {
             v = adj.get(i);
             edge = new PairInt(vertex, v);
-            if (vertex <= v) {
-                chk = new PairInt(vertex, v);
-            } else {
-                chk = new PairInt(v, vertex);
-            }
+            chk = makeOrderedNode(vertex, v);
+
             if (colorMap.containsKey(chk) && colorMap.get(chk) == colorD) {
                 invertCDPathRecursive(edge, colorD, colorC, adjMapOrdered, colorMap);
                 return;
@@ -465,12 +463,8 @@ public class Coloring {
         int v = edge.getY();
 
         // assign color d to edge
-        PairInt chk;
-        if (x <= v) {
-            chk = new PairInt(x, v);
-        } else {
-            chk = new PairInt(v, x);
-        }
+        PairInt chk = makeOrderedNode(x, v);
+
         colorMap.put(chk, colorD);
 
         TIntList adj = adjMapOrdered.get(v);
@@ -483,11 +477,7 @@ public class Coloring {
         for (int i = 0; i < adj.size(); ++i) {
             v2 = adj.get(i);
             edge2 = new PairInt(v, v2);
-            if (v <= v2) {
-                chk2 = new PairInt(v, v2);
-            } else {
-                chk2 = new PairInt(v2, v);
-            }
+            chk2 = makeOrderedNode(v, v2);
             if (!chk.equals(chk2) && colorMap.containsKey(chk2) && colorMap.get(chk2) == colorD) {
                 invertCDPathRecursive(edge2, colorD, colorC, adjMapOrdered, colorMap);
                 return;
@@ -541,12 +531,7 @@ public class Coloring {
                 continue;
             }
 
-            PairInt chk;
-            if (v <= xii) {
-                chk = new PairInt(v, xii);
-            } else {
-                chk = new PairInt(xii, v);
-            }
+            PairInt chk = makeOrderedNode(v, xii);
             if (!cMap.containsKey(chk)) {
                 break;
             }
@@ -571,11 +556,7 @@ public class Coloring {
         int v;
         for (int i = 0; i < adj.size(); ++i) {
             v = adj.get(i);
-            if (u <= v) {
-                e = new PairInt(u, v);
-            } else {
-                e = new PairInt(v, u);
-            }
+            e = makeOrderedNode(u, v);
             if (cMap.containsKey(e) && (cMap.get(e) == color)) {
                 return false;
             }
