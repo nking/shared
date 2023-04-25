@@ -1,4 +1,4 @@
-package algorithms.tsp;
+package algorithms.optimization.tsp;
 
 import java.util.ArrayList;
 import java.util.HashSet;

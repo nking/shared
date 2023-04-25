@@ -60,7 +60,7 @@ public class BayesianCurveFitting {
     private static final Logger log = Logger.getLogger(BayesianCurveFitting.class.getSimpleName());
 
     /**
-     * fit the training data
+     * fit the training data.
      * the likelihood and the prior are both Gaussian.
      @param phiX training data feature matrix
      @param t training data label vector

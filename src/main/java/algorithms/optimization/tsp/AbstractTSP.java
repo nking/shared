@@ -1,4 +1,4 @@
-package algorithms.tsp;
+package algorithms.optimization.tsp;
 
 import algorithms.PermutationsWithAwait;
 import algorithms.SubsetChooser;
@@ -15,7 +15,7 @@ import java.util.Arrays;
 import java.util.Stack;
 
 /**
- *
+
  * The dynamic approach needs to store the partial sums as the path lengthens
      (without the start node).
     

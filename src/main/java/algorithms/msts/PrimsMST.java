@@ -33,7 +33,7 @@ import java.util.Stack;
  *     adjacency matrix, searching          O(N^2)
  *     binary heap and adjacency list       O((N + E) lg2 N) = O(E lg2 N)
  *     Fibonacci heap and adjacency list	O(E + N lg2 N)
- *     YFastTrie and adjacency list         O(E + V)
+ *     YFastTrie and adjacency list         O((E + V)*c) where c log_2 log_2(max value to store in heap)
  *     
  * this implementation uses a YFastTrie min priority queue and adjacency list.
  * 

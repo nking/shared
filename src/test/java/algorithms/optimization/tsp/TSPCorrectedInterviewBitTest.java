@@ -1,4 +1,4 @@
-package algorithms.tsp;
+package algorithms.optimization.tsp;
 
 import java.util.Arrays;
 import java.util.List;

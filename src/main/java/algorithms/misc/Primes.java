@@ -98,7 +98,7 @@ public class Primes {
      * 
      * NOTE: for factoring large numbers, may want to implement:
      * "Factoring integers with the number field sieve"
-        J. P. Buhler,  H. W. Lenstra, Jr., Carl Pomerance
+     J. P. Buhler, H. W. Lenstra, Jr., Carl Pomerance
      * http://www.math.leidenuniv.nl/~hwl/PUBLICATIONS/1993e/art.pdf
      * 
      * NOTE: the method returns numbers that are factors, but not prime also.
@@ -125,20 +125,18 @@ public class Primes {
      * 
      * NOTE: for factoring large numbers, may want to implement:
      * "Factoring integers with the number field sieve"
-        J. P. Buhler,  H. W. Lenstra, Jr., Carl Pomerance
+      J. P. Buhler, H. W. Lenstra, Jr., Carl Pomerance
      * http://www.math.leidenuniv.nl/~hwl/PUBLICATIONS/1993e/art.pdf
      * 
      * NOTE: the method returns numbers that are factors, but not prime also.
      * One can use probablyPrime to test for primality and use
      * pollardRhoFactorization() on the non-prime factor.
-     * 
-     @param n
-     @param rand
-     @return 
-     * @throws java.security.NoSuchAlgorithmException 
+
+     @param n number to decompose into prime factors
+     @param rand rand number generator
+     @return set of primes that are factors of n
      */
-    public static TLongSet pollardRhoFactorization(final long n, ThreadLocalRandom rand) 
-        throws NoSuchAlgorithmException {
+    public static TLongSet pollardRhoFactorization(final long n, ThreadLocalRandom rand) {
                             
         long i = 1;
         

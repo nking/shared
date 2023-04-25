@@ -1,4 +1,4 @@
-package algorithms.tsp;
+package algorithms.optimization.tsp;
 
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;

@@ -54,7 +54,7 @@ public class NumberTheory {
     
     /**
      * solves for x in the equation a * x ≡ b (mod n) (which is actually (a*x) mod n = b)
-     * where d is the gcd of number n and d|b (that is, d divides b).
+     * where d is the gcd of number n and d|b (a.k.a. d divides b).
      * finds the smallest gcd for which a*x + b*y = d.
      * The equation may have zero, one, or more than one such solution.
      * performs O(lg n + gcd(a, n)) arithmetic operations.

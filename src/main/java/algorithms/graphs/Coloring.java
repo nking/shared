@@ -319,7 +319,7 @@ public class Coloring {
             Invert the cdu path
             Let w ∈ V(G) be such that w ∈ F, F' = [F[1]...w] is a fan and d is free on w.
             Rotate F' and set c(u, w) = d.
-            U := U − {(u, v)}
+            U:= U − {(u, v)}
         end while
          */
         int j;
@@ -464,7 +464,6 @@ public class Coloring {
 
         // assign color d to edge
         PairInt chk = makeOrderedNode(x, v);
-
         colorMap.put(chk, colorD);
 
         TIntList adj = adjMapOrdered.get(v);

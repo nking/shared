@@ -49,7 +49,9 @@ public class ReverseCuthillMcKee {
     
     /**
      * given the adjacency map as pairs of edges, calculate the
-     * Cuthill-McKee ordering.
+     * Cuthill-McKee ordering to reduce the bandwidth of a
+     * symmetric matrix (remember that an adjacency matrix for an undirected graph
+     * is symmetric).
      * runtime complexity is O(|V| + |E|*log_2(|E|) where |V| is the number
      * of vertices and |E| is the number of edges where an edge is counted
      * once.
@@ -79,7 +81,7 @@ public class ReverseCuthillMcKee {
      * once.
      *
      * Reducing the bandwidth of a graph consists of ﬁnding a special labeling of vertices which minimizes the
-     * maximum absolute diﬀerence between the labels of adjacent vertices.
+     * maximum absolute difference between the labels of adjacent vertices.
      * <pre>
      * references:
      * 

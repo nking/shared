@@ -396,7 +396,7 @@ public class ApproxGraphSearchZengTest extends TestCase {
         System.out.println("\ntestOptimalEditDistance");
         //example graphs from Figure 1 of
         //A Coding Method for Efficient Subgraph Querying on Vertex- and Edge-Labeled Graphs
-        //Zhu et al, May 2014 PLoS ONE 9(5):e97178
+        //Zhu et al, May 2014 PLoS ONE9(5):e97178
         //DOI:10.1371/journal.pone.0097178
         
         // 4!=24, 5!=120, so using a small test graph
@@ -696,7 +696,7 @@ public class ApproxGraphSearchZengTest extends TestCase {
     /**
      * get the example graphs from Figure 1 of
      * A Coding Method for Efficient Subgraph Querying on Vertex- and Edge-Labeled Graphs
-       Zhu et al, May 2014 PLoS ONE 9(5):e97178
+       Zhu et al, May 2014 PLoS ONE9(5):e97178
        DOI:10.1371/journal.pone.0097178
     
      @param outputDB list of graphs representing the database

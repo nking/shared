@@ -4,8 +4,7 @@ import algorithms.matrix.MatrixUtil;
 
 /**
  * An algorithm to make cumulative sums at a pixel adding to it
- * the value from the pixel
- * below and the value from left of it.
+ * the value from the pixel below and the value from left of it.
  * The extraction of a window of any size throughout the image
  * then only takes 4 steps at most.
  * The runtime complexity for building the summed area table

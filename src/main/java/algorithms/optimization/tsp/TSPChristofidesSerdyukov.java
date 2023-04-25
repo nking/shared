@@ -1,4 +1,4 @@
-package algorithms.optimization;
+package algorithms.optimization.tsp;
 
 import algorithms.graphs.HierholzersEulerCircuit;
 import algorithms.msts.PrimsMST;
@@ -19,10 +19,22 @@ import thirdparty.HungarianAlgorithm;
 
 /**
  * An approximate solution to the Traveling Salesman Problem.
- * It is an approximation algorithm that guarantees that its solutions will be 
+ *
+ * from https://en.m.wikipedia.org/wiki/Travelling_salesman_problem
+ *  The travelling salesman problem (also called the travelling salesperson
+ * problem or TSP)
+ *  asks the following question: "Given a list of cities and the distances between
+ * each pair of cities, what is the shortest possible route that visits each city
+ * exactly once and returns to the origin city?" It is an NP-hard problem in
+ * combinatorial optimization, important in theoretical computer science and
+ * operations research.
+ *
+ * The travelling purchaser problem and the vehicle routing problem are both generalizations of TSP.
+ *
+ * The Christofides-Serdyukov algorithm is an approximation algorithm that guarantees that its solutions will be
  * within a factor of 3/2 of the optimal solution length, and is named after 
  * Nicos Christofides and Anatoliy I. Serdyukov, who discovered it 
- * independently in 1976.  The runtime compexity is O(n^3)
+ * independently in 1976.  The runtime complexity is O(n^3)
  * 
  * following the pseudocode in
  * https://en.m.wikipedia.org/wiki/Christofides_algorithm
@@ -31,7 +43,7 @@ import thirdparty.HungarianAlgorithm;
  * k-approximation:
     for minimization problems, cost function c():
          c(approxSoln)/c(OPT) .leq. k
-    for maximimization problems:
+    for maximization problems:
          c(approxSoln)/c(OPT) .geq. k
  * </pre>
  * 
@@ -58,6 +70,10 @@ public class TSPChristofidesSerdyukov {
     /**
      * find a Hamiltonian tour of the given graph (simple cycle including all vertexes once) 
      * that is 3/2 - approximate for minimum total cost.
+     <pre>
+     reference:
+     https://en.m.wikipedia.org/wiki/Christofides_algorithm
+     </pre>
      @param nVertexes
      @param adjCostMap a graph represented as an adjacency cost map which obeys
      * the triangle inequality.x
@@ -87,7 +103,7 @@ public class TSPChristofidesSerdyukov {
         //    where each edges present in both T and M are present twice in H
         TIntObjectMap<TIntSet> h = unionMSTAndAssignments(mstTree, m);
         
-        //(5) EC is the eulerian circuit in H. each edge is visited exactly once.
+        //(5) EC is the Eulerian circuit in H. each edge is visited exactly once.
         HierholzersEulerCircuit hec = new HierholzersEulerCircuit();
         int[] ec = hec.createCircuit(h); // assuming start node = 0.
 

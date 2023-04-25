@@ -48,7 +48,7 @@ public class MinMaxPeakFinder {
      * first indexes and calculates the mean for them and returns it.
      * 
      @param values
-     @param fraction
+     @param fraction fraction of sorted values to determine the mean of, i.e. range is [0, fraction*n)
      @return 
      */
     public float calculateMeanOfSmallest(float[] values, float fraction) {
@@ -75,7 +75,7 @@ public class MinMaxPeakFinder {
      * first indexes and calculates the mean for them and returns it.
      * 
      @param values
-     @param fraction
+     @param fraction fraction of sorted values to determine the mean of, i.e. range is [0, fraction*n)
      @return 
      */
     public float calculateMeanOfSmallest(int[] values, float fraction) {

@@ -21,18 +21,18 @@ import java.util.Arrays;
  * Implemented from pseudo code in Cormen, Leiserson, Rivest, and Stein Introduction to Algorithms and
       from http://en.wikipedia.org/wiki/Prim's_algorithm
      
-      Time complexity for different implementations:
+      Time complexity for implementations using different min heaps:
      
           Minimum edge weight data structure   Time complexity (total)
           ----------------------------------   -----------------------
           adjacency matrix, searching          O(V^2)
           binary heap and adjacency list       O((V + E) lg2 V) = O(E lg2 V)
           Fibonacci heap and adjacency list    O(E + V lg2 V) 
-          YFastTrie and adjacency list         O(E + V)
+          YFastTrie and adjacency list         O((E + V)*c) where c log_2 log_2(max value to store in heap)
      
       Prim's algorithm:
      
-      Grow a Tree in Running time is O((|N| + |E|)log|N|)
+      Grow a Tree Running time is O((|N| + |E|)log|N|)
       -- Start by picking any vertex to be the root of the tree.
       -- While the tree does not contain all vertices in the graph find shortest
          edge leaving the tree and add it to the tree.
@@ -49,13 +49,13 @@ import java.util.Arrays;
  *         crossing the cut.   a tie can mean more than one light edge for a cut.
  *         
  *    
- *     the goal is to visit every node in the input graph in a greedy BFS style (that is
+ *     the goal is to visit every node in the input graph in a greedy BestFirstSearch style (that is
  *     find the next best connected edge and continue from there) adding an edge if
  *     the end points are not already in the tree and if the edge is the minimum of the
  *     u neighbors.
  *     
  *     The input graph and edges are determined by cost, so if the edges are undirected,
- *     be sure to create cost[u][v] = value and cost[v][u] = value.
+ *     be sure to create cost[u][v] = value and cost[v][u] = value for the input.
 
 * 
   Following pseudo-code from Introduction to Algorithms,
@@ -63,7 +63,7 @@ import java.util.Arrays;
 
 * 
  * this implementation uses a YFastTrie min priority queue and adjacency list.
- * 
+ * runtime complexity is O((E + V)*c) where c log_2 log_2(max value in heap)
 * 
  * @author nichole
  @param <T>
@@ -139,10 +139,10 @@ public class PrimsMinimumSpanningTree<T> {
         int v;
         int wUV;
         
-        // worst case O((|V| + |E|)*(lg_2 lg_2 (maxNBits)))
+        // worst case O((|V| + |E|)*(lg_2 (maxNBits)))
         while (heap.getNumberOfNodes() > 0) {
             
-            //essentially O(small constant of lg_2 lg_2 (maxNBits))
+            //essentially O(small constant of lg_2 (maxNBits))
             uNode = heap.extractMin();
             
             u = (Integer)uNode.getData();
@@ -174,7 +174,7 @@ public class PrimsMinimumSpanningTree<T> {
                 if (wUV < d[v]) {
                     prev[v] = u;
                     d[v] = wUV;
-                    //essentially O(small constant of lg_2 lg_2 (maxNBits))
+                    //essentially O(small constant of lg_2 (maxNBits))
                     heap.decreaseKey(nodes[v], wUV);
                 }
                 

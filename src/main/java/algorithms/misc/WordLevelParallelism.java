@@ -36,6 +36,7 @@ public class WordLevelParallelism {
     public static long highestOneBitIn(long tiled) {
         //NOTE: java's Long.highestOneBit() uses 14 operations
         return Long.highestOneBit(tiled);
+
         // this implementation uses ~33 operations
         // with block size 7 and 9 tiles, have 63 bits that are searched.  tileBitLength=blockSize - 1.
         //return highestOneBitIn(tiled, 9, 6);

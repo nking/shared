@@ -597,7 +597,7 @@ public class MiscSorterTest extends TestCase {
         }
 
         MiscSorter.sortByIndexes(a, indexes);
-        double[] expected = new double[]{5, 6, 7, 9, 8, 10};
+        double[] expected = new double[]{5, 6, 7, 8, 9, 10};
         double tol = 1E-7;
         assertEquals(expected.length, a.length);
         for (int i = 0; i < expected.length; ++i) {

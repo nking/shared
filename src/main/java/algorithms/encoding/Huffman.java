@@ -212,7 +212,7 @@ public class Huffman {
         // or PriorityQueue<Integer> q = new PriorityQueue<>(n);
         HeapNode node;
         while (iter.hasNext()) {
-            iter.advance();;
+            iter.advance();
             cP = iter.key();
             fP = iter.value();
             node = new HeapNode(fP);
@@ -426,8 +426,8 @@ public class Huffman {
         //    TreeTraversal.printLevelOrder(t);
             
         // there is a possible violation of unique prefix code for
-        // a path from root to leaf that is all left nodes and longer than 1.
-        // can remove the all left path leaf
+        // a path from root to leaf that is all left nodes and with a path length longer than 1.
+        // can remove the "all-left" path leaf
         // add a new root node to top of the tree t and assign the existing tree to its right
         // assign the leaf to the new root's left 
         

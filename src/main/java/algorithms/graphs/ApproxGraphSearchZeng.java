@@ -45,7 +45,7 @@ similarity search: find all graphs D_i in D s.t. D_i is similar to the
 in information theory, GED is seeking the matched configuration of vertices
    that has maximum a posteriori probability w.r.t. the available vertex
    attribute information.
-   * 
+
  * @author nichole
  */
 public class ApproxGraphSearchZeng {

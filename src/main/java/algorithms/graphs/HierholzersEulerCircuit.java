@@ -9,14 +9,14 @@ import java.util.Stack;
 
 /**
  Hierholzer’s Algorithm to create a euler circuit from a directed graph.
-  Euler circuit is a path that traverses every edge of a graph, and the path 
-  ends on the starting vertex.  Edges are only included once, but vertexes can be included more than once.
- * <pre>
- * The implementation follows from:
- * https://www.geeksforgeeks.org/hierholzers-algorithm-directed-graph/
- * written by
- * https://in.linkedin.com/in/ashutosh-kumar-9527a7105
- *
+ Euler circuit is a path that traverses every edge of a graph, and the path
+ ends on the starting vertex.  Edges are only included once, but vertexes can be included more than once.
+ <pre>
+ The implementation follows from:
+ https://www.geeksforgeeks.org/hierholzers-algorithm-directed-graph/
+ written by
+ https://in.linkedin.com/in/ashutosh-kumar-9527a7105
+
    Geeks For Geeks  has a liberal copyright policy at:
    https://www.geeksforgeeks.org/copyright-information/?ref=footer
    an excerpt:

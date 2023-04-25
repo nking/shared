@@ -8,7 +8,7 @@ package thirdparty.fpetitjean.dba;
  * <pre>
  * "A global averaging method for dynamic time warping, with applications to clustering"
     Petitjean, Ketterlin, & Gancarski 
-    Pattern recognition, 2011 - Elsevier
+   Pattern recognition, 2011 - Elsevier
  * </pre>
  * 
  * *****************************************************************************

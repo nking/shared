@@ -1,4 +1,4 @@
-package algorithms.tsp;
+package algorithms.optimization.tsp;
 
 import algorithms.Permutations;
 import algorithms.SubsetChooser;

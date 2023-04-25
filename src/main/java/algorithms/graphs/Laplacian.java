@@ -119,7 +119,8 @@ public class Laplacian {
     }
 
     /**
-     * calculate the 2nd smallest eigenvector of undirected graph g.  it approximates the smallest cut in the graph.
+     * calculate the 2nd smallest eigenvector of the Laplacian of undirected graph g.
+     * it approximates the smallest cut in the graph.
      @param g
      @return
      */
@@ -129,7 +130,7 @@ public class Laplacian {
 
         int nEig = 2;
         ArpackSym.Ritz ritz = ArpackSym.Ritz.SA;
-
+        // calculate the 2 smallest eigenvectors of the laplacian
         Map<Double, DenseVectorSub> eigenVectors = MatrixUtil.sparseEigen(lS, nEig, ritz);
 
         double maxEig = Double.NEGATIVE_INFINITY;

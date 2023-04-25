@@ -1,21 +1,19 @@
-package algorithms.tsp;
+package algorithms.optimization.tsp;
 
 import algorithms.matrix.MatrixUtil;
 import algorithms.misc.MiscMath0;
 import algorithms.util.PairInt;
 import algorithms.util.ResourceFinder;
 import gnu.trove.list.TIntList;
-import gnu.trove.list.TLongList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntIntHashMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import junit.framework.TestCase;

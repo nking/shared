@@ -1,39 +1,31 @@
-package algorithms.optimization;
+package algorithms.optimization.tsp;
 
-import algorithms.bipartite.Graph;
-import algorithms.bipartite.MinCostUnbalancedAssignment;
 import algorithms.graphs.HierholzersEulerCircuit;
 import algorithms.matrix.MatrixUtil;
+import algorithms.optimization.tsp.TSPChristofidesSerdyukov;
 import algorithms.util.PairInt;
 import algorithms.util.ResourceFinder;
-import gnu.trove.iterator.TIntIntIterator;
 import gnu.trove.iterator.TIntObjectIterator;
-import gnu.trove.iterator.TObjectIntIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
-import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import junit.framework.TestCase;
-import thirdparty.HungarianAlgorithm;
 
 /**
  *

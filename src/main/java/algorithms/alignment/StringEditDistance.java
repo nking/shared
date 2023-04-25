@@ -315,7 +315,7 @@ public class StringEditDistance {
          Powell, Allison, and Dix, Information Processing Letters 70 (1999) 127–139 
         
         alignment can be global, semi-lobal, local, optimal, approximate, 
-        pairwise, mutlple sequence, etc.
+        pairwise, multiple sequence, etc.
         
         A 2004 review of use of it in biological context can be found the book 
         "Bioinformatics Sequence and Genome

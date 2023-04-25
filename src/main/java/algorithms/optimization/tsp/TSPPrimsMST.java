@@ -1,4 +1,4 @@
-package algorithms.tsp;
+package algorithms.optimization.tsp;
 
 import algorithms.msts.PrimsMST;
 import gnu.trove.list.TIntList;
@@ -39,7 +39,17 @@ import gnu.trove.map.TIntObjectMap;
 public class TSPPrimsMST {
      
     /**
-     * 
+     * from https://en.m.wikipedia.org/wiki/Travelling_salesman_problem
+     *  The travelling salesman problem (also called the travelling salesperson
+     *  problem or TSP)
+     *   asks the following question: "Given a list of cities and the distances between
+     *  each pair of cities, what is the shortest possible route that visits each city
+     *  exactly once and returns to the origin city?" It is an NP-hard problem in
+     *  combinatorial optimization, important in theoretical computer science and
+     *  operations research.   see also Hamiltonian cycle.
+     *
+     *  The travelling purchaser problem and the vehicle routing problem are both generalizations of TSP.
+     *
      * The approximate TSP tour created from Prim's Minimum Spanning Tree is
      * returned. Note that the result may contain crossing edges, hence not
      * optimal.
