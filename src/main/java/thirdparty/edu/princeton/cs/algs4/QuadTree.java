@@ -54,6 +54,13 @@ public class QuadTree<T extends Comparable<T>, Value>  {
         root = insert(root, x, y, value);
     }
 
+    /***********************************************************************
+     *  Insert (x, y) into appropriate quadrant
+     @param h root node
+     @param x
+     @param y
+     @param value
+     ***************************************************************************/
     @SuppressWarnings({"unchecked"})
     private Node<T> insert(Node<T> h, T x, T y, Value value) {
         if (h == null) return new Node<T>(x, y, value);
@@ -145,7 +152,6 @@ public class QuadTree<T extends Comparable<T>, Value>  {
             System.out.println(rect + " : ");
             st.query2D(rect);
         }
-        
     }
 
 }
