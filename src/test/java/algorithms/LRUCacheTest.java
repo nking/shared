@@ -1,5 +1,6 @@
 package algorithms;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import junit.framework.TestCase;
@@ -16,7 +17,7 @@ public class LRUCacheTest extends TestCase {
     
     public void test0() {
         int initialCapacity = 3;
-        float loadFactor = 0.75f;
+        float loadFactor = (3 + 2.f)/3;
         boolean accessOrder = true;
         
         LRUCache<Integer, Integer> lRUCache = new LRUCache<Integer, Integer>(
@@ -27,10 +28,16 @@ public class LRUCacheTest extends TestCase {
         }
         Iterator<Map.Entry<Integer, Integer>> iter = lRUCache.entrySet().iterator();
         Map.Entry<Integer, Integer> entry;
+        int max = -1;
         while (iter.hasNext()) {
             entry = iter.next();
             System.out.printf("lru: key=%d\n", entry.getKey(), entry.getValue());
+            if (entry.getKey() > max) {
+                max = entry.getKey();
+            }
         }
+        assertEquals(initialCapacity - 1, max);
+        //3,4,5, but access 2, so expecting 4,5,2
         for (int i = initialCapacity; i < 2*initialCapacity; ++i) {
             lRUCache.put(i, i);
             if (i == (initialCapacity+1)) {
@@ -39,10 +46,16 @@ public class LRUCacheTest extends TestCase {
                 lRUCache.get(2); // wanting to keep key=2 in map
             }
         }
+        HashSet expected = new HashSet();
+        expected.add(4);
+        expected.add(5);
+        expected.add(2);
         iter = lRUCache.entrySet().iterator();
         while (iter.hasNext()) {
             entry = iter.next();
             System.out.printf("*lru: key=%d\n", entry.getKey(), entry.getValue());
+            assert(expected.contains(entry.getKey()));
         }
+        assertEquals(initialCapacity, lRUCache.size());
     }
 }

@@ -20,19 +20,19 @@ public class LRUCache<K, V> extends LinkedHashMap<K, V> {
     private final int initialCapacity;
     
     /**
-     *
+     * default size is 3
      */
     public LRUCache() {
-        super(3, 0.75f, accessOrder);
+        super(3, (3 + 2.f)/3.f, accessOrder);
         this.initialCapacity = 3;
     }
     
     /**
-     *
+     * create a fixed size LRU cache with loadFactor = (initialCapacity + 2.f)/initialCapacity.
      @param initialCapacity
      */
     public LRUCache(int initialCapacity) {
-        super(initialCapacity, 0.75f, accessOrder);
+        super(initialCapacity, (initialCapacity + 2.f)/initialCapacity, accessOrder);
         this.initialCapacity = initialCapacity;
     }
     
@@ -61,12 +61,13 @@ public class LRUCache<K, V> extends LinkedHashMap<K, V> {
     }
     
     /**
-     *
+     * given the map, create a fixed size LRU cache with loadFactor = (m.size() + 2.f)/m.size().
+     * The items are inserted without order using map iterator.
      @param m
      */
     public LRUCache(Map<? extends K, ? extends V> m) {
-        super(3, 0.75f, accessOrder);
-        this.initialCapacity = 3;
+        super(m.size(), (m.size() + 2.f)/ m.size(), accessOrder);
+        this.initialCapacity = m.size();
         putAll(m);
     }
     
