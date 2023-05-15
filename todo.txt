@@ -1,3 +1,5 @@
+-- consider https://datasketches.apache.org/docs/HLL/HLL.html
+
 -- for vectorization (single instruction on mulitiple data), explore:
    - viktor:
      https://blog.jetbrains.com/kotlin/2021/03/viktor-efficient-vectorized-computations-in-kotlin/
