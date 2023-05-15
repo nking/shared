@@ -1,4 +1,8 @@
--- consider https://datasketches.apache.org/docs/HLL/HLL.html
+-- explore (not immed priority, future):
+   https://datasketches.apache.org/docs/Community/Research.html
+   https://datasketches.apache.org/docs/HLL/HLL.html
+   https://datasketches.apache.org/docs/Sampling/ReservoirSampling.html
+   
 
 -- for vectorization (single instruction on mulitiple data), explore:
    - viktor:
