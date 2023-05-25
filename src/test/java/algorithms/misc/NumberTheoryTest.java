@@ -155,7 +155,9 @@ public class NumberTheoryTest extends TestCase {
         // exercise 31.7-1
         
         // NOTE: see also https://en.wikipedia.org/wiki/Paillier_cryptosystem
-        
+
+        // p and q should be large and have a large difference
+
         int p = 11;
         int q = 29;
         int n = p*q;//319

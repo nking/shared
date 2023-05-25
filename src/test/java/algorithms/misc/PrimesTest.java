@@ -196,4 +196,18 @@ public class PrimesTest extends TestCase {
             
         }
     }
+
+    public void testAllPrimesLessThanN() {
+        int n = 100;
+        int[] primes;
+        /*primes = Primes.allPrimesLessThanN(n);
+        System.out.println("primes=" + Arrays.toString(primes));
+        assertEquals(24, primes.length);
+*/
+        n = Integer.MAX_VALUE - 1; // ~1e8 primes
+        //n = n / 10; // ~1e7 primes
+        //n = n / 100; // ~1e6 primes
+        primes = Primes.allPrimesLessThanN(n);
+        System.out.println("# primes=" + primes.length);
+    }
 }

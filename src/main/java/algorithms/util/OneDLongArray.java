@@ -1,5 +1,6 @@
 package algorithms.util;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 
 /**
@@ -36,58 +37,7 @@ public class OneDLongArray {
 
     @Override
     public int hashCode() {
-        
-        int hash = fnvHashCode();
-
-        return hash;
-    }
-
-    /**
-     *
-     */
-    protected final static int fnv321aInit = 0x811c9dc5;
-
-    /**
-     *
-     */
-    protected final static int fnv32Prime = 0x01000193;
-
-    /**
-     *
-     @return
-     */
-    protected int fnvHashCode() {
-
-        /*
-         * hash = offset_basis
-         * for each octet_of_data to be hashed
-         *     hash = hash xor octet_of_data
-         *     hash = hash * FNV_prime
-         * return hash
-         *
-         * Public domain:  http://www.isthe.com/chongo/src/fnv/hash_32a.c
-         */
-
-        int mask = (1 << 31) - 1;
-        int shift = 32;
-        int sum = fnv321aInit;
-        long b0, b1;
-        
-        for (int i = 0; i < a.length; ++i) {
-
-            b0 = a[i] & mask;
-            b1 = (a[i] >> shift) & mask;
-            
-            // xor the bottom with the current octet.
-            sum ^= b0;
-            // multiply by the 32 bit FNV magic prime mod 2^32
-            sum *= fnv32Prime;
-            
-            sum ^= b1;
-            sum *= fnv32Prime;
-        }
-        
-        return sum;
+        return FNVHash.hash(a);
     }
 
     @Override

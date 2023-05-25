@@ -128,7 +128,6 @@ public class MultiArrayMergeSortTest extends TestCase {
             assertTrue(exy.getX(i) == xy.getX(i));
             assertTrue(exy.getY(i) == xy.getY(i));
         }
-    	
     }
     
     public void testSortByDecr() throws Exception {

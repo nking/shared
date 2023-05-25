@@ -23,6 +23,13 @@ public class StringEditDistanceTest extends TestCase {
  
     public StringEditDistanceTest() {
     }
+
+    public void testDel() {
+
+        PairIntArray outIndexes = new PairIntArray();
+        StringEditDistance sed = new StringEditDistance();
+        int nEdits = sed.calculateWithWagnerFischer("anima", "amina", outIndexes);
+    }
     
     public void testCalculateWithWagnerFischer() {
         

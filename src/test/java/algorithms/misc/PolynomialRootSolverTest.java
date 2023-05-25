@@ -1,6 +1,8 @@
 package algorithms.misc;
 
 import algorithms.util.FormatArray;
+
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,7 +18,17 @@ public class PolynomialRootSolverTest extends TestCase {
     public PolynomialRootSolverTest(String testName) {
         super(testName);
     }
-    
+
+    public void test00() throws IOException {
+        //[4, 3, 2, 1] for 4*x^3 + 3*x^2 + 2*x + 1 = 0.
+        //-3(p^2) + 4p - 1 => [-3, 4, -1]
+        Complex[] a = PolynomialRootSolver.solveUsingMPSolve(new double[]{-3, 4, -1});
+
+        //$6 * (p^4) - 14 * (p^3) + 10*p^2 - 2p = 0$
+        Complex[] b = PolynomialRootSolver.solveUsingMPSolve(new double[]{6, -4, +10, -2});
+
+        int w = 1;
+    }
     public void test0() throws NotConvergedException, Exception {
         
         double tol = 1e-5;

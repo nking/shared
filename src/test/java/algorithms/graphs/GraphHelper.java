@@ -137,6 +137,8 @@ public class GraphHelper {
      */
     public static Map<Integer, Set<Integer>> getGraph5() {
         // https://en.m.wikipedia.org/wiki/Misra_%26_Gries_edge_coloring_algorithm
+        // top figure in the page.
+        // has caption A fan F=[x_1,x_2,x_3] of v ...
         Map<Integer, Set<Integer>> adj = new HashMap<Integer, Set<Integer>>();
 
         int n = 12;
