@@ -158,7 +158,12 @@ public class ContourPlotter {
      */
     protected String writeToFile(String fileContent, String fileName) throws IOException {
 
-        return ResourceFinder.writeToCWD(fileContent, fileName);
+        String bin = ResourceFinder.findDirectory("bin");
+        if (bin == null) {
+            throw new IOException("could not find directory bin");
+        }
+        String filePath = bin + ResourceFinder.sep + fileName;
+        return ResourceFinder.writeDataToDirectory(fileContent, filePath);
     }
 
 }

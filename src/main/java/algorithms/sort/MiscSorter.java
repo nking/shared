@@ -98,7 +98,7 @@ public class MiscSorter {
                         ++st1;
                     } else {
                         // inversion: a pair is a[st1], a[st2]
-                        //System.out.printf("inversion idxL1=%d idxL2=%d (%.3e,%.3e)\n", idxL1, idxL2, a[idxL1], a[idxL2]);
+                        System.out.printf("inversion (%.3e,%.3e)\n", y[st1], y[st2]);
                         t[idxT] = y[st2];
                         ++st2;
                     }
@@ -1550,6 +1550,7 @@ public class MiscSorter {
                 a1[k] = a1Left[leftPos];
                 leftPos++;
             } else {
+                //if (Math.abs(a1[k] - r) > 1e-7) System.out.printf("inversion pair (%.3e,%.3e)\n", a1[k], r);
                 a2[k] = a2Right[rightPos];
                 a1[k] = a1Right[rightPos];
                 rightPos++;

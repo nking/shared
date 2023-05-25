@@ -28,6 +28,7 @@ public class ResourceFinderTest extends TestCase {
         
         String sep = System.getProperty("file.separator");
         String cwd = System.getProperty("user.dir");
+        cwd = ResourceFinder.getBaseDir();
           
         String jarFileName = "trove4j-3.0.3.jar";
         jarFileName = cwd + sep + "lib" + sep + jarFileName; 

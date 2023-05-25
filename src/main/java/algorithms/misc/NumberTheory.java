@@ -53,7 +53,7 @@ public class NumberTheory {
     }
     
     /**
-     * solves for x in the equation a * x ≡ b (mod n) (which is actually (a*x) mod n = b)
+     * solves for x in the equation a * x ≡ b (mod n) (which is actually (a*x) % n = b)
      * where d is the gcd of number n and d|b (a.k.a. d divides b).
      * finds the smallest gcd for which a*x + b*y = d.
      * The equation may have zero, one, or more than one such solution.
@@ -66,7 +66,7 @@ public class NumberTheory {
      @param n
      @return 
      */
-    public static long[] gcdModularLinearEqnSolver(long a, long b, long n) {
+    public static long[] gcdModularLinearEqnSolver(final long a, final long b, final long n) {
         
         /*
         https://en.wikipedia.org/wiki/B%C3%A9zout%27s_identity

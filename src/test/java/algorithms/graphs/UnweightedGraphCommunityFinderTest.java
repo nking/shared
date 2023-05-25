@@ -20,8 +20,9 @@ public class UnweightedGraphCommunityFinderTest extends TestCase {
      * Test of girvanNewman2002 method, of class UnweightedGraphCommunityFinder.
      */
     public void testGirvanNewman2002_0() throws IOException {
-        
-        String path = ResourceFinder.findFileInTestResources("karate.gml");
+
+        //cwd is bin/test-classes/
+        String path = ResourceFinder.findFileInCWD("karate.gml");
         
         NewmanGMLParser.GMLGraph g = NewmanGMLParser.readGraph(path);
         

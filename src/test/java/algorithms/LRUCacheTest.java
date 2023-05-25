@@ -46,7 +46,7 @@ public class LRUCacheTest extends TestCase {
                 lRUCache.get(2); // wanting to keep key=2 in map
             }
         }
-        HashSet expected = new HashSet();
+        HashSet<Integer> expected = new HashSet<Integer>();
         expected.add(4);
         expected.add(5);
         expected.add(2);

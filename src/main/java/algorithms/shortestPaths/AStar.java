@@ -255,7 +255,8 @@ public class AStar {
                     throw new IllegalStateException("no weight found for edge " 
                     + u + " to " + v);
                 }
-                
+
+                //f(n) = g(n) + h(n)
                 int gUPlusWUV = g[u];
                 if (gUPlusWUV < sentinel) {
                     gUPlusWUV += uWeights.get(v);

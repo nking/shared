@@ -130,6 +130,10 @@ public class StringEditDistance {
                 } else {
                     c = cChangeUnequal;
                 }
+                System.out.println(a.charAt(i-1) + " " + b.charAt(j-1)
+                        + " : " + (d[i-1][j-1] + c) + ", " + (d[i-1][j] + cDel) + "," + (d[i][j-1] + cIns)
+                        + "=>[" + (i-1) + " " + (j-1) + "]"
+                );
                 d[i][j] = minimum(d[i-1][j-1] + c, d[i-1][j] + cDel, d[i][j-1] + cIns);
             }
         }

@@ -391,7 +391,7 @@ public class Heap {
                 
         String bin = ResourceFinder.findDirectory("bin");
         String fileName = "debug_heap_" + System.currentTimeMillis() + ".txt";
-        String filePath = bin + "/" + fileName;
+        String filePath = bin + ResourceFinder.sep + fileName;
         File file = new File(filePath);
         
         BufferedWriter writer = Files.newBufferedWriter(file.toPath(), 

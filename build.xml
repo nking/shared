@@ -34,6 +34,7 @@
     <property name="lib.dir"             value="${basedir}/lib"/>
     <property name="classes.dir"         value="${basedir}/bin"/>
     <property name="resources.dir"       value="${basedir}/src/main/resources"/>
+    <property name="tests.resources.dir" value="${basedir}/src/test/resources"/>
     <property name="src.out.dir"         value="${classes.dir}/classes"/>
     <property name="doc.dir"             value="${basedir}/docs"/>
     <property name="tests.dir"           value="${basedir}/src/test/java"/>
@@ -136,6 +137,7 @@
         </javac>
 
         <copy file="${resources.dir}/logging.properties" todir="${src.out.dir}" />
+        <copy file="${resources.dir}/plot_points_and_polygon.html" todir="${src.out.dir}" />
         <copy file="${resources.dir}/CMAEvolutionStrategy.properties" todir="${src.out.dir}" />
 
     </target>
@@ -157,6 +159,12 @@
             <src path="${src.dir}"/>
             <compilerarg value="-Xlint"/>
     	</javac>
+        <copy file="${resources.dir}/logging.properties" todir="${tests.out.dir}" />
+        <copy file="${resources.dir}/plot_points_and_polygon.html" todir="${tests.out.dir}" />
+        <copy file="${resources.dir}/CMAEvolutionStrategy.properties" todir="${tests.out.dir}" />
+        <copy todir="${tests.out.dir}" overwrite="true">
+            <fileset dir="${tests.resources.dir}"/>
+        </copy>
     </target>
 
     <!-- javadoc -->

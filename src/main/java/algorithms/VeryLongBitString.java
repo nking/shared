@@ -307,7 +307,7 @@ public final class VeryLongBitString {
     
     /**
      * get a list of the bit numbers that are set.
-     @return bit nuber of set bits
+     @return bit number of set bits
      */
     public int[] getSetBits() {
         

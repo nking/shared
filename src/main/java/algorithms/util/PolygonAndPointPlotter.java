@@ -9,6 +9,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * writes an html file using the d3.js library.
@@ -34,35 +37,13 @@ import java.io.InputStream;
  */
 public class PolygonAndPointPlotter {
 
-    /**
-     *
-     */
     protected final StringBuffer plotContent;
 
-    /**
-     *
-     */
     protected int plotNumber = 0;
 
-    /**
-     *
-     */
     protected boolean dataMinMaxAreSet = false;
-    
-    /**
-     *
-     */
-    protected float minX,
 
-    /**
-     *
-     */
-    maxX, minY,
-
-    /**
-     *
-     */
-    maxY;
+    protected float minX, maxX, minY, maxY;
 
     /**
      *
@@ -577,7 +558,7 @@ public class PolygonAndPointPlotter {
             
         try {
             
-            String path = ResourceFinder.findFileInResources(fileName);
+            String path = ResourceFinder.findFileInCWD(fileName);
         
             StringBuffer sb = new StringBuffer();
             BufferedReader in = null;
@@ -597,11 +578,10 @@ public class PolygonAndPointPlotter {
             
         } catch (IOException ex) {
             
-            // this class and resources might be in a jar file, so look
-            // for that
+            // this class and resources might be in a jar file
             
             String sep = System.getProperty("file.separator");
-            String cwd = System.getProperty("user.dir");
+            String cwd = ResourceFinder.getBaseDir();
                         
             String jarFilePath = "com.climbwithyourfeet.shared.jar";
             jarFilePath = cwd + sep + "lib" + sep + jarFilePath; 
@@ -629,8 +609,6 @@ public class PolygonAndPointPlotter {
                 }
             }            
         }
-
-        
     }
 
     /**
@@ -702,7 +680,9 @@ public class PolygonAndPointPlotter {
      */
     protected String writeToFile(String fileContent, String fileName) throws IOException {
 
-        return ResourceFinder.writeToCWD(fileContent, fileName);
+        String bin = ResourceFinder.findDirectory("bin");
+        String filePath = bin + ResourceFinder.sep + fileName;
+        return ResourceFinder.writeDataToDirectory(fileContent, filePath);
     }
 
 }

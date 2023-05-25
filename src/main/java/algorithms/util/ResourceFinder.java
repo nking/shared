@@ -34,7 +34,7 @@ public class ResourceFinder {
     /**
      *
      */
-    protected final static String sep = System.getProperty("file.separator");
+    public final static String sep = System.getProperty("file.separator");
 
     /**
      * find the jar file then the entry for the filePath within it.
@@ -152,7 +152,7 @@ public class ResourceFinder {
      */
     public static String findDirectory(String dirName) throws IOException {
 
-        String cwd = System.getProperty("user.dir");
+        String cwd = getBaseDir();
         
         assert(cwd != null && !cwd.equals(""));
         
@@ -186,15 +186,15 @@ public class ResourceFinder {
      */
     public static String findDirectory(String[] path, String dirName) throws IOException {
 
-        String cwd = System.getProperty("user.dir");
+        String dir = getBaseDir();
         
-        assert(cwd != null && !cwd.equals(""));
-        
+        assert(dir != null && !dir.equals(""));
+
         for (String p : path) {
-            cwd = cwd + sep + p;
+            dir = dir + sep + p;
         }
-        
-        String filePath = cwd + sep + dirName;
+
+        String filePath = dir + sep + dirName;
 
         File f = new File(filePath);
         if (!f.exists()) {
@@ -256,6 +256,19 @@ public class ResourceFinder {
      */
     public static String findFileInCWD(String serializationFileName) throws IOException {
 
+        String filePath = getCWD() + sep + serializationFileName;
+
+        return filePath;
+    }
+
+    /**
+     * get the base directory of the project.  note that the string does not end with
+     * a file separator "/".
+     * @return
+     * @throws IOException
+     */
+    public static String getCWD() throws IOException {
+
         ClassLoader cls = ResourceFinder.class.getClassLoader();
 
         URL basedir = cls.getResource(".");
@@ -263,7 +276,34 @@ public class ResourceFinder {
             throw new IOException("base path not found");
         }
 
-        String filePath = basedir.getPath() + sep + serializationFileName;
+        String filePath = basedir.getPath();
+
+        return filePath;
+    }
+
+    /**
+     * get the base directory of the project.  note that the string does not end with
+     * a file separator "/".
+     * @return
+     * @throws IOException
+     */
+    public static String getBaseDir() throws IOException {
+
+        ClassLoader cls = ResourceFinder.class.getClassLoader();
+
+        URL basedir = cls.getResource(".");
+        if (basedir == null) {
+            throw new IOException("base path not found");
+        }
+
+        String filePath = basedir.getPath();
+
+        String[] rep = new String[]{"/bin/classes/", "/bin/test-classes/"};
+        for (String r : rep) {
+            if (filePath.endsWith(r)) {
+                filePath = filePath.replace(r, "");
+            }
+        }
 
         return filePath;
     }
@@ -276,14 +316,7 @@ public class ResourceFinder {
      */
     public static String getAFilePathInCWD(String fileName) throws IOException {
 
-        ClassLoader cls = ResourceFinder.class.getClassLoader();
-
-        URL basedir = cls.getResource(".");
-        if (basedir == null) {
-            throw new IOException("base path not found");
-        }
-
-        String filePath = basedir.getPath() + sep + fileName;
+        String filePath = getCWD() + sep + fileName;
 
         return filePath;
     }

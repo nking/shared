@@ -1,5 +1,7 @@
 package algorithms;
 
+import java.util.regex.Pattern;
+
 /**
  * Methods rotate the values in an array of numbers by a distance in terms of
  * indexes.
@@ -41,11 +43,11 @@ public class Rotate {
             if (left > n) {
                 left = left % n;
             }
-
+String r = "^(?:[A-F0-9]{1,4}:){7}[A-F0-9]{1,4}$";
             reverse(a, 0, left - 1);
             reverse(a, left, n - 1);
             reverse(a, 0, n - 1);
-            
+
         } else {
             
             left *= -1;

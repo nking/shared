@@ -1,5 +1,6 @@
 package algorithms.misc;
 
+import algorithms.VeryLongBitString;
 import gnu.trove.iterator.TLongIterator;
 import gnu.trove.list.TLongList;
 import gnu.trove.list.array.TLongArrayList;
@@ -120,7 +121,7 @@ public class Primes {
      * integer factorization into primes following Pollard-Rho algorithm in Cormen, Leiserson, Rivest, and Stein 
      * "Introduction to Algorithms".  Usually can find at least one small integer
      * that divides the number n.  The runtime is usually O(n^1/4).
-     * "the algorithms is only a heuristic, neither its running time nor its success 
+     * "the algorithm is only a heuristic, neither its running time nor its success
      * is guaranteed, although the procedure is highly effective in practice."
      * 
      * NOTE: for factoring large numbers, may want to implement:
@@ -243,7 +244,7 @@ public class Primes {
      @param s number of randomly chosen base numbers to try
      @return 
      */
-    public static boolean probablyPrime(long n, int s) {
+    public static boolean probablyPrime(final long n, final int s) {
         
         if (n < 3) {
             throw new IllegalArgumentException("n must be > 2");
@@ -293,11 +294,11 @@ public class Primes {
             throw new IllegalArgumentException("n must be odd and > 2");
         }
                
-        //n - 1 = 2^t*u where t >=1 and u is an odd integer
+        //n - 1 = (2^t)*u where t >=1 and u is an odd integer
         // n-1/u is an integer 
         // ((n-1)/u) = 2^t
         // t = math.log( (n-1)/u )/math.log(2)
-        
+
         long u = 1;
         int t = 1;
         int div;
@@ -450,6 +451,43 @@ public class Primes {
         } else {
             return 9223372036854775783l;
         }
+    }
+
+    /**
+     * return a bit vector with set bits for the primes between 2 and n.
+     * The "Sieve of Eratosthenes" is used.
+     * <pre>
+     *     reference:  https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes
+     * </pre>
+     * @param n
+     * @return
+     */
+    public static int[] allPrimesLessThanN(int n) {
+        if (n < 2) {
+            throw new UnsupportedOperationException("n must be > 1");
+        } else if (n == 2) {
+            return new int[]{};
+        } else if (n == 3) {
+            return new int[]{3};
+        }
+        VeryLongBitString b = new VeryLongBitString(n);
+        int i;
+        for (i = 2; i < n; ++i) {
+            b.setBit(i);
+        }
+        int j;
+        for (i = 2; i < (int)Math.sqrt(n); ++i) {
+            if (b.isSet(i)) {
+                j = i * i;
+                while (j < n && j > 0) {
+                    b.clearBit(j);
+                    j += i;
+                }
+            }
+        }
+        b.clearBit(2);
+
+        return b.getSetBits();
     }
     
 }

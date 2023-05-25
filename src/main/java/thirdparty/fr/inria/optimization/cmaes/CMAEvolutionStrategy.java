@@ -493,6 +493,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
     double[] artmp;
     
     String propertiesFileName = "CMAEvolutionStrategy.properties";
+	String propertiesFilePath = null;
     /** postpones most initialization. For initialization use setInitial... 
      * methods or set up a properties file, see file "CMAEvolutionStrategy.properties". */
     public CMAEvolutionStrategy() {
@@ -819,18 +820,17 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
      @return 
      */
     public Properties readProperties() {
-        
         ClassLoader cls = ResourceFinder.class.getClassLoader();
         URL url = cls.getResource(propertiesFileName);
         if (url != null) {
-            propertiesFileName = url.getPath();
+            propertiesFilePath = url.getPath();
         } else {
             try {
                 // search for in developer environment
-                propertiesFileName = ResourceFinder.findFileInResources(versionNumber);
+				propertiesFilePath = ResourceFinder.findFileInResources(propertiesFileName);
             } catch (IOException ex) {
                 try {
-                    propertiesFileName = ResourceFinder.getAFilePathInCWD(versionNumber);
+					propertiesFilePath = ResourceFinder.getAFilePathInCWD(propertiesFileName);
                 } catch (IOException ex1) {
                     throw new RuntimeException("could not find file "
                         + " \"CMAEvolutionStrategy.properties\"");
@@ -838,21 +838,21 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
             }
         }
         
-    	return readProperties(propertiesFileName);
+    	return readProperties(propertiesFilePath);
     }
     Properties properties = new Properties();
     /** reads properties from fileName and sets strategy parameters and options
      * accordingly
-     @param fileName of properties file
+     @param filePath path of properties file
      @return 
      */
-    public Properties readProperties(String fileName) {
-        this.propertiesFileName = fileName;
+    public Properties readProperties(String filePath) {
+        //this.propertiesFileName = fileName;
 //        if (fileName.equals(""))
 //            return properties;
 		java.io.FileInputStream fis = null;
         try {
-            fis = new java.io.FileInputStream(fileName);
+            fis = new java.io.FileInputStream(filePath);
             properties.load(fis);
 
             
@@ -874,11 +874,10 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
                         }
                     }
                 }
-                properties.setProperty("outputFileNamesPrefix",
-                    dir + System.getProperty("file.separator") + fileName);
+                properties.setProperty("outputFileNamesPrefix", filePath);
             }
         } catch(java.io.IOException e) { 
-            warning("File '" + fileName + "' not found, no options read");
+            warning("File '" + filePath + "' not found, no options read");
             // e.printStackTrace();
         } finally {
 			if (fis != null) {
