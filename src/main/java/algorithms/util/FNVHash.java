@@ -63,7 +63,7 @@ public class FNVHash {
      */
     public int hash(int[] params) {
 
-        if (true) {
+        if (false) {
             // TODO:  finish testing.  reenable old hash meanwhile
             return oldHash(params);
         }

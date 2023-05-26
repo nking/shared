@@ -51,73 +51,6 @@ public class FNVHashTest extends TestCase {
         return hash;
     }
 
-    public void testPairIntHashing() {
-        /*
-        there is a difference in the results of the Misra Gies edge coloring algorithm
-        for use of PairInt.
-        PairInt previously used the old fnv hash and I just changed it to a new one.
-        the old hash produced better results.
-
-        The classes which use the hash function in the Misra Gies Coloring.java are
-
-            Set<PairInt> edges = new HashSet<PairInt>();
-            and
-            Map<PairInt, Integer> colorMap
-
-        Here are the pairs of points for 2 different unit tests that produce different results:
-
-        [junit] testEdgeColoring5
-    [junit] (0,1)
-    [junit] (0,2)
-    [junit] (0,3)
-    [junit] (0,1)
-    [junit] (1,4)
-    [junit] (1,5)
-    [junit] (1,6)
-    [junit] (0,2)
-    [junit] (2,7)
-    [junit] (2,8)
-    [junit] (2,9)
-    [junit] (0,3)
-    [junit] (3,10)
-    [junit] (3,11)
-    [junit] (1,4)
-    [junit] (1,5)
-    [junit] (1,6)
-    [junit] (2,7)
-    [junit] (2,8)
-    [junit] (2,9)
-    [junit] (3,10)
-    [junit] (3,11)
-    [junit] testEdgeColoring5 k=4
-
-    [junit] testEdgeColoring6
-    [junit] (0,1)
-    [junit] (0,2)
-    [junit] (0,1)
-    [junit] (1,3)
-    [junit] (1,6)
-    [junit] (0,2)
-    [junit] (2,4)
-    [junit] (2,6)
-    [junit] (1,3)
-    [junit] (3,5)
-    [junit] (3,6)
-    [junit] (2,4)
-    [junit] (4,5)
-    [junit] (4,6)
-    [junit] (3,5)
-    [junit] (4,5)
-    [junit] (1,6)
-    [junit] (2,6)
-    [junit] (3,6)
-    [junit] (4,6)
-    [junit] testEdgeColoring6 k=5
-
-    so will look at the differences in detail here, that is collisions, containskey
-         */
-    }
-
     public void testWithShort() throws IOException {
         log.info("testWithShort");
 
@@ -208,6 +141,9 @@ public class FNVHashTest extends TestCase {
         //   for 14 bits, 1st collision = 181, all elements collide = 32766
         //   for 15 bits, 1st collision = 256, all elements collide = 65534
         //   for 31 bits, 1st collision = 65536, all elements collide = 8.6e9
+
+        // TODO: to test this, need to use a smaller datastructure than hashmap,
+        // like CPC sketch
 
         // key = hash, value = number of times seen
         TIntIntMap freq = new TIntIntHashMap();

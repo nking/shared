@@ -79,12 +79,16 @@ public class ColoringTest extends TestCase {
 
         Map<Integer, Set<Integer>> adjMap = GraphHelper.getGraph5();
 
+        int kOpt = 4;
+
         Map<PairInt, Integer> colorMap = new HashMap<PairInt, Integer>();
         int k = Coloring.edgeColoringMisraGies(adjMap, colorMap);
 
         assertEdgeColoring(adjMap, colorMap);
         System.out.println("testEdgeColoring5 k=" + k);
-        assertEquals(4, k);
+
+        // Misra Gies produces at most kOpt + 1
+        assertTrue(k <= (kOpt + 1));
 
     }
 
@@ -93,12 +97,15 @@ public class ColoringTest extends TestCase {
 
         Map<Integer, Set<Integer>> adjMap = GraphHelper.getGraph6();
 
+        int kOpt = 4;
+
         Map<PairInt, Integer> colorMap = new HashMap<PairInt, Integer>();
         int k = Coloring.edgeColoringMisraGies(adjMap, colorMap);
 
         assertEdgeColoring(adjMap, colorMap);
         System.out.println("testEdgeColoring6 k=" + k);
-        assertEquals(5, k);
+        // Misra Gies produces at most kOpt + 1
+        assertTrue(k <= (kOpt + 1));
 
     }
 
