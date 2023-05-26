@@ -8,6 +8,8 @@
       <root url="jar://$PROJECT_DIR$/lib/MAC.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/trove4j-3.0.3.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/mtj-1.0.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/datasketches-java-4.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/datasketches-memory-2.2.0.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
