@@ -14,6 +14,10 @@ import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.iterator.TIntIntIterator;
 import gnu.trove.set.TShortSet;
 import junit.framework.TestCase;
+import org.apache.datasketches.cpc.CpcSketch;
+import org.apache.datasketches.frequencies.ErrorType;
+import org.apache.datasketches.frequencies.ItemsSketch;
+import org.apache.datasketches.kll.KllFloatsSketch;
 
 import java.util.Random;
 import java.io.IOException;
@@ -151,31 +155,61 @@ public class FNVHashTest extends TestCase {
 
         final FNVHash fnv = new FNVHash();
 
-        int limit = (1<<18)-1;
+        int limit = (1<<30)-1;
+        long n = 2*limit;
+        final int lgK = 10;
+        CpcSketch cpcSketch;
+        KllFloatsSketch kLLSketch;
+        //ItemsSketch<Integer> iSketch;
 
         Random rand = new Random();
         int r;
         int h;
-        int h2;
-        for (int i = 0; i < limit; ++i) {
-            //r = rand.nextInt(limit);
-            //h = fnv._hash(new short[]{r});
-
-            h = fnv.hash(new int[]{i});
-            if (freq.containsKey(h)) {
-                freq.put(h, freq.get(h) + 1);
+        int key;
+        for (int type = 0; type < 2; ++type) {
+            cpcSketch = new CpcSketch(lgK);
+            kLLSketch = KllFloatsSketch.newHeapInstance();
+            //iSketch = new ItemsSketch<Integer>(limit+1);// size has to be a power of 2
+            if (type == 0) {
+                System.out.println("old hash");
             } else {
-                freq.put(h, 1);
+                System.out.println("new hash");
+            }
+            for (int i = 0; i < n; ++i) {
+                r = rand.nextInt(limit);
+                key = r;
+                //key = i;
+
+                if (type == 0) {
+                    h = oldHash(new int[]{key});
+                } else {
+                    h = fnv.hash(new int[]{key});
+                }
+
+                cpcSketch.update(h);
+                kLLSketch.update(h);
+                //iSketch.update(h);
             }
 
-            h2 = oldHash(new int[]{i});
-            if (freq2.containsKey(h2)) {
-                freq2.put(h2, freq2.get(h2) + 1);
-            } else {
-                freq2.put(h2, 1);
-            }
+            System.out.println(cpcSketch.toString());
+            System.out.printf("Distinct count estimate: %f, expect=%d\n", cpcSketch.getEstimate(), limit);
+            System.out.println("Distinct count lower bound 95% confidence: " + cpcSketch.getLowerBound(2));
+            System.out.println("Distinct count upper bound 95% confidence: " + cpcSketch.getUpperBound(2));
+
+            // hash min, max and median values
+            System.out.printf("min=%f, max=%f, median=%f\n", kLLSketch.getMinItem(), kLLSketch.getMaxItem(),
+                    kLLSketch.getQuantile(0.5));
+
+            // largest numbers of collisions
+            /*ItemsSketch.Row<Integer>[] items = iSketch.getFrequentItems(ErrorType.NO_FALSE_POSITIVES);
+            System.out.println("Largest collisions (Frequent items): " + items.length);
+            System.out.println(ItemsSketch.Row.getRowHeader());
+            for (ItemsSketch.Row<Integer> row: items) {
+                System.out.println("First item: " + row.toString());
+                break;
+            }*/
         }
-
+        /*
         int[] xPoints = new int[freq.size()];
         int[] yPoints = new int[freq.size()];
         int[] xPoints2 = new int[freq2.size()];
@@ -194,7 +228,6 @@ public class FNVHashTest extends TestCase {
             ++i;
         }
         MultiArrayMergeSort.sortByIncr(xPoints, yPoints);
-
         TIntIntIterator iter2 = freq2.iterator();
         i = 0;
         while (iter2.hasNext()) {
@@ -204,12 +237,12 @@ public class FNVHashTest extends TestCase {
             ++i;
         }
         MultiArrayMergeSort.sortByIncr(xPoints2, yPoints2);
-
         // plot the hash vs frequency.
         PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();
         plotter.addPlot(xPoints, yPoints, xPolygon, yPolygon, label);
         plotter.addPlot(xPoints2, yPoints2, xPolygon, yPolygon, label2);
         plotter.writeFile("hash_freq_int");
+        */
     }
 
 }
