@@ -297,7 +297,7 @@ public class Coloring {
      * @param colorMap output map of edge colorings where key=edge vertexes and value is the color assigned to the edge
      * @return the number of colors assigned to edges
      */
-    public static int edgeColoringMisraGies(final Map<Integer, Set<Integer>> adjMap, final Map<PairInt, Integer> colorMap) {
+    public static int edgeColoringMisraGries(final Map<Integer, Set<Integer>> adjMap, final Map<PairInt, Integer> colorMap) {
 
         //For building the "fans" we need a fixed ordering of the edges, presumably by label = vertex number which are integers here.
 

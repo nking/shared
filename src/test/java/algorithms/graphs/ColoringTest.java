@@ -82,7 +82,7 @@ public class ColoringTest extends TestCase {
         int kOpt = 4;
 
         Map<PairInt, Integer> colorMap = new HashMap<PairInt, Integer>();
-        int k = Coloring.edgeColoringMisraGies(adjMap, colorMap);
+        int k = Coloring.edgeColoringMisraGries(adjMap, colorMap);
 
         assertEdgeColoring(adjMap, colorMap);
         System.out.println("testEdgeColoring5 k=" + k);
@@ -100,7 +100,7 @@ public class ColoringTest extends TestCase {
         int kOpt = 4;
 
         Map<PairInt, Integer> colorMap = new HashMap<PairInt, Integer>();
-        int k = Coloring.edgeColoringMisraGies(adjMap, colorMap);
+        int k = Coloring.edgeColoringMisraGries(adjMap, colorMap);
 
         assertEdgeColoring(adjMap, colorMap);
         System.out.println("testEdgeColoring6 k=" + k);
