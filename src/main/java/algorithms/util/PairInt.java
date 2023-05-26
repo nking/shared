@@ -16,7 +16,9 @@ public class PairInt {
     
     private int x = Integer.MIN_VALUE;
     private int y = Integer.MIN_VALUE;
-    
+
+    private static final FNVHash fnv = new FNVHash();
+
     /**
      *
      */
@@ -98,7 +100,7 @@ public class PairInt {
 
     @Override
     public int hashCode() {
-        return FNVHash.hash(new int[]{this.x, this.y});
+        return fnv.hash(new int[]{this.x, this.y});
     }
 
     @Override

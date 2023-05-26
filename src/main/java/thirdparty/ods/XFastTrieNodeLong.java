@@ -14,6 +14,8 @@ public class XFastTrieNodeLong<T> extends BinaryTrieNode<T> {
     
     long prefix;
 
+    private static final FNVHash fnv = new FNVHash();
+
     @SuppressWarnings({"unchecked"})
     @Override
     public boolean equals(Object u) {
@@ -33,7 +35,7 @@ public class XFastTrieNodeLong<T> extends BinaryTrieNode<T> {
 
     @Override
     public int hashCode() {
-        return FNVHash.hash(new long[]{prefix});
+        return fnv.hash(new long[]{prefix});
     }
 
     /**

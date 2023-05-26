@@ -15,6 +15,8 @@ public class OneDIntArray {
      */
     public int[] a;
 
+    private static final FNVHash fnv = new FNVHash();
+
     /**
      *
      @param t
@@ -36,7 +38,7 @@ public class OneDIntArray {
 
     @Override
     public int hashCode() {
-        return FNVHash.hash(a);
+        return fnv.hash(a);
     }
 
     @Override

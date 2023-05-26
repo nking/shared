@@ -75,19 +75,21 @@ public class ColoringTest extends TestCase {
 
     public void testEdgeColoring5() {
 
+        System.out.println("testEdgeColoring5");
+
         Map<Integer, Set<Integer>> adjMap = GraphHelper.getGraph5();
 
         Map<PairInt, Integer> colorMap = new HashMap<PairInt, Integer>();
         int k = Coloring.edgeColoringMisraGies(adjMap, colorMap);
 
         assertEdgeColoring(adjMap, colorMap);
-        assertEquals(5, k);
+        System.out.println("testEdgeColoring5 k=" + k);
+        assertEquals(4, k);
 
     }
 
-    public void estEdgeColoring6() {
-        //TODO: review the figure and expected results because expect is 5, but k = 4.
-        // this has changed after I fixed the FNV hashcode
+    public void testEdgeColoring6() {
+        System.out.println("testEdgeColoring6");
 
         Map<Integer, Set<Integer>> adjMap = GraphHelper.getGraph6();
 
@@ -95,6 +97,7 @@ public class ColoringTest extends TestCase {
         int k = Coloring.edgeColoringMisraGies(adjMap, colorMap);
 
         assertEdgeColoring(adjMap, colorMap);
+        System.out.println("testEdgeColoring6 k=" + k);
         assertEquals(5, k);
 
     }

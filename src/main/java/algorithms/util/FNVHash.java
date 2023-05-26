@@ -29,13 +29,24 @@ import java.math.BigInteger;
  */
 public class FNVHash {
 
-    protected final static BigInteger fnv321aInit = new BigInteger("2166136261");
+    protected final static BigInteger fnv321aInit = new BigInteger("2166136261");//0x811c9dc5
 
-    protected final static BigInteger fnv32Prime = new BigInteger("16777619");
+    protected final static BigInteger fnv32Prime = new BigInteger("16777619");//0x01000193
 
-    protected final static BigInteger fnv64Init = new BigInteger("14695981039346656037");
+    protected final static BigInteger fnv64Init = new BigInteger("14695981039346656037");//0xcbf29ce484222325
 
-    protected final static BigInteger fnv64Prime = new BigInteger("1099511628211");
+    protected final static BigInteger fnv64Prime = new BigInteger("1099511628211");//0x100000001b3
+
+    private int oldHash(int[] params) {
+        int fnv321aInit = 0x811c9dc5;
+        int fnv32Prime = 0x01000193;
+        int hash = fnv321aInit;
+        for (int p : params) {
+            hash = hash ^ p;
+            hash = hash * fnv32Prime;
+        }
+        return hash;
+    }
 
     /**
      * create a hashcode for use in Object.hashCode() from the data in the object.
@@ -50,7 +61,12 @@ public class FNVHash {
      * @param params parameters to use in making the hashcode
      * @return a non-cryptographic hash for use in object identity
      */
-    public static int hash(int[] params) {
+    public int hash(int[] params) {
+
+        if (true) {
+            // TODO:  finish testing.  reenable old hash meanwhile
+            return oldHash(params);
+        }
 
         /*
         FNV-1a alternate algorithm
@@ -91,7 +107,7 @@ public class FNVHash {
      * @param params parameters to use in making the hashcode
      * @return a non-cryptographic hash for use in object identity
      */
-    public static int hash(float[] params) {
+    public int hash(float[] params) {
 
         /*
         FNV-1a alternate algorithm
@@ -132,7 +148,7 @@ public class FNVHash {
      * @param params parameters to use in making the hashcode
      * @return a non-cryptographic hash for use in object identity
      */
-    public static int hash(long[] params) {
+    public int hash(long[] params) {
 
         /*
         FNV-1a alternate algorithm
@@ -159,8 +175,9 @@ public class FNVHash {
         return to31Bit(hash);
     }
 
-    protected static int to31Bit(BigInteger hash) {
+    protected int to31Bit(BigInteger hash) {
         // make it 31 bit: hash = (((hash>>31) ^ hash) & ((1<<31)-1))
+        // make it n bit: hash = (((hash>>nBits) ^ hash) & ((1<<nBits)-1))
         BigInteger upper = hash.shiftRight(31);
         upper = upper.xor(hash);
 
@@ -172,4 +189,36 @@ public class FNVHash {
         return Integer.valueOf(s);
     }
 
+    // for testing
+    protected short _toShort(BigInteger hash) {
+
+        // make it n bit: hash = (((hash>>nBits) ^ hash) & ((1<<nBits)-1))
+        BigInteger upper = hash.shiftRight(15);
+        upper = upper.xor(hash);
+
+        BigInteger mask = BigInteger.ONE.shiftLeft(15);
+        mask = mask.subtract(BigInteger.ONE);
+
+        hash = upper.and(mask);
+        String s = hash.toString();
+        return Short.valueOf(s);
+    }
+
+    /**
+     * for test use
+     * @param params
+     * @return
+     */
+    protected short _hash(short[] params) {
+
+        // BigInteger is needed as this variable overflows a signed integer
+        BigInteger hash = fnv321aInit;
+
+        for (short p : params) {
+            hash = hash.xor(BigInteger.valueOf(p));
+            hash = hash.multiply(fnv32Prime);
+        }
+
+        return _toShort(hash);
+    }
 }

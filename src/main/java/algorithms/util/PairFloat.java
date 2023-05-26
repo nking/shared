@@ -8,7 +8,9 @@ public class PairFloat {
     
     private float x;
     private float y;
-    
+
+    private static final FNVHash fnv = new FNVHash();
+
     /**
      *
      */
@@ -71,7 +73,7 @@ public class PairFloat {
 
     @Override
     public int hashCode() {
-        return FNVHash.hash(new float[]{this.x, this.y});
+        return fnv.hash(new float[]{this.x, this.y});
     }
 
     @Override
