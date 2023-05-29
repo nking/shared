@@ -1,6 +1,5 @@
 package algorithms.util;
 
-import java.math.BigInteger;
 import java.util.Arrays;
 
 /**
@@ -15,8 +14,6 @@ public class OneDLongArray {
      *
      */
     public long[] a;
-
-    private static final FNVHash fnv = new FNVHash();
 
     /**
      *
@@ -39,7 +36,7 @@ public class OneDLongArray {
 
     @Override
     public int hashCode() {
-        return fnv.hash(a);
+        return FNVHash.hash64a(a);
     }
 
     @Override

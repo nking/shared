@@ -10,9 +10,6 @@ public class QuadInt {
     private int b = Integer.MIN_VALUE;
     private int c = Integer.MIN_VALUE;
     private int d = Integer.MIN_VALUE;
-
-    private static final FNVHash fnv = new FNVHash();
-
     /**
      *
      */
@@ -133,7 +130,7 @@ public class QuadInt {
 
     @Override
     public int hashCode() {
-        return fnv.hash(new int[]{a, b, c, d});
+        return FNVHash.hash32a(new int[]{a, b, c, d});
     }
 
     @Override

@@ -1,9 +1,12 @@
 package algorithms.util;
 
+import algorithms.misc.MiscMath0;
 import algorithms.sort.MultiArrayMergeSort;
 import algorithms.util.LinkedListCostNode;
 
 import java.math.BigInteger;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import gnu.trove.map.TShortIntMap;
@@ -18,6 +21,7 @@ import org.apache.datasketches.cpc.CpcSketch;
 import org.apache.datasketches.frequencies.ErrorType;
 import org.apache.datasketches.frequencies.ItemsSketch;
 import org.apache.datasketches.kll.KllFloatsSketch;
+import org.junit.Assert;
 
 import java.util.Random;
 import java.io.IOException;
@@ -44,17 +48,6 @@ public class FNVHashTest extends TestCase {
         super.tearDown();
     }
 
-    private int oldHash(int[] params) {
-        int fnv321aInit = 0x811c9dc5;
-        int fnv32Prime = 0x01000193;
-        int hash = fnv321aInit;
-        for (int p : params) {
-            hash = hash ^ p;
-            hash = hash * fnv32Prime;
-        }
-        return hash;
-    }
-
     public void testWithShort() throws IOException {
         log.info("testWithShort");
 
@@ -69,69 +62,148 @@ public class FNVHashTest extends TestCase {
 
         // key = hash, value = number of times seen
         TShortIntMap freq = new TShortIntHashMap();
-        TIntIntMap freq2 = new TIntIntHashMap();
+        PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();
 
-        final FNVHash fnv = new FNVHash();
-
-        short limit = Short.MAX_VALUE;//32767
+        int limit = (1<<15)-1;
+        long n = 2*limit;
+        final int lgK = 10;
+        CpcSketch cpcSketch;
+        KllFloatsSketch kLLSketch;
+        ItemsSketch<Short> iSketch;
 
         Random rand = new Random();
         int r;
         short h;
-        int h2;
-        for (short i = 0; i < limit; ++i) {
-            //r = rand.nextInt(limit);
-            //h = fnv._hash(new short[]{r});
-
-            h = fnv._hash(new short[]{i});
-            if (freq.containsKey(h)) {
-                freq.put(h, freq.get(h) + 1);
+        int key;
+        String label;
+        for (int type = 0; type < 2; ++type) {
+            cpcSketch = new CpcSketch(lgK);
+            kLLSketch = KllFloatsSketch.newHeapInstance();
+            iSketch = new ItemsSketch<Short>(limit + 1);// size has to be a power of 2
+            if (type == 0) {
+                label = "old hash";
             } else {
-                freq.put(h, 1);
+                label = "new hash";
+            }
+            System.out.println(label);
+            for (int i = 0; i < n; ++i) {
+                r = rand.nextInt(limit);
+                key = r;
+                //key = i % limit;
+
+                if (type == 0) {
+                    h = FNVHash._oldhash(new short[]{(short)key});
+                } else {
+                    h = FNVHash._hash(new short[]{(short)key});
+                }
+
+                if (freq.containsKey(h)) {
+                    freq.put(h, freq.get(h) + 1);
+                } else {
+                    freq.put(h, 1);
+                }
+
+                cpcSketch.update(h);
+                kLLSketch.update(h);
+                iSketch.update(h);
             }
 
-            h2 = oldHash(new int[]{i});
-            if (freq2.containsKey(h2)) {
-                freq2.put(h2, freq2.get(h2) + 1);
-            } else {
-                freq2.put(h2, 1);
+
+            System.out.println(cpcSketch.toString());
+            System.out.printf("Distinct count estimate: %f, expect=%d\n", cpcSketch.getEstimate(), limit);
+            System.out.println("Distinct count lower bound 95% confidence: " + cpcSketch.getLowerBound(2));
+            System.out.println("Distinct count upper bound 95% confidence: " + cpcSketch.getUpperBound(2));
+
+            // hash min, max and median values
+            float[] qs = kLLSketch.getQuantiles(new double[]{0.25, 0.5, 0.75, 1});
+            System.out.printf("min=%f, max=%f, quantiles=%s\n", kLLSketch.getMinItem(), kLLSketch.getMaxItem(),
+                    FormatArray.toString(qs, "%.3e"));
+
+            // largest numbers of collisions
+            //System.out.println("summary: " + iSketch.toString());
+            //System.out.flush();
+            ItemsSketch.Row<Short>[] items = iSketch.getFrequentItems(ErrorType.NO_FALSE_POSITIVES);
+            System.out.println("number of Largest collisions (Frequent items): " + items.length);
+            System.out.println(ItemsSketch.Row.getRowHeader());
+            for (ItemsSketch.Row<Short> row : items) {
+                System.out.println("First item: " + row.toString());
+                break;
             }
+
+            int[] xPoints = new int[freq.size()];
+            int[] yPoints = new int[freq.size()];
+            int[] xPolygon = null;
+            int[] yPolygon = null;
+
+            TShortIntIterator iter = freq.iterator();
+            int i = 0;
+            while (iter.hasNext()) {
+                iter.advance();
+                xPoints[i] = iter.key();
+                yPoints[i] = iter.value();
+                ++i;
+            }
+            MultiArrayMergeSort.sortByIncr(xPoints, yPoints);
+
+            // plot the hash vs frequency.
+            plotter.addPlot(xPoints, yPoints, xPolygon, yPolygon, label);
+
+            // FreedmanDiaconis: binWidth = 2*IQR * n^(−1/3)
+            long nn = kLLSketch.getN();
+            float iqr = kLLSketch.getQuantile(0.75) - kLLSketch.getQuantile(0.5);
+            double binWidth = 2. * iqr * Math.pow(nn, -0.33333);
+            double dwd = binWidth/nn;
+            binWidth = 2. * iqr * Math.pow(limit, -0.33333);
+            dwd = binWidth/limit;
+
+            // plot rank vs quantile
+            float dw = 0.01f;
+            int nw = (int)(1./dw);
+            float[] xd = new float[nw];
+            float[] yd = new float[nw];
+            for (i = 0; i < nw; ++i) {
+                xd[i] = i*dw;
+                yd[i] = kLLSketch.getQuantile(xd[i]);
+            }
+            /*double[] pmf = kLLSketch.getPMF(xd);
+            for (i = 0; i < nw; ++i) {
+                yd[i] = (float)pmf[i];
+            }*/
+            plotter.addPlot(xd, yd, xPolygon, yPolygon, label + " CDF");
+
+            // create splitpoints and PMF
+            dw = (float)binWidth;
+            nw = (int)(limit/dw);
+            xd = new float[nw];
+            yd = new float[nw];
+            xd[0] = 1.f;
+            for (i = 0; i < nw; ++i) {
+                xd[i] = i*dw;
+            }
+            double[] pmf = kLLSketch.getPMF(xd);
+            double sum = 0;
+            for (i = 0; i < nw; ++i) {
+                yd[i] = (float)pmf[i];
+                sum += yd[i];
+            }
+            plotter.addPlot(xd, yd, xPolygon, yPolygon, label + " PMF.  sum=" + sum);
         }
-
-        int[] xPoints = new int[freq.size()];
-        int[] yPoints = new int[freq.size()];
-        int[] xPoints2 = new int[freq2.size()];
-        int[] yPoints2 = new int[freq2.size()];
-        int[] xPolygon = null;
-        int[] yPolygon = null;
-        String label = "hash frequency";
-        String label2 = "old hash frequency";
-
-        TShortIntIterator iter = freq.iterator();
-        int i = 0;
-        while (iter.hasNext()) {
-            iter.advance();
-            xPoints[i] = iter.key();
-            yPoints[i] = iter.value();
-            ++i;
-        }
-        MultiArrayMergeSort.sortByIncr(xPoints, yPoints);
-
-        TIntIntIterator iter2 = freq2.iterator();
-        i = 0;
-        while (iter2.hasNext()) {
-            iter2.advance();
-            xPoints2[i] = iter2.key();
-            yPoints2[i] = iter2.value();
-            ++i;
-        }
-        MultiArrayMergeSort.sortByIncr(xPoints2, yPoints2);
-
-        // plot the hash vs frequency.
-        PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();
-        plotter.addPlot(xPoints, yPoints, xPolygon, yPolygon, label);
-        plotter.addPlot(xPoints2, yPoints2, xPolygon, yPolygon, label2);
         plotter.writeFile("hash_freq");
+
+        /*
+        int limit = (1<<15)-1;
+        long n = 2*limit;
+
+        old hash
+        number of Largest collisions (Frequent items): 18950
+                   Est          UB          LB Item
+        First item:             24          24          24 16138
+        new hash
+        number of Largest collisions (Frequent items): 18939
+                   Est          UB          LB Item
+        First item:             26          26          26 15908
+
+         */
     }
 
     public void testWithInt() throws IOException {
@@ -146,30 +218,21 @@ public class FNVHashTest extends TestCase {
         //   for 15 bits, 1st collision = 256, all elements collide = 65534
         //   for 31 bits, 1st collision = 65536, all elements collide = 8.6e9
 
-        // TODO: to test this, need to use a smaller datastructure than hashmap,
-        // like CPC sketch
-
-        // key = hash, value = number of times seen
-        TIntIntMap freq = new TIntIntHashMap();
-        TIntIntMap freq2 = new TIntIntHashMap();
-
-        final FNVHash fnv = new FNVHash();
-
-        int limit = (1<<30)-1;
+        int limit = (1<<24)-1;//(1<<30)-1;
         long n = 2*limit;
         final int lgK = 10;
-        CpcSketch cpcSketch;
-        KllFloatsSketch kLLSketch;
-        //ItemsSketch<Integer> iSketch;
+        //CpcSketch cpcSketch;
+        //KllFloatsSketch kLLSketch;
+        ItemsSketch<Integer> iSketch;
 
         Random rand = new Random();
         int r;
         int h;
         int key;
         for (int type = 0; type < 2; ++type) {
-            cpcSketch = new CpcSketch(lgK);
-            kLLSketch = KllFloatsSketch.newHeapInstance();
-            //iSketch = new ItemsSketch<Integer>(limit+1);// size has to be a power of 2
+            //cpcSketch = new CpcSketch(lgK);
+            //kLLSketch = KllFloatsSketch.newHeapInstance();
+            iSketch = new ItemsSketch<Integer>(limit+1);// size has to be a power of 2
             if (type == 0) {
                 System.out.println("old hash");
             } else {
@@ -181,16 +244,17 @@ public class FNVHashTest extends TestCase {
                 //key = i;
 
                 if (type == 0) {
-                    h = oldHash(new int[]{key});
+                    h = FNVHash.hash32a(new int[]{key});
                 } else {
-                    h = fnv.hash(new int[]{key});
+                    h = FNVHash.hash31a(new int[]{key});
                 }
 
-                cpcSketch.update(h);
-                kLLSketch.update(h);
-                //iSketch.update(h);
+                //cpcSketch.update(h);
+                //kLLSketch.update(h);
+                iSketch.update(h);
             }
 
+            /*
             System.out.println(cpcSketch.toString());
             System.out.printf("Distinct count estimate: %f, expect=%d\n", cpcSketch.getEstimate(), limit);
             System.out.println("Distinct count lower bound 95% confidence: " + cpcSketch.getLowerBound(2));
@@ -199,16 +263,46 @@ public class FNVHashTest extends TestCase {
             // hash min, max and median values
             System.out.printf("min=%f, max=%f, median=%f\n", kLLSketch.getMinItem(), kLLSketch.getMaxItem(),
                     kLLSketch.getQuantile(0.5));
+            */
 
             // largest numbers of collisions
-            /*ItemsSketch.Row<Integer>[] items = iSketch.getFrequentItems(ErrorType.NO_FALSE_POSITIVES);
-            System.out.println("Largest collisions (Frequent items): " + items.length);
+            //System.out.println("summary: " + iSketch.toString());
+            //System.out.flush();
+            ItemsSketch.Row<Integer>[] items = iSketch.getFrequentItems(ErrorType.NO_FALSE_POSITIVES);
+            System.out.println("number of Largest collisions (Frequent items): " + items.length);
             System.out.println(ItemsSketch.Row.getRowHeader());
             for (ItemsSketch.Row<Integer> row: items) {
                 System.out.println("First item: " + row.toString());
                 break;
-            }*/
+            }
         }
+        /*
+        with int limit = (1<<22)-1;//(1<<30)-1;
+        long n = 2*limit;
+
+         old hash
+        Largest collisions (Frequent items): 876563
+                   Est          UB          LB Item
+        First item:             12          12          10 -2146108584
+
+        new hash
+        Largest collisions (Frequent items): 875945
+                   Est          UB          LB Item
+        First item:             14          14          12 434781249
+
+        -----
+        with int limit = (1<<24)-1;//(1<<30)-1;
+        long n = 2*limit;
+
+        old hash
+        number of Largest collisions (Frequent items): 3506275
+                   Est          UB          LB Item
+        First item:             13          13          11 780217474
+        new hash
+        number of Largest collisions (Frequent items): 3497277
+                   Est          UB          LB Item
+        First item:             14          14          12 317334821
+         */
         /*
         int[] xPoints = new int[freq.size()];
         int[] yPoints = new int[freq.size()];

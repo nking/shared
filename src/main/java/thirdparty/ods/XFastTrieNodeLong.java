@@ -3,8 +3,6 @@ package thirdparty.ods;
 import algorithms.util.FNVHash;
 import algorithms.util.ObjectSpaceEstimator;
 
-import java.math.BigInteger;
-
 /**
  * @author nichole
  @param <T>
@@ -13,8 +11,6 @@ import java.math.BigInteger;
 public class XFastTrieNodeLong<T> extends BinaryTrieNode<T> {
     
     long prefix;
-
-    private static final FNVHash fnv = new FNVHash();
 
     @SuppressWarnings({"unchecked"})
     @Override
@@ -35,7 +31,7 @@ public class XFastTrieNodeLong<T> extends BinaryTrieNode<T> {
 
     @Override
     public int hashCode() {
-        return fnv.hash(new long[]{prefix});
+        return FNVHash.hash64a(new long[]{prefix});
     }
 
     /**
