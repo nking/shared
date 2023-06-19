@@ -122,8 +122,11 @@ public class Knapsack01 {
                 }
             }
         }
-        
+
+        /*System.out.printf("weights=\n%s\n", FormatArray.toString(weights, "%d"));
+        System.out.printf("values=\n%s\n", FormatArray.toString(values, "%d"));
         System.out.printf("memo=\n%s\n", FormatArray.toString(memo, "%d"));
+        System.out.flush();*/
 
         return memo[memo.length - 1][memo[0].length - 1];
     }
