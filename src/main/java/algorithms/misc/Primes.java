@@ -478,10 +478,8 @@ public class Primes {
         int j;
         for (i = 2; i < (int)Math.sqrt(n); ++i) {
             if (b.isSet(i)) {
-                j = i * i;
-                while (j < n && j > 0) {
+                for (j = i*i; j < n; j+=i) {// remove all multiples of i
                     b.clearBit(j);
-                    j += i;
                 }
             }
         }
