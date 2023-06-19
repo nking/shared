@@ -88,10 +88,10 @@ public class FloydWarshalAllPairs {
             }
         }
         
-        for (int k = 0; k < n; k++) {
+        for (int j = 0; j < n; j++) {
             
             if (debug) {
-                System.out.println("k=" + k);
+                System.out.println("k=" + j);
                 for (int i = 0; i < n; i++) {
                     System.out.println("dist i=" + i + " : " + Arrays.toString(dist[i]));
                 }
@@ -101,18 +101,17 @@ public class FloydWarshalAllPairs {
             }
             
             for (int i = 0; i < n; i++) {
-                for (int j = 0; j < n; j++) {
-                    int s0 = dist[i][j];
-                    int s1 = dist[i][k] + dist[k][j];
-                                 
-                    if (i == j) {
-                        dist[i][j] = 0;
-                    } else if ((s0 <= s1) || ((dist[i][k] == Integer.MAX_VALUE) 
-                        || (dist[k][j] == Integer.MAX_VALUE))) {
-                        dist[i][j] = s0;
+                for (int k = 0; k < n; k++) {
+                    int s0 = dist[i][k];
+                    int s1 = dist[i][j] + dist[j][k];
+                    if (i == k) {
+                        dist[i][k] = 0;
+                    } else if ((s0 <= s1) || ((dist[i][j] == Integer.MAX_VALUE)
+                        || (dist[j][k] == Integer.MAX_VALUE))) {
+                        dist[i][k] = s0;
                     } else {
-                        dist[i][j] = s1;
-                        prev[i][j] = prev[k][j];
+                        dist[i][k] = s1;
+                        prev[i][k] = prev[j][k];
                     } 
                 }
             }
