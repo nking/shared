@@ -32,6 +32,13 @@ import java.io.IOException;
  */
 public class FNVHashTest extends TestCase {
 
+
+   /* see:
+   https://datasketches.apache.org/docs/Community/Research.html
+   https://datasketches.apache.org/docs/HLL/HLL.html
+   https://datasketches.apache.org/docs/Sampling/ReservoirSampling.html
+   */
+
     protected Logger log = Logger.getLogger(this.getClass().getSimpleName());
     
     public FNVHashTest(String testName) {
