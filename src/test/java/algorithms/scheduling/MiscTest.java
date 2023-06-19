@@ -51,7 +51,7 @@ public class MiscTest extends TestCase {
      * Design and Analysis of Computer Algorithms.
      * https://www.cs.umd.edu/class/fall2017/cmsc451-0101/Lects/lect10-dp-intv-sched.pdf
      */
-    public void testWeightedIntervalBottomUp() {
+    public void testweightedIntervalBottomUp() {
 
         //TODO: add more tests and include changing the order of items in this one
 
@@ -61,7 +61,7 @@ public class MiscTest extends TestCase {
         double[] v = new double[]{2, 6, 3.5, 7, 8, 1.1};
 
         Misc misc = new Misc();
-        int[] indexes = misc.weightedIntervalBottomUp(s, f, v);
+        int[] indexes = misc.weightedIntervalBottomUp2(s, f, v);
         //System.out.println("scheduled intervals = " + Arrays.toString(indexes));
         int i;
         double sum = 0;
@@ -72,49 +72,11 @@ public class MiscTest extends TestCase {
         //System.out.println("sum of values=" + sum);
         assertEquals(14.0, sum);
 
-        int[] expected = new int[]{4, 1};
+        int[] expected = new int[]{1,4};
         assertTrue(Arrays.equals(expected, indexes));
 
 
         // change the order  
-        s = new double[]{1.25, 0.5, 5.25, 1, 2.75, 6};
-        f = new double[]{7, 2.5, 7.5, 3, 5, 8.5};
-        v = new double[]{7, 2, 8, 6, 3.5, 1.1};
-
-        misc = new Misc();
-        indexes = misc.weightedIntervalBottomUp(s, f, v);
-        //System.out.println("scheduled intervals = " + Arrays.toString(indexes));
-        sum = 0;
-        for (i = 0; i < indexes.length; ++i) {
-            //System.out.printf("%d [%.2f : %.2f]  sum=%.2f\n", indexes[i], s[indexes[i]], f[indexes[i]], sum);
-            sum += v[indexes[i]];
-        }
-        //System.out.println("sum of values=" + sum);
-        assertEquals(14.0, sum);
-
-        expected = new int[]{2, 3};
-        assertTrue(Arrays.equals(expected, indexes));
-
-        // add a redundant interval with lower weight  
-        s = new double[]{1.25, 0.5, 5.25, 1, 2.75, 6, 1};
-        f = new double[]{7, 2.5, 7.5, 3, 5, 8.5, 3};
-        v = new double[]{7, 2, 8, 6, 3.5, 1.1, 1};
-
-        misc = new Misc();
-        indexes = misc.weightedIntervalBottomUp(s, f, v);
-        //System.out.println("scheduled intervals = " + Arrays.toString(indexes));
-        sum = 0;
-        for (i = 0; i < indexes.length; ++i) {
-            //System.out.printf("%d [%.2f : %.2f]  sum=%.2f\n", indexes[i], s[indexes[i]], f[indexes[i]], sum);
-            sum += v[indexes[i]];
-        }
-        //System.out.println("sum of values=" + sum);
-        assertEquals(14.0, sum);
-
-        expected = new int[]{2, 3};
-        assertTrue(Arrays.equals(expected, indexes));
-
-        // --- test the 2nd algorithm for same scheduling:
         s = new double[]{1.25, 0.5, 5.25, 1, 2.75, 6};
         f = new double[]{7, 2.5, 7.5, 3, 5, 8.5};
         v = new double[]{7, 2, 8, 6, 3.5, 1.1};
@@ -133,6 +95,67 @@ public class MiscTest extends TestCase {
         expected = new int[]{2, 3};
         assertTrue(Arrays.equals(expected, indexes));
 
+        // add a redundant interval with lower weight  
+        s = new double[]{1.25, 0.5, 5.25, 1, 2.75, 6, 1};
+        f = new double[]{7, 2.5, 7.5, 3, 5, 8.5, 3};
+        v = new double[]{7, 2, 8, 6, 3.5, 1.1, 1};
+
+        misc = new Misc();
+        indexes = misc.weightedIntervalBottomUp2(s, f, v);
+        //System.out.println("scheduled intervals = " + Arrays.toString(indexes));
+        sum = 0;
+        for (i = 0; i < indexes.length; ++i) {
+            //System.out.printf("%d [%.2f : %.2f]  sum=%.2f\n", indexes[i], s[indexes[i]], f[indexes[i]], sum);
+            sum += v[indexes[i]];
+        }
+        //System.out.println("sum of values=" + sum);
+        assertEquals(14.0, sum);
+
+        expected = new int[]{2, 3};
+        assertTrue(Arrays.equals(expected, indexes));
+
+        // --- test the other algorithm for same scheduling:
+        s = new double[]{1.25, 0.5, 5.25, 1, 2.75, 6};
+        f = new double[]{7, 2.5, 7.5, 3, 5, 8.5};
+        v = new double[]{7, 2, 8, 6, 3.5, 1.1};
+
+        misc = new Misc();
+        indexes = misc.weightedIntervalBottomUp(s, f, v);
+        //System.out.println("scheduled intervals = " + Arrays.toString(indexes));
+        sum = 0;
+        for (i = 0; i < indexes.length; ++i) {
+            //System.out.printf("%d [%.2f : %.2f]  sum=%.2f\n", indexes[i], s[indexes[i]], f[indexes[i]], sum);
+            sum += v[indexes[i]];
+        }
+        //System.out.println("sum of values=" + sum);
+        assertEquals(14.0, sum);
+
+        expected = new int[]{2, 3};
+        assertTrue(Arrays.equals(expected, indexes));
+
+        /*
+              0  1  2  3  4  5  6  7  8  9
+           0  ---------| *
+           1     ------------|
+           2           --------| *
+           3        ---------------|
+           4                   ------|*
+           5                   ---------|
+         */
+        s = new double[]{0, 1, 3, 2,   6, 6};
+        f = new double[]{3, 5, 6, 7.5, 8, 9};
+        v = new double[]{2, 2, 2, 2,   5, 2};
+
+        expected = new int[]{0, 2, 4};
+        indexes = misc.weightedIntervalBottomUp2(s, f, v);
+        sum = 0;
+        for (i = 0; i < indexes.length; ++i) {
+            //System.out.printf("%d [%.2f : %.2f]  sum=%.2f\n", indexes[i], s[indexes[i]], f[indexes[i]], sum);
+            sum += v[indexes[i]];
+        }
+        //System.out.println("scheduled intervals = " + Arrays.toString(indexes));
+        assertEquals(9.0, sum);
+        assertTrue(Arrays.equals(expected, indexes));
     }
 
     public void testWeightedGreedy() {
@@ -205,21 +228,29 @@ public class MiscTest extends TestCase {
         double[] f = new double[]{4.5, 10, 6.5, 11, 22, 24, 17.5, 25, 32, 29.5, 33, 34};
 
         Misc misc = new Misc();
-        int[] resources = misc.intervalPartitionGreedy(s, f);
-        //System.out.println("resources=" + Arrays.toString(resources));
-        int cMax = MiscMath0.findMax(resources);
-        double sPrev, fPrev;
-        for (int c = 0; c < cMax; ++c) {
-            fPrev = Double.NEGATIVE_INFINITY;
-            sPrev = Double.NEGATIVE_INFINITY;
-            for (int i = 0; i < resources.length; ++i) {
-                if (resources[i] == c) {
-                    assertTrue(s[i] > sPrev);
-                    assertTrue(s[i] >= fPrev);
-                    assertTrue(f[i] > fPrev);
-                    //System.out.printf("color=%d) %.2f -- %.2f\n", c, s[i], f[i]);
-                    fPrev = f[i];
-                    sPrev = s[i];
+        int[] resources;
+        for (int method = 0; method < 2; ++method) {
+            if (method == 0) {
+                resources = misc.intervalPartitionGreedy(s, f);
+            } else {
+                resources = misc.intervalPartitionGreedy2(s, f);
+            }
+            //System.out.println("resources=" + Arrays.toString(resources));
+            int cMax = MiscMath0.findMax(resources);
+            assertEquals(2, cMax);
+            double sPrev, fPrev;
+            for (int c = 0; c < cMax; ++c) {
+                fPrev = Double.NEGATIVE_INFINITY;
+                sPrev = Double.NEGATIVE_INFINITY;
+                for (int i = 0; i < resources.length; ++i) {
+                    if (resources[i] == c) {
+                        assertTrue(s[i] > sPrev);
+                        assertTrue(s[i] >= fPrev);
+                        assertTrue(f[i] > fPrev);
+                        //System.out.printf("color=%d) %.2f -- %.2f\n", c, s[i], f[i]);
+                        fPrev = f[i];
+                        sPrev = s[i];
+                    }
                 }
             }
         }

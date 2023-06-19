@@ -11,7 +11,10 @@ import gnu.trove.map.hash.TIntDoubleHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  *
@@ -306,18 +309,31 @@ public class Misc {
         s = Arrays.copyOf(s, s.length);
         f = Arrays.copyOf(f, f.length);
         v = Arrays.copyOf(v, v.length);
-        
+
         int n = f.length;
-        
+
         // ascending order sort by f
         // runtime complexity is O(n*log_2(n))
         int[] origIndexes = sort2(f, s, v);
         //System.out.printf("sorted indexes=%s\n", Arrays.toString(origIndexes));
 
-        // holds max values
+        // memo is populated from the bottom up.
+        // the index of memo is the same index of sorted arrays.
+        // memo[i=n-1] holds best solution schedulable from i to higher indexes,
+        // so one can see that memo[i=n-1] must be values[n-1].
+        // then we solve for memo[i=n-2] by iterating over j=n-2+1 to j=n-1
+        // to find the max memo[j] that is schedulable, and assign memo[i] = that
+        // max of value[j] plus values[i].
+        // continuing this way, solving sub-problems from bottom-up, reusing already
+        // solved memo of higher indexes.
+        // then the memo array is scanned for maximum solution.
+        // meanwhile, in the memo[i] solutions above, a map was made to keep track of which
+        // indexes were added, so that the schedule can be constructed from it afterwards.
+
+        // index is same as sorted f.  value is max sum of schedulable values from memo[i] and higher.
         double[] memo = new double[n];
         TIntObjectMap<TIntSet> map = new TIntObjectHashMap<TIntSet>();
-        
+
         int i;
         int j;
         double max;
@@ -326,27 +342,28 @@ public class Misc {
 
         // runtime complexity is O(n^2)
         for (i = n - 1; i >= 0; --i) {
-          max = Double.NEGATIVE_INFINITY;
-          jMax = -1;
-          for (j = i + 1; j < n; ++j) { // memo[j] will already exist and hold best max sum for its part of the schedule to end
-            if (s[j] >= f[i]) { // task j can be appended after task i
-              if (memo[j] > max) {
-                jMax = j;
-                max = memo[j];
-              }
-            }
-          }// end loop over j
-          set = new TIntHashSet();
-          map.put(i, set);
-          set.add(i);
-          if (jMax == -1) {
+            set = new TIntHashSet();
+            map.put(i, set);
+            set.add(i);
             memo[i] = v[i];
-          } else {
-            memo[i] = v[i] + memo[jMax];
-            set.add(jMax);
-          }
+
+            max = Double.NEGATIVE_INFINITY;
+            jMax = -1;
+            for (j = i + 1; j < n; ++j) { // memo[j] will already exist and hold best max sum for its part of the schedule to end
+                if (s[j] >= f[i]) { // task j can be appended after task i
+                    if (memo[j] > max) {
+                        jMax = j;
+                        max = memo[j];
+                    }
+                }
+            }// end loop over j
+
+            if (jMax > -1) {
+                memo[i] += memo[jMax];
+                set.addAll( map.get(jMax) );
+            }
         }//end loop over i
-        
+
         max = Double.NEGATIVE_INFINITY;
         jMax = -1;
         for (i = 0; i < n; ++i) {
@@ -354,15 +371,15 @@ public class Misc {
                 max = memo[i];
                 jMax = i;
             }
-        } 
-                 
+        }
+
         int[] sched = map.get(jMax).toArray();
         for (i = 0; i < sched.length; ++i) {
             sched[i] = origIndexes[sched[i]];
         }
-                
+
         Arrays.sort(sched);
-        
+
         return sched;
     }
 
@@ -696,7 +713,7 @@ public class Misc {
         penalties = Arrays.copyOf(penalties, penalties.length);
 
         //O(N * log_2(N))
-        // sort w, m into monotonically decreasing order by penalties w
+        // sort w, m into monotonically decreasing order by penalties
         int[] origIndexes = sortDecr(penalties, deadlines);
         int i, oIdx;
         
@@ -923,19 +940,6 @@ public class Misc {
         return i + 1;
     }
 
-    /*
-    Note: can compare greedy interval partitioning algorithm to the left-edge algorithm which
-     * sorts by increasing finish times, then loops over each request
-     * to add all sequential non-conflicting requests to a resource, then
-     * start a new resource for a conflict.
-     * Then one attempts to merge resources, by visiting them in reverse order.
-     * After all requests have been placed in a resource, one attempts to
-     * merge the non-conflicting resources by visiting them in reverse order
-     * and comparing to the previous resource (that is, starting with the last resource
-     * created, and then the one before it, etc until the first is visited).
-     * The left-edge algorithm runtime is similar to this interval partitioning greedy algorithm.
-     */
-
     /**
     Interval Partitioning:
     Given an infinite number of possible exclusive resources to use, 
@@ -976,7 +980,7 @@ public class Misc {
             such that it conflicts with no other requests of this color class. 
         */
         
-        // runtime complexity O(n)
+        // runtime complexity O(n*log_2(n))
         //sort requests by increasing start times
         int[] indexes = MiscSorter.mergeSortIncreasing(s2);
         double[] f2 = new double[s2.length];
@@ -992,7 +996,6 @@ public class Misc {
         
         TIntSet excl = new TIntHashSet();
         int color;
-        // runtime complexity O(n*n/2)
         for (i = 0; i < f2.length; ++i) {
             excl.clear();
             for (j = 0; j < i; ++j) {
@@ -1025,6 +1028,89 @@ public class Misc {
             c2[i] = c[indexes[i]];
         }
         return c2;
+    }
+
+    /**
+     Interval Partitioning:
+     Given an infinite number of possible exclusive resources to use,
+     schedule all the activities using the smallest number of resources.
+     The activity requests each have a start and finish time.
+     Let the resources be a collection R, partitioned into d disjoint subsets R_0,...R_{d-1}
+     such that events of R_j are mutually non-conflicting, for each j: 0 ≤ j ≤ (d-1).
+
+     runtime complexity is O(n^2).
+
+     The algorithm used is sometimes called "left edge".
+
+     <pre>
+     https://en.wikipedia.org/wiki/Interval_scheduling
+     Interval scheduling is a class of problems in computer science, particularly in the area of
+     algorithm design. The problems consider a set of tasks. Each task is represented by an
+     interval describing the time in which it needs to be processed by some machine
+     (or, equivalently, scheduled on some resource).
+     </pre>
+     *
+     @param s start times
+     @param f finish times
+     @return indexes of resources to schedule the requests on.
+     */
+    public int[] intervalPartitionGreedy2(double[] s, double[] f) {
+        int n = s.length;
+        if (f.length != n) {
+            throw new IllegalArgumentException("s and f must be same length");
+        }
+        double[] f2 = Arrays.copyOf(f, f.length);
+
+        // runtime complexity O(n*log(n))
+        //sort requests by increasing finish times
+        int[] indexes = MiscSorter.mergeSortIncreasing(f2);
+        double[] s2 = new double[n];
+        int i, j;
+        for (i = 0; i < n; ++i) {
+            s2[i] = s[indexes[i]];
+        }
+
+        List<List<Integer>> resources = new ArrayList<List<Integer>>();
+        List<Integer> current = new ArrayList<>();
+        resources.add(current);
+        double fPrev = -1;
+        for (i = 0; i < n; ++i) {
+            if (s2[i] < fPrev) {
+                current = new ArrayList<>();
+                resources.add(current);
+            }
+            current.add(i);
+            fPrev = f2[i];
+        }
+        // merge resources, bottom up
+        double start, finish;
+        for (i = resources.size() - 1; i > 0; --i) {
+            current = resources.get(i);
+            start = s2[current.get(0)];
+            // search lower indexes for feasible concatenation
+            for (j = i - 1; j >= 0; --j) {
+                List<Integer> lower = resources.get(j);
+                finish = f2[lower.get(lower.size() - 1)];
+                if (start >= finish) {
+                    // append current to lower
+                    lower.addAll(current);
+                    resources.remove(i);
+                    break;
+                }
+            }
+        }
+
+        //rewrite in terms of original indexes of method argument's unsorted (s,f)
+        int[] schedResource = new int[n];
+        for (i = 0; i < resources.size(); ++i) {
+            current = resources.get(i);
+            for (j = 0; j < current.size(); ++j) {
+                int idx = indexes[current.get(j)];
+                schedResource[idx] = i;
+                //System.out.printf("%d) [%.3f : %.3f]  %d\n", i, s[idx], f[idx], idx);
+            }
+        }
+        return schedResource;
     }
 
     /**
