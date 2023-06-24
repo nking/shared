@@ -3523,6 +3523,7 @@ public class MatrixUtil {
     }
 
     /**
+     * TODO: write a version for sparse graphs.
      * determine the largest eigenvalue using the power method.  note that
      * matrix A must be diagonalize-able, that is, a positive definite matrix.
      * for best results, perform standard normalization on matrix A first
