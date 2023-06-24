@@ -3531,6 +3531,11 @@ public class MatrixUtil {
      * The method is implemented from pseudocode in Golub and van Loan
      * "Matrix Computations".
      *
+     * Note that this method normalizes the rows of matrix a during operation.
+     * If one is using a matrix that expects normalized columns, such as the transition
+     * matrix of page rank in MMDS chap 5, then you'll want to transpose the
+     * matrix before using this method).
+     *
      * calculates lambda in lambda * v = M * v for some constant eigenvalue lambda.
      *
      * NOTE that the number of necessary iterations is dependent upon
@@ -3539,7 +3544,8 @@ public class MatrixUtil {
      * method isn't the right method (consider QR or SVD).
      * TODO:consider implementing the inverse power method also to determine the
      * smallest eigenvalue and its eigenvector
-     @param a a positive definite matrix
+     @param a a positive definite matrix.  if you have a transition matrix of normalized columns,
+     you'll want to transpose the matrix before using this method.
      @param nIterations number of iterations to use
      @return the largest eigenvalue of a
      */
