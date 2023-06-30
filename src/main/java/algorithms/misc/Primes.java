@@ -478,7 +478,8 @@ public class Primes {
         int j;
         for (i = 2; i < (int)Math.sqrt(n); ++i) {
             if (b.isSet(i)) {
-                for (j = i*i; j < n; j+=i) {// remove all multiples of i
+                for (j = i*i; j < n && j <= (Integer.MAX_VALUE - i); j+=i) {
+                    // remove all multiples of i
                     b.clearBit(j);
                 }
             }

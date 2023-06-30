@@ -58,6 +58,9 @@ public final class VeryLongBitString {
         if (nBits > N_MAX_BITS) {
             throw new IllegalArgumentException("cannot hold more than " + N_MAX_BITS + " bits");
         }
+        if (nBits < 0) {
+            throw new IllegalArgumentException("nBits must be non-negative");
+        }
         
         int nElements = getRowNumber(nBits) + 1;
         
@@ -103,7 +106,10 @@ public final class VeryLongBitString {
      @param nthBit
      */
     public void setBit(long nthBit) {
-        
+        if (nthBit < 0) {
+            throw new IllegalArgumentException("nthBit must be non-negative");
+        }
+
         int idx = getRowNumber(nthBit);
         
         int bitIdx = getBitIdx(nthBit, idx);
@@ -126,10 +132,16 @@ public final class VeryLongBitString {
      @param nthBit
      */
     public void clearBit(long nthBit) {
-        
+
+        if (nthBit < 0) {
+            throw new IllegalArgumentException("nthBit must be non-negative");
+        }
+
         int idx = getRowNumber(nthBit);
+        assert(idx >= 0 && idx < bitstring.length);
         
         int bitIdx = getBitIdx(nthBit, idx);
+        assert(bitIdx >= 0);
         
         // test bit
         if ((bitstring[idx] & (1L << bitIdx)) != 0) {
@@ -146,11 +158,13 @@ public final class VeryLongBitString {
      @param nthBit
      */
     public void toggleBit(long nthBit) {
-        
+
         int idx = getRowNumber(nthBit);
-        
+        assert(idx >= 0 && idx < bitstring.length);
+
         int bitIdx = getBitIdx(nthBit, idx);
-        
+        assert(bitIdx >= 0);
+
         // replace toggle so can keep track of nSetBits
         //bitstring[idx] ^= (1L << bitIdx);
         
@@ -192,7 +206,11 @@ public final class VeryLongBitString {
      @return
      */
     public boolean isSet(long nthBit) {
-        
+
+        if (nthBit < 0) {
+            throw new IllegalArgumentException("nthBit must be non-negative");
+        }
+
         int idx = getRowNumber(nthBit);
         
         int bitIdx = getBitIdx(nthBit, idx);
@@ -206,7 +224,10 @@ public final class VeryLongBitString {
      @return
      */
     public boolean isNotSet(long nthBit) {
-        
+        if (nthBit < 0) {
+            throw new IllegalArgumentException("nthBit must be non-negative");
+        }
+
         int idx = getRowNumber(nthBit);
         
         int bitIdx = getBitIdx(nthBit, idx);
@@ -220,6 +241,10 @@ public final class VeryLongBitString {
      @return
      */
     protected int getRowNumber(long n) {
+
+        if (n < 0) {
+            throw new IllegalArgumentException("n must be non-negative");
+        }
         
         int nthElement = (int)(n/ITEM_BIT_LENGTH);
         
