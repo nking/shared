@@ -8,7 +8,7 @@ import algorithms.misc.Misc0;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.logging.Logger;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
 
 import algorithms.sort.MiscSorter;
 import algorithms.util.FormatArray;

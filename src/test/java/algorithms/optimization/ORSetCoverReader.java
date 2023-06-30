@@ -8,7 +8,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  *

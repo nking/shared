@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Random;
 import java.util.logging.Logger;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
 import junit.framework.TestCase;
 import no.uib.cipr.matrix.*;
 import no.uib.cipr.matrix.sparse.ArpackSym;

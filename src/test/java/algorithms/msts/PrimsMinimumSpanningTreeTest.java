@@ -5,7 +5,7 @@ import algorithms.util.SimpleLinkedListNode;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
 import junit.framework.TestCase;
 
 /**

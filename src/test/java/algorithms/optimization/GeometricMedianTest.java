@@ -3,7 +3,7 @@ package algorithms.optimization;
 import algorithms.statistics.Standardization;
 import thirdparty.dlib.optimization.*;
 import java.util.Arrays;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
 import junit.framework.TestCase;
 
 /**

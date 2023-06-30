@@ -3,7 +3,7 @@ package algorithms.graphs;
 import algorithms.graphs.ApproxGraphSearchZeng.Graph;
 import java.util.ArrayList;
 import java.util.List;
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 import junit.framework.TestCase;
 
 /**
