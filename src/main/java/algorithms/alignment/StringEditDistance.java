@@ -32,6 +32,36 @@ import java.util.Arrays;
  * @author nichole
  */
 public class StringEditDistance {
+
+
+    /**
+     * calculate the number of insert, delete, and substitution operations to change
+     * one string into another following Wagner and Fischer 1954
+     * "The String-to-String Correction Problem".
+     * This uses dynamic programming with time O(a.length * b.length)
+     * and space O(a.length * b.length).
+     * http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.367.5281&amp;rep=rep1&amp;type=pdf
+     *
+     * Also, see Levenshtein Distance:
+     * https://en.wikipedia.org/wiki/Levenshtein_distance
+     *
+     * see also https://en.wikipedia.org/wiki/Needleman%E2%80%93Wunsch_algorithm
+     * and
+     * Vintsyuk TK (1968). "Speech discrimination by dynamic programming". Kibernetika. 4: 81–88.
+     *
+     * Other methods for comparing string similarity are Jaccard similarity,
+     * Jaro-Winkler distance, and dynamic time warping
+     * (see thirdparty.fpetitjean.dba.DynamicTimeWarpingBarycenterAveraging in this project).
+     *
+     @param a string to edit
+     @param b target string to change a into.
+     @param outIndexes a and b indexes of the solution in pairs (a_i, b_j)
+     @return the number of insert, delete, and substitution operations to change
+      *      * one string into another
+     */
+    public int calculateWithWagnerFischer(String a, String b, PairIntArray outIndexes) {
+        return calculateWithWagnerFischer(a, b, outIndexes, true);
+    }
    
     /**
      * calculate the number of insert, delete, and substitution operations to change
@@ -55,13 +85,17 @@ public class StringEditDistance {
      @param a string to edit
      @param b target string to change a into.
      @param outIndexes a and b indexes of the solution in pairs (a_i, b_j)
+     @param stringEdit if true, solve for string edit, else solve for longest common subsequence
      @return the number of insert, delete, and substitution operations to change
      *      * one string into another
      */
-    public int calculateWithWagnerFischer(String a, String b, PairIntArray outIndexes) {
+    public int calculateWithWagnerFischer(String a, String b, PairIntArray outIndexes,
+                                          boolean stringEdit) {
         
-        final int cDel = 1;
-        final int cIns = 1;
+        final int cDel = stringEdit ? 1 : 0;
+        final int cIns = stringEdit ? 1 : 0;
+        final int cEqual = stringEdit ? 0 : 1;
+        final int cUnequal = stringEdit ? 1 : 0;
          /*
         The positive costs and minimization are the common forms in this
         algorithm in context of computer science.
@@ -72,7 +106,6 @@ public class StringEditDistance {
          Pages 45–53, https://doi.org/10.1093/bioinformatics/13.1.45
         */
         
-        int cChangeUnequal = 1;
         int m = a.length();
         int n = b.length();
         // (m+1) X (n+1)
@@ -113,11 +146,11 @@ public class StringEditDistance {
         */
         
         for (int i = 1; i <= m; ++i) {
-            d[i][0] = i; //i*cDel
+            d[i][0] = i*cDel;
         }
         for (int i = 1; i <= n; ++i) {
             //a conversion of empty string 'a' into 'b' is all inserts
-            d[0][i] = i; //i*cIns
+            d[0][i] = i*cIns;
         }
         
         int i, j;
@@ -126,15 +159,19 @@ public class StringEditDistance {
         for (j = 1; j <= n; ++j) {
             for (i = 1; i <= m; ++i) {
                 if (a.charAt(i-1) == b.charAt(j-1)) {
-                    c = 0;
+                    c = cEqual;
                 } else {
-                    c = cChangeUnequal;
+                    c = cUnequal;
                 }
-                System.out.println(a.charAt(i-1) + " " + b.charAt(j-1)
+                /*System.out.println(a.charAt(i-1) + " " + b.charAt(j-1)
                         + " : " + (d[i-1][j-1] + c) + ", " + (d[i-1][j] + cDel) + "," + (d[i][j-1] + cIns)
                         + "=>[" + (i-1) + " " + (j-1) + "]"
-                );
-                d[i][j] = minimum(d[i-1][j-1] + c, d[i-1][j] + cDel, d[i][j-1] + cIns);
+                );*/
+                if (stringEdit) {
+                    d[i][j] = minimum(d[i - 1][j - 1] + c, d[i - 1][j] + cDel, d[i][j - 1] + cIns);
+                } else {
+                    d[i][j] = Math.max(Math.max(d[i - 1][j - 1] + c, d[i - 1][j] + cDel), d[i][j - 1] + cIns);
+                }
             }
         }
         

@@ -1,6 +1,8 @@
 package algorithms.alignment;
 
 import java.util.Arrays;
+
+import algorithms.util.PairIntArray;
 import junit.framework.TestCase;
 
 /**
@@ -15,7 +17,7 @@ public class LongestCommonSubsequenceTest extends TestCase {
     public void testCalculateWithCormenEtAl() {
         System.out.println("testCalculateWithCormenEtAl");
         
-        // Fig. 15.6 from Corment et al.
+        // Fig. 15.6 from Cormen et al.
         
         /*
          *  C  j  .  0  1   2   3   4   5   6
@@ -67,7 +69,19 @@ public class LongestCommonSubsequenceTest extends TestCase {
         System.out.println("   0 UL1  U2  U2  U3 UL4  U4");
         
         assertTrue(Arrays.equals(ans, result));
-        
+
+        PairIntArray out = new PairIntArray();
+        StringEditDistance sed = new StringEditDistance();
+        int r = sed.calculateWithWagnerFischer(new String("ABCBDAB"),
+                new String("BDCABA"), out, false);
+        System.out.println("r=" + r + " out=" + out.toString());
+        PairIntArray expected0 = new PairIntArray();
+        expected0.add(5,5);
+        expected0.add(3,4);
+        expected0.add(2,2);
+        expected0.add(1,0);
+        assertEquals(expected0.toString(), out.toString());
     }
-    
+
+
 }
