@@ -133,6 +133,7 @@ public class ConnectedValuesGroupFinder implements IConnectedValuesGroupFinder {
         } else {
             /*
             for 8 neighbor, can use 4 offsets instead of 8 if visiting all pix
+            to avoid repeating calculations
             
              2  *  *  *       (2,0) 1:2,1:1,2:1
              1  *  *  +       (1,1) 0:1,0:0,1:0,2:0,2:1,2:2,1:2,0:2
@@ -191,26 +192,18 @@ public class ConnectedValuesGroupFinder implements IConnectedValuesGroupFinder {
      */
     protected void processPair(long uPoint, long vPoint) {
 
-        DisjointSet2Node<Long> uNode = pixNodes.get(uPoint);
-        DisjointSet2Node<Long> uParentNode
-            = disjointSetHelper.findSet(uNode);
-        assert(uParentNode != null);
+        DisjointSet2Node<Long> uReprNode = disjointSetHelper.findSet(pixNodes.get(uPoint));
+        assert(uReprNode != null);
 
-        int uGroupId = uParentNode.getMember().intValue();
+        DisjointSet2Node<Long> vReprNode = disjointSetHelper.findSet(pixNodes.get(vPoint));
+        assert(vReprNode != null);
 
-        DisjointSet2Node<Long> vNode = pixNodes.get(vPoint);
-        DisjointSet2Node<Long> vParentNode
-            = disjointSetHelper.findSet(vNode);
-        assert(vParentNode != null);
+        DisjointSet2Node<Long> mergedNode = disjointSetHelper.union(uReprNode, vReprNode);
 
-        long vGroupId = vParentNode.getMember().longValue();
-
-        DisjointSet2Node<Long> merged =
-            disjointSetHelper.union(uParentNode, vParentNode);
-
-        pixNodes.put(uGroupId, merged);
-
-        pixNodes.put(vGroupId, merged);
+        pixNodes.put(uPoint, mergedNode);
+        pixNodes.put(vPoint, mergedNode);
+        pixNodes.put(uReprNode.getMember().intValue(), mergedNode);
+        pixNodes.put(vReprNode.getMember().longValue(), mergedNode);
     }
 
     private List<TLongSet> prune() {
@@ -218,8 +211,7 @@ public class ConnectedValuesGroupFinder implements IConnectedValuesGroupFinder {
         // key = repr node index, value = set of pixels w/ repr
         TLongObjectMap<TLongSet> map = new TLongObjectHashMap<TLongSet>();
 
-        TLongObjectIterator<DisjointSet2Node<Long>> iter =
-            pixNodes.iterator();
+        TLongObjectIterator<DisjointSet2Node<Long>> iter = pixNodes.iterator();
         for (int i = 0; i < pixNodes.size(); ++i) {
 
             iter.advance();
@@ -273,9 +265,7 @@ public class ConnectedValuesGroupFinder implements IConnectedValuesGroupFinder {
                 
                 long pixIdx = ph.toPixelIndex(i, j, w);
             
-                DisjointSet2Node<Long> pNode =
-                    disjointSetHelper.makeSet(
-                    new DisjointSet2Node<Long>(Long.valueOf(pixIdx)));
+                DisjointSet2Node<Long> pNode = disjointSetHelper.makeSet(new DisjointSet2Node<Long>(Long.valueOf(pixIdx)));
 
                 pixNodes.put(pixIdx, pNode);
             }

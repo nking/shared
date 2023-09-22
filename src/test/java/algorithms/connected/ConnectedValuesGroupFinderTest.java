@@ -1,5 +1,6 @@
 package algorithms.connected;
 
+import algorithms.util.FormatArray;
 import algorithms.util.PixelHelper;
 import gnu.trove.iterator.TLongIterator;
 import gnu.trove.set.TIntSet;
@@ -58,7 +59,7 @@ public class ConnectedValuesGroupFinderTest extends TestCase {
         data[2] = new int[]{0, 1, 2, 3, 0};
         data[3] = new int[]{0, 2, 3, 1, 0};
         data[4] = new int[]{0, 0, 0, 0, 0};
-        
+
         ConnectedValuesGroupFinder finder = new ConnectedValuesGroupFinder();
         finder.setMinimumNumberInCluster(2);
         finder.setToUse8Neighbors();

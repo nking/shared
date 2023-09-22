@@ -27,7 +27,7 @@ public class BeamSearchTest extends TestCase {
         */
         SimpleLinkedListNode[] adjList = new SimpleLinkedListNode[21];
         for (int i = 0; i < 21; i++) {
-            adjList[i] = new SimpleLinkedListNode(i);
+            adjList[i] = new SimpleLinkedListNode();
         }
         adjList[0].insert(1);
         adjList[0].insert(2);
@@ -59,6 +59,8 @@ public class BeamSearchTest extends TestCase {
         
         BeamSearch b = new BeamSearch(adjList, 0, k);
         TIntList searched = b.search();
+
+        //System.out.printf("searched=%s\n", searched.toString());
         
         assertEquals(21-6, searched.size());
     }
@@ -74,12 +76,12 @@ public class BeamSearchTest extends TestCase {
         /*
                         0
             1                      2
-          3    4            5         6         7
-        8  9  10  11     12 13 14   15 16 17  18 19 20   
+          3    4            5        *6          7
+        8  9  10  11     12 *13 14  15 *16 17  18 *19 20
         */
         LinkedListCostNode[] adjList = new LinkedListCostNode[21];
         for (int i = 0; i < 21; i++) {
-            adjList[i] = new LinkedListCostNode(i);
+            adjList[i] = new LinkedListCostNode();
         }
         adjList[0].insert(1, c);
         adjList[0].insert(2, c);
@@ -111,8 +113,9 @@ public class BeamSearchTest extends TestCase {
         
         BeamSearch b = new BeamSearch(adjList, 0, k);
         TIntList searched = b.search();
-        
-        
+
+        //System.out.printf("searched=%s\n", searched.toString());
+
         assertEquals(21-6, searched.size());
         
         //6,15,16,17,13,19

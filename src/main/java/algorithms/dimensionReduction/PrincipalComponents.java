@@ -472,8 +472,9 @@ public class PrincipalComponents {
         int i;
         int j;
 
-        double[][] re = MatrixUtil.multiply(stats.principalComponents,
-                stats.principalAxes);
+        // pC = SVD(X).U * diag(SVD(X).s) for first p cols of U
+        // pA = first k rows of V^T
+        double[][] re = MatrixUtil.multiply(stats.principalComponents, stats.principalAxes);
         //reconstructions = stats.principalComponents dot stats.pA + column means
         //    which is u_P * s dot pA
         //[n X p] * [p X k] = [n X k]
@@ -504,8 +505,12 @@ public class PrincipalComponents {
         double[][] principalAxes;
 
         /**
-         * principal components are the data projected onto the principal axes.
-         * principal components = X*V = U * D where X = SVD(X).U * diag(SVD(X).s) * SVD(X).vT
+         * principal components are the data projected onto the principal axes, formed from the left
+         eigenvectors dot singular values.
+         <pre>
+          principal components = first p columns of U times first p elements of diagonal S:
+                               = SVD(X).U * diag(SVD(X).s)
+         </pre>
          * The size is [n X p] where n is x.length and p is the number of components.
          */
         double[][] principalComponents;

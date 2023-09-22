@@ -216,7 +216,7 @@ public class ConnectedValuesGroupFinder2 implements IConnectedValuesGroupFinder 
         }
     }
     
-    private long getKeyRecipr(long pixIdx) {
+    private long getKeyRec(long pixIdx) {
         
         if (!pixKeyMap.containsKey(pixIdx)) {
             return -1;
@@ -252,8 +252,8 @@ public class ConnectedValuesGroupFinder2 implements IConnectedValuesGroupFinder 
             if (uKey == vKey) {
                 return;
             }
-            uKey = getKeyRecipr(uPoint);
-            vKey = getKeyRecipr(vPoint);
+            uKey = getKeyRec(uPoint);
+            vKey = getKeyRec(vPoint);
             if (uKey == vKey) {
                 return;
             }
@@ -265,13 +265,13 @@ public class ConnectedValuesGroupFinder2 implements IConnectedValuesGroupFinder 
             pixKeyMap.put(vKey, uKey);
             
             //System.out.println("  key=>" + uKey);
-            //System.out.println("  getKeyRecipr(uPoint)=" + getKeyRecipr(uPoint));
-            //System.out.println("  getKeyRecipr(vPoint)=" + getKeyRecipr(vPoint));
-            //System.out.println("  getKeyRecipr(uKey)=" + getKeyRecipr(uKey));
-            //System.out.println("  getKeyRecipr(vKey)=" + getKeyRecipr(vKey));
+            //System.out.println("  getKeyRec(uPoint)=" + getKeyRec(uPoint));
+            //System.out.println("  getKeyRec(vPoint)=" + getKeyRec(vPoint));
+            //System.out.println("  getKeyRec(uKey)=" + getKeyRec(uKey));
+            //System.out.println("  getKeyRec(vKey)=" + getKeyRec(vKey));
             
         } else if (pixKeyMap.containsKey(uPoint)) {
-            long uKey = getKeyRecipr(uPoint);
+            long uKey = getKeyRec(uPoint);
             TLongSet uSet = keySetMap.get(uKey);
             uSet.add(vPoint);
             pixKeyMap.put(vPoint, uKey);
@@ -280,7 +280,7 @@ public class ConnectedValuesGroupFinder2 implements IConnectedValuesGroupFinder 
             //    " key=" + uKey);
             
         } else if (pixKeyMap.containsKey(vPoint)) {
-            long vKey = getKeyRecipr(vPoint);
+            long vKey = getKeyRec(vPoint);
             TLongSet vSet = keySetMap.get(vKey);
             vSet.add(uPoint);
             pixKeyMap.put(uPoint, vKey);

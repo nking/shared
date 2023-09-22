@@ -3,6 +3,7 @@ package algorithms.matrix;
 import algorithms.matrix.LinearEquations.LU;
 import algorithms.matrix.LinearEquations.LUP;
 import algorithms.misc.Misc0;
+import algorithms.misc.MiscMath0;
 import algorithms.util.FormatArray;
 import algorithms.util.PairInt;
 import gnu.trove.list.array.TDoubleArrayList;
@@ -3483,21 +3484,29 @@ public class MatrixUtil {
     /**
      * normalize vector v by power p, that is the (1/p) power of sum of
      * its (components)^p.  notation is sometimes ||v||_p.
-     * when p = 0, this is the manhattan normalization or taxi-cab normalization,
-     * when p = 2, this is the euclidean normalization.
+     <pre>
+     when p = 0, this is the manhattan normalization or taxi-cab normalization,
+     when p = 2, this is the euclidean normalization,
+     when p = Double.POSITIVE_INFINITY, this is the max.
+     </pre>
      @param v array
      @param p
      @return array v normalized by its lp_p sum.
      */
     public static double[] normalizeLP(double[] v, double p) {
-        double sum = 0;
-        for (double a : v) {
-            sum += Math.pow(a, p);
+        double divisor = 0;
+        if (Double.isInfinite(p)) {
+            divisor = MiscMath0.findMax(v);
+        } else {
+
+            for (double a : v) {
+                divisor += Math.pow(a, p);
+            }
+            divisor = Math.pow(divisor, 1. / p);
         }
-        sum = Math.pow(sum, 1./p);
         double[] out = Arrays.copyOf(v, v.length);
         for (int i = 0; i < v.length; ++i) {
-            out[i] /= sum;
+            out[i] /= divisor;
         }
         return out;
     }
@@ -4043,7 +4052,7 @@ public class MatrixUtil {
         matrix A is positive definite for every non-zero vector x if x^T*A*x > 0
 
         when a symmetric nxn matrix has 1 of these 4, it has all 4:
-            1) both eigenvectors are positive
+            1) both eigenvalues are positive
                Note: mathworks recommends a tolerance for error, so all eigenvalues > tolerance above 0.
             2) all upper left determinants (the 1x1 and 2x2 ... ) are positive
             3) the pivots are positive a>0 and a*c-b^2>0

@@ -7,6 +7,8 @@ import algorithms.util.LinkedListCostNode;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import java.util.Arrays;
+
+import gnu.trove.map.TIntIntMap;
 import thirdparty.edu.princeton.cs.algs4.Queue;
 
         
@@ -37,7 +39,7 @@ public class BeamSearch {
     /**
      *
      */
-    protected int[] d = null;
+    protected int[] dist = null;
 
     /**
      *
@@ -47,19 +49,17 @@ public class BeamSearch {
     /**
      *
      */
-    protected int[] color = null;
+    protected int[] visited = null;
 
     /**
      *
      */
     protected SimpleLinkedListNode[] adjacencyList = null;
 
-    // source index
-
     /**
-     *
+     * source index
      */
-    protected final int s;
+    protected final int src;
 
     /**
      *
@@ -78,16 +78,16 @@ public class BeamSearch {
             final int beamSize) {
 
         this.adjacencyList = theAdjacencyList;
-        this.d = new int[adjacencyList.length];
+        this.dist = new int[adjacencyList.length];
         this.predecessor = new int[adjacencyList.length];
-        this.color = new int[adjacencyList.length];
+        this.visited = new int[adjacencyList.length];
         if (sourceNodeIndex < 0) {
             throw new IllegalArgumentException("sourceNodeIndex cannot be a negative number");
         }
         if (sourceNodeIndex >= adjacencyList.length) {
             throw new IllegalArgumentException("sourceNodeIndex must be an index within size limits of theAdjacencyList");
         }
-        this.s = sourceNodeIndex;
+        this.src = sourceNodeIndex;
         
         if (beamSize <= 0) {
             throw new IllegalArgumentException("beamSize must be a positive number greater than 0");
@@ -107,16 +107,16 @@ public class BeamSearch {
             final int beamSize) {
 
         this.adjacencyList = theAdjacencyList;
-        this.d = new int[adjacencyList.length];
+        this.dist = new int[adjacencyList.length];
         this.predecessor = new int[adjacencyList.length];
-        this.color = new int[adjacencyList.length];
+        this.visited = new int[adjacencyList.length];
         if (sourceNodeIndex < 0) {
             throw new IllegalArgumentException("sourceNodeIndex cannot be a negative number");
         }
         if (sourceNodeIndex >= adjacencyList.length) {
             throw new IllegalArgumentException("sourceNodeIndex must be an index within size limits of theAdjacencyList");
         }
-        this.s = sourceNodeIndex;
+        this.src = sourceNodeIndex;
         
         if (beamSize <= 0) {
             throw new IllegalArgumentException("beamSize must be a positive number greater than 0");
@@ -133,43 +133,46 @@ public class BeamSearch {
         TIntList searched = new TIntArrayList();
                 
         // initialize
-        Arrays.fill(d, Integer.MAX_VALUE);
+        Arrays.fill(dist, Integer.MAX_VALUE);
         Arrays.fill(predecessor, -1);
-        Arrays.fill(color, 0);        
-        setColorToGray(s);
-        d[s] = 0;
-        predecessor[s] = -1;
+        Arrays.fill(visited, 0);
+        visited[src] = 1;
+        dist[src] = 0;
         Queue queue = new Queue();
-        queue.enqueue(s);
+        queue.enqueue(src);
+
+        int dUPlusWUV;
 
         while (!queue.isEmpty()) {
 
-            int u = (Integer)queue.dequeue();
+            final int u = (Integer)queue.dequeue();
+
+            if (visited[u] == 2) {
+                continue;
+            }
 
             searched.add(u);
 
             SimpleLinkedListNode vNode = adjacencyList[u];
 
-            FixedSizeSortedVector<Index> sorted = 
-                new FixedSizeSortedVector(beamSize, Index.class);
+            FixedSizeSortedVector<Index> sorted = new FixedSizeSortedVector(beamSize, Index.class);
         
-            while (vNode != null) {
+            while (vNode != null && vNode.getNumberOfKeys() > 0) {
 
-                int v = vNode.getKey();
-                
-                if (isColorWhite(v)) {
+                final int v = vNode.getKey();
 
-                    setColorToGray(v);
-
-                    if (vNode instanceof LinkedListCostNode) {
-                        d[v] = d[u] + ((LinkedListCostNode)vNode).getCost();
-                    } else {
-                        d[v] = d[u] + 1;
-                    }
-
+                if (vNode instanceof LinkedListCostNode) {
+                    dUPlusWUV = dist[u] + ((LinkedListCostNode)vNode).getCost();
+                } else {
+                    dUPlusWUV = dist[u] + 1;
+                }
+                if (dist[v] > dUPlusWUV) {
+                    dist[v] = dUPlusWUV;
                     predecessor[v] = u;
-
-                    sorted.add(new Index(v));
+                    if (visited[v] == 0) {
+                        visited[v] = 1;
+                        sorted.add(new Index(v, dist[v]));
+                    }
                 }
 
                 vNode = vNode.getNext();
@@ -180,62 +183,102 @@ public class BeamSearch {
                 queue.enqueue(sortedArray[z].idx);
             }
 
-            setColorToBlack(u);
+            visited[u] = 2;
         }
         
         return searched;
     }
 
-    /**
-     *
-     @param nodeIndex
-     */
-    protected void setColorToWhite(int nodeIndex) {
-        color[nodeIndex] = 0;
-        //System.out.println(nodeIndex + " = white");
-    }
-
-    /**
-     *
-     @param nodeIndex
-     */
-    protected void setColorToGray(int nodeIndex) {
-        color[nodeIndex] = 1;
-        //System.out.println(nodeIndex + " = gray");
-    }
-
-    /**
-     *
-     @param nodeIndex
-     */
-    protected void setColorToBlack(int nodeIndex) {
-        color[nodeIndex] = 2;
-        //System.out.println(nodeIndex + " = black");
-    }
-
-    /**
-     *
-     @param nodeIndex
-     @return
-     */
-    protected boolean isColorWhite(int nodeIndex) {
-        return (color[nodeIndex] == 0);
-    }
-
     private class Index implements Comparable<Index> {
 
         private final int idx;
-        
-        public Index(int index) {
+        private final int dist;
+
+        public Index(int index, int pathDist) {
             this.idx = index;
+            this.dist = pathDist;
         }
         
         @Override
         public int compareTo(Index c) {
-            int c1 = d[idx];
-            int c2 = d[c.idx];
-            return Integer.compare(c1, c2);
+            // compare distances. this is within scope of d
+            return Integer.compare(dist, c.dist);
         }
         
     }
+
+
+    /**
+     * get shortest path from source to destIndex
+     @param destVertex
+     @return
+     */
+    public int[] getShortestPathToVertex(int destVertex) {
+        int n = adjacencyList.length;
+        if (destVertex < 0 || destVertex >= n) {
+            throw new IllegalArgumentException("destIndex cannot be null");
+        }
+        if (predecessor == null) {
+            throw new IllegalStateException("find must be run before this method can be used");
+        }
+
+        int[] p = new int[n];
+        p[p.length - 1] = destVertex;
+
+        for (int i = p.length - 2; i > -1; --i) {
+            if (destVertex == src) {
+                int len = p.length - 1 - i;
+                int[] t = new int[len];
+                System.arraycopy(p, i + 1, t, 0, len);
+                return t;
+            } else if (destVertex == -1) {
+                throw new IllegalStateException("path did not complete correctly");
+            }
+            p[i] = predecessor[destVertex];
+            destVertex = p[i];
+        }
+
+        if (p[0] != src) {
+            throw new IllegalStateException("path did not complete correctly for destIndex");
+        }
+
+        return p;
+    }
+
+    /**
+     *
+     @param vertexes
+     @return
+     */
+    public int getSumOfPath(int[] vertexes) {
+        if (vertexes == null) {
+            throw new IllegalArgumentException("vertexes cannot be null");
+        }
+        if (dist == null) {
+            throw new IllegalStateException("find must be run before this method can be used");
+        }
+        int sum = 0;
+        int u, v;
+        SimpleLinkedListNode vNode;
+        int dUV;
+        for (int i = 1; i < vertexes.length; ++i) {
+            u = vertexes[i - 1];
+            v = vertexes[i];
+
+            vNode = adjacencyList[u];
+            if (vNode == null) {
+                throw new IllegalStateException("no edge from " + u + " to " + v);
+            }
+
+            if (vNode instanceof LinkedListCostNode) {
+                dUV = ((LinkedListCostNode)vNode).getCost();
+            } else {
+                dUV = 1;
+            }
+
+            sum += dUV;
+        }
+        return sum;
+    }
+
 }

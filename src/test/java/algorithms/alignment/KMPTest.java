@@ -37,7 +37,7 @@ public class KMPTest extends TestCase {
                   X               X
                                  pi[4]
                                  q=3                  q=1
-                                 i=6->5               i=11
+                                 i=5                  i=10
          */
 
     }
@@ -64,8 +64,7 @@ public class KMPTest extends TestCase {
          *                *3                     *9
                                       X
                                      pi[4]
-                                     q=
-                                     i=
+                                     q=3
          */
 
     }

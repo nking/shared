@@ -31,6 +31,7 @@ public class DistanceTransformTest extends TestCase {
         double[][] data = new double[w][h];
         for (int x = 0; x < w; ++x) {
             data[x] = new double[h];
+
         }
         
         /*
@@ -72,10 +73,10 @@ public class DistanceTransformTest extends TestCase {
         data[7][7] = 1;
             
         DistanceTransform dtr = new DistanceTransform();
-        
+
         // ----- inverse binary of that  ----------
         Set<PairInt> pointsInvM = new HashSet<PairInt>();
-        
+
         for (int x = 0; x < w; ++x) {
             for (int y = 0; y < h; ++y) {
                 PairInt p = new PairInt(x, y);
@@ -84,7 +85,7 @@ public class DistanceTransformTest extends TestCase {
                 }
             }
         }
-        
+
         int[][] dtInvM = dtr.applyMeijsterEtAl(pointsInvM, w, h);
         
         assertFabbri(dtInvM, w, h);

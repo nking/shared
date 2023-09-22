@@ -40,15 +40,16 @@ public class StringEditDistance {
      * "The String-to-String Correction Problem".
      * This uses dynamic programming with time O(a.length * b.length)
      * and space O(a.length * b.length).
-     * http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.367.5281&amp;rep=rep1&amp;type=pdf
-     *
-     * Also, see Levenshtein Distance:
-     * https://en.wikipedia.org/wiki/Levenshtein_distance
-     *
-     * see also https://en.wikipedia.org/wiki/Needleman%E2%80%93Wunsch_algorithm
-     * and
-     * Vintsyuk TK (1968). "Speech discrimination by dynamic programming". Kibernetika. 4: 81–88.
-     *
+     <pre>
+     http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.367.5281&amp;rep=rep1&amp;type=pdf
+
+     Also, see Levenshtein Distance:
+     https://en.wikipedia.org/wiki/Levenshtein_distance
+
+     see also https://en.wikipedia.org/wiki/Needleman%E2%80%93Wunsch_algorithm
+     and
+     Vintsyuk TK (1968). "Speech discrimination by dynamic programming". Kibernetika. 4: 81–88.
+     </pre>
      * Other methods for comparing string similarity are Jaccard similarity,
      * Jaro-Winkler distance, and dynamic time warping
      * (see thirdparty.fpetitjean.dba.DynamicTimeWarpingBarycenterAveraging in this project).
@@ -66,18 +67,21 @@ public class StringEditDistance {
     /**
      * calculate the number of insert, delete, and substitution operations to change
      * one string into another following Wagner and Fischer 1954 
-     * "The String-to-String Correction Problem".
+     * "The String-to-String Correction Problem"
+     * or calculate the longest common subsequence by setting stringEdit = true.
+
      * This uses dynamic programming with time O(a.length * b.length)
      * and space O(a.length * b.length).
-     * http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.367.5281&amp;rep=rep1&amp;type=pdf
-     * 
-     * Also, see Levenshtein Distance:
-     * https://en.wikipedia.org/wiki/Levenshtein_distance
-     * 
-     * see also https://en.wikipedia.org/wiki/Needleman%E2%80%93Wunsch_algorithm
-     * and
-     * Vintsyuk TK (1968). "Speech discrimination by dynamic programming". Kibernetika. 4: 81–88.
-     * 
+     <pre>
+     http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.367.5281&amp;rep=rep1&amp;type=pdf
+
+     Also, see Levenshtein Distance:
+     https://en.wikipedia.org/wiki/Levenshtein_distance
+
+     see also https://en.wikipedia.org/wiki/Needleman%E2%80%93Wunsch_algorithm
+     and
+     Vintsyuk TK (1968). "Speech discrimination by dynamic programming". Kibernetika. 4: 81–88.
+     </pre>
      * Other methods for comparing string similarity are Jaccard similarity, 
      * Jaro-Winkler distance, and dynamic time warping
      * (see thirdparty.fpetitjean.dba.DynamicTimeWarpingBarycenterAveraging in this project).

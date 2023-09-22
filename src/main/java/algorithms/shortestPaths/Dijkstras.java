@@ -17,8 +17,10 @@ import java.util.Arrays;
  * 
  * The runtime complexity is O(|V| + |E|) due to use of a YFastTrie as the min-priority heap.
    Note runtime complexity using YFasttrie is O(|V|*(log log(M)) + |E|)     
-   where M is the number of bits of the maximum value the trie
-   runtime complexity using Fibonacci is O(|V|*log_2|V| + |E|)
+   where M is the number of bits of the maximum value the trie.
+
+   Implementations using a Fibonacci Heap have runtime complexity
+    O(|V|*log_2|V| + |E|)
  * 
  * implemented from pseudocode from Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms"
  * then edited to use heaps and priority queues.

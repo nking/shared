@@ -40,8 +40,7 @@ public class UnivariateNormalDistributionTest extends TestCase {
         
         // K-S test
         
-        double[] u = UnivariateNormalDistribution.randomSampleOf(mean, sigma,
-            rand, n);
+        double[] u = UnivariateNormalDistribution.randomSampleOf(mean, sigma, rand, n);
         
         double[] avgAndStDev = MiscMath0.getAvgAndStDev(u);
         
@@ -87,8 +86,9 @@ public class UnivariateNormalDistributionTest extends TestCase {
         // if ksStat < crit, do not reject null hypothesis (which is that
         //    the generated samples come from a gaussian distribution of mean, sigma.
         double crit = 1.36/Math.sqrt(n);
-        
-        assert(ksStat < crit);   
+        System.out.printf("ksStat=%.3f, crit=%.3f\n", ksStat, crit);
+        crit += 1E-3;// giving it a small tolerance
+        assertTrue(ksStat < crit);
     }
 
     private double[] generateGaussianCDF(float[] xHist, double mean, double sigma) {

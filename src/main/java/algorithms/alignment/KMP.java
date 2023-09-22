@@ -14,9 +14,12 @@ public class KMP {
 
     /**
      * find the indexes of t where the complete matches of p begin.
-     *
-     * the method implements KMP-Matcher from
-     * Introduction to Algorithms, by Corman, Leiserson, Rivest, and Stein (CLRS)
+     * The runtime complexity is O(m) + O(n) where m is the length of the
+     * pattern and n is the length of the text to search.
+     <pre>
+         reference:
+         Introduction to Algorithms, by Corman, Leiserson, Rivest, and Stein (CLRS)
+     </pre>
      * @param p pattern of characters to find in t
      * @param t text to be searched for pattern p
      * @return the indexes of t where the complete matches of p begin.

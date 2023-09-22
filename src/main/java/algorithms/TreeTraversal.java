@@ -272,7 +272,7 @@ public class TreeTraversal {
         Queue<Integer> nodeLevel = new ArrayDeque<>();
         Queue<Long> nodeParent = new ArrayDeque<>();
         Queue<Character> leftOrRight = new ArrayDeque<>();
-        
+
         int level = 0;
         Character lOrR = '-';
         Long parent = -1L;
@@ -317,8 +317,8 @@ public class TreeTraversal {
      * adapted from https://www.geeksforgeeks.org/inorder-tree-traversal-without-recursion/?ref=gcse 
      <pre>
        e.g.
-               0
-            1           2
+                  0
+             1           2
            3  4      5     6
          7     10     8      11
                         9   12 13

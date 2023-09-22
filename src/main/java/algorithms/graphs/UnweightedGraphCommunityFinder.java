@@ -15,6 +15,26 @@ import java.util.List;
  */
 public class UnweightedGraphCommunityFinder {
 
+    /*
+    TODO: consider adding the simplest spectral graph partitioning for comparison.
+    caveat is that it hasn't been found to be a good partitoning of networks in general.
+    reference:  Newman 2006, "Finding community structure in networks using the eigenvectors of matrices"
+
+   (1) create Laplacian from Degree matrix and adjacency matrix:
+      L = D - A
+   (2) find the 2nd smallest eifenvector (the Fieldler vector) using
+   CUR decomposition or other efficient matrix methods.
+
+   (3) v_i are the normalized eigenvectors v of the Laplacian, but we only need the 2nd smallest eigenvector.
+
+   (4) then assign membership:
+       index vector s of n elements.
+       s_i = +1 if vertex i is in group 1.  assign if v_i >= 0 for Fielder vector
+           = -1 if vertex i is in group 2.  assign if v_i < 0 for Fielder vector
+   (5) can repeat that until some criteria are met or exceeded
+
+   see also graph cuts algorithm and girvan newman algorithm.
+     */
     /**
      *
      */

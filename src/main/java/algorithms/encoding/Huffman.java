@@ -164,8 +164,8 @@ public class Huffman {
         int n = c.length();
 
         // key = code point of character, value = number of times character is in c
-        int sumF = 0;
         TIntIntMap f = new TIntIntHashMap();
+        int sumF = 0;
         int cP;
         int fP;
         int i;
@@ -254,7 +254,7 @@ public class Huffman {
         //System.out.println("freqMap:");
         //printMap(f);   
         
-
+        // key = combined frequency, data=code point.
         HeapNode t = buildFrequencyCodeTree(f, sumF);
         
         
