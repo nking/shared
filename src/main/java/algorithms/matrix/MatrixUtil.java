@@ -2430,6 +2430,23 @@ public class MatrixUtil {
         return m;
     }
 
+
+    /**
+     *
+     @param a
+     @return
+     */
+    public static float[] copy(double[] a) {
+
+        float[] m = new float[a.length];
+
+        for (int i = 0; i < a.length; ++i) {
+            m[i] = (float)a[i];
+        }
+
+        return m;
+    }
+
     /**
      *
      @param source

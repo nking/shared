@@ -1,5 +1,7 @@
 package algorithms.sort;
 
+import algorithms.misc.MiscMath0;
+import algorithms.util.AngleUtil;
 import algorithms.util.FormatArray;
 
 import java.util.Arrays;
@@ -1556,5 +1558,352 @@ public class MiscSorter {
                 rightPos++;
             }
         }
-    }       
+    }
+
+    /**
+     * sort the given points in place by polar angle in counterclockwise order
+     * around the first point x[0], y[0].
+     * NOTE that the angles are rounded to degree integers for the "reduce to
+     * unique" step.
+     * The runtime complexity is O(n) where n = x.length.
+     * @param x array of x points
+     * @param y array of y points of same length as x.
+     @param reduceToUniqueAngles if true, for any points having the same polar angle, only the point furthest
+      *                             from the first point in (x,y) will be kept. if false, all points are kept.
+      * for reference, 0.1 degrees = 0.001745 radians.
+      * @return the number of usable points in the sorted arrays. if reduceToUniqueAngles is true,
+     * then for points having same angle,
+     * only the furthest from x[0], y[0] is kept, and so there may be points at the ends of arrays
+     * x,y, and outPolarAngle that are unusable.
+     */
+    public static int sortCCWBy1stPointLinear(long[] x, long[] y, boolean reduceToUniqueAngles) {
+        return sortCCWBy1stPointLinear(x, y, reduceToUniqueAngles, 1E-7);
+    }
+
+    /**
+     * sort the given points in place by polar angle in counterclockwise order
+     * around the first point x[0], y[0].
+     * NOTE that the angles are rounded to degree integers for the "reduce to
+     * unique" step.
+     * The runtime complexity is O(n) where n = x.length.
+     * @param x array of x points
+     * @param y array of y points of same length as x.
+     @param reduceToUniqueAngles if true, for any points having the same polar angle, only the point furthest
+      *                             from the first point in (x,y) will be kept. if false, all points are kept.
+     * for reference, 0.1 degrees = 0.001745 radians.
+     * @return the number of usable points in the sorted arrays. if reduceToUniqueAngles is true,
+     * then for points having same angle,
+     * only the furthest from x[0], y[0] is kept, and so there may be points at the ends of arrays
+     * x,y, and outPolarAngle that are unusable.
+     */
+    public static int sortCCWBy1stPointLinear(double[] x, double[] y, boolean reduceToUniqueAngles) {
+        return sortCCWBy1stPointLinear(x, y, reduceToUniqueAngles, 1E-7);
+    }
+
+    /**
+     * sort the given points in place by polar angle in counterclockwise order
+     * around the first point x[0], y[0].
+     * NOTE that the angles are rounded to degree integers for the "reduce to
+     * unique" step.
+     * The runtime complexity is O(n) where n = x.length.
+     * @param x array of x points
+     * @param y array of y points of same length as x.
+     @param reduceToUniqueAngles if true, for any points having the same polar angle, only the point furthest
+      *                             from the first point in (x,y) will be kept. if false, all points are kept.
+      * @param tolerance if reduceToUniqueAngles is true, tolerance is used to determing if two angles are equivalent.
+     *                  The angles are in radians and so is the tolerance.
+     * for reference, 0.1 degrees = 0.001745 radians.
+     * @return the number of usable points in the sorted arrays. if reduceToUniqueAngles is true,
+     * then for points having same angle,
+     * only the furthest from x[0], y[0] is kept, and so there may be points at the ends of arrays
+     * x,y, and outPolarAngle that are unusable.
+     */
+    public static int sortCCWBy1stPointLinear(double[] x, double[] y, boolean reduceToUniqueAngles, double tolerance) {
+
+        if (x.length != y.length) {
+            throw new IllegalArgumentException("x and y must be same length");
+        }
+
+        if (x.length < 3) {
+            return x.length;
+        }
+
+        double x0 = x[0];
+        double y0 = y[0];
+
+        double[] x1 = Arrays.copyOfRange(x, 1, x.length);
+        double[] y1 = Arrays.copyOfRange(y, 1, y.length);
+
+        double degRadians;
+        int[] polarAngleDegree1 = new int[x.length - 1];
+
+        for (int i = 0; i < x1.length; i++) {
+            degRadians = AngleUtil.polarAngleCCW((x1[i] - x0), (y1[i] - y0));
+            polarAngleDegree1[i] = (int)Math.round(degRadians * (180./Math.PI));
+        }
+
+        int[] sortedIndexes1;
+
+        int rangeOfData = MiscMath0.findMax(polarAngleDegree1) - MiscMath0.findMin(polarAngleDegree1);
+
+        if ((rangeOfData < 360) && (polarAngleDegree1.length >= 360)) {
+            // this will be O(360) if range of data is 0 to 359, inclusive
+            sortedIndexes1 = CountingSort.sortAndReturnIndexes(polarAngleDegree1);
+        } else {
+            // this will be O(N) where N is length of input array
+            sortedIndexes1 = BucketSort.sortAndReturnIndexes(polarAngleDegree1);
+        }
+
+        int i;
+        double[] polarAngleDegree = new double[x.length];
+        for (i = 0; i < x1.length; ++i) {
+            x[i+1] = x1[sortedIndexes1[i]];
+            y[i+1] = y1[sortedIndexes1[i]];
+            polarAngleDegree[i+1] = polarAngleDegree1[i];
+        }
+
+        // for same polar angles, keep the one which is furthest from x0, p0.
+        // assuming an angular resolution of 1 degree and using rounded integers for the angle degrees
+        int nUsable;
+        if (reduceToUniqueAngles) {
+            nUsable = reduceToUniquePolarAngles(x, y, polarAngleDegree, tolerance);
+        } else {
+            nUsable = x.length;
+        }
+
+        return nUsable;
+    }
+
+    private static void rewriteBySortedIndexes(int[] sortedIndexes1, double[] x) {
+
+        int n = x.length;
+
+        double[] x2 = new double[n];
+        for (int i = 0; i < n; ++i) {
+            x2[i] = x[sortedIndexes1[i]];
+        }
+
+        System.arraycopy(x2, 0, x, 0, n);
+    }
+
+
+    /**
+     * traverse the polar angles in pA, and if points have the same polar angles
+     * within tolerance, only keep the one furthest from (x0, y0).
+     * NOTE that x, y, deg should have been sorted by polar angle before using this method.
+     * This method compacts arrays x, y, and pA are compacted so that the usable values are at the
+     * top r indexes where r is returned by this method
+     * @param x x coordinates of points
+     * @param y y coordinates of points
+     * @param polarAngle polar angles of points in x,y w.r.t to their first points x[0], y[0].
+     *            x,y,deg should have been sorted by polar angle before using this method.
+     * @return returns the number of indexes usable in each of x, y, and pA
+     * after compacting the arrays to remove redundant polar angle degrees.
+     */
+    static int reduceToUniquePolarAngles(double[] x, double[] y, double[] polarAngle, double tolerance) {
+
+        if (x.length != polarAngle.length || x.length != y.length) {
+            throw new IllegalArgumentException("x, y, and polarAngle must be same lengths");
+        }
+
+        double maxDist = Double.NEGATIVE_INFINITY;
+        int iMaxDist;
+        double dist;
+        int nextI;
+        int i2 = 1;
+        int i = 1;
+        assert(polarAngle[0] == 0);
+
+        int n = x.length;
+
+        // process any angle=0's first.  we want to keep the first point and not use distance argument on it
+        while ((i < n) &&  (polarAngle[i] <= tolerance)) {
+            ++i;
+        }
+
+        for (; i < x.length; i++) {
+            // look ahead
+            nextI = i + 1;
+            iMaxDist = i;
+
+            if ( (nextI < x.length)   && (Math.abs( polarAngle[i] - polarAngle[nextI] ) <= tolerance) ) {
+                maxDist = relativeLengthOfLine(x[0], y[0], x[i], y[i]);
+            }
+
+            while ( (nextI < x.length)  && (Math.abs( polarAngle[i] - polarAngle[nextI] ) <= tolerance) ) {
+                dist = relativeLengthOfLine(x[0], y[0], x[nextI], y[nextI]);
+                if (maxDist < dist) {
+                    maxDist = dist;
+                    iMaxDist = nextI;
+                }
+                nextI++;
+            }
+
+            x[i2] = x[iMaxDist];
+            y[i2] = y[iMaxDist];
+            polarAngle[i2] = polarAngle[iMaxDist];
+            i = nextI - 1;
+            ++i2;
+        }
+
+        return i2;
+    }
+
+    static double relativeLengthOfLine(double x1, double y1, double x2, double y2) {
+        double dx2 = (x2 - x1);
+        dx2 *= dx2;
+        double dy2 = (y2 - y1);
+        dy2 *= dy2;
+        //double d = Math.sqrt(dx2 + dy2);
+        return dx2 + dy2;
+    }
+
+    /**
+     * sort the given points in place by polar angle in counterclockwise order
+     * around the first point x[0], y[0].
+     * NOTE that the angles are rounded to degree integers for the linear runtime.
+     * The runtime complexity is O(n) where n = x.length.
+     * @param x array of x points
+     * @param y array of y points of same length as x.
+     @param reduceToUniqueAngles if true, for any points having the same polar angle, only the point furthest
+      *                             from the first point in (x,y) will be kept. if false, all points are kept.
+      * @param tolerance if reduceToUniqueAngles is true, tolerance is used to determing if two angles are equivalent.
+     *                  The angles are in radians and so is the tolerance.
+     * for reference, 0.1 degrees = 0.001745 radians.
+     * @return the number of usable points in the sorted arrays. if reduceToUniqueAngles is true,
+     * then for points having same angle,
+     * only the furthest from x[0], y[0] is kept, and so there may be points at the ends of arrays
+     * x,y, and outPolarAngle that are unusable.
+     */
+    public static int sortCCWBy1stPointLinear(long[] x, long[] y, boolean reduceToUniqueAngles, double tolerance) {
+
+        if (x.length != y.length) {
+            throw new IllegalArgumentException("x and y must be same length");
+        }
+
+        if (x.length < 3) {
+            return x.length;
+        }
+
+        long x0 = x[0];
+        long y0 = y[0];
+
+        long[] x1 = Arrays.copyOfRange(x, 1, x.length);
+        long[] y1 = Arrays.copyOfRange(y, 1, y.length);
+
+        double degRadians;
+        int[] polarAngleDegree1 = new int[x.length - 1];
+
+        for (int i = 0; i < x1.length; i++) {
+            degRadians = AngleUtil.polarAngleCCW((double)(x1[i] - x0), (double)(y1[i] - y0));
+            polarAngleDegree1[i] = (int)Math.round(degRadians * (180./Math.PI));
+        }
+
+        int[] sortedIndexes1;
+
+        int rangeOfData = MiscMath0.findMax(polarAngleDegree1) - MiscMath0.findMin(polarAngleDegree1);
+
+        if ((rangeOfData < 360) && (polarAngleDegree1.length >= 360)) {
+            // this will be O(360) if range of data is 0 to 359, inclusive
+            sortedIndexes1 = CountingSort.sortAndReturnIndexes(polarAngleDegree1);
+        } else {
+            // this will be O(N) where N is length of input array
+            sortedIndexes1 = BucketSort.sortAndReturnIndexes(polarAngleDegree1);
+        }
+
+        int i;
+        double[] polarAngleDegree = new double[x.length];
+        for (i = 0; i < x1.length; ++i) {
+            x[i+1] = x1[sortedIndexes1[i]];
+            y[i+1] = y1[sortedIndexes1[i]];
+            polarAngleDegree[i+1] = polarAngleDegree1[i];
+        }
+
+        // for same polar angles, keep the one which is furthest from x0, p0.
+        // assuming an angular resolution of 1 degree and using rounded integers for the angle degrees
+        int nUsable;
+        if (reduceToUniqueAngles) {
+            nUsable = reduceToUniquePolarAngles(x, y, polarAngleDegree, tolerance);
+        } else {
+            nUsable = x.length;
+        }
+
+        return nUsable;
+    }
+
+    private static void rewriteBySortedIndexes(int[] sortedIndexes1, long[] x) {
+
+        int n = x.length;
+
+        long[] x2 = new long[n];
+        for (int i = 0; i < n; ++i) {
+            x2[i] = x[sortedIndexes1[i]];
+        }
+
+        System.arraycopy(x2, 0, x, 0, n);
+    }
+
+
+    /**
+     * traverse the polar angles in pA, and if points have the same polar angles
+     * within tolerance, only keep the one furthest from (x0, y0).
+     * NOTE that x, y, deg should have been sorted by polar angle before using this method.
+     * This method compacts arrays x, y, and pA are compacted so that the usable values are at the
+     * top r indexes where r is returned by this method
+     * @param x x coordinates of points
+     * @param y y coordinates of points
+     * @param polarAngle polar angles of points in x,y w.r.t to their first points x[0], y[0].
+     *            x,y,deg should have been sorted by polar angle before using this method.
+     * @return returns the number of indexes usable in each of x, y, and pA
+     * after compacting the arrays to remove redundant polar angle degrees.
+     */
+    static int reduceToUniquePolarAngles(long[] x, long[] y, double[] polarAngle, double tolerance) {
+
+        if (x.length != polarAngle.length || x.length != y.length) {
+            throw new IllegalArgumentException("x, y, and polarAngle must be same lengths");
+        }
+
+        double maxDist = Double.NEGATIVE_INFINITY;
+        int iMaxDist;
+        double dist;
+        int nextI;
+        int i2 = 1;
+        int i = 1;
+        assert(polarAngle[0] == 0);
+
+        int n = x.length;
+
+        // process any angle=0's first.  we want to keep the first point and not use distance argument on it
+        while ((i < n) &&  (polarAngle[i] <= tolerance)) {
+            ++i;
+        }
+
+        for (; i < x.length; i++) {
+
+            // look ahead
+            nextI = i + 1;
+            iMaxDist = i;
+
+            if ( (nextI < x.length)   && (Math.abs( polarAngle[i] - polarAngle[nextI] ) <= tolerance) ) {
+                maxDist = relativeLengthOfLine(x[0], y[0], x[i], y[i]);
+            }
+
+            while ( (nextI < x.length)  && (Math.abs( polarAngle[i] - polarAngle[nextI] ) <= tolerance) ) {
+                dist = relativeLengthOfLine(x[0], y[0], x[nextI], y[nextI]);
+                if (maxDist < dist) {
+                    maxDist = dist;
+                    iMaxDist = nextI;
+                }
+                nextI++;
+            }
+
+            x[i2] = x[iMaxDist];
+            y[i2] = y[iMaxDist];
+            polarAngle[i2] = polarAngle[iMaxDist];
+            i = nextI - 1;
+            ++i2;
+        }
+
+        return i2;
+    }
 }
