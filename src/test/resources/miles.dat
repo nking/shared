@@ -1,7 +1,7 @@
 * File "miles.dat" from the Stanford GraphBase (C) 1993 Stanford University
 * Revised mileage data for highways in the United States and Canada, 1949
 * This file may be freely copied but please do not change it in any way!
-* (Checksum parameters 696,295999341).  NLK: looks like [northIndex, westIndex] population then dist from last nodes in that order
+* (Checksum parameters 696,295999341). 
 Youngstown, OH[4110,8065]115436
 Yankton, SD[4288,9739]12011
 966
