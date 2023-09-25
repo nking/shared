@@ -112,14 +112,11 @@ public class LargestDistancePair {
 
         int nScan = n - 1;
 
-        // this O(n_hull^2) section is necessary
-
         int j;
         int i;
         for (i = 0; i < nScan; ++i) {
             xRef = ch.getXH()[i];
             yRef = ch.getYH()[i];
-            //System.out.printf("%d)\n", i);
             maxDistSqJ = Long.MIN_VALUE;
 
             for (j = i+1; j < nScan; ++j) {
@@ -129,9 +126,7 @@ public class LargestDistancePair {
                 if (distSq >= maxDistSqJ) {
                     maxDistSqJ = distSq;
                     maxJ2 = j;
-                    //System.out.printf("*\n");
                 } else {
-                    //System.out.printf("\n");
                     break;
                 }
             } // end loop over j
@@ -139,16 +134,8 @@ public class LargestDistancePair {
                 maxI = i;
                 maxJ = maxJ2;
                 maxDistSq = maxDistSqJ;
-                //System.out.printf("    j: i0=%d, i1=%d, distSq=%d\n", iRef, iMaxDist, maxDist);
             }
         } //end loop over i
-        
-        /*System.out.printf("MAXDISTSQ=%d  (x[%d]=%d, y[%d]=%d), (x[%d]=%d, y[%d]=%d)\n", 
-            maxDist, 
-            iRef, ch.getXH()[iRef], 
-            iRef, ch.getYH()[iRef],
-            iMaxDist, ch.getXH()[iMaxDist],
-            iMaxDist, ch.getYH()[iMaxDist]);*/
 
         PairAndHull ph = new PairAndHull(maxI, maxJ, maxDistSq, ch);
 
@@ -230,14 +217,11 @@ public class LargestDistancePair {
 
         int nScan = n - 1;
 
-        // this O(n_hull^2) section is necessary
-
         int j;
         int i;
         for (i = 0; i < nScan; ++i) {
             xRef = hull.get(i).getX();
             yRef = hull.get(i).getY();
-            //System.out.printf("%d)\n", i);
             maxDistSqJ = Long.MIN_VALUE;
 
             for (j = i+1; j < nScan; ++j) {
@@ -247,9 +231,7 @@ public class LargestDistancePair {
                 if (distSq >= maxDistSqJ) {
                     maxDistSqJ = distSq;
                     maxJ2 = j;
-                    //System.out.printf("*\n");
                 } else {
-                    //System.out.printf("\n");
                     break;
                 }
             } // end loop over j
@@ -257,18 +239,10 @@ public class LargestDistancePair {
                 maxI = i;
                 maxJ = maxJ2;
                 maxDistSq = maxDistSqJ;
-                //System.out.printf("    j: i0=%d, i1=%d, distSq=%d\n", iRef, iMaxDist, maxDist);
             }
         } //end loop over i
 
-        /*System.out.printf("MAXDISTSQ=%d  (x[%d]=%d, y[%d]=%d), (x[%d]=%d, y[%d]=%d)\n",
-            maxDist,
-            iRef, ch.getXH()[iRef],
-            iRef, ch.getYH()[iRef],
-            iMaxDist, ch.getXH()[iMaxDist],
-            iMaxDist, ch.getYH()[iMaxDist]);*/
-
-        // or specifiy type of class in method arugments
+        // or specifiy type of class in method arguments
         T[] pairs = (T[]) Array.newInstance(PairInt.class, 2);
         pairs[0] = hull.get(maxI);
         pairs[1] = hull.get(maxJ);
