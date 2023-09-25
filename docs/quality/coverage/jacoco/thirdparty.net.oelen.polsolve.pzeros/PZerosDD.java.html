@@ -70,6 +70,17 @@ import thirdparty.net.oelen.polarith.DoubleDouble;
     *     AGAIN : this variable is .true. if the computed value p(z) is     *
     *             reliable, i.e., (3) is not satisfied in Z. AGAIN is       *
     *             .false., otherwise.                                       *
+     @param n
+     @param again
+     @param apoly
+     @param apolyr
+     @param poly
+     @param z
+     @param outIndex
+     @param small
+     @param eps
+     @param radius
+     @return 
     *************************************************************************/
     // Version for a polynomial with complex coefficients.
     private static DoubleComplex newton(int n, DoubleComplex[] poly, double[] apoly, double[] apolyr,
@@ -81,66 +92,66 @@ import thirdparty.net.oelen.polarith.DoubleDouble;
         DoubleComplex corr;
         double ap, az;
 
-<span class="fc" id="L84">        az = z.ComplexValue().abs();</span>
+<span class="fc" id="L95">        az = z.ComplexValue().abs();</span>
 
         // If |z|&lt;=1 then apply Ruffini-Horner's rule for p(z)/p'(z) 
         // and for the computation of the inclusion radius.
         // If |z|&gt;1 then apply Ruffini-Horner's rule to the reversed polynomial
         // and use formula (2) for p(z)/p'(z). Analogously do for the inclusion
         // radius.
-<span class="fc bfc" id="L91" title="All 2 branches covered.">        if (az &lt; 1.0) {</span>
-<span class="fc" id="L92">            p = poly[n];</span>
-<span class="fc" id="L93">            p1 = p;</span>
-<span class="fc" id="L94">            ap = apoly[n];</span>
-<span class="fc bfc" id="L95" title="All 2 branches covered.">            for (i = n - 1; i &gt;= 1; i--) {</span>
-<span class="fc" id="L96">                p = poly[i].add(p.mul(z));</span>
-<span class="fc" id="L97">                p1 = p.add(p1.mul(z));</span>
-<span class="fc" id="L98">                ap = apoly[i] + ap * az;</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        if (az &lt; 1.0) {</span>
+<span class="fc" id="L103">            p = poly[n];</span>
+<span class="fc" id="L104">            p1 = p;</span>
+<span class="fc" id="L105">            ap = apoly[n];</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">            for (i = n - 1; i &gt;= 1; i--) {</span>
+<span class="fc" id="L107">                p = poly[i].add(p.mul(z));</span>
+<span class="fc" id="L108">                p1 = p.add(p1.mul(z));</span>
+<span class="fc" id="L109">                ap = apoly[i] + ap * az;</span>
             }
-<span class="fc" id="L100">            p = poly[0].add(p.mul(z));</span>
-<span class="fc" id="L101">            ap = apoly[0] + ap * az;</span>
-<span class="fc" id="L102">            corr = p.div(p1);</span>
+<span class="fc" id="L111">            p = poly[0].add(p.mul(z));</span>
+<span class="fc" id="L112">            ap = apoly[0] + ap * az;</span>
+<span class="fc" id="L113">            corr = p.div(p1);</span>
 
-<span class="fc" id="L104">            double epsap = eps * ap;</span>
+<span class="fc" id="L115">            double epsap = eps * ap;</span>
             // double absp = p.abs().doubleValue();
-<span class="fc" id="L106">            double absp = Math.abs(p.re.doubleValue()) + Math.abs(p.im.doubleValue());</span>
-<span class="fc bfc" id="L107" title="All 2 branches covered.">            again[outIndex] = (absp &gt; small + epsap);</span>
-<span class="fc bfc" id="L108" title="All 2 branches covered.">            if (!again[outIndex]) {</span>
-<span class="fc" id="L109">                radius[outIndex] = n * (absp + epsap) / p1.abs().doubleValue();</span>
+<span class="fc" id="L117">            double absp = Math.abs(p.re.doubleValue()) + Math.abs(p.im.doubleValue());</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">            again[outIndex] = (absp &gt; small + epsap);</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">            if (!again[outIndex]) {</span>
+<span class="fc" id="L120">                radius[outIndex] = n * (absp + epsap) / p1.abs().doubleValue();</span>
             }
-<span class="fc" id="L111">        } else // az &gt;= 1.0</span>
+<span class="fc" id="L122">        } else // az &gt;= 1.0</span>
         {
             DoubleComplex zi, den, ppsp;
             double azi;
 
-<span class="fc" id="L116">            zi = z.recip();</span>
-<span class="fc" id="L117">            azi = 1.0 / az;</span>
-<span class="fc" id="L118">            p = poly[0];</span>
-<span class="fc" id="L119">            p1 = p;</span>
-<span class="fc" id="L120">            ap = apolyr[n];</span>
-<span class="fc bfc" id="L121" title="All 2 branches covered.">            for (i = n - 1; i &gt;= 1; i--) {</span>
-<span class="fc" id="L122">                p = poly[n - i].add(p.mul(zi));</span>
-<span class="fc" id="L123">                p1 = p.add(p1.mul(zi));</span>
-<span class="fc" id="L124">                ap = apolyr[i] + ap * azi;</span>
+<span class="fc" id="L127">            zi = z.recip();</span>
+<span class="fc" id="L128">            azi = 1.0 / az;</span>
+<span class="fc" id="L129">            p = poly[0];</span>
+<span class="fc" id="L130">            p1 = p;</span>
+<span class="fc" id="L131">            ap = apolyr[n];</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">            for (i = n - 1; i &gt;= 1; i--) {</span>
+<span class="fc" id="L133">                p = poly[n - i].add(p.mul(zi));</span>
+<span class="fc" id="L134">                p1 = p.add(p1.mul(zi));</span>
+<span class="fc" id="L135">                ap = apolyr[i] + ap * azi;</span>
             }
-<span class="fc" id="L126">            p = poly[n].add(p.mul(zi));</span>
-<span class="fc" id="L127">            ap = apolyr[0] + ap * azi;</span>
+<span class="fc" id="L137">            p = poly[n].add(p.mul(zi));</span>
+<span class="fc" id="L138">            ap = apolyr[0] + ap * azi;</span>
 
-<span class="fc" id="L129">            ppsp = p.mul(z).div(p1);</span>
-<span class="fc" id="L130">            den = ppsp.mul(n).sub1();</span>
-<span class="fc" id="L131">            corr = z.mul(ppsp.div(den));</span>
-<span class="fc" id="L132">            double epsap = eps * ap;</span>
+<span class="fc" id="L140">            ppsp = p.mul(z).div(p1);</span>
+<span class="fc" id="L141">            den = ppsp.mul(n).sub1();</span>
+<span class="fc" id="L142">            corr = z.mul(ppsp.div(den));</span>
+<span class="fc" id="L143">            double epsap = eps * ap;</span>
             // double absp = p.abs().doubleValue();
-<span class="fc" id="L134">            double absp = Math.abs(p.real().doubleValue()) + Math.abs(p.imag().doubleValue());</span>
-<span class="fc bfc" id="L135" title="All 2 branches covered.">            again[outIndex] = (absp &gt; small + epsap);</span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">            if (!again[outIndex]) {</span>
-<span class="fc" id="L137">                radius[outIndex] = ppsp.abs().doubleValue() + (epsap * az) / p1.abs().doubleValue();</span>
-<span class="fc" id="L138">                radius[outIndex] *= n / den.abs().doubleValue();</span>
-<span class="fc" id="L139">                radius[outIndex] *= az;</span>
+<span class="fc" id="L145">            double absp = Math.abs(p.real().doubleValue()) + Math.abs(p.imag().doubleValue());</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">            again[outIndex] = (absp &gt; small + epsap);</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">            if (!again[outIndex]) {</span>
+<span class="fc" id="L148">                radius[outIndex] = ppsp.abs().doubleValue() + (epsap * az) / p1.abs().doubleValue();</span>
+<span class="fc" id="L149">                radius[outIndex] *= n / den.abs().doubleValue();</span>
+<span class="fc" id="L150">                radius[outIndex] *= az;</span>
             }
         }
         
-<span class="fc" id="L143">        return corr;</span>
+<span class="fc" id="L154">        return corr;</span>
     }
     
     
@@ -155,7 +166,7 @@ import thirdparty.net.oelen.polarith.DoubleDouble;
         DoubleComplex p, p1;
         double ap, az;
 
-<span class="fc" id="L158">        az = z.abs().doubleValue();</span>
+<span class="fc" id="L169">        az = z.abs().doubleValue();</span>
         
         DoubleComplex corr;
 
@@ -171,95 +182,95 @@ import thirdparty.net.oelen.polarith.DoubleDouble;
         // If |z|&gt;1 then apply modified Horner's rule to the reversed polynomial
         // and use formula (2) for p(z)/p'(z). Analogously do for the inclusion
         // radius.
-<span class="fc bfc" id="L174" title="All 2 branches covered.">        if (az &lt; 1.0) {</span>
-<span class="fc" id="L175">            DoubleDouble r = z.real().mulPowerOf2(2);</span>
-<span class="fc" id="L176">            DoubleDouble s = z.sqrabs();</span>
-<span class="fc" id="L177">            DoubleDouble aa = poly[n];</span>
-<span class="fc" id="L178">            DoubleDouble bb = poly[n - 1];</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">        if (az &lt; 1.0) {</span>
+<span class="fc" id="L186">            DoubleDouble r = z.real().mulPowerOf2(2);</span>
+<span class="fc" id="L187">            DoubleDouble s = z.sqrabs();</span>
+<span class="fc" id="L188">            DoubleDouble aa = poly[n];</span>
+<span class="fc" id="L189">            DoubleDouble bb = poly[n - 1];</span>
 
             // Compute p(z) and |p|(|z|)
-<span class="fc" id="L181">            ap = apoly[n - 1] + az * apoly[n];</span>
-<span class="fc bfc" id="L182" title="All 2 branches covered.">            for (i = n - 2; i &gt;= 0; i--) {</span>
+<span class="fc" id="L192">            ap = apoly[n - 1] + az * apoly[n];</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">            for (i = n - 2; i &gt;= 0; i--) {</span>
                 // Next step for polynomial.
-<span class="fc" id="L184">                DoubleDouble tmp = bb.add(r.mul(aa));</span>
-<span class="fc" id="L185">                bb = poly[i].sub(s.mul(aa));</span>
-<span class="fc" id="L186">                aa = tmp;</span>
+<span class="fc" id="L195">                DoubleDouble tmp = bb.add(r.mul(aa));</span>
+<span class="fc" id="L196">                bb = poly[i].sub(s.mul(aa));</span>
+<span class="fc" id="L197">                aa = tmp;</span>
 
                 // Next step for |p|(|z|)
-<span class="fc" id="L189">                ap = apoly[i] + ap * az;</span>
+<span class="fc" id="L200">                ap = apoly[i] + ap * az;</span>
             }
-<span class="fc" id="L191">            p = z.mul(aa).add(bb);</span>
+<span class="fc" id="L202">            p = z.mul(aa).add(bb);</span>
 
             // Compute p'(z)
-<span class="fc" id="L194">            aa = poly[n].mul(n);</span>
-<span class="fc" id="L195">            bb = poly[n - 1].mul(n - 1);</span>
-<span class="fc bfc" id="L196" title="All 2 branches covered.">            for (i = n - 2; i &gt;= 1; i--) {</span>
-<span class="fc" id="L197">                DoubleDouble tmp = bb.add(r.mul(aa));</span>
-<span class="fc" id="L198">                bb = poly[i].mul(i).sub(s.mul(aa));</span>
-<span class="fc" id="L199">                aa = tmp;</span>
+<span class="fc" id="L205">            aa = poly[n].mul(n);</span>
+<span class="fc" id="L206">            bb = poly[n - 1].mul(n - 1);</span>
+<span class="fc bfc" id="L207" title="All 2 branches covered.">            for (i = n - 2; i &gt;= 1; i--) {</span>
+<span class="fc" id="L208">                DoubleDouble tmp = bb.add(r.mul(aa));</span>
+<span class="fc" id="L209">                bb = poly[i].mul(i).sub(s.mul(aa));</span>
+<span class="fc" id="L210">                aa = tmp;</span>
             }
-<span class="fc" id="L201">            p1 = z.mul(aa).add(bb);</span>
+<span class="fc" id="L212">            p1 = z.mul(aa).add(bb);</span>
 
-<span class="fc" id="L203">            double epsap = eps * ap;</span>
-<span class="fc" id="L204">            corr = p.div(p1);</span>
+<span class="fc" id="L214">            double epsap = eps * ap;</span>
+<span class="fc" id="L215">            corr = p.div(p1);</span>
             //double absp = p.abs().doubleValue();
-<span class="fc" id="L206">            double absp = Math.abs(p.real().doubleValue()) + Math.abs(p.imag().doubleValue());</span>
-<span class="fc bfc" id="L207" title="All 2 branches covered.">            again[outIndex] = (absp &gt; small + epsap);</span>
-<span class="fc bfc" id="L208" title="All 2 branches covered.">            if (!again[outIndex]) {</span>
-<span class="fc" id="L209">                radius[outIndex] = n * (absp + epsap) / p1.abs().doubleValue();</span>
+<span class="fc" id="L217">            double absp = Math.abs(p.real().doubleValue()) + Math.abs(p.imag().doubleValue());</span>
+<span class="fc bfc" id="L218" title="All 2 branches covered.">            again[outIndex] = (absp &gt; small + epsap);</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">            if (!again[outIndex]) {</span>
+<span class="fc" id="L220">                radius[outIndex] = n * (absp + epsap) / p1.abs().doubleValue();</span>
             }
-<span class="fc" id="L211">        } </span>
+<span class="fc" id="L222">        } </span>
         else // az &gt;= 1.0
         {
             DoubleComplex den, ppsp;
 
-<span class="fc" id="L216">            DoubleComplex zi = z.recip();</span>
-<span class="fc" id="L217">            double azi = 1.0 / az;</span>
+<span class="fc" id="L227">            DoubleComplex zi = z.recip();</span>
+<span class="fc" id="L228">            double azi = 1.0 / az;</span>
 
-<span class="fc" id="L219">            DoubleDouble r = zi.real().mulPowerOf2(2);</span>
-<span class="fc" id="L220">            DoubleDouble s = zi.sqrabs();</span>
-<span class="fc" id="L221">            DoubleDouble aa = poly[0];</span>
-<span class="fc" id="L222">            DoubleDouble bb = poly[1];</span>
+<span class="fc" id="L230">            DoubleDouble r = zi.real().mulPowerOf2(2);</span>
+<span class="fc" id="L231">            DoubleDouble s = zi.sqrabs();</span>
+<span class="fc" id="L232">            DoubleDouble aa = poly[0];</span>
+<span class="fc" id="L233">            DoubleDouble bb = poly[1];</span>
 
             // Compute q(zi) and |q|(|zi|), where
             // q equals p with reversed coefficients.
-<span class="fc" id="L226">            ap = apolyr[n - 1] + azi * apolyr[n];</span>
-<span class="fc bfc" id="L227" title="All 2 branches covered.">            for (i = n - 2; i &gt;= 0; i--) {</span>
+<span class="fc" id="L237">            ap = apolyr[n - 1] + azi * apolyr[n];</span>
+<span class="fc bfc" id="L238" title="All 2 branches covered.">            for (i = n - 2; i &gt;= 0; i--) {</span>
                 // Next step for polynomial.
-<span class="fc" id="L229">                DoubleDouble tmp = bb.add(r.mul(aa));</span>
-<span class="fc" id="L230">                bb = poly[n - i].sub(s.mul(aa));</span>
-<span class="fc" id="L231">                aa = tmp;</span>
+<span class="fc" id="L240">                DoubleDouble tmp = bb.add(r.mul(aa));</span>
+<span class="fc" id="L241">                bb = poly[n - i].sub(s.mul(aa));</span>
+<span class="fc" id="L242">                aa = tmp;</span>
 
                 // Next step for |q|(|zi|)
-<span class="fc" id="L234">                ap = apolyr[i] + ap * azi;</span>
+<span class="fc" id="L245">                ap = apolyr[i] + ap * azi;</span>
             }
-<span class="fc" id="L236">            p = zi.mul(aa).add(bb);</span>
+<span class="fc" id="L247">            p = zi.mul(aa).add(bb);</span>
 
             // Compute q'(zi)
-<span class="fc" id="L239">            aa = poly[0].mul(n);</span>
-<span class="fc" id="L240">            bb = poly[1].mul(n - 1);</span>
-<span class="fc bfc" id="L241" title="All 2 branches covered.">            for (i = n - 2; i &gt;= 1; i--) {</span>
-<span class="fc" id="L242">                DoubleDouble tmp = bb.add(r.mul(aa));</span>
-<span class="fc" id="L243">                bb = poly[n - i].mul(i).sub(s.mul(aa));</span>
-<span class="fc" id="L244">                aa = tmp;</span>
+<span class="fc" id="L250">            aa = poly[0].mul(n);</span>
+<span class="fc" id="L251">            bb = poly[1].mul(n - 1);</span>
+<span class="fc bfc" id="L252" title="All 2 branches covered.">            for (i = n - 2; i &gt;= 1; i--) {</span>
+<span class="fc" id="L253">                DoubleDouble tmp = bb.add(r.mul(aa));</span>
+<span class="fc" id="L254">                bb = poly[n - i].mul(i).sub(s.mul(aa));</span>
+<span class="fc" id="L255">                aa = tmp;</span>
             }
-<span class="fc" id="L246">            p1 = zi.mul(aa).add(bb);</span>
+<span class="fc" id="L257">            p1 = zi.mul(aa).add(bb);</span>
 
-<span class="fc" id="L248">            ppsp = p.mul(z).div(p1);</span>
-<span class="fc" id="L249">            den = ppsp.mul(n).sub1();</span>
-<span class="fc" id="L250">            corr = z.mul(ppsp.div(den));</span>
-<span class="fc" id="L251">            double epsap = eps * ap;</span>
+<span class="fc" id="L259">            ppsp = p.mul(z).div(p1);</span>
+<span class="fc" id="L260">            den = ppsp.mul(n).sub1();</span>
+<span class="fc" id="L261">            corr = z.mul(ppsp.div(den));</span>
+<span class="fc" id="L262">            double epsap = eps * ap;</span>
             // double absp = p.abs().doubleValue();
-<span class="fc" id="L253">            double absp = Math.abs(p.real().doubleValue()) + Math.abs(p.imag().doubleValue());</span>
-<span class="fc bfc" id="L254" title="All 2 branches covered.">            again[outIndex] = (absp &gt; small + epsap);</span>
-<span class="fc bfc" id="L255" title="All 2 branches covered.">            if (!again[outIndex]) {</span>
-<span class="fc" id="L256">                radius[outIndex] = (ppsp.abs().doubleValue() + (epsap * az) / p1.abs().doubleValue());</span>
-<span class="fc" id="L257">                radius[outIndex] *= n / den.abs().doubleValue();</span>
-<span class="fc" id="L258">                radius[outIndex] *= az;</span>
+<span class="fc" id="L264">            double absp = Math.abs(p.real().doubleValue()) + Math.abs(p.imag().doubleValue());</span>
+<span class="fc bfc" id="L265" title="All 2 branches covered.">            again[outIndex] = (absp &gt; small + epsap);</span>
+<span class="fc bfc" id="L266" title="All 2 branches covered.">            if (!again[outIndex]) {</span>
+<span class="fc" id="L267">                radius[outIndex] = (ppsp.abs().doubleValue() + (epsap * az) / p1.abs().doubleValue());</span>
+<span class="fc" id="L268">                radius[outIndex] *= n / den.abs().doubleValue();</span>
+<span class="fc" id="L269">                radius[outIndex] *= az;</span>
             }
         }
         
-<span class="fc" id="L262">        return corr;</span>
+<span class="fc" id="L273">        return corr;</span>
     }
 
     
@@ -282,6 +293,10 @@ import thirdparty.net.oelen.polarith.DoubleDouble;
     *************************************************************************
     * Output variable:                                                      *
     *     ABCORR: Aberth's correction (compare (1))                         *
+     @param n
+     @param j
+     @param root
+     @return 
     *************************************************************************/
     
     /* The pseudocode below is left here for documentation purposes, the real
@@ -310,33 +325,33 @@ import thirdparty.net.oelen.polarith.DoubleDouble;
      */
     
     private static DoubleComplex aberth(int n, int j, DoubleComplex root[]) {
-<span class="fc" id="L313">        DoubleDouble zj_re = root[j].re;</span>
-<span class="fc" id="L314">        DoubleDouble zj_im = root[j].im;</span>
+<span class="fc" id="L328">        DoubleDouble zj_re = root[j].re;</span>
+<span class="fc" id="L329">        DoubleDouble zj_im = root[j].im;</span>
 
-<span class="fc" id="L316">        double corr_re = 0.0;</span>
-<span class="fc" id="L317">        double corr_im = 0.0;</span>
-<span class="fc bfc" id="L318" title="All 2 branches covered.">        for (int i = 0; i &lt; n; i++) {</span>
-<span class="fc bfc" id="L319" title="All 2 branches covered.">            if (i != j) {</span>
-<span class="fc" id="L320">                double z_re = zj_re.sub(root[i].re).doubleValue();</span>
-<span class="fc" id="L321">                double z_im = zj_im.sub(root[i].im).doubleValue();</span>
-<span class="fc bfc" id="L322" title="All 2 branches covered.">                double absr = (z_re &gt; 0) ? z_re : -z_re;</span>
-<span class="fc bfc" id="L323" title="All 2 branches covered.">                double absi = (z_im &gt; 0) ? z_im : -z_im;</span>
-<span class="fc bfc" id="L324" title="All 2 branches covered.">                if (absr &gt; absi) {</span>
-<span class="fc" id="L325">                    double r = z_im / z_re;</span>
-<span class="fc" id="L326">                    double den = z_re + r * z_im;</span>
-<span class="fc" id="L327">                    corr_re += 1.0/den;</span>
-<span class="fc" id="L328">                    corr_im -= r/den;</span>
-<span class="fc" id="L329">                } </span>
+<span class="fc" id="L331">        double corr_re = 0.0;</span>
+<span class="fc" id="L332">        double corr_im = 0.0;</span>
+<span class="fc bfc" id="L333" title="All 2 branches covered.">        for (int i = 0; i &lt; n; i++) {</span>
+<span class="fc bfc" id="L334" title="All 2 branches covered.">            if (i != j) {</span>
+<span class="fc" id="L335">                double z_re = zj_re.sub(root[i].re).doubleValue();</span>
+<span class="fc" id="L336">                double z_im = zj_im.sub(root[i].im).doubleValue();</span>
+<span class="fc bfc" id="L337" title="All 2 branches covered.">                double absr = (z_re &gt; 0) ? z_re : -z_re;</span>
+<span class="fc bfc" id="L338" title="All 2 branches covered.">                double absi = (z_im &gt; 0) ? z_im : -z_im;</span>
+<span class="fc bfc" id="L339" title="All 2 branches covered.">                if (absr &gt; absi) {</span>
+<span class="fc" id="L340">                    double r = z_im / z_re;</span>
+<span class="fc" id="L341">                    double den = z_re + r * z_im;</span>
+<span class="fc" id="L342">                    corr_re += 1.0/den;</span>
+<span class="fc" id="L343">                    corr_im -= r/den;</span>
+<span class="fc" id="L344">                } </span>
                 else {
-<span class="fc" id="L331">                    double r = z_re / z_im;</span>
-<span class="fc" id="L332">                    double den = z_im + r * z_re;</span>
-<span class="fc" id="L333">                    corr_re += r/den;</span>
-<span class="fc" id="L334">                    corr_im -= 1.0/den;</span>
+<span class="fc" id="L346">                    double r = z_re / z_im;</span>
+<span class="fc" id="L347">                    double den = z_im + r * z_re;</span>
+<span class="fc" id="L348">                    corr_re += r/den;</span>
+<span class="fc" id="L349">                    corr_im -= 1.0/den;</span>
                 }
             }
         }
 
-<span class="fc" id="L339">        return new DoubleComplex(corr_re, corr_im);  // Aberth correction</span>
+<span class="fc" id="L354">        return new DoubleComplex(corr_re, corr_im);  // Aberth correction</span>
     }
     
     
@@ -366,77 +381,83 @@ import thirdparty.net.oelen.polarith.DoubleDouble;
     * 0 and having suitable radii. The computation of the number of circles *
     * and of the corresponding radii is performed by computing the upper    *
     * convex hull of the set (i,log(A(i))), i=1,...,n+1.                    *
+     @param n
+     @param a
+     @param y
+     @param radius
+     @param big
+     @return 
     *************************************************************************/
     private static int start(int n, double[] a, DoubleComplex[] y, double[] radius, double big) {
         int i, iold, nzeros, j, jj;
         double r, th, ang, temp;
-<span class="nc" id="L373">        final double sigma = 0.7;</span>
-<span class="nc" id="L374">        final double pi2 = 6.2831853071796;</span>
-<span class="nc" id="L375">        double xbig = Math.log(big);</span>
-<span class="nc" id="L376">        double xsmall = -xbig;</span>
-<span class="nc" id="L377">        boolean[] h = new boolean[n + 1];</span>
+<span class="nc" id="L394">        final double sigma = 0.7;</span>
+<span class="nc" id="L395">        final double pi2 = 6.2831853071796;</span>
+<span class="nc" id="L396">        double xbig = Math.log(big);</span>
+<span class="nc" id="L397">        double xsmall = -xbig;</span>
+<span class="nc" id="L398">        boolean[] h = new boolean[n + 1];</span>
         int nz;   // number of zeros which cannot be represented without under/overflow.
 
-<span class="nc" id="L380">        nz = 0;</span>
+<span class="nc" id="L401">        nz = 0;</span>
 
         // Compute the logarithm A(I) of the moduli of the coefficients of
         // the polynomial and then the upper convex hull of the set (A(I),I)
-<span class="nc bnc" id="L384" title="All 2 branches missed.">        for (i = 0; i &lt;= n; i++) {</span>
-<span class="nc bnc" id="L385" title="All 2 branches missed.">            if (a[i] != 0.0) {</span>
-<span class="nc" id="L386">                a[i] = Math.log(a[i]);</span>
+<span class="nc bnc" id="L405" title="All 2 branches missed.">        for (i = 0; i &lt;= n; i++) {</span>
+<span class="nc bnc" id="L406" title="All 2 branches missed.">            if (a[i] != 0.0) {</span>
+<span class="nc" id="L407">                a[i] = Math.log(a[i]);</span>
             } else {
-<span class="nc" id="L388">                a[i] = -1e30;   // -infinity</span>
+<span class="nc" id="L409">                a[i] = -1e30;   // -infinity</span>
             }
         }
-<span class="nc" id="L391">        Convex.cnvex(n, a, h);</span>
+<span class="nc" id="L412">        Convex.cnvex(n, a, h);</span>
 
         // Given the upper convex hull of the set (A(I),I) compute the moduli
         // of the starting approximations by means of Rouche's theorem
-<span class="nc" id="L395">        iold = 0;</span>
-<span class="nc" id="L396">        th = pi2 / n;</span>
-<span class="nc bnc" id="L397" title="All 2 branches missed.">        for (i = 1; i &lt;= n; i++) {</span>
-<span class="nc bnc" id="L398" title="All 2 branches missed.">            if (h[i]) {</span>
-<span class="nc" id="L399">                nzeros = i - iold;</span>
-<span class="nc" id="L400">                temp = (a[iold] - a[i]) / nzeros;</span>
-<span class="nc" id="L401">                boolean underflow = false, overflow = false;</span>
-<span class="nc bnc" id="L402" title="All 2 branches missed.">                if (temp &lt;= xsmall) {</span>
+<span class="nc" id="L416">        iold = 0;</span>
+<span class="nc" id="L417">        th = pi2 / n;</span>
+<span class="nc bnc" id="L418" title="All 2 branches missed.">        for (i = 1; i &lt;= n; i++) {</span>
+<span class="nc bnc" id="L419" title="All 2 branches missed.">            if (h[i]) {</span>
+<span class="nc" id="L420">                nzeros = i - iold;</span>
+<span class="nc" id="L421">                temp = (a[iold] - a[i]) / nzeros;</span>
+<span class="nc" id="L422">                boolean underflow = false, overflow = false;</span>
+<span class="nc bnc" id="L423" title="All 2 branches missed.">                if (temp &lt;= xsmall) {</span>
                     // Radii are too small, underflow situation.
-<span class="nc" id="L404">                    underflow = true;</span>
-<span class="nc" id="L405">                    r = 0.0;</span>
-<span class="nc" id="L406">                    nz += nzeros;</span>
+<span class="nc" id="L425">                    underflow = true;</span>
+<span class="nc" id="L426">                    r = 0.0;</span>
+<span class="nc" id="L427">                    nz += nzeros;</span>
                 } 
-<span class="nc bnc" id="L408" title="All 2 branches missed.">                else if (temp &gt;= xbig) {</span>
+<span class="nc bnc" id="L429" title="All 2 branches missed.">                else if (temp &gt;= xbig) {</span>
                     // Overflow situation.
-<span class="nc" id="L410">                    overflow = true;</span>
-<span class="nc" id="L411">                    r = big;</span>
-<span class="nc" id="L412">                    nz += nzeros;</span>
+<span class="nc" id="L431">                    overflow = true;</span>
+<span class="nc" id="L432">                    r = big;</span>
+<span class="nc" id="L433">                    nz += nzeros;</span>
                 } 
                 else {
                     // In range of floating point arithmetic.
-<span class="nc" id="L416">                    r = Math.exp(temp);</span>
+<span class="nc" id="L437">                    r = Math.exp(temp);</span>
                 }
 
-<span class="nc" id="L419">                ang = pi2 / nzeros;</span>
-<span class="nc bnc" id="L420" title="All 2 branches missed.">                for (j = iold; j &lt; i; j++) {</span>
-<span class="nc" id="L421">                    jj = j - iold;</span>
-<span class="nc bnc" id="L422" title="All 4 branches missed.">                    if (underflow || overflow) {</span>
-<span class="nc" id="L423">                        radius[j] = -1.0;</span>
-<span class="nc" id="L424">                        y[j] = new DoubleComplex(r);</span>
+<span class="nc" id="L440">                ang = pi2 / nzeros;</span>
+<span class="nc bnc" id="L441" title="All 2 branches missed.">                for (j = iold; j &lt; i; j++) {</span>
+<span class="nc" id="L442">                    jj = j - iold;</span>
+<span class="nc bnc" id="L443" title="All 4 branches missed.">                    if (underflow || overflow) {</span>
+<span class="nc" id="L444">                        radius[j] = -1.0;</span>
+<span class="nc" id="L445">                        y[j] = new DoubleComplex(r);</span>
                     } 
                     else {
-<span class="nc" id="L427">                        double re = r * Math.cos(ang * jj + th * i + sigma);</span>
-<span class="nc" id="L428">                        double im = r * Math.sin(ang * jj + th * i + sigma);</span>
-<span class="nc" id="L429">                        y[j] = new DoubleComplex(re, im);</span>
+<span class="nc" id="L448">                        double re = r * Math.cos(ang * jj + th * i + sigma);</span>
+<span class="nc" id="L449">                        double im = r * Math.sin(ang * jj + th * i + sigma);</span>
+<span class="nc" id="L450">                        y[j] = new DoubleComplex(re, im);</span>
                     }
                 }
 
                 // Make the current vertex the basis for the
                 // new set of roots.
-<span class="nc" id="L435">                iold = i;</span>
+<span class="nc" id="L456">                iold = i;</span>
             }
         }
         
-<span class="nc" id="L439">        return nz;</span>
+<span class="nc" id="L460">        return nz;</span>
     }
     
     
@@ -446,32 +467,36 @@ import thirdparty.net.oelen.polarith.DoubleDouble;
     *************************************************************************
     *   SORT  the vector X, according to nonincreasing real parts,          *
     *   the same permutation is applied to vectors Y and E.                 *
+     @param n
+     @param x
+     @param y
+     @param e
     *************************************************************************/
     private static void sort(int n, DoubleComplex[] x, double[] y, boolean[] e) {
-<span class="fc bfc" id="L451" title="All 2 branches covered.">        for (int k = 0; k &lt; n - 1; k++) {</span>
-<span class="fc" id="L452">            DoubleDouble amax = x[k].real();</span>
-<span class="fc" id="L453">            int imax = k;</span>
-<span class="fc bfc" id="L454" title="All 2 branches covered.">            for (int i = k + 1; i &lt; n; i++) {</span>
-<span class="fc" id="L455">                DoubleDouble rxi = x[i].real();</span>
-<span class="fc bfc" id="L456" title="All 2 branches covered.">                if (amax.compareTo(rxi) &lt; 0) {</span>
-<span class="fc" id="L457">                    amax = rxi;</span>
-<span class="fc" id="L458">                    imax = i;</span>
+<span class="fc bfc" id="L476" title="All 2 branches covered.">        for (int k = 0; k &lt; n - 1; k++) {</span>
+<span class="fc" id="L477">            DoubleDouble amax = x[k].real();</span>
+<span class="fc" id="L478">            int imax = k;</span>
+<span class="fc bfc" id="L479" title="All 2 branches covered.">            for (int i = k + 1; i &lt; n; i++) {</span>
+<span class="fc" id="L480">                DoubleDouble rxi = x[i].real();</span>
+<span class="fc bfc" id="L481" title="All 2 branches covered.">                if (amax.compareTo(rxi) &lt; 0) {</span>
+<span class="fc" id="L482">                    amax = rxi;</span>
+<span class="fc" id="L483">                    imax = i;</span>
                 }
             }
 
-<span class="fc" id="L462">            DoubleComplex temp = x[k];</span>
-<span class="fc" id="L463">            x[k] = x[imax];</span>
-<span class="fc" id="L464">            x[imax] = temp;</span>
+<span class="fc" id="L487">            DoubleComplex temp = x[k];</span>
+<span class="fc" id="L488">            x[k] = x[imax];</span>
+<span class="fc" id="L489">            x[imax] = temp;</span>
 
-<span class="fc" id="L466">            double yt = y[k];</span>
-<span class="fc" id="L467">            y[k] = y[imax];</span>
-<span class="fc" id="L468">            y[imax] = yt;</span>
+<span class="fc" id="L491">            double yt = y[k];</span>
+<span class="fc" id="L492">            y[k] = y[imax];</span>
+<span class="fc" id="L493">            y[imax] = yt;</span>
 
-<span class="fc" id="L470">            boolean et = e[k];</span>
-<span class="fc" id="L471">            e[k] = e[imax];</span>
-<span class="fc" id="L472">            e[imax] = et;</span>
+<span class="fc" id="L495">            boolean et = e[k];</span>
+<span class="fc" id="L496">            e[k] = e[imax];</span>
+<span class="fc" id="L497">            e[imax] = et;</span>
         }
-<span class="fc" id="L474">    }</span>
+<span class="fc" id="L499">    }</span>
 
     
     
@@ -595,6 +620,20 @@ import thirdparty.net.oelen.polarith.DoubleDouble;
     *           condition                                                   *
     *************************************************************************
     ******         WARNING:   2 is the output unit                    *******
+     @param n
+     @param init
+     @param eps
+     @param poly
+     @param radius
+     @param root
+     @param nitmax
+     @param big
+     @param err
+     @param iter
+     @param needSort
+     @param apolyr
+     @param apoly
+     @return 
     *************************************************************************/
     // Version for polynomial with real coefficients.
     static int polzeros(int n, DoubleDouble[] poly, double eps, double big,
@@ -603,44 +642,44 @@ import thirdparty.net.oelen.polarith.DoubleDouble;
         int i;
         int nzeros;
         double amax;
-<span class="fc" id="L606">        double small = 1.0 / big;</span>
+<span class="fc" id="L645">        double small = 1.0 / big;</span>
 
-<span class="pc bpc" id="L608" title="1 of 2 branches missed.">        if (init) {</span>
+<span class="pc bpc" id="L647" title="1 of 2 branches missed.">        if (init) {</span>
             // Check consistency of data
-<span class="nc bnc" id="L610" title="All 2 branches missed.">            if (poly[n].isZero()) {</span>
-<span class="nc" id="L611">                return -1;</span>
+<span class="nc bnc" id="L649" title="All 2 branches missed.">            if (poly[n].isZero()) {</span>
+<span class="nc" id="L650">                return -1;</span>
             }
-<span class="nc bnc" id="L613" title="All 2 branches missed.">            if (poly[0].isZero()) {</span>
-<span class="nc" id="L614">                return -2;</span>
+<span class="nc bnc" id="L652" title="All 2 branches missed.">            if (poly[0].isZero()) {</span>
+<span class="nc" id="L653">                return -2;</span>
             }
 
             // Compute the moduli of the coefficients
             // and the largest of the absolute values.
-<span class="nc" id="L619">            amax = 0.0;</span>
-<span class="nc bnc" id="L620" title="All 2 branches missed.">            for (i = 0; i &lt;= n; i++) {</span>
-<span class="nc" id="L621">                apoly[i] = poly[i].abs().doubleValue();</span>
-<span class="nc bnc" id="L622" title="All 2 branches missed.">                if (amax &lt; apoly[i]) {</span>
-<span class="nc" id="L623">                    amax = apoly[i];</span>
+<span class="nc" id="L658">            amax = 0.0;</span>
+<span class="nc bnc" id="L659" title="All 2 branches missed.">            for (i = 0; i &lt;= n; i++) {</span>
+<span class="nc" id="L660">                apoly[i] = poly[i].abs().doubleValue();</span>
+<span class="nc bnc" id="L661" title="All 2 branches missed.">                if (amax &lt; apoly[i]) {</span>
+<span class="nc" id="L662">                    amax = apoly[i];</span>
                 }
-<span class="nc" id="L625">                apolyr[i] = apoly[i];</span>
+<span class="nc" id="L664">                apolyr[i] = apoly[i];</span>
             }
 
-<span class="nc bnc" id="L628" title="All 2 branches missed.">            if (amax &gt; big / (4 * n + 1)) {</span>
-<span class="nc" id="L629">                return -3;</span>
+<span class="nc bnc" id="L667" title="All 2 branches missed.">            if (amax &gt; big / (4 * n + 1)) {</span>
+<span class="nc" id="L668">                return -3;</span>
             }
 
-<span class="nc bnc" id="L632" title="All 2 branches missed.">            if (n == 1) {</span>
+<span class="nc bnc" id="L671" title="All 2 branches missed.">            if (n == 1) {</span>
                 // Linear equation, subsequent code is not called.
-<span class="nc" id="L634">                root[0] = new DoubleComplex(poly[0].div(poly[1]).neg());</span>
-<span class="nc" id="L635">                err[0] = false;</span>
-<span class="nc" id="L636">                iter[0] = 1;</span>
-<span class="nc" id="L637">                radius[0] = eps * root[0].abs().doubleValue();</span>
-<span class="nc" id="L638">                return 0;</span>
+<span class="nc" id="L673">                root[0] = new DoubleComplex(poly[0].div(poly[1]).neg());</span>
+<span class="nc" id="L674">                err[0] = false;</span>
+<span class="nc" id="L675">                iter[0] = 1;</span>
+<span class="nc" id="L676">                radius[0] = eps * root[0].abs().doubleValue();</span>
+<span class="nc" id="L677">                return 0;</span>
             }
 
             // Initialize
-<span class="nc bnc" id="L642" title="All 2 branches missed.">            for (i = 0; i &lt; n; i++) {</span>
-<span class="nc" id="L643">                radius[i] = 0.0;</span>
+<span class="nc bnc" id="L681" title="All 2 branches missed.">            for (i = 0; i &lt; n; i++) {</span>
+<span class="nc" id="L682">                radius[i] = 0.0;</span>
             }
 
             // Select the starting points. We use the array apolyr
@@ -649,26 +688,26 @@ import thirdparty.net.oelen.polarith.DoubleDouble;
             // by start(), but that is of no cencern. After calling
             // start(), the apoly and apolyr arrays are derived
             // from the apoly array values.
-<span class="nc" id="L652">            nzeros = start(n, apolyr, root, radius, big);</span>
+<span class="nc" id="L691">            nzeros = start(n, apolyr, root, radius, big);</span>
 
             // Compute the coefficients of the backward-error polynomial.
-<span class="nc bnc" id="L655" title="All 2 branches missed.">            for (i = 0; i &lt;= n; i++) {</span>
-<span class="nc" id="L656">                apolyr[n - i] = apoly[i] * (3.8 * (n - i) + 1.0);</span>
-<span class="nc" id="L657">                apoly[i] = apoly[i] * (3.8 * i + 1.0);</span>
+<span class="nc bnc" id="L694" title="All 2 branches missed.">            for (i = 0; i &lt;= n; i++) {</span>
+<span class="nc" id="L695">                apolyr[n - i] = apoly[i] * (3.8 * (n - i) + 1.0);</span>
+<span class="nc" id="L696">                apoly[i] = apoly[i] * (3.8 * i + 1.0);</span>
             }
 
-<span class="nc bnc" id="L660" title="All 2 branches missed.">            for (i = 0; i &lt; n; i++) {</span>
-<span class="nc bnc" id="L661" title="All 2 branches missed.">                err[i] = (radius[i] &gt;= 0.0);</span>
+<span class="nc bnc" id="L699" title="All 2 branches missed.">            for (i = 0; i &lt; n; i++) {</span>
+<span class="nc bnc" id="L700" title="All 2 branches missed.">                err[i] = (radius[i] &gt;= 0.0);</span>
             }
 
             // Set number of iterations equal to 0.
-<span class="nc" id="L665">            iter[0] = 0;</span>
+<span class="nc" id="L704">            iter[0] = 0;</span>
         } 
         else {
-<span class="fc" id="L668">            nzeros = 0;</span>
-<span class="fc bfc" id="L669" title="All 2 branches covered.">            for (i = 0; i &lt; n; i++) {</span>
-<span class="pc bpc" id="L670" title="1 of 2 branches missed.">                if (!err[i]) {</span>
-<span class="nc" id="L671">                    nzeros++;</span>
+<span class="fc" id="L707">            nzeros = 0;</span>
+<span class="fc bfc" id="L708" title="All 2 branches covered.">            for (i = 0; i &lt; n; i++) {</span>
+<span class="pc bpc" id="L709" title="1 of 2 branches missed.">                if (!err[i]) {</span>
+<span class="nc" id="L710">                    nzeros++;</span>
                 }
             }
         }
@@ -677,28 +716,28 @@ import thirdparty.net.oelen.polarith.DoubleDouble;
         // Beware: The vector err[] is now used as a flags vector
         // again[] in order to determine whether we need to iterate
         // again or not.
-<span class="pc bpc" id="L680" title="1 of 2 branches missed.">        for (; iter[0] &lt; nitmax; iter[0]++) {</span>
-<span class="fc bfc" id="L681" title="All 2 branches covered.">            for (i = 0; i &lt; n; i++) {</span>
-<span class="fc bfc" id="L682" title="All 2 branches covered.">                if (err[i]) {</span>
-<span class="fc" id="L683">                    DoubleComplex corr = newton(n, poly, apoly, apolyr, root[i], small, eps, radius, err, i);</span>
-<span class="fc" id="L684">                    DoubleComplex abcorr = aberth(n, i, root);</span>
-<span class="fc" id="L685">                    root[i] = root[i].sub(corr.div(corr.mul(abcorr).sub1().neg()));</span>
-<span class="fc bfc" id="L686" title="All 2 branches covered.">                    if (!err[i]) {</span>
+<span class="pc bpc" id="L719" title="1 of 2 branches missed.">        for (; iter[0] &lt; nitmax; iter[0]++) {</span>
+<span class="fc bfc" id="L720" title="All 2 branches covered.">            for (i = 0; i &lt; n; i++) {</span>
+<span class="fc bfc" id="L721" title="All 2 branches covered.">                if (err[i]) {</span>
+<span class="fc" id="L722">                    DoubleComplex corr = newton(n, poly, apoly, apolyr, root[i], small, eps, radius, err, i);</span>
+<span class="fc" id="L723">                    DoubleComplex abcorr = aberth(n, i, root);</span>
+<span class="fc" id="L724">                    root[i] = root[i].sub(corr.div(corr.mul(abcorr).sub1().neg()));</span>
+<span class="fc bfc" id="L725" title="All 2 branches covered.">                    if (!err[i]) {</span>
                         // We have found a new root, increment the total
                         // number of roots and advance to the next root.
-<span class="fc" id="L689">                        nzeros++;</span>
-<span class="fc bfc" id="L690" title="All 2 branches covered.">                        if (nzeros == n) {</span>
-<span class="pc bpc" id="L691" title="1 of 2 branches missed.">                            if (needSort) {</span>
-<span class="fc" id="L692">                                sort(n, root, radius, err);</span>
+<span class="fc" id="L728">                        nzeros++;</span>
+<span class="fc bfc" id="L729" title="All 2 branches covered.">                        if (nzeros == n) {</span>
+<span class="pc bpc" id="L730" title="1 of 2 branches missed.">                            if (needSort) {</span>
+<span class="fc" id="L731">                                sort(n, root, radius, err);</span>
                             }
-<span class="fc" id="L694">                            return 0;</span>
+<span class="fc" id="L733">                            return 0;</span>
                         }
                     }
                 }
             }
         }
 
-<span class="nc" id="L701">        return -4;</span>
+<span class="nc" id="L740">        return -4;</span>
     }
 
     
@@ -708,44 +747,44 @@ import thirdparty.net.oelen.polarith.DoubleDouble;
                         /* out */ int[] iter, boolean init, double[] apoly, double[] apolyr, boolean needSort) {
         int i;
         int nzeros;
-<span class="fc" id="L711">        double small = 1.0 / big;</span>
+<span class="fc" id="L750">        double small = 1.0 / big;</span>
 
-<span class="pc bpc" id="L713" title="1 of 2 branches missed.">        if (init) {</span>
+<span class="pc bpc" id="L752" title="1 of 2 branches missed.">        if (init) {</span>
             // Check consistency of data
-<span class="nc bnc" id="L715" title="All 2 branches missed.">            if (poly[n].isZero()) {</span>
-<span class="nc" id="L716">                return -1;</span>
+<span class="nc bnc" id="L754" title="All 2 branches missed.">            if (poly[n].isZero()) {</span>
+<span class="nc" id="L755">                return -1;</span>
             }
-<span class="nc bnc" id="L718" title="All 2 branches missed.">            if (poly[0].isZero()) {</span>
-<span class="nc" id="L719">                return -2;</span>
+<span class="nc bnc" id="L757" title="All 2 branches missed.">            if (poly[0].isZero()) {</span>
+<span class="nc" id="L758">                return -2;</span>
             }
 
             // Compute the moduli of the coefficients
             // and the largest of the absolute values.
-<span class="nc" id="L724">            double amax = 0.0;</span>
-<span class="nc bnc" id="L725" title="All 2 branches missed.">            for (i = 0; i &lt;= n; i++) {</span>
-<span class="nc" id="L726">                apoly[i] = poly[i].abs().doubleValue();</span>
-<span class="nc bnc" id="L727" title="All 2 branches missed.">                if (amax &lt; apoly[i]) {</span>
-<span class="nc" id="L728">                    amax = apoly[i];</span>
+<span class="nc" id="L763">            double amax = 0.0;</span>
+<span class="nc bnc" id="L764" title="All 2 branches missed.">            for (i = 0; i &lt;= n; i++) {</span>
+<span class="nc" id="L765">                apoly[i] = poly[i].abs().doubleValue();</span>
+<span class="nc bnc" id="L766" title="All 2 branches missed.">                if (amax &lt; apoly[i]) {</span>
+<span class="nc" id="L767">                    amax = apoly[i];</span>
                 }
-<span class="nc" id="L730">                apolyr[i] = apoly[i];</span>
+<span class="nc" id="L769">                apolyr[i] = apoly[i];</span>
             }
 
-<span class="nc bnc" id="L733" title="All 2 branches missed.">            if (amax &gt; big / (4 * n + 1)) {</span>
-<span class="nc" id="L734">                return -3;</span>
+<span class="nc bnc" id="L772" title="All 2 branches missed.">            if (amax &gt; big / (4 * n + 1)) {</span>
+<span class="nc" id="L773">                return -3;</span>
             }
 
-<span class="nc bnc" id="L737" title="All 2 branches missed.">            if (n == 1) {</span>
+<span class="nc bnc" id="L776" title="All 2 branches missed.">            if (n == 1) {</span>
                 // Linear equation, subsequent code is not called.
-<span class="nc" id="L739">                root[0] = poly[0].div(poly[1]).neg();</span>
-<span class="nc" id="L740">                err[0] = false;</span>
-<span class="nc" id="L741">                iter[0] = 1;</span>
-<span class="nc" id="L742">                radius[0] = eps * root[0].abs().doubleValue();</span>
-<span class="nc" id="L743">                return 0;</span>
+<span class="nc" id="L778">                root[0] = poly[0].div(poly[1]).neg();</span>
+<span class="nc" id="L779">                err[0] = false;</span>
+<span class="nc" id="L780">                iter[0] = 1;</span>
+<span class="nc" id="L781">                radius[0] = eps * root[0].abs().doubleValue();</span>
+<span class="nc" id="L782">                return 0;</span>
             }
 
             // Initialize
-<span class="nc bnc" id="L747" title="All 2 branches missed.">            for (i = 0; i &lt; n; i++) {</span>
-<span class="nc" id="L748">                radius[i] = 0.0;</span>
+<span class="nc bnc" id="L786" title="All 2 branches missed.">            for (i = 0; i &lt; n; i++) {</span>
+<span class="nc" id="L787">                radius[i] = 0.0;</span>
             }
 
             // Select the starting points. We use the array apolyr
@@ -754,26 +793,26 @@ import thirdparty.net.oelen.polarith.DoubleDouble;
             // by start(), but that is of no cencern. After calling
             // start(), the apoly and apolyr arrays are derived
             // from the apoly array values.
-<span class="nc" id="L757">            nzeros = start(n, apolyr, root, radius, big);</span>
+<span class="nc" id="L796">            nzeros = start(n, apolyr, root, radius, big);</span>
 
             // Compute the coefficients of the backward-error polynomial.
-<span class="nc bnc" id="L760" title="All 2 branches missed.">            for (i = 0; i &lt;= n; i++) {</span>
-<span class="nc" id="L761">                apolyr[n - i] = apoly[i] * (3.8 * (n - i) + 1.0);</span>
-<span class="nc" id="L762">                apoly[i] = apoly[i] * (3.8 * i + 1.0);</span>
+<span class="nc bnc" id="L799" title="All 2 branches missed.">            for (i = 0; i &lt;= n; i++) {</span>
+<span class="nc" id="L800">                apolyr[n - i] = apoly[i] * (3.8 * (n - i) + 1.0);</span>
+<span class="nc" id="L801">                apoly[i] = apoly[i] * (3.8 * i + 1.0);</span>
             }
 
-<span class="nc bnc" id="L765" title="All 2 branches missed.">            for (i = 0; i &lt; n; i++) {</span>
-<span class="nc bnc" id="L766" title="All 2 branches missed.">                err[i] = (radius[i] &gt;= 0.0);</span>
+<span class="nc bnc" id="L804" title="All 2 branches missed.">            for (i = 0; i &lt; n; i++) {</span>
+<span class="nc bnc" id="L805" title="All 2 branches missed.">                err[i] = (radius[i] &gt;= 0.0);</span>
             }
 
             // Set number of iterations equal to 0.
-<span class="nc" id="L770">            iter[0] = 0;</span>
-<span class="nc" id="L771">        }</span>
+<span class="nc" id="L809">            iter[0] = 0;</span>
+<span class="nc" id="L810">        }</span>
         else {
-<span class="fc" id="L773">            nzeros = 0;</span>
-<span class="fc bfc" id="L774" title="All 2 branches covered.">            for (i = 0; i &lt; n; i++) {</span>
-<span class="pc bpc" id="L775" title="1 of 2 branches missed.">                if (!err[i]) {</span>
-<span class="nc" id="L776">                    nzeros++;</span>
+<span class="fc" id="L812">            nzeros = 0;</span>
+<span class="fc bfc" id="L813" title="All 2 branches covered.">            for (i = 0; i &lt; n; i++) {</span>
+<span class="pc bpc" id="L814" title="1 of 2 branches missed.">                if (!err[i]) {</span>
+<span class="nc" id="L815">                    nzeros++;</span>
                 }
             }
         }
@@ -782,28 +821,28 @@ import thirdparty.net.oelen.polarith.DoubleDouble;
         // Beware: The vector err[] is now used as a flags vector
         // again[] in order to determine whether we need to iterate
         // again or not.
-<span class="pc bpc" id="L785" title="1 of 2 branches missed.">        for (; iter[0] &lt; nitmax; iter[0]++) {</span>
-<span class="fc bfc" id="L786" title="All 2 branches covered.">            for (i = 0; i &lt; n; i++) {</span>
-<span class="fc bfc" id="L787" title="All 2 branches covered.">                if (err[i]) {</span>
-<span class="fc" id="L788">                    DoubleComplex corr = newton(n, poly, apoly, apolyr, root[i], small, eps, radius, err, i);</span>
-<span class="fc" id="L789">                    DoubleComplex abcorr = aberth(n, i, root);</span>
-<span class="fc" id="L790">                    root[i] = root[i].sub(corr.div(corr.mul(abcorr).sub1().neg()));</span>
-<span class="fc bfc" id="L791" title="All 2 branches covered.">                    if (!err[i]) {</span>
+<span class="pc bpc" id="L824" title="1 of 2 branches missed.">        for (; iter[0] &lt; nitmax; iter[0]++) {</span>
+<span class="fc bfc" id="L825" title="All 2 branches covered.">            for (i = 0; i &lt; n; i++) {</span>
+<span class="fc bfc" id="L826" title="All 2 branches covered.">                if (err[i]) {</span>
+<span class="fc" id="L827">                    DoubleComplex corr = newton(n, poly, apoly, apolyr, root[i], small, eps, radius, err, i);</span>
+<span class="fc" id="L828">                    DoubleComplex abcorr = aberth(n, i, root);</span>
+<span class="fc" id="L829">                    root[i] = root[i].sub(corr.div(corr.mul(abcorr).sub1().neg()));</span>
+<span class="fc bfc" id="L830" title="All 2 branches covered.">                    if (!err[i]) {</span>
                         // We have found a new root, increment the total
                         // number of roots and advance to the next root.
-<span class="fc" id="L794">                        nzeros++;</span>
-<span class="fc bfc" id="L795" title="All 2 branches covered.">                        if (nzeros == n) {</span>
-<span class="pc bpc" id="L796" title="1 of 2 branches missed.">                            if (needSort) {</span>
-<span class="fc" id="L797">                                sort(n, root, radius, err);</span>
+<span class="fc" id="L833">                        nzeros++;</span>
+<span class="fc bfc" id="L834" title="All 2 branches covered.">                        if (nzeros == n) {</span>
+<span class="pc bpc" id="L835" title="1 of 2 branches missed.">                            if (needSort) {</span>
+<span class="fc" id="L836">                                sort(n, root, radius, err);</span>
                             }
-<span class="fc" id="L799">                            return 0;</span>
+<span class="fc" id="L838">                            return 0;</span>
                         }
                     }
                 }
             }
         }
 
-<span class="nc" id="L806">        return -4;</span>
+<span class="nc" id="L845">        return -4;</span>
     }
     
 }

@@ -9,24 +9,33 @@ import no.uib.cipr.matrix.NotConvergedException;
  */
 <span class="pc" id="L10">public class CubicRootSolver {</span>
 
+    /**
+     *
+     */
     public final static double eps = 1e-7;
+
+    /**
+     *
+     @param r
+     @return
+     */
     public static double[] realNonZeroOnly(Complex[] r) {
-<span class="fc" id="L14">        int n = 0;</span>
+<span class="fc" id="L23">        int n = 0;</span>
         int i;
-<span class="fc bfc" id="L16" title="All 2 branches covered.">        for (i = 0; i &lt; r.length;++i){</span>
-<span class="fc bfc" id="L17" title="All 4 branches covered.">            if ( (Math.abs(r[i].re()) &gt; eps) &amp;&amp; (Math.abs(r[i].im()) &lt; eps)) {</span>
-<span class="fc" id="L18">                n++;</span>
+<span class="fc bfc" id="L25" title="All 2 branches covered.">        for (i = 0; i &lt; r.length;++i){</span>
+<span class="fc bfc" id="L26" title="All 4 branches covered.">            if ( (Math.abs(r[i].re()) &gt; eps) &amp;&amp; (Math.abs(r[i].im()) &lt; eps)) {</span>
+<span class="fc" id="L27">                n++;</span>
             }
         }
-<span class="fc" id="L21">        double[] out = new double[n];</span>
-<span class="fc" id="L22">        n = 0;</span>
-<span class="fc bfc" id="L23" title="All 2 branches covered.">        for (i = 0; i &lt; r.length;++i){</span>
-<span class="fc bfc" id="L24" title="All 4 branches covered.">            if ( (Math.abs(r[i].re()) &gt; eps) &amp;&amp; (Math.abs(r[i].im()) &lt; eps)) {</span>
-<span class="fc" id="L25">                out[n] = r[i].re();</span>
-<span class="fc" id="L26">                n++;</span>
+<span class="fc" id="L30">        double[] out = new double[n];</span>
+<span class="fc" id="L31">        n = 0;</span>
+<span class="fc bfc" id="L32" title="All 2 branches covered.">        for (i = 0; i &lt; r.length;++i){</span>
+<span class="fc bfc" id="L33" title="All 4 branches covered.">            if ( (Math.abs(r[i].re()) &gt; eps) &amp;&amp; (Math.abs(r[i].im()) &lt; eps)) {</span>
+<span class="fc" id="L34">                out[n] = r[i].re();</span>
+<span class="fc" id="L35">                n++;</span>
             }
         }
-<span class="fc" id="L29">        return out;</span>
+<span class="fc" id="L38">        return out;</span>
     }
     
     /**
@@ -34,9 +43,9 @@ import no.uib.cipr.matrix.NotConvergedException;
      * The given coefficients are transformed internally to those used by Pearson in 
      * &quot;Handbook of Applied Mathematics&quot; which uses t^3 + (3q_p)*t + (2r_p) = 0.
      * 
-     * @param p0 coefficient p for the first order term.
-     * @param q0 coefficient q for the zero order term.
-     * @return returns the roots of the polynomial w/ the given depressed cubic parameters.
+     @param p0 coefficient p for the first order term.
+     @param q0 coefficient q for the zero order term.
+     @return returns the roots of the polynomial w/ the given depressed cubic parameters.
      * NOTE that if an empty array is returned, one can use solveUsingGeneral
      */
     static Complex[] solveUsingDepressedCubic0(final double p0, final double q0) {
@@ -50,33 +59,33 @@ import no.uib.cipr.matrix.NotConvergedException;
            =&gt; r_p=q/2
            z^3 = r +- sqrt(r^2 + q^3)
         */
-<span class="fc" id="L53">        final double q = p0/3.;</span>
-<span class="fc" id="L54">        final double r = q0/2.;</span>
+<span class="fc" id="L62">        final double q = p0/3.;</span>
+<span class="fc" id="L63">        final double r = q0/2.;</span>
                 
-<span class="fc" id="L56">        double r2q3 = r*r + q*q*q;</span>
+<span class="fc" id="L65">        double r2q3 = r*r + q*q*q;</span>
         
         // z = ( r + math.sqrt(r2q3) )^(1./3.)
         // y = ( r - math.sqrt(r2q3) )^(1./3.)
-<span class="fc" id="L60">        Complex z = new Complex(r2q3, 0);</span>
-<span class="fc" id="L61">        z = z.nthRoot(2);</span>
-<span class="fc" id="L62">        z = z.plus(r).nthRoot(3);</span>
+<span class="fc" id="L69">        Complex z = new Complex(r2q3, 0);</span>
+<span class="fc" id="L70">        z = z.nthRoot(2);</span>
+<span class="fc" id="L71">        z = z.plus(r).nthRoot(3);</span>
         
-<span class="fc" id="L64">        Complex y = new Complex(r2q3, 0);</span>
-<span class="fc" id="L65">        y = y.nthRoot(2).times(-1);</span>
-<span class="fc" id="L66">        y = y.plus(r).nthRoot(3);</span>
+<span class="fc" id="L73">        Complex y = new Complex(r2q3, 0);</span>
+<span class="fc" id="L74">        y = y.nthRoot(2).times(-1);</span>
+<span class="fc" id="L75">        y = y.plus(r).nthRoot(3);</span>
         
         // w = 0.5*(-1 + i*sqrt(3))
-<span class="fc" id="L69">        Complex w = new Complex(-0.5, 0.5*Math.sqrt(3));</span>
-<span class="fc" id="L70">        Complex w2 = new Complex(-0.5, -0.5*Math.sqrt(3));</span>
+<span class="fc" id="L78">        Complex w = new Complex(-0.5, 0.5*Math.sqrt(3));</span>
+<span class="fc" id="L79">        Complex w2 = new Complex(-0.5, -0.5*Math.sqrt(3));</span>
         
         // roots are 
         // (-y - z), (-w*y -w2*z), (-w2*y -w*z)
-<span class="fc" id="L74">        Complex[] roots = new Complex[3];</span>
-<span class="fc" id="L75">        roots[0] = y.times(-1).minus(z);</span>
-<span class="fc" id="L76">        roots[1] = w.times(-1).minus(w2.times(z));</span>
-<span class="fc" id="L77">        roots[2] = w2.times(-1).times(y).minus(w.times(z));</span>
+<span class="fc" id="L83">        Complex[] roots = new Complex[3];</span>
+<span class="fc" id="L84">        roots[0] = y.times(-1).minus(z);</span>
+<span class="fc" id="L85">        roots[1] = w.times(-1).minus(w2.times(z));</span>
+<span class="fc" id="L86">        roots[2] = w2.times(-1).times(y).minus(w.times(z));</span>
         
-<span class="fc" id="L79">        return roots;</span>
+<span class="fc" id="L88">        return roots;</span>
     }
     
     /**
@@ -86,16 +95,16 @@ import no.uib.cipr.matrix.NotConvergedException;
      * https://www.wikiwand.com/en/Cubic_equation#/google_vignette
      * https://en.wikipedia.org/wiki/Cubic_equation#Reduction_to_a_depressed_cubic
      * NOTE: only solving for the real, rational roots.
-     * @param p coefficient p for the first order term.
-     * @param q coefficient q for the zero order term.
-     * @return returns the roots of the polynomial w/ the given depressed cubic parameters.
+     @param p coefficient p for the first order term.
+     @param q coefficient q for the zero order term.
+     @return returns the roots of the polynomial w/ the given depressed cubic parameters.
      * NOTE that if an empty array is returned, one can use solveUsingGeneral
      */
     public static double[] solveUsingDepressedCubic(double p, double q) {
         
-<span class="fc" id="L96">        double eps = 1.e-10;</span>
+<span class="fc" id="L105">        double eps = 1.e-10;</span>
        
-<span class="fc" id="L98">        double discr = Math.pow(q/2., 2) + Math.pow(p/3., 3);</span>
+<span class="fc" id="L107">        double discr = Math.pow(q/2., 2) + Math.pow(p/3., 3);</span>
                 
         /*
         TODO: handle characteristic 3 modifications.
@@ -113,20 +122,20 @@ import no.uib.cipr.matrix.NotConvergedException;
         In characteristic characteristic 3, the formula for a triple root involves a cube root.
         */  
         
-<span class="fc" id="L116">        System.out.println(&quot;discr=&quot; + discr);</span>
+<span class="fc" id="L125">        System.out.println(&quot;discr=&quot; + discr);</span>
                  
-<span class="fc bfc" id="L118" title="All 2 branches covered.">        if (Math.abs(discr) &lt; eps) {</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">        if (Math.abs(discr) &lt; eps) {</span>
             // discriminant is 0.  
             //there are 3 real roots, not necessarily distinct (has a multiple root)
-<span class="fc bfc" id="L121" title="All 2 branches covered.">            if (Math.abs(p) &lt; eps) {</span>
-<span class="fc" id="L122">                return new double[]{0};</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">            if (Math.abs(p) &lt; eps) {</span>
+<span class="fc" id="L131">                return new double[]{0};</span>
             }
                        
             // Vieta's formula, Viete's formula
-<span class="fc" id="L126">            double t1 = 3.*q/p;</span>
-<span class="fc" id="L127">            double t2 = -t1/2.;</span>
-<span class="fc" id="L128">            return new double[]{t1, t2};</span>
-<span class="fc bfc" id="L129" title="All 2 branches covered.">        } else if (discr &gt; 0) {</span>
+<span class="fc" id="L135">            double t1 = 3.*q/p;</span>
+<span class="fc" id="L136">            double t2 = -t1/2.;</span>
+<span class="fc" id="L137">            return new double[]{t1, t2};</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">        } else if (discr &gt; 0) {</span>
             // cardano's formula.  valid for discriminant == 0 and &gt; 0
             // one real root and 2 non-real
       
@@ -142,29 +151,29 @@ import no.uib.cipr.matrix.NotConvergedException;
             Complex r3 = new Complex(r2.re(), -r2.im());
             */
             
-<span class="fc" id="L145">            double pt2 = Math.sqrt(discr);</span>
-<span class="fc" id="L146">            double pt1 = -q/2.;</span>
-<span class="pc bpc" id="L147" title="1 of 4 branches missed.">            if ((pt1 + pt2) &lt; 0 || (pt1 - pt2) &lt; 0) {</span>
+<span class="fc" id="L154">            double pt2 = Math.sqrt(discr);</span>
+<span class="fc" id="L155">            double pt1 = -q/2.;</span>
+<span class="pc bpc" id="L156" title="1 of 4 branches missed.">            if ((pt1 + pt2) &lt; 0 || (pt1 - pt2) &lt; 0) {</span>
                 // stop here and let invoker use polynomial solver
-<span class="fc" id="L149">                return new double[]{};</span>
+<span class="fc" id="L158">                return new double[]{};</span>
             }
-<span class="fc" id="L151">            double t = Math.pow(pt1 + pt2, 1./3.) + Math.pow(pt1 - pt2, 1./3.);</span>
-<span class="fc" id="L152">            return new double[]{t};</span>
+<span class="fc" id="L160">            double t = Math.pow(pt1 + pt2, 1./3.) + Math.pow(pt1 - pt2, 1./3.);</span>
+<span class="fc" id="L161">            return new double[]{t};</span>
             
         } else {
             // discriminant &lt; 0.  3 real distinct roots
             // trigonometric solution
             //https://www.wikiwand.com/en/Cubic_equation#/google_vignette
-<span class="pc bnc" id="L158" title="All 2 branches missed.">            assert(p &lt; 0);</span>
+<span class="pc bnc" id="L167" title="All 2 branches missed.">            assert(p &lt; 0);</span>
             
-<span class="fc" id="L160">            double pt1 = 2.*Math.sqrt(-p/3);</span>
-<span class="fc" id="L161">            double pt2 = Math.acos(((3.*q)/(2.*p)) * Math.sqrt(-3./p));</span>
-<span class="fc" id="L162">            double tp3 = 2.*Math.PI/3.;</span>
-<span class="fc" id="L163">            double[] t = new double[3];</span>
-<span class="fc bfc" id="L164" title="All 2 branches covered.">            for (int i = 0; i &lt; 3; ++i) {</span>
-<span class="fc" id="L165">                t[i] = pt1 * Math.cos((1./3.)*pt2 - (tp3*i)); ;</span>
+<span class="fc" id="L169">            double pt1 = 2.*Math.sqrt(-p/3);</span>
+<span class="fc" id="L170">            double pt2 = Math.acos(((3.*q)/(2.*p)) * Math.sqrt(-3./p));</span>
+<span class="fc" id="L171">            double tp3 = 2.*Math.PI/3.;</span>
+<span class="fc" id="L172">            double[] t = new double[3];</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">            for (int i = 0; i &lt; 3; ++i) {</span>
+<span class="fc" id="L174">                t[i] = pt1 * Math.cos((1./3.)*pt2 - (tp3*i)); ;</span>
             }
-<span class="fc" id="L167">            return t;</span>
+<span class="fc" id="L176">            return t;</span>
             
             /*
             alternative implementation:
@@ -187,35 +196,35 @@ import no.uib.cipr.matrix.NotConvergedException;
     /**
      * calculates coefficients for the reduced form of the cubic equation
      * called the depressed cubic.
-     * @param cubicCoeff
-     * @return a, b, c, p, q.  returns null if cubicCoeff[0] = 0.
+     @param cubicCoeff
+     @return a, b, c, p, q.  returns null if cubicCoeff[0] = 0.
      */
     static double[] calcDepressedCubicCoefficients(double[] cubicCoeff) {
-<span class="pc bpc" id="L194" title="1 of 2 branches missed.">        if (cubicCoeff.length != 4) {</span>
-<span class="nc" id="L195">            throw new IllegalArgumentException(&quot;cubicCoeff must be length 4&quot;);</span>
+<span class="pc bpc" id="L203" title="1 of 2 branches missed.">        if (cubicCoeff.length != 4) {</span>
+<span class="nc" id="L204">            throw new IllegalArgumentException(&quot;cubicCoeff must be length 4&quot;);</span>
         }
         
-<span class="fc" id="L198">        double a3 = cubicCoeff[0];</span>
-<span class="fc" id="L199">        double a2 = cubicCoeff[1];</span>
-<span class="fc" id="L200">        double a1 = cubicCoeff[2];</span>
-<span class="fc" id="L201">        double a0 = cubicCoeff[3];</span>
+<span class="fc" id="L207">        double a3 = cubicCoeff[0];</span>
+<span class="fc" id="L208">        double a2 = cubicCoeff[1];</span>
+<span class="fc" id="L209">        double a1 = cubicCoeff[2];</span>
+<span class="fc" id="L210">        double a0 = cubicCoeff[3];</span>
                 
-<span class="pc bpc" id="L203" title="1 of 2 branches missed.">        if (Math.abs(a3) &lt; eps) {</span>
-<span class="nc" id="L204">            return null;</span>
+<span class="pc bpc" id="L212" title="1 of 2 branches missed.">        if (Math.abs(a3) &lt; eps) {</span>
+<span class="nc" id="L213">            return null;</span>
         }
         
-<span class="fc" id="L207">        double a = a2/a3;</span>
-<span class="fc" id="L208">        double b = a1/a3;</span>
-<span class="fc" id="L209">        double c = a0/a3;</span>
+<span class="fc" id="L216">        double a = a2/a3;</span>
+<span class="fc" id="L217">        double b = a1/a3;</span>
+<span class="fc" id="L218">        double c = a0/a3;</span>
                 
         // p = b - a^2/3
         // q = (2*a^3/27) - (a*b/3) + c
         
-<span class="fc" id="L214">        double p = b - a*a/3;</span>
+<span class="fc" id="L223">        double p = b - a*a/3;</span>
         
-<span class="fc" id="L216">        double q = (2.*a*a*a/27.) - (a*b/3.) + c;</span>
+<span class="fc" id="L225">        double q = (2.*a*a*a/27.) - (a*b/3.) + c;</span>
         
-<span class="fc" id="L218">        return new double[]{a, b, c, p, q};</span>
+<span class="fc" id="L227">        return new double[]{a, b, c, p, q};</span>
     }
     
     /**
@@ -225,13 +234,14 @@ import no.uib.cipr.matrix.NotConvergedException;
      * https://www.mathemania.com/lesson/cardanos-formula-solving-cubic-equations/
      * https://en.wikipedia.org/wiki/Cubic_equation#Reduction_to_a_depressed_cubic
      * NOTE: only solving for the real roots.
-     * @param coeffs an array holding a, b, c , d for the equation 
+     @param coeffs an array holding a, b, c , d for the equation 
      * a*x^3 + b*x^2 + c*x + d = 0.
-     * @return x as the roots of the cubic equation a*x^3 + b*x^2 + c*x + d = 0
+     @return x as the roots of the cubic equation a*x^3 + b*x^2 + c*x + d = 0
+     * @throws no.uib.cipr.matrix.NotConvergedException
      */
     public static double[] solve(double[] coeffs) throws NotConvergedException {
-<span class="pc bpc" id="L233" title="1 of 2 branches missed.">        if (coeffs.length != 4) {</span>
-<span class="nc" id="L234">            throw new IllegalArgumentException(&quot;coeffs must be length 4&quot;);</span>
+<span class="pc bpc" id="L243" title="1 of 2 branches missed.">        if (coeffs.length != 4) {</span>
+<span class="nc" id="L244">            throw new IllegalArgumentException(&quot;coeffs must be length 4&quot;);</span>
         }
                 
         /*
@@ -239,32 +249,32 @@ import no.uib.cipr.matrix.NotConvergedException;
             return solveUsingGeneral(coeffs);
         }*/
         
-<span class="fc" id="L242">        double[] dCoeffs = calcDepressedCubicCoefficients(coeffs);</span>
-<span class="pc bpc" id="L243" title="1 of 2 branches missed.">        if (dCoeffs == null) {</span>
-<span class="nc" id="L244">            double[] rr2 = solveUsingGeneral(coeffs);</span>
-<span class="nc" id="L245">            return rr2;</span>
+<span class="fc" id="L252">        double[] dCoeffs = calcDepressedCubicCoefficients(coeffs);</span>
+<span class="pc bpc" id="L253" title="1 of 2 branches missed.">        if (dCoeffs == null) {</span>
+<span class="nc" id="L254">            double[] rr2 = solveUsingGeneral(coeffs);</span>
+<span class="nc" id="L255">            return rr2;</span>
         }
                 
-<span class="fc" id="L248">        double a = dCoeffs[0];</span>
-<span class="fc" id="L249">        double b = dCoeffs[1];</span>
-<span class="fc" id="L250">        double c = dCoeffs[2];</span>
-<span class="fc" id="L251">        double p = dCoeffs[3];</span>
-<span class="fc" id="L252">        double q = dCoeffs[4];</span>
+<span class="fc" id="L258">        double a = dCoeffs[0];</span>
+<span class="fc" id="L259">        double b = dCoeffs[1];</span>
+<span class="fc" id="L260">        double c = dCoeffs[2];</span>
+<span class="fc" id="L261">        double p = dCoeffs[3];</span>
+<span class="fc" id="L262">        double q = dCoeffs[4];</span>
         
-<span class="fc" id="L254">        double[] t = solveUsingDepressedCubic(p, q);</span>
+<span class="fc" id="L264">        double[] t = solveUsingDepressedCubic(p, q);</span>
         
-<span class="pc bpc" id="L256" title="1 of 4 branches missed.">        if (t == null || t.length == 0) {</span>
+<span class="pc bpc" id="L266" title="1 of 4 branches missed.">        if (t == null || t.length == 0) {</span>
             //Complex[] rr = solveUsingDepressedCubic0(p, q);
-<span class="fc" id="L258">            double[] rr2 = solveUsingGeneral(coeffs);</span>
-<span class="fc" id="L259">            return rr2;</span>
+<span class="fc" id="L268">            double[] rr2 = solveUsingGeneral(coeffs);</span>
+<span class="fc" id="L269">            return rr2;</span>
         }
         
-<span class="fc" id="L262">        double[] x = new double[t.length];</span>
-<span class="fc bfc" id="L263" title="All 2 branches covered.">        for (int i = 0; i &lt; x.length; ++i) {</span>
-<span class="fc" id="L264">            x[i] = t[i] - a/3.;  // -coeffs[1]/(3.*coeffs[0])</span>
+<span class="fc" id="L272">        double[] x = new double[t.length];</span>
+<span class="fc bfc" id="L273" title="All 2 branches covered.">        for (int i = 0; i &lt; x.length; ++i) {</span>
+<span class="fc" id="L274">            x[i] = t[i] - a/3.;  // -coeffs[1]/(3.*coeffs[0])</span>
         }
         
-<span class="fc" id="L267">        return x;</span>
+<span class="fc" id="L277">        return x;</span>
     }
     
     /**
@@ -272,22 +282,23 @@ import no.uib.cipr.matrix.NotConvergedException;
      * using the general formula, given coefficients a, b, c, d. returns x.
      * following
      * https://www.wikiwand.com/en/Cubic_equation#/General_cubic_formula
-     * @param coeffs an array holding a, b, c , d for the equation 
+     @param coeffs an array holding a, b, c , d for the equation 
      * a*x^3 + b*x^2 + c*x + d = 0.
-     * @return x as the roots of the cubic equation a*x^3 + b*x^2 + c*x + d = 0
+     @return x as the roots of the cubic equation a*x^3 + b*x^2 + c*x + d = 0
+     * @throws no.uib.cipr.matrix.NotConvergedException
      */
     public static double[] solveUsingGeneral(double[] coeffs) throws NotConvergedException {
         
         //https://www.wikiwand.com/en/Cubic_equation#/General_cubic_formula
         
-<span class="pc bpc" id="L283" title="1 of 2 branches missed.">        if (coeffs.length != 4) {</span>
-<span class="nc" id="L284">            throw new IllegalArgumentException(&quot;coeffs must be length 4&quot;);</span>
+<span class="pc bpc" id="L294" title="1 of 2 branches missed.">        if (coeffs.length != 4) {</span>
+<span class="nc" id="L295">            throw new IllegalArgumentException(&quot;coeffs must be length 4&quot;);</span>
         }
                         
-<span class="fc" id="L287">        double a = coeffs[0];</span>
-<span class="fc" id="L288">        double b = coeffs[1];</span>
-<span class="fc" id="L289">        double c = coeffs[2];</span>
-<span class="fc" id="L290">        double d = coeffs[3];</span>
+<span class="fc" id="L298">        double a = coeffs[0];</span>
+<span class="fc" id="L299">        double b = coeffs[1];</span>
+<span class="fc" id="L300">        double c = coeffs[2];</span>
+<span class="fc" id="L301">        double d = coeffs[3];</span>
                 
         /*
         TODO: handle characteristic 2 and 3 modifications
@@ -307,27 +318,27 @@ import no.uib.cipr.matrix.NotConvergedException;
         and, in characteristic 3, the formula for a triple root involves a cube root.
         */              
         
-<span class="fc" id="L310">        double discr = 18.*a*b*c*d - 4*b*b*b*d + b*b*c*c - 4*a*c*c*c - 27.*a*a*d*d;</span>
+<span class="fc" id="L321">        double discr = 18.*a*b*c*d - 4*b*b*b*d + b*b*c*c - 4*a*c*c*c - 27.*a*a*d*d;</span>
         
-<span class="pc bpc" id="L312" title="1 of 2 branches missed.">        if (Math.abs(discr) &lt; eps) {</span>
+<span class="pc bpc" id="L323" title="1 of 2 branches missed.">        if (Math.abs(discr) &lt; eps) {</span>
             // discriminant is 0.  
             //there are 3 real roots, not necessarily distinct (has a multiple root)
             
-<span class="nc bnc" id="L316" title="All 2 branches missed.">            if (Math.abs(b*b - 3*a*c) &lt; 0) {</span>
+<span class="nc bnc" id="L327" title="All 2 branches missed.">            if (Math.abs(b*b - 3*a*c) &lt; 0) {</span>
                 // either b^2 = 3ac, triple root but all the same
                 
-<span class="nc" id="L319">                return new double[]{-b/(3.*a)};</span>
+<span class="nc" id="L330">                return new double[]{-b/(3.*a)};</span>
                 
             } else {
                 // or b^2 != 3ac, double root
                 
                 // a double root
-<span class="nc" id="L325">                double x2 = (9.*a*d - b*c)/(2.*(b*b - 3.*a*c));</span>
+<span class="nc" id="L336">                double x2 = (9.*a*d - b*c)/(2.*(b*b - 3.*a*c));</span>
                 
                 // a simple root
-<span class="nc" id="L328">                double x1 = (4.*a*b*c - 9.*a*a*d - b*b*b)/(a*(b*b - 3.*a*c));</span>
+<span class="nc" id="L339">                double x1 = (4.*a*b*c - 9.*a*a*d - b*b*b)/(a*(b*b - 3.*a*c));</span>
                 
-<span class="nc" id="L330">                return new double[]{x2, x1};</span>
+<span class="nc" id="L341">                return new double[]{x2, x1};</span>
             }
             
         } else {
@@ -343,10 +354,10 @@ import no.uib.cipr.matrix.NotConvergedException;
                 // 1 real root
             }  
             */
-<span class="fc" id="L346">            double[] roots = PolynomialRootSolver.solveForRealUsingCompanionMatrix(</span>
+<span class="fc" id="L357">            double[] roots = PolynomialRootSolver.solveForRealUsingCompanionMatrix(</span>
                 coeffs, eps);
             
-<span class="fc" id="L349">            return roots;</span>
+<span class="fc" id="L360">            return roots;</span>
         }
         
     }

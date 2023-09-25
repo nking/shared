@@ -3,173 +3,238 @@
 /**
  *
  * @author nichole
+ @param &lt;K&gt;
+ @param &lt;V&gt;
  */
-<span class="nc" id="L7">public class LinkedList&lt;K, V&gt; {</span>
+<span class="nc" id="L9">public class LinkedList&lt;K, V&gt; {</span>
 
-<span class="nc" id="L9">  protected Node&lt;K, V&gt; head = null;</span>
-<span class="nc" id="L10">  protected Node&lt;K, V&gt; tail = null;</span>
-<span class="nc" id="L11">  protected int n = 0;</span>
+    /**
+     *
+     */
+<span class="nc" id="L14">    protected Node&lt;K, V&gt; head = null;</span>
 
-<span class="nc" id="L13">  public LinkedList() {</span>
-<span class="nc" id="L14">  }</span>
+    /**
+     *
+     */
+<span class="nc" id="L19">    protected Node&lt;K, V&gt; tail = null;</span>
 
-<span class="nc" id="L16">  public LinkedList(K key, V value) {</span>
-<span class="nc" id="L17">    add(key, value);</span>
-<span class="nc" id="L18">  }</span>
+    /**
+     *
+     */
+<span class="nc" id="L24">    protected int n = 0;</span>
+
+    /**
+     *
+     */
+<span class="nc" id="L29">    public LinkedList() {</span>
+<span class="nc" id="L30">  }</span>
+
+    /**
+     *
+     @param key
+     @param value
+     */
+<span class="nc" id="L37">    public LinkedList(K key, V value) {</span>
+<span class="nc" id="L38">    add(key, value);</span>
+<span class="nc" id="L39">  }</span>
 
   /**
   add a node to the end of the linked list
+     @param key
+     @param value
+     @return 
   */
   public Node&lt;K,V&gt; add(K key, V value) {
-<span class="nc" id="L24">    Node&lt;K,V&gt; node = new Node(key, value);</span>
-<span class="nc bnc" id="L25" title="All 2 branches missed.">    if (head == null) {</span>
-<span class="nc bnc" id="L26" title="All 2 branches missed.">      assert(tail == null);</span>
-<span class="nc" id="L27">      head = node;</span>
-<span class="nc" id="L28">      tail = node;</span>
+<span class="nc" id="L48">    Node&lt;K,V&gt; node = new Node(key, value);</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">    if (head == null) {</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">      assert(tail == null);</span>
+<span class="nc" id="L51">      head = node;</span>
+<span class="nc" id="L52">      tail = node;</span>
       // node next and prev are null instead of pointing to self
     } else {
       // add to end of nodes
-<span class="nc" id="L32">      node.prev = tail;</span>
-<span class="nc" id="L33">      tail.next = node;</span>
-<span class="nc" id="L34">      tail = node;</span>
+<span class="nc" id="L56">      node.prev = tail;</span>
+<span class="nc" id="L57">      tail.next = node;</span>
+<span class="nc" id="L58">      tail = node;</span>
     }
-<span class="nc" id="L36">    ++n;</span>
-<span class="nc" id="L37">    return node;</span>
+<span class="nc" id="L60">    ++n;</span>
+<span class="nc" id="L61">    return node;</span>
   }
 
-  public Node&lt;K,V&gt; removeFirst() {
+    /**
+     *
+     @return
+     */
+    public Node&lt;K,V&gt; removeFirst() {
     //cases:
     //  (1) head == null and tail == null
     //  (2) there's only item in list so head == tail
     //  (3) there's more than one item in list
 
-<span class="nc bnc" id="L46" title="All 2 branches missed.">    if (head == null) {</span>
-<span class="nc bnc" id="L47" title="All 2 branches missed.">      assert(n == 0);</span>
-<span class="nc" id="L48">      return null;</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">    if (head == null) {</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">      assert(n == 0);</span>
+<span class="nc" id="L76">      return null;</span>
     }
-<span class="nc bnc" id="L50" title="All 2 branches missed.">    assert(tail != null);</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">    assert(tail != null);</span>
 
-<span class="nc" id="L52">    Node&lt;K,V&gt; node = head;</span>
+<span class="nc" id="L80">    Node&lt;K,V&gt; node = head;</span>
 
     // case where head == tail, that is, only 1 item was in the list
-<span class="nc bnc" id="L55" title="All 2 branches missed.">    if (head.equals(tail)) {</span>
-<span class="nc bnc" id="L56" title="All 2 branches missed.">       assert(n == 1);</span>
-<span class="nc" id="L57">       head = null;</span>
-<span class="nc" id="L58">       tail = null;</span>
-<span class="nc" id="L59">       --n;</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">    if (head.equals(tail)) {</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">       assert(n == 1);</span>
+<span class="nc" id="L85">       head = null;</span>
+<span class="nc" id="L86">       tail = null;</span>
+<span class="nc" id="L87">       --n;</span>
        // can remove next link of node to improve integrity of remaining LinkedList
-<span class="nc" id="L61">       node.next = null;</span>
-<span class="nc" id="L62">       node.prev = null;</span>
-<span class="nc" id="L63">       return node;</span>
+<span class="nc" id="L89">       node.next = null;</span>
+<span class="nc" id="L90">       node.prev = null;</span>
+<span class="nc" id="L91">       return node;</span>
     }
 
-<span class="nc bnc" id="L66" title="All 2 branches missed.">    assert(head.next != null);</span>
-<span class="nc bnc" id="L67" title="All 2 branches missed.">    assert(tail.prev != null);</span>
-<span class="nc bnc" id="L68" title="All 2 branches missed.">    assert(n &gt; 1);</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">    assert(head.next != null);</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">    assert(tail.prev != null);</span>
+<span class="nc bnc" id="L96" title="All 2 branches missed.">    assert(n &gt; 1);</span>
 
-<span class="nc" id="L70">    head = head.next;</span>
-<span class="nc" id="L71">    head.prev = null;</span>
-<span class="nc" id="L72">    --n;</span>
+<span class="nc" id="L98">    head = head.next;</span>
+<span class="nc" id="L99">    head.prev = null;</span>
+<span class="nc" id="L100">    --n;</span>
 
     // can remove next link of node to improve integrity of remaining LinkedList
-<span class="nc" id="L75">    node.next = null;</span>
-<span class="nc" id="L76">    node.prev = null;</span>
+<span class="nc" id="L103">    node.next = null;</span>
+<span class="nc" id="L104">    node.prev = null;</span>
 
-<span class="nc" id="L78">    return node;</span>
+<span class="nc" id="L106">    return node;</span>
   }
 
-  public Node&lt;K,V&gt; removeLast() {
+    /**
+     *
+     @return
+     */
+    public Node&lt;K,V&gt; removeLast() {
     //cases:
     //(1) head and tail are null
     //(2) head == tail, that is, only 1 item in list
     //(3) more than 1 item in list
 
-<span class="nc bnc" id="L87" title="All 2 branches missed.">    if (tail == null) {</span>
-<span class="nc bnc" id="L88" title="All 2 branches missed.">      assert(head == null);</span>
-<span class="nc bnc" id="L89" title="All 2 branches missed.">      assert(n == 0);</span>
-<span class="nc" id="L90">      return null;</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">    if (tail == null) {</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">      assert(head == null);</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">      assert(n == 0);</span>
+<span class="nc" id="L122">      return null;</span>
     }
 
-<span class="nc" id="L93">    Node&lt;K,V&gt; node = tail;</span>
+<span class="nc" id="L125">    Node&lt;K,V&gt; node = tail;</span>
 
-<span class="nc bnc" id="L95" title="All 2 branches missed.">    if (head.equals(tail)) {</span>
-<span class="nc bnc" id="L96" title="All 2 branches missed.">      assert(n == 1);</span>
-<span class="nc" id="L97">      head = null;</span>
-<span class="nc" id="L98">      tail = null;</span>
-<span class="nc" id="L99">      --n;</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">    if (head.equals(tail)) {</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">      assert(n == 1);</span>
+<span class="nc" id="L129">      head = null;</span>
+<span class="nc" id="L130">      tail = null;</span>
+<span class="nc" id="L131">      --n;</span>
       // can remove next link of node to improve integrity of remaining LinkedList
-<span class="nc" id="L101">      node.next = null;</span>
-<span class="nc" id="L102">      node.prev = null;</span>
-<span class="nc" id="L103">      return node;</span>
+<span class="nc" id="L133">      node.next = null;</span>
+<span class="nc" id="L134">      node.prev = null;</span>
+<span class="nc" id="L135">      return node;</span>
     }
 
-<span class="nc" id="L106">    tail = tail.prev;</span>
-<span class="nc" id="L107">    tail.next = null;</span>
-<span class="nc" id="L108">    --n;</span>
+<span class="nc" id="L138">    tail = tail.prev;</span>
+<span class="nc" id="L139">    tail.next = null;</span>
+<span class="nc" id="L140">    --n;</span>
 
     // can remove next link of node to improve integrity of remaining LinkedList
-<span class="nc" id="L111">    node.next = null;</span>
-<span class="nc" id="L112">    node.prev = null;</span>
-<span class="nc" id="L113">    return node;</span>
+<span class="nc" id="L143">    node.next = null;</span>
+<span class="nc" id="L144">    node.prev = null;</span>
+<span class="nc" id="L145">    return node;</span>
   }
 
-  public boolean containsKey(K key) {
-<span class="nc" id="L117">    Node&lt;K, V&gt; node = get(key);</span>
-<span class="nc bnc" id="L118" title="All 2 branches missed.">    return (node != null);</span>
+    /**
+     *
+     @param key
+     @return
+     */
+    public boolean containsKey(K key) {
+<span class="nc" id="L154">    Node&lt;K, V&gt; node = get(key);</span>
+<span class="nc bnc" id="L155" title="All 2 branches missed.">    return (node != null);</span>
   }
 
-  public Node&lt;K,V&gt; get(K key) {
+    /**
+     *
+     @param key
+     @return
+     */
+    public Node&lt;K,V&gt; get(K key) {
     // search from head to null
-<span class="nc" id="L123">    Node&lt;K, V&gt; node = head;</span>
-<span class="nc bnc" id="L124" title="All 2 branches missed.">    while (node != null) {</span>
-<span class="nc bnc" id="L125" title="All 2 branches missed.">      if (node.getKey().equals(key)) {</span>
-<span class="nc" id="L126">        return node;</span>
+<span class="nc" id="L165">    Node&lt;K, V&gt; node = head;</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">    while (node != null) {</span>
+<span class="nc bnc" id="L167" title="All 2 branches missed.">      if (node.getKey().equals(key)) {</span>
+<span class="nc" id="L168">        return node;</span>
       }
-<span class="nc" id="L128">      node = node.getNext();</span>
+<span class="nc" id="L170">      node = node.getNext();</span>
     }
-<span class="nc" id="L130">    return node;</span>
+<span class="nc" id="L172">    return node;</span>
   }
 
-  public Node&lt;K,V&gt; remove(K key) {
-<span class="nc" id="L134">    Node&lt;K, V&gt; node = get(key);</span>
-<span class="nc bnc" id="L135" title="All 2 branches missed.">    if (node == null) {</span>
-<span class="nc" id="L136">      return null;</span>
+    /**
+     *
+     @param key
+     @return
+     */
+    public Node&lt;K,V&gt; remove(K key) {
+<span class="nc" id="L181">    Node&lt;K, V&gt; node = get(key);</span>
+<span class="nc bnc" id="L182" title="All 2 branches missed.">    if (node == null) {</span>
+<span class="nc" id="L183">      return null;</span>
     }
     // cases:
     // (1) key == head, can use removeFirst()
-<span class="nc bnc" id="L140" title="All 2 branches missed.">    if (node.equals(head)) {</span>
-<span class="nc" id="L141">      return removeFirst();</span>
+<span class="nc bnc" id="L187" title="All 2 branches missed.">    if (node.equals(head)) {</span>
+<span class="nc" id="L188">      return removeFirst();</span>
     }
     // (2) key == tail, can use removeLast()
-<span class="nc bnc" id="L144" title="All 2 branches missed.">    if (node.equals(tail)) {</span>
-<span class="nc" id="L145">      return removeLast();</span>
+<span class="nc bnc" id="L191" title="All 2 branches missed.">    if (node.equals(tail)) {</span>
+<span class="nc" id="L192">      return removeLast();</span>
     }
     // (3) key is not head nor tail
     // prev
     // node
     // tail
-<span class="nc" id="L151">    node.prev.next = node.next;</span>
-<span class="nc" id="L152">    node.next.prev = node.prev;</span>
-<span class="nc" id="L153">    --n;</span>
+<span class="nc" id="L198">    node.prev.next = node.next;</span>
+<span class="nc" id="L199">    node.next.prev = node.prev;</span>
+<span class="nc" id="L200">    --n;</span>
 
     // can remove next link of node to improve integrity of remaining LinkedList
-<span class="nc" id="L156">    node.next = null;</span>
-<span class="nc" id="L157">    node.prev = null;</span>
-<span class="nc" id="L158">    return node;</span>
+<span class="nc" id="L203">    node.next = null;</span>
+<span class="nc" id="L204">    node.prev = null;</span>
+<span class="nc" id="L205">    return node;</span>
   }
 
-  public Node&lt;K,V&gt; first() {
-<span class="nc" id="L162">    return head;</span>
+    /**
+     *
+     @return
+     */
+    public Node&lt;K,V&gt; first() {
+<span class="nc" id="L213">    return head;</span>
   }
 
-  public Node&lt;K,V&gt; last() {
-<span class="nc" id="L166">    return tail;</span>
+    /**
+     *
+     @return
+     */
+    public Node&lt;K,V&gt; last() {
+<span class="nc" id="L221">    return tail;</span>
   }
-  public int size() {
-<span class="nc" id="L169">    return n;</span>
+
+    /**
+     *
+     @return
+     */
+    public int size() {
+<span class="nc" id="L229">    return n;</span>
   }
-  public boolean isEmpty() {
-<span class="nc bnc" id="L172" title="All 2 branches missed.">    return (n == 0);</span>
+
+    /**
+     *
+     @return
+     */
+    public boolean isEmpty() {
+<span class="nc bnc" id="L237" title="All 2 branches missed.">    return (n == 0);</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

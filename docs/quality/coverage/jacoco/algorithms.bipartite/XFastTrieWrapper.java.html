@@ -29,26 +29,34 @@ import thirdparty.ods.XFastTrieNode;
         
 <span class="nc" id="L30">    private int n = 0;</span>
     
-<span class="nc" id="L32">    public XFastTrieWrapper(int maxC) {</span>
+    /**
+     *
+     @param maxC
+     */
+<span class="nc" id="L36">    public XFastTrieWrapper(int maxC) {</span>
             
-<span class="nc" id="L34">        w = 1 + (int)Math.ceil(Math.log(maxC)/Math.log(2));</span>
+<span class="nc" id="L38">        w = 1 + (int)Math.ceil(Math.log(maxC)/Math.log(2));</span>
         
-<span class="nc" id="L36">        this.maxC = maxC;</span>
+<span class="nc" id="L40">        this.maxC = maxC;</span>
         
-<span class="nc" id="L38">        Integerizer&lt;Integer&gt; it = new Integerizer&lt;Integer&gt;() {</span>
+<span class="nc" id="L42">        Integerizer&lt;Integer&gt; it = new Integerizer&lt;Integer&gt;() {</span>
             @Override
             public int intValue(Integer x) {
                 return x;
             }
         };
         
-<span class="nc" id="L45">        XFastTrieNode&lt;Integer&gt; node = new XFastTrieNode&lt;Integer&gt;();</span>
+<span class="nc" id="L49">        XFastTrieNode&lt;Integer&gt; node = new XFastTrieNode&lt;Integer&gt;();</span>
         
-<span class="nc" id="L47">        xft = new XFastTrie&lt;XFastTrieNode&lt;Integer&gt;, Integer&gt;(node, it, w);</span>
-<span class="nc" id="L48">    }</span>
+<span class="nc" id="L51">        xft = new XFastTrie&lt;XFastTrieNode&lt;Integer&gt;, Integer&gt;(node, it, w);</span>
+<span class="nc" id="L52">    }</span>
     
+    /**
+     *
+     @return
+     */
     public int getW() {
-<span class="nc" id="L51">        return w;</span>
+<span class="nc" id="L59">        return w;</span>
     }
     
     /**
@@ -61,36 +69,36 @@ import thirdparty.ods.XFastTrieNode;
      * up to the value x.  The performance of the XFastTrie
      * increases when more nodes are in it (can see that in the
      * l term).
-     * @param node 
+     @param node 
      */
     public void insert(HeapNode node) {
         
-<span class="nc" id="L68">        int keyIdx = (int)node.getKey();</span>
+<span class="nc" id="L76">        int keyIdx = (int)node.getKey();</span>
         
-<span class="nc" id="L70">        Set&lt;HeapNode&gt; set = map.get(keyIdx);</span>
+<span class="nc" id="L78">        Set&lt;HeapNode&gt; set = map.get(keyIdx);</span>
         
-<span class="nc bnc" id="L72" title="All 2 branches missed.">        if (set == null) {</span>
-<span class="nc" id="L73">            Integer key = Integer.valueOf(keyIdx);</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">        if (set == null) {</span>
+<span class="nc" id="L81">            Integer key = Integer.valueOf(keyIdx);</span>
             // O(log_2(w)) + O(w-l)
-<span class="nc" id="L75">            boolean added = xft.add(key);</span>
-<span class="nc bnc" id="L76" title="All 2 branches missed.">            assert(added);</span>
+<span class="nc" id="L83">            boolean added = xft.add(key);</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">            assert(added);</span>
             
-<span class="nc" id="L78">            set = new HashSet&lt;HeapNode&gt;();</span>
-<span class="nc" id="L79">            map.put(keyIdx, set);</span>
+<span class="nc" id="L86">            set = new HashSet&lt;HeapNode&gt;();</span>
+<span class="nc" id="L87">            map.put(keyIdx, set);</span>
         }
         
         //O(1)
-<span class="nc" id="L83">        set.add(node);</span>
+<span class="nc" id="L91">        set.add(node);</span>
         
-<span class="nc" id="L85">        n++;</span>
+<span class="nc" id="L93">        n++;</span>
         
-<span class="nc bnc" id="L87" title="All 2 branches missed.">        if (keyIdx &lt; lastKnownMinKey) {</span>
-<span class="nc" id="L88">            lastKnownMinKey = keyIdx;</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">        if (keyIdx &lt; lastKnownMinKey) {</span>
+<span class="nc" id="L96">            lastKnownMinKey = keyIdx;</span>
         }
-<span class="nc bnc" id="L90" title="All 2 branches missed.">        if (keyIdx &gt; lastKnownMaxKey) {</span>
-<span class="nc" id="L91">            lastKnownMaxKey = keyIdx;</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">        if (keyIdx &gt; lastKnownMaxKey) {</span>
+<span class="nc" id="L99">            lastKnownMaxKey = keyIdx;</span>
         }
-<span class="nc" id="L93">    }</span>
+<span class="nc" id="L101">    }</span>
     
     /**
      * runtime complexity for best case is O(1) when there
@@ -102,44 +110,45 @@ import thirdparty.ods.XFastTrieNode;
      * up to the value x.  The performance of the XFastTrie
      * increases when more nodes are in it (can see that in the
      * l term).
-     * @param node 
+     @param node 
+     @param key2 
      */
     public void decreaseKey(HeapNode node, long key2) {
 
-<span class="nc" id="L109">        int keyIdx = (int)node.getKey();</span>
+<span class="nc" id="L118">        int keyIdx = (int)node.getKey();</span>
                 
-<span class="nc" id="L111">        Set&lt;HeapNode&gt; set0 = map.get(keyIdx);</span>
+<span class="nc" id="L120">        Set&lt;HeapNode&gt; set0 = map.get(keyIdx);</span>
         
-<span class="nc bnc" id="L113" title="All 2 branches missed.">        assert(set0 != null);</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">        assert(set0 != null);</span>
         
-<span class="nc" id="L115">        set0.remove(node);</span>
+<span class="nc" id="L124">        set0.remove(node);</span>
         
-<span class="nc bnc" id="L117" title="All 2 branches missed.">        if (set0.size() == 0) {</span>
-<span class="nc" id="L118">            boolean removed = xft.remove(Integer.valueOf(keyIdx));</span>
-<span class="nc bnc" id="L119" title="All 2 branches missed.">            assert(removed);</span>
-<span class="nc" id="L120">            map.remove(keyIdx);</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">        if (set0.size() == 0) {</span>
+<span class="nc" id="L127">            boolean removed = xft.remove(Integer.valueOf(keyIdx));</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">            assert(removed);</span>
+<span class="nc" id="L129">            map.remove(keyIdx);</span>
         }
                         
-<span class="nc" id="L123">        node.setKey(key2);</span>
+<span class="nc" id="L132">        node.setKey(key2);</span>
         
-<span class="nc" id="L125">        Integer index2 = Integer.valueOf((int)key2);</span>
+<span class="nc" id="L134">        Integer index2 = Integer.valueOf((int)key2);</span>
         
-<span class="nc" id="L127">        Set&lt;HeapNode&gt; set2 = map.get((int)key2);</span>
+<span class="nc" id="L136">        Set&lt;HeapNode&gt; set2 = map.get((int)key2);</span>
          
-<span class="nc bnc" id="L129" title="All 2 branches missed.">        if (set2 == null) {</span>
-<span class="nc" id="L130">            boolean added = xft.add(index2);</span>
-<span class="nc bnc" id="L131" title="All 2 branches missed.">            assert(added);</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">        if (set2 == null) {</span>
+<span class="nc" id="L139">            boolean added = xft.add(index2);</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">            assert(added);</span>
             
-<span class="nc" id="L133">            set2 = new HashSet&lt;HeapNode&gt;();</span>
-<span class="nc" id="L134">            map.put((int)key2, set2);</span>
+<span class="nc" id="L142">            set2 = new HashSet&lt;HeapNode&gt;();</span>
+<span class="nc" id="L143">            map.put((int)key2, set2);</span>
         }
         
-<span class="nc" id="L137">        set2.add(node);</span>
+<span class="nc" id="L146">        set2.add(node);</span>
      
-<span class="nc bnc" id="L139" title="All 2 branches missed.">        if (key2 &lt; lastKnownMinKey) {</span>
-<span class="nc" id="L140">            lastKnownMinKey = key2;</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">        if (key2 &lt; lastKnownMinKey) {</span>
+<span class="nc" id="L149">            lastKnownMinKey = key2;</span>
         }
-<span class="nc" id="L142">    }</span>
+<span class="nc" id="L151">    }</span>
     
     /**
      * runtime complexity for best case is O(1) when there
@@ -151,34 +160,38 @@ import thirdparty.ods.XFastTrieNode;
      * up to the value x.  The performance of the XFastTrie
      * increases when more nodes are in it (can see that in the
      * l term).
-     * @return node 
+     @return node 
      */
     public HeapNode extractMin() {
         
-<span class="nc bnc" id="L158" title="All 2 branches missed.">        if (n == 0) {</span>
-<span class="nc" id="L159">            return null;</span>
+<span class="nc bnc" id="L167" title="All 2 branches missed.">        if (n == 0) {</span>
+<span class="nc" id="L168">            return null;</span>
         }
      
-<span class="nc" id="L162">        Integer key = xft.minimum();</span>
+<span class="nc" id="L171">        Integer key = xft.minimum();</span>
         
-<span class="nc" id="L164">        Set&lt;HeapNode&gt; set = map.get(key.intValue());</span>
+<span class="nc" id="L173">        Set&lt;HeapNode&gt; set = map.get(key.intValue());</span>
         
-<span class="nc" id="L166">        HeapNode node = set.iterator().next();</span>
-<span class="nc" id="L167">        set.remove(node);</span>
+<span class="nc" id="L175">        HeapNode node = set.iterator().next();</span>
+<span class="nc" id="L176">        set.remove(node);</span>
         
-<span class="nc bnc" id="L169" title="All 2 branches missed.">        if (set.isEmpty()) {</span>
-<span class="nc" id="L170">            map.remove(key.intValue());</span>
-<span class="nc" id="L171">            xft.remove(key);</span>
+<span class="nc bnc" id="L178" title="All 2 branches missed.">        if (set.isEmpty()) {</span>
+<span class="nc" id="L179">            map.remove(key.intValue());</span>
+<span class="nc" id="L180">            xft.remove(key);</span>
         }
        
-<span class="nc" id="L174">        lastKnownMinKey = key.intValue();</span>
-<span class="nc" id="L175">        n--;</span>
+<span class="nc" id="L183">        lastKnownMinKey = key.intValue();</span>
+<span class="nc" id="L184">        n--;</span>
         
-<span class="nc" id="L177">        return node;</span>
+<span class="nc" id="L186">        return node;</span>
     }
     
+    /**
+     *
+     @return
+     */
     public long getNumberOfNodes() {
-<span class="nc" id="L181">        return n;</span>
+<span class="nc" id="L194">        return n;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

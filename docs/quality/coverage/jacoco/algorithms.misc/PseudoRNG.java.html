@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PseudoRNG.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.misc</a> &gt; <span class="el_source">PseudoRNG.java</span></div><h1>PseudoRNG.java</h1><pre class="source lang-java linenums">package algorithms.misc;
 
-<span class="nc" id="L3">public class PseudoRNG {</span>
+/**
+ *
+ * @author nichole
+ */
+<span class="nc" id="L7">public class PseudoRNG {</span>
 
     //TODO: add tests from
     // https://github.com/nmondal/diehard.c
@@ -13,14 +17,14 @@
      &quot;XorShift RNGs&quot;
      referenced by Goetz et al. &quot;Java Concurrency in Practice&quot;, Listing 12.4.
      &lt;/pre&gt;
-     * @param y
-     * @return
+     @param y
+     @return
      */
     public static int xorShift(int y) {
-<span class="nc" id="L20">        y ^= (y &lt;&lt; 6);</span>
-<span class="nc" id="L21">        y ^= (y &gt;&gt; 21);</span>
-<span class="nc" id="L22">        y ^= (y &lt;&lt; 7);</span>
-<span class="nc" id="L23">        return y;</span>
+<span class="nc" id="L24">        y ^= (y &lt;&lt; 6);</span>
+<span class="nc" id="L25">        y ^= (y &gt;&gt; 21);</span>
+<span class="nc" id="L26">        y ^= (y &lt;&lt; 7);</span>
+<span class="nc" id="L27">        return y;</span>
     }
 
     /**
@@ -30,14 +34,14 @@
      &quot;XorShift RNGs&quot;
      referenced by Goetz et al. &quot;Java Concurrency in Practice&quot;, Listing 12.4.
      &lt;/pre&gt;
-     * @param y
-     * @return
+     @param y
+     @return
      */
     public static long xorShift(long y) {
-<span class="nc" id="L37">        y ^= (y &lt;&lt; 13);</span>
-<span class="nc" id="L38">        y ^= (y &gt;&gt; 7);</span>
-<span class="nc" id="L39">        y ^= (y &lt;&lt; 17);</span>
-<span class="nc" id="L40">        return y;</span>
+<span class="nc" id="L41">        y ^= (y &lt;&lt; 13);</span>
+<span class="nc" id="L42">        y ^= (y &gt;&gt; 7);</span>
+<span class="nc" id="L43">        y ^= (y &lt;&lt; 17);</span>
+<span class="nc" id="L44">        return y;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

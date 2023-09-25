@@ -37,10 +37,10 @@ import java.security.SecureRandom;
 
     /**
      * generate a point in the Gumbel cumulative distribution
-     * @param x a general element, that is a quantile, of the larger range of general variate X
-     * @param location parameter of the distribution function
-     * @param scale parameter of the distribution function
-     * @return
+     @param x a general element, that is a quantile, of the larger range of general variate X
+     @param location parameter of the distribution function
+     @param scale parameter of the distribution function
+     @return
      */
     public static double cdf(double x, double location, double scale) {
 <span class="nc" id="L46">        double z = (x - location) / scale;</span>
@@ -50,10 +50,10 @@ import java.security.SecureRandom;
     /**
      * calculate the probability of a point in the Gumbel discrete probability density function
      * This uses the minimum Gumbel distribution and has a right leaning distribution.
-     * @param x a general element, that is a quantile, of the larger range of general variate X
-     * @param location parameter of the distribution function
-     * @param scale parameter of the distribution function
-     * @return
+     @param x a general element, that is a quantile, of the larger range of general variate X
+     @param location parameter of the distribution function
+     @param scale parameter of the distribution function
+     @return
      */
     public static double pdfForMinimum(double x, double location, double scale) {
 <span class="nc" id="L59">        double z = (x - location) / scale;</span>
@@ -63,10 +63,10 @@ import java.security.SecureRandom;
     /**
      * calculate the probability of a point in the Gumbel discrete probability density function
      * This uses the maximum Gumbel distribution and has a left leaning distribution.
-     * @param x a general element, that is a quantile, of the larger range of general variate X
-     * @param location parameter of the distribution function
-     * @param scale parameter of the distribution function
-     * @return
+     @param x a general element, that is a quantile, of the larger range of general variate X
+     @param location parameter of the distribution function
+     @param scale parameter of the distribution function
+     @return
      */
     public static double pdf(double x, double location, double scale) {
 <span class="nc" id="L72">        double z = (x - location) / scale;</span>
@@ -76,10 +76,10 @@ import java.security.SecureRandom;
     /**
      * calculate the inverse CDF of the Gumbel, that is, a random variate x given the
      * probability alpha.
-     * @param alpha random variate drawn from U(0,1) where U is the uniform distribution.
-     * @param location parameter of the distribution function
-     * @param scale parameter of the distribution function
-     * @return
+     @param alpha random variate drawn from U(0,1) where U is the uniform distribution.
+     @param location parameter of the distribution function
+     @param scale parameter of the distribution function
+     @return
      */
     public static double inverseCdf(double alpha, double location, double scale) {
 <span class="fc" id="L85">        return location - scale*Math.log(-Math.log(alpha));</span>
@@ -87,43 +87,52 @@ import java.security.SecureRandom;
 
     /**
      * sample from a Gumbel distribution G(location, scale).
-     * @param location
-     * @param scale
-     * @param nDraws number of random draws to make
-     * @return a fair sampling from a Gumbel distribution G(location, scale).
+     @param location
+     @param scale
+     @param nDraws number of random draws to make
+     @param rand
+     @return a fair sampling from a Gumbel distribution G(location, scale).
      */
     public static double[] sampleRandomlyFrom(double location, double scale,
         int nDraws, SecureRandom rand) {
 
-<span class="fc" id="L98">        double[] out = new double[nDraws];</span>
+<span class="fc" id="L99">        double[] out = new double[nDraws];</span>
         int i;
         double u;
-<span class="fc" id="L101">        double eps = 1e-320;</span>
-<span class="fc bfc" id="L102" title="All 2 branches covered.">        for (i = 0; i &lt; nDraws; ++i) {</span>
-<span class="fc" id="L103">            u = rand.nextDouble();</span>
-<span class="pc bpc" id="L104" title="1 of 2 branches missed.">            while (u &lt; eps) {</span>
+<span class="fc" id="L102">        double eps = 1e-320;</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">        for (i = 0; i &lt; nDraws; ++i) {</span>
+<span class="fc" id="L104">            u = rand.nextDouble();</span>
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">            while (u &lt; eps) {</span>
                 // to stay within math domain of Math.log(u)
-<span class="nc" id="L106">                u = rand.nextDouble();</span>
+<span class="nc" id="L107">                u = rand.nextDouble();</span>
             }
-<span class="fc" id="L108">            out[i] = inverseCdf(u, location, scale);</span>
+<span class="fc" id="L109">            out[i] = inverseCdf(u, location, scale);</span>
         }
 
-<span class="fc" id="L111">        return out;</span>
+<span class="fc" id="L112">        return out;</span>
     }
 
     /**
-     * @param x ordered statistic of an observed Gumbel distribution.
+     @param x ordered statistic of an observed Gumbel distribution.
+     @return 
      */
     public static double[] empiricalCdf(double[] x) {
-<span class="nc" id="L118">        throw new UnsupportedOperationException(&quot;not yet implemented&quot;);</span>
+<span class="nc" id="L120">        throw new UnsupportedOperationException(&quot;not yet implemented&quot;);</span>
     }
 
+    /**
+     *
+     @param x
+     @param location
+     @param scale
+     @return
+     */
     public static double[] generateCurve(double[] x, double location, double scale) {
-<span class="nc" id="L122">        double[] y = new double[x.length];</span>
-<span class="nc bnc" id="L123" title="All 2 branches missed.">        for (int i = 0; i &lt; x.length; ++i) {</span>
-<span class="nc" id="L124">            y[i] = pdf(x[i], location, scale);</span>
+<span class="nc" id="L131">        double[] y = new double[x.length];</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">        for (int i = 0; i &lt; x.length; ++i) {</span>
+<span class="nc" id="L133">            y[i] = pdf(x[i], location, scale);</span>
         }
-<span class="nc" id="L126">        return y;</span>
+<span class="nc" id="L135">        return y;</span>
     }
 
     /**
@@ -136,31 +145,31 @@ import java.security.SecureRandom;
      *     and
      *     https://www.itl.nist.gov/div898/handbook/eda/section3/eda366g.htm
      * &lt;/pre&gt;
-     * @param x ordered statistic of an observed Gumbel distribution.
-     * @return
+     @param x ordered statistic of an observed Gumbel distribution.
+     @return
      */
     public static double[] fitUsingMethodOfMoments(double[] x) {
 
-<span class="fc" id="L144">        int n = x.length;</span>
+<span class="fc" id="L153">        int n = x.length;</span>
 
-<span class="fc" id="L146">        double[] mADMinMax = MiscMath0.calculateMedianOfAbsoluteDeviation(x);</span>
-<span class="fc" id="L147">        double kMAD = 1.4826;</span>
-<span class="fc" id="L148">        double s = kMAD*mADMinMax[0];</span>
+<span class="fc" id="L155">        double[] mADMinMax = MiscMath0.calculateMedianOfAbsoluteDeviation(x);</span>
+<span class="fc" id="L156">        double kMAD = 1.4826;</span>
+<span class="fc" id="L157">        double s = kMAD*mADMinMax[0];</span>
 
-<span class="fc" id="L150">        double[] meanStdv = MiscMath0.getAvgAndStDev(x);</span>
+<span class="fc" id="L159">        double[] meanStdv = MiscMath0.getAvgAndStDev(x);</span>
 
-<span class="fc" id="L152">        double sigma0 = meanStdv[1] * Math.sqrt(6.)/Math.PI;</span>
-<span class="fc" id="L153">        double sigma1 = s * Math.sqrt(6.)/Math.PI;</span>
-<span class="fc" id="L154">        double mu0 = meanStdv[0] - sigma0 * MiscMath0.eulerMascheroniConstant();</span>
-<span class="fc" id="L155">        double mu1 = meanStdv[0] - sigma1 * MiscMath0.eulerMascheroniConstant();</span>
+<span class="fc" id="L161">        double sigma0 = meanStdv[1] * Math.sqrt(6.)/Math.PI;</span>
+<span class="fc" id="L162">        double sigma1 = s * Math.sqrt(6.)/Math.PI;</span>
+<span class="fc" id="L163">        double mu0 = meanStdv[0] - sigma0 * MiscMath0.eulerMascheroniConstant();</span>
+<span class="fc" id="L164">        double mu1 = meanStdv[0] - sigma1 * MiscMath0.eulerMascheroniConstant();</span>
 
         //double r0 = mADMinMax[1] - 3*s;
         //double r1 = mADMinMax[1] + 3*s;
 
-<span class="fc" id="L160">        System.out.println(&quot;mu0,1=&quot; + mu0 + &quot;, &quot; + mu1);</span>
-<span class="fc" id="L161">        System.out.println(&quot;sigma0,1=&quot; + sigma0 + &quot;, &quot; + sigma1);</span>
+<span class="fc" id="L169">        System.out.println(&quot;mu0,1=&quot; + mu0 + &quot;, &quot; + mu1);</span>
+<span class="fc" id="L170">        System.out.println(&quot;sigma0,1=&quot; + sigma0 + &quot;, &quot; + sigma1);</span>
 
-<span class="fc" id="L163">        return new double[]{mu1, sigma1, 0};</span>
+<span class="fc" id="L172">        return new double[]{mu1, sigma1, 0};</span>
     }
 
     /**
@@ -171,13 +180,13 @@ import java.security.SecureRandom;
      *    and
      *    https://www.itl.nist.gov/div898/handbook/eda/section3/eda366g.htm
      * &lt;/pre&gt;
-     * @param x ordered values for which to find the best fitting Gumbel distribution parameters
-     * @return
+     @param x ordered values for which to find the best fitting Gumbel distribution parameters
+     @return
      */
     public static double[] fitUsingMaximumLikelihood(double[] x) {
 
-<span class="nc" id="L179">        double[] params = fitUsingMethodOfMoments(x);</span>
-<span class="nc" id="L180">        double[] avgAndStdev = MiscMath0.getAvgAndStDev(x);</span>
+<span class="nc" id="L188">        double[] params = fitUsingMethodOfMoments(x);</span>
+<span class="nc" id="L189">        double[] avgAndStdev = MiscMath0.getAvgAndStDev(x);</span>
         /*
         method of maximum likelihood simultaneous solutions:
         scaleEst = x_avg - ( sum_over_i(x_i * exp(-x_i/scaleEst) ) / sum_over_i(exp(-x_i/scaleEst) ) )
@@ -193,53 +202,53 @@ import java.security.SecureRandom;
 
         // simple loop until scale estimate change is small is not efficient
         // so prefer the optimization
-<span class="nc" id="L196">        boolean useOptimization = false;</span>
-<span class="nc bnc" id="L197" title="All 2 branches missed.">        if (!useOptimization) {</span>
-<span class="nc" id="L198">            final int nIterMax = 100;</span>
-<span class="nc" id="L199">            int nIter = 0;</span>
+<span class="nc" id="L205">        boolean useOptimization = false;</span>
+<span class="nc bnc" id="L206" title="All 2 branches missed.">        if (!useOptimization) {</span>
+<span class="nc" id="L207">            final int nIterMax = 100;</span>
+<span class="nc" id="L208">            int nIter = 0;</span>
             // TODO: allow tolerance and nIterMax to be method arguments if keep the simple loop iteration
-<span class="nc" id="L201">            final double tol = 1e-3;</span>
-<span class="nc" id="L202">            double prevScaleEst = params[1];</span>
+<span class="nc" id="L210">            final double tol = 1e-3;</span>
+<span class="nc" id="L211">            double prevScaleEst = params[1];</span>
             double diffScale;
             do {
-<span class="nc" id="L205">                scaleEst = estimateScaleML(x, avgAndStdev[0], prevScaleEst);</span>
-<span class="nc" id="L206">                locEst = estimateLocML(x, scaleEst);</span>
-<span class="nc" id="L207">                diffScale = scaleEst - prevScaleEst;</span>
-<span class="nc" id="L208">                System.out.printf(&quot;locEst=%11.6e, prevScaleEst=%11.6e, scaleEst=%11.6e, diffScale=%11.6e\n&quot;,</span>
-<span class="nc" id="L209">                        locEst, prevScaleEst, scaleEst, diffScale);</span>
-<span class="nc" id="L210">                prevScaleEst = scaleEst;</span>
-<span class="nc" id="L211">                nIter++;</span>
-<span class="nc bnc" id="L212" title="All 4 branches missed.">            } while ((nIter &lt; nIterMax) &amp;&amp; Math.abs(diffScale) &gt; tol);</span>
-<span class="nc" id="L213">            System.out.printf(&quot;nIter=%d\n&quot;, nIter);</span>
-<span class="nc" id="L214">        } else {</span>
+<span class="nc" id="L214">                scaleEst = estimateScaleML(x, avgAndStdev[0], prevScaleEst);</span>
+<span class="nc" id="L215">                locEst = estimateLocML(x, scaleEst);</span>
+<span class="nc" id="L216">                diffScale = scaleEst - prevScaleEst;</span>
+<span class="nc" id="L217">                System.out.printf(&quot;locEst=%11.6e, prevScaleEst=%11.6e, scaleEst=%11.6e, diffScale=%11.6e\n&quot;,</span>
+<span class="nc" id="L218">                        locEst, prevScaleEst, scaleEst, diffScale);</span>
+<span class="nc" id="L219">                prevScaleEst = scaleEst;</span>
+<span class="nc" id="L220">                nIter++;</span>
+<span class="nc bnc" id="L221" title="All 4 branches missed.">            } while ((nIter &lt; nIterMax) &amp;&amp; Math.abs(diffScale) &gt; tol);</span>
+<span class="nc" id="L222">            System.out.printf(&quot;nIter=%d\n&quot;, nIter);</span>
+<span class="nc" id="L223">        } else {</span>
             // non-linear optimization.
             // solving for 2 parameter Gumbel distribution should be convex, so one could use the
             //   first derivative, the second derivative, and or the gradient.
 
-<span class="nc" id="L219">            throw new UnsupportedOperationException(&quot;not yet implemented&quot;);</span>
+<span class="nc" id="L228">            throw new UnsupportedOperationException(&quot;not yet implemented&quot;);</span>
         }
-<span class="nc" id="L221">        return new double[]{locEst, scaleEst};</span>
+<span class="nc" id="L230">        return new double[]{locEst, scaleEst};</span>
     }
 
     private static double estimateLocML(double[] x, double scaleEst) {
-<span class="nc" id="L225">        int n = x.length;</span>
-<span class="nc" id="L226">        double sum = 0;</span>
-<span class="nc bnc" id="L227" title="All 2 branches missed.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="nc" id="L228">            sum += Math.exp(-x[i]/scaleEst);</span>
+<span class="nc" id="L234">        int n = x.length;</span>
+<span class="nc" id="L235">        double sum = 0;</span>
+<span class="nc bnc" id="L236" title="All 2 branches missed.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="nc" id="L237">            sum += Math.exp(-x[i]/scaleEst);</span>
         }
-<span class="nc" id="L230">        return -scaleEst * Math.log((1./n)*sum);</span>
+<span class="nc" id="L239">        return -scaleEst * Math.log((1./n)*sum);</span>
     }
 
     private static double estimateScaleML(double[] x, double xAvg, double scaleEst) {
-<span class="nc" id="L234">        int n = x.length;</span>
-<span class="nc" id="L235">        double sum0 = 0;</span>
-<span class="nc" id="L236">        double sum1 = 0;</span>
-<span class="nc bnc" id="L237" title="All 2 branches missed.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="nc" id="L238">            sum0 += (x[i] * Math.exp(-x[i]/scaleEst));</span>
-<span class="nc" id="L239">            sum1 += (Math.exp(-x[i]/scaleEst));</span>
+<span class="nc" id="L243">        int n = x.length;</span>
+<span class="nc" id="L244">        double sum0 = 0;</span>
+<span class="nc" id="L245">        double sum1 = 0;</span>
+<span class="nc bnc" id="L246" title="All 2 branches missed.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="nc" id="L247">            sum0 += (x[i] * Math.exp(-x[i]/scaleEst));</span>
+<span class="nc" id="L248">            sum1 += (Math.exp(-x[i]/scaleEst));</span>
         }
-<span class="nc" id="L241">        scaleEst = xAvg - ( sum0 / sum1 );</span>
-<span class="nc" id="L242">        return scaleEst;</span>
+<span class="nc" id="L250">        scaleEst = xAvg - ( sum0 / sum1 );</span>
+<span class="nc" id="L251">        return scaleEst;</span>
     }
 
     /**
@@ -247,25 +256,25 @@ import java.security.SecureRandom;
      * &lt;pre&gt;
      *     reference is Chap 19 of &quot;Statistical Distributions&quot; by Evans et al.
      * &lt;/pre&gt;
-     * @param x1
-     * @param mu
-     * @param sigma
-     * @return
+     @param x1
+     @param mu
+     @param sigma
+     @return
      */
     public static double[] generateGumbelCurve(double[] x1, double mu, double sigma) {
-<span class="pc bpc" id="L256" title="1 of 2 branches missed.">        if (sigma &lt;= 0) {</span>
-<span class="nc" id="L257">            throw new IllegalArgumentException(&quot;sigma must be &gt; 0&quot;);</span>
+<span class="pc bpc" id="L265" title="1 of 2 branches missed.">        if (sigma &lt;= 0) {</span>
+<span class="nc" id="L266">            throw new IllegalArgumentException(&quot;sigma must be &gt; 0&quot;);</span>
         }
-<span class="fc" id="L259">        double[] yGEV = new double[x1.length];</span>
+<span class="fc" id="L268">        double[] yGEV = new double[x1.length];</span>
         double z;
         double a;
-<span class="fc bfc" id="L262" title="All 2 branches covered.">        for (int i = 0; i &lt; x1.length; i++) {</span>
-<span class="fc" id="L263">            z = (x1[i] - mu)/sigma;</span>
-<span class="fc" id="L264">            a = Math.exp(-z);</span>
-<span class="fc" id="L265">            yGEV[i] = (1./sigma) * Math.exp(-z) * Math.exp(-a);</span>
+<span class="fc bfc" id="L271" title="All 2 branches covered.">        for (int i = 0; i &lt; x1.length; i++) {</span>
+<span class="fc" id="L272">            z = (x1[i] - mu)/sigma;</span>
+<span class="fc" id="L273">            a = Math.exp(-z);</span>
+<span class="fc" id="L274">            yGEV[i] = (1./sigma) * Math.exp(-z) * Math.exp(-a);</span>
             //yGEV[i] = (1./sigma) * Math.exp(-(Math.exp(-z) + z)); // same result
         }
-<span class="fc" id="L268">        return yGEV;</span>
+<span class="fc" id="L277">        return yGEV;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

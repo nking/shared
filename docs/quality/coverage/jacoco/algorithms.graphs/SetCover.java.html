@@ -45,16 +45,23 @@ public class SetCover {
      */
 <span class="fc" id="L46">    private static double eps = 1e-11;</span>
     
+    /**
+     *
+     */
     public SetCover() {
-<span class="fc" id="L49">        this(System.nanoTime());</span>
-<span class="fc" id="L50">    }</span>
+<span class="fc" id="L52">        this(System.nanoTime());</span>
+<span class="fc" id="L53">    }</span>
     
-<span class="fc" id="L52">    public SetCover(long randomSeed) {</span>
+    /**
+     *
+     @param randomSeed
+     */
+<span class="fc" id="L59">    public SetCover(long randomSeed) {</span>
         //seed = 180328550254112L;
-<span class="fc" id="L54">        System.out.println(&quot;seed=&quot; + randomSeed);</span>
-<span class="fc" id="L55">        System.out.flush();</span>
-<span class="fc" id="L56">        rand.setSeed(randomSeed);</span>
-<span class="fc" id="L57">    }</span>
+<span class="fc" id="L61">        System.out.println(&quot;seed=&quot; + randomSeed);</span>
+<span class="fc" id="L62">        System.out.flush();</span>
+<span class="fc" id="L63">        rand.setSeed(randomSeed);</span>
+<span class="fc" id="L64">    }</span>
     
     /**
      * find a minimum weighted set cover using a randomized rounding approximation algorithm
@@ -63,20 +70,20 @@ public class SetCover {
      * TODO: revisit this for element weights.
      * The cost of the sets in the cover is minimized.
      * The problem is NP-complete.
-     * @param nU the number of items in U. U is the universe of elements in sets.
+     @param nU the number of items in U. U is the universe of elements in sets.
      * items in U are the sequential range of integers from 0 to nU-1.
-     * @param sets a list of sets for which each set contains integers from the range
+     @param sets a list of sets for which each set contains integers from the range
      * 0 through weights.length - 1, inclusive.
-     * @param weights the weights of each element.
-     * @return the list of indexes of sets which comprise the cover, that is the
+     @param weights the weights of each element.
+     @return the list of indexes of sets which comprise the cover, that is the
      * indexes of the minimum subset of sets that together include all numbers 
      * 0 through nU-1, inclusive.
      */
     public TIntSet weightedElementsApprox2LgN(int nU, List&lt;TIntSet&gt; sets, double[] weights) {
         
-<span class="nc" id="L77">        double[] sWeights = calcSetWeightsFromElementWeights(nU, sets, weights);</span>
+<span class="nc" id="L84">        double[] sWeights = calcSetWeightsFromElementWeights(nU, sets, weights);</span>
 
-<span class="nc" id="L79">        return weightedSetsApprox2LgN(nU, sets, sWeights);</span>
+<span class="nc" id="L86">        return weightedSetsApprox2LgN(nU, sets, sWeights);</span>
     }
         
     /**
@@ -85,12 +92,12 @@ public class SetCover {
      * cover (== nU).
      * The cost of the sets in the cover is minimized.
      * The problem is NP-complete.
-     * @param nU the number of items in U. U is the universe of elements in sets.
+     @param nU the number of items in U. U is the universe of elements in sets.
      * items in U are the sequential range of integers from 0 to nU-1.
-     * @param sets a list of sets for which each set contains integers from the range
+     @param sets a list of sets for which each set contains integers from the range
      * 0 through weights.length - 1, inclusive.
-     * @param weights the weights of each set in sets.
-     * @return the list of indexes of sets which comprise the cover, that is the
+     @param weights the weights of each set in sets.
+     @return the list of indexes of sets which comprise the cover, that is the
      * indexes of the minimum subset of sets that together include all numbers 
      * 0 through nU-1, inclusive.
      */
@@ -147,16 +154,16 @@ public class SetCover {
         
         */
                 
-<span class="fc" id="L150">        LinearProgramming.StandardForm standForm = </span>
-<span class="fc" id="L151">            createLinearProgramInStandardFormForWeightedSets(nU, sets, weights);</span>
-<span class="fc" id="L152">        LinearProgramming lp = new LinearProgramming();</span>
-<span class="fc" id="L153">        LinearProgramming.SlackForm lpSoln = lp.solveUsingSimplexMethod(standForm);</span>
-<span class="fc" id="L154">        double[] primalX = lpSoln.calculatePrimalX();</span>
-<span class="fc" id="L155">        double[] dualY = lpSoln.calculateDualY();</span>
-<span class="fc" id="L156">        System.out.printf(&quot;primalX=%s\n&quot;, FormatArray.toString(primalX, &quot;%.3f&quot;));</span>
-<span class="fc" id="L157">        System.out.printf(&quot;dualY=%s\n&quot;, FormatArray.toString(dualY, &quot;%.3f&quot;));</span>
+<span class="fc" id="L157">        LinearProgramming.StandardForm standForm = </span>
+<span class="fc" id="L158">            createLinearProgramInStandardFormForWeightedSets(nU, sets, weights);</span>
+<span class="fc" id="L159">        LinearProgramming lp = new LinearProgramming();</span>
+<span class="fc" id="L160">        LinearProgramming.SlackForm lpSoln = lp.solveUsingSimplexMethod(standForm);</span>
+<span class="fc" id="L161">        double[] primalX = lpSoln.calculatePrimalX();</span>
+<span class="fc" id="L162">        double[] dualY = lpSoln.calculateDualY();</span>
+<span class="fc" id="L163">        System.out.printf(&quot;primalX=%s\n&quot;, FormatArray.toString(primalX, &quot;%.3f&quot;));</span>
+<span class="fc" id="L164">        System.out.printf(&quot;dualY=%s\n&quot;, FormatArray.toString(dualY, &quot;%.3f&quot;));</span>
         
-<span class="fc" id="L159">        return weightedApprox2LgN(nU, sets, weights, primalX);</span>
+<span class="fc" id="L166">        return weightedApprox2LgN(nU, sets, weights, primalX);</span>
     }
     
     /**
@@ -165,14 +172,14 @@ public class SetCover {
      * cover (== nU).
      * The cost of the sets in the cover is minimized.
      * The problem is NP-complete.
-     * @param nU the number of items in U. U is the universe of elements in sets.
+     @param nU the number of items in U. U is the universe of elements in sets.
      * items in U are the sequential range of integers from 0 to nU-1.
-     * @param sets a list of sets for which each set contains integers from the range
+     @param sets a list of sets for which each set contains integers from the range
      * 0 through weights.length - 1, inclusive.
-     * @param weights the weights of each set in sets.
-     * @param yProbabilities coefficients of the optimal solution to LinearProgram
+     @param weights the weights of each set in sets.
+     @param yProbabilities coefficients of the optimal solution to LinearProgram
      * for the given sets and weights.
-     * @return the list of indexes of sets which comprise the cover, that is the
+     @return the list of indexes of sets which comprise the cover, that is the
      * indexes of the minimum subset of sets that together include all numbers 
      * 0 through nU-1, inclusive.
      */
@@ -236,38 +243,38 @@ public class SetCover {
         //      members summed.
           
         int i;
-<span class="fc" id="L239">        TIntSet indexes = new TIntHashSet();</span>
-<span class="fc bfc" id="L240" title="All 2 branches covered.">        for (i = 0; i &lt; sets.size(); ++i) {</span>
-<span class="fc" id="L241">            indexes.add(i);</span>
+<span class="fc" id="L246">        TIntSet indexes = new TIntHashSet();</span>
+<span class="fc bfc" id="L247" title="All 2 branches covered.">        for (i = 0; i &lt; sets.size(); ++i) {</span>
+<span class="fc" id="L248">            indexes.add(i);</span>
         }
         TIntIterator iter;
-<span class="fc" id="L244">        TIntSet rm = new TIntHashSet();</span>
+<span class="fc" id="L251">        TIntSet rm = new TIntHashSet();</span>
         double r;
         
-<span class="fc" id="L247">        TIntSet c = new TIntHashSet();</span>
-<span class="fc" id="L248">        int nMax = (int)Math.ceil(2*Math.log(nU));</span>
+<span class="fc" id="L254">        TIntSet c = new TIntHashSet();</span>
+<span class="fc" id="L255">        int nMax = (int)Math.ceil(2*Math.log(nU));</span>
         int idx;
-<span class="fc bfc" id="L250" title="All 2 branches covered.">        for (i = 0; i &lt; nMax; ++i) {</span>
-<span class="fc" id="L251">            iter = indexes.iterator();</span>
-<span class="fc bfc" id="L252" title="All 2 branches covered.">            while (iter.hasNext()) {</span>
-<span class="fc" id="L253">                idx = iter.next();</span>
-<span class="fc" id="L254">                r = rand.nextDouble();</span>
+<span class="fc bfc" id="L257" title="All 2 branches covered.">        for (i = 0; i &lt; nMax; ++i) {</span>
+<span class="fc" id="L258">            iter = indexes.iterator();</span>
+<span class="fc bfc" id="L259" title="All 2 branches covered.">            while (iter.hasNext()) {</span>
+<span class="fc" id="L260">                idx = iter.next();</span>
+<span class="fc" id="L261">                r = rand.nextDouble();</span>
                 //System.out.printf(&quot;%d) r=%.3f, yP[%d]=%.3f\n&quot;, i, r, idx, yProbabilities[idx]);
-<span class="fc bfc" id="L256" title="All 2 branches covered.">                if (r &lt;= yProbabilities[idx]) {</span>
-<span class="fc" id="L257">                    c.add(idx);</span>
-<span class="fc" id="L258">                    rm.add(idx);</span>
+<span class="fc bfc" id="L263" title="All 2 branches covered.">                if (r &lt;= yProbabilities[idx]) {</span>
+<span class="fc" id="L264">                    c.add(idx);</span>
+<span class="fc" id="L265">                    rm.add(idx);</span>
                 }
             }
-<span class="fc" id="L261">            iter = rm.iterator();</span>
-<span class="fc bfc" id="L262" title="All 2 branches covered.">            while (iter.hasNext()) {</span>
-<span class="fc" id="L263">                idx = iter.next();</span>
-<span class="fc" id="L264">                indexes.remove(idx);</span>
+<span class="fc" id="L268">            iter = rm.iterator();</span>
+<span class="fc bfc" id="L269" title="All 2 branches covered.">            while (iter.hasNext()) {</span>
+<span class="fc" id="L270">                idx = iter.next();</span>
+<span class="fc" id="L271">                indexes.remove(idx);</span>
             }
-<span class="pc bpc" id="L266" title="1 of 2 branches missed.">            if (c.size() == nU) {</span>
-<span class="nc" id="L267">                break;</span>
+<span class="pc bpc" id="L273" title="1 of 2 branches missed.">            if (c.size() == nU) {</span>
+<span class="nc" id="L274">                break;</span>
             }
         }
-<span class="fc" id="L270">        return c;</span>
+<span class="fc" id="L277">        return c;</span>
     }
     
     /**
@@ -281,77 +288,89 @@ public class SetCover {
      *  from https://www.ics.uci.edu/~goodrich/teach/graph/notes/Approximation.pdf
      * and Cormen, Leiserson, Rivest, and Stein &quot;Introduction to Algorithms&quot; chap 35.3.
      * &lt;/pre&gt;
-     * @param sets
-     * @return the list of indexes of sets which comprise the cover.
+     @param sets
+     @return the list of indexes of sets which comprise the cover.
      */
     public TIntList approxLgN(List&lt;TIntSet&gt; sets) {
         
         // make a copy of the sets to edit it
-<span class="fc" id="L290">        TIntObjectMap&lt;TIntSet&gt; setsMap = copy(sets);</span>
+<span class="fc" id="L297">        TIntObjectMap&lt;TIntSet&gt; setsMap = copy(sets);</span>
         TIntObjectIterator&lt;TIntSet&gt; iter;
         
-<span class="fc" id="L293">        TIntList c = new TIntArrayList();</span>
+<span class="fc" id="L300">        TIntList c = new TIntArrayList();</span>
         
-<span class="fc" id="L295">        TIntSet si, siMaxN = null;        </span>
-<span class="fc" id="L296">        int maxN, i, n, maxNIdx = -1, idx;</span>
-<span class="fc" id="L297">        TIntList rm = new TIntArrayList();</span>
-<span class="fc bfc" id="L298" title="All 2 branches covered.">        while (!setsMap.isEmpty()) {</span>
-<span class="fc" id="L299">            maxN = Integer.MIN_VALUE;</span>
-<span class="fc" id="L300">            iter = setsMap.iterator();</span>
-<span class="fc bfc" id="L301" title="All 2 branches covered.">            for (i = 0; i &lt; setsMap.size(); ++i) {</span>
-<span class="fc" id="L302">                iter.advance();</span>
-<span class="fc" id="L303">                si = iter.value();</span>
-<span class="fc" id="L304">                idx = iter.key();</span>
-<span class="fc" id="L305">                n = si.size();</span>
+<span class="fc" id="L302">        TIntSet si, siMaxN = null;        </span>
+<span class="fc" id="L303">        int maxN, i, n, maxNIdx = -1, idx;</span>
+<span class="fc" id="L304">        TIntList rm = new TIntArrayList();</span>
+<span class="fc bfc" id="L305" title="All 2 branches covered.">        while (!setsMap.isEmpty()) {</span>
+<span class="fc" id="L306">            maxN = Integer.MIN_VALUE;</span>
+<span class="fc" id="L307">            iter = setsMap.iterator();</span>
+<span class="fc bfc" id="L308" title="All 2 branches covered.">            for (i = 0; i &lt; setsMap.size(); ++i) {</span>
+<span class="fc" id="L309">                iter.advance();</span>
+<span class="fc" id="L310">                si = iter.value();</span>
+<span class="fc" id="L311">                idx = iter.key();</span>
+<span class="fc" id="L312">                n = si.size();</span>
                 //System.out.printf(&quot;   idx=%d (%s) n=%d\n&quot;, idx, si.toString(), n);
-<span class="pc bpc" id="L307" title="1 of 4 branches missed.">                if (n &gt; 0 &amp;&amp; n &gt; maxN) {</span>
-<span class="fc" id="L308">                    maxN = n;</span>
-<span class="fc" id="L309">                    maxNIdx = idx;</span>
+<span class="pc bpc" id="L314" title="1 of 4 branches missed.">                if (n &gt; 0 &amp;&amp; n &gt; maxN) {</span>
+<span class="fc" id="L315">                    maxN = n;</span>
+<span class="fc" id="L316">                    maxNIdx = idx;</span>
                 }
             }
-<span class="pc bpc" id="L312" title="1 of 2 branches missed.">            if (maxN == Integer.MIN_VALUE) {</span>
-<span class="nc" id="L313">                break;</span>
+<span class="pc bpc" id="L319" title="1 of 2 branches missed.">            if (maxN == Integer.MIN_VALUE) {</span>
+<span class="nc" id="L320">                break;</span>
             }
-<span class="fc" id="L315">            siMaxN = setsMap.remove(maxNIdx);</span>
+<span class="fc" id="L322">            siMaxN = setsMap.remove(maxNIdx);</span>
             //System.out.printf(&quot;max idx=%d (%s)\n&quot;, maxNIdx, siMaxN.toString());
-<span class="fc" id="L317">            c.add(maxNIdx);</span>
+<span class="fc" id="L324">            c.add(maxNIdx);</span>
             
             // remove siMaxN from each set in s.  and store the empty sets as indexes to remove after use of iterator
-<span class="fc" id="L320">            iter = setsMap.iterator();</span>
-<span class="fc bfc" id="L321" title="All 2 branches covered.">            for (i = 0; i &lt; setsMap.size(); ++i) {</span>
-<span class="fc" id="L322">                iter.advance();</span>
-<span class="fc" id="L323">                si = iter.value();</span>
-<span class="fc" id="L324">                si.removeAll(siMaxN);</span>
-<span class="fc bfc" id="L325" title="All 2 branches covered.">                if (si.isEmpty()) {</span>
-<span class="fc" id="L326">                    rm.add(iter.key());</span>
+<span class="fc" id="L327">            iter = setsMap.iterator();</span>
+<span class="fc bfc" id="L328" title="All 2 branches covered.">            for (i = 0; i &lt; setsMap.size(); ++i) {</span>
+<span class="fc" id="L329">                iter.advance();</span>
+<span class="fc" id="L330">                si = iter.value();</span>
+<span class="fc" id="L331">                si.removeAll(siMaxN);</span>
+<span class="fc bfc" id="L332" title="All 2 branches covered.">                if (si.isEmpty()) {</span>
+<span class="fc" id="L333">                    rm.add(iter.key());</span>
                 }
             }
-<span class="fc bfc" id="L329" title="All 2 branches covered.">            for (i = 0; i &lt; rm.size(); ++i) {</span>
-<span class="fc" id="L330">                setsMap.remove(rm.get(i));</span>
+<span class="fc bfc" id="L336" title="All 2 branches covered.">            for (i = 0; i &lt; rm.size(); ++i) {</span>
+<span class="fc" id="L337">                setsMap.remove(rm.get(i));</span>
             }
-<span class="fc" id="L332">            rm.clear();</span>
+<span class="fc" id="L339">            rm.clear();</span>
         }
         
-<span class="fc" id="L335">        return c;</span>
+<span class="fc" id="L342">        return c;</span>
     }
 
+    /**
+     *
+     @param s
+     @return
+     */
     protected TIntObjectMap&lt;TIntSet&gt; copy(List&lt;TIntSet&gt; s) {
-<span class="fc" id="L339">        TIntObjectMap&lt;TIntSet&gt; c = new TIntObjectHashMap&lt;TIntSet&gt;(s.size());</span>
+<span class="fc" id="L351">        TIntObjectMap&lt;TIntSet&gt; c = new TIntObjectHashMap&lt;TIntSet&gt;(s.size());</span>
         int i;
         TIntSet cSet, si;
         TIntIterator iter;
-<span class="fc bfc" id="L343" title="All 2 branches covered.">        for (i = 0; i &lt; s.size(); ++i) {</span>
-<span class="fc" id="L344">            cSet = new TIntHashSet();</span>
-<span class="fc" id="L345">            si = s.get(i);</span>
-<span class="fc" id="L346">            iter = si.iterator();</span>
-<span class="fc bfc" id="L347" title="All 2 branches covered.">            while (iter.hasNext()){</span>
-<span class="fc" id="L348">                cSet.add(iter.next());</span>
+<span class="fc bfc" id="L355" title="All 2 branches covered.">        for (i = 0; i &lt; s.size(); ++i) {</span>
+<span class="fc" id="L356">            cSet = new TIntHashSet();</span>
+<span class="fc" id="L357">            si = s.get(i);</span>
+<span class="fc" id="L358">            iter = si.iterator();</span>
+<span class="fc bfc" id="L359" title="All 2 branches covered.">            while (iter.hasNext()){</span>
+<span class="fc" id="L360">                cSet.add(iter.next());</span>
             }
-<span class="fc" id="L350">            c.put(i, cSet);</span>
+<span class="fc" id="L362">            c.put(i, cSet);</span>
         }
-<span class="fc" id="L352">        return c;</span>
+<span class="fc" id="L364">        return c;</span>
     }
 
+    /**
+     *
+     @param nX
+     @param sets
+     @param weights
+     @return
+     */
     protected static LinearProgramming.StandardForm 
         createLinearProgramInStandardFormForWeightedSets(
         int nX, List&lt;TIntSet&gt; sets, double[] weights) {
@@ -385,63 +404,70 @@ public class SetCover {
         solves for y.         
         */
         
-<span class="fc" id="L388">        int nS = sets.size();</span>
+<span class="fc" id="L407">        int nS = sets.size();</span>
         
-<span class="fc" id="L390">        double[] c = Arrays.copyOf(weights, weights.length);</span>
-<span class="fc" id="L391">        double[] b = new double[nX + nS];</span>
-<span class="fc" id="L392">        Arrays.fill(b, 1);</span>
+<span class="fc" id="L409">        double[] c = Arrays.copyOf(weights, weights.length);</span>
+<span class="fc" id="L410">        double[] b = new double[nX + nS];</span>
+<span class="fc" id="L411">        Arrays.fill(b, 1);</span>
         
-<span class="fc" id="L394">        double[][] a = new double[nX + nS][nS];</span>
+<span class="fc" id="L413">        double[][] a = new double[nX + nS][nS];</span>
         int i, j;
-<span class="fc bfc" id="L396" title="All 2 branches covered.">        for (i = 0; i &lt; nX; ++i) {</span>
-<span class="fc" id="L397">            a[i] = new double[nS];</span>
-<span class="fc bfc" id="L398" title="All 2 branches covered.">            for (j = 0; j &lt; sets.size(); ++j) {</span>
-<span class="fc bfc" id="L399" title="All 2 branches covered.">                if (sets.get(j).contains(i)) {</span>
-<span class="fc" id="L400">                    a[i][j] = 1;</span>
+<span class="fc bfc" id="L415" title="All 2 branches covered.">        for (i = 0; i &lt; nX; ++i) {</span>
+<span class="fc" id="L416">            a[i] = new double[nS];</span>
+<span class="fc bfc" id="L417" title="All 2 branches covered.">            for (j = 0; j &lt; sets.size(); ++j) {</span>
+<span class="fc bfc" id="L418" title="All 2 branches covered.">                if (sets.get(j).contains(i)) {</span>
+<span class="fc" id="L419">                    a[i][j] = 1;</span>
                 }
             }
         }
         int i2;
-<span class="fc bfc" id="L405" title="All 2 branches covered.">        for (i = 0, i2=nX; i &lt; nS; ++i, ++i2) {</span>
-<span class="fc" id="L406">            a[i2] = new double[nS];</span>
-<span class="fc" id="L407">            a[i2][i] = 1;</span>
+<span class="fc bfc" id="L424" title="All 2 branches covered.">        for (i = 0, i2=nX; i &lt; nS; ++i, ++i2) {</span>
+<span class="fc" id="L425">            a[i2] = new double[nS];</span>
+<span class="fc" id="L426">            a[i2][i] = 1;</span>
         }
                 
-<span class="fc" id="L410">        boolean isMaximization = false;</span>
-<span class="fc" id="L411">        int[] constraintComparisons = new int[nX + nS];</span>
-<span class="fc" id="L412">        Arrays.fill(constraintComparisons, 0, nX, 1);</span>
-<span class="fc" id="L413">        Arrays.fill(constraintComparisons, nX, nX+nS, -1);</span>
+<span class="fc" id="L429">        boolean isMaximization = false;</span>
+<span class="fc" id="L430">        int[] constraintComparisons = new int[nX + nS];</span>
+<span class="fc" id="L431">        Arrays.fill(constraintComparisons, 0, nX, 1);</span>
+<span class="fc" id="L432">        Arrays.fill(constraintComparisons, nX, nX+nS, -1);</span>
         
-<span class="fc" id="L415">        boolean[] nonnegativityConstraints = new boolean[nS];</span>
-<span class="fc" id="L416">        Arrays.fill(nonnegativityConstraints, true);</span>
+<span class="fc" id="L434">        boolean[] nonnegativityConstraints = new boolean[nS];</span>
+<span class="fc" id="L435">        Arrays.fill(nonnegativityConstraints, true);</span>
         
-<span class="fc" id="L418">        LinearProgramming.StandardForm standForm = LinearProgramming</span>
-<span class="fc" id="L419">            .convertLinearProgramToStandardForm(isMaximization, a, b, c, </span>
+<span class="fc" id="L437">        LinearProgramming.StandardForm standForm = LinearProgramming</span>
+<span class="fc" id="L438">            .convertLinearProgramToStandardForm(isMaximization, a, b, c, </span>
             constraintComparisons, nonnegativityConstraints);
         
         //System.out.printf(&quot;Linear Program in standard form=\n%s\n&quot;, standForm.toString());
 
-<span class="fc" id="L424">        return standForm;</span>
+<span class="fc" id="L443">        return standForm;</span>
     }
 
+    /**
+     *
+     @param nU
+     @param sets
+     @param weights
+     @return
+     */
     public static double[] calcSetWeightsFromElementWeights(int nU,
         List&lt;TIntSet&gt; sets, double[] weights) {
-<span class="nc" id="L429">        double[] weightsSets = new double[sets.size()];</span>
+<span class="nc" id="L455">        double[] weightsSets = new double[sets.size()];</span>
         int i, idx;
         TIntSet set;
         TIntIterator iter;
-<span class="nc" id="L433">        double sum = 0;</span>
-<span class="nc bnc" id="L434" title="All 2 branches missed.">        for (i = 0; i &lt; sets.size(); ++i) {</span>
-<span class="nc" id="L435">            set = sets.get(i);</span>
-<span class="nc" id="L436">            iter = set.iterator();</span>
-<span class="nc" id="L437">            sum = 0;</span>
-<span class="nc bnc" id="L438" title="All 2 branches missed.">            while (iter.hasNext()) {</span>
-<span class="nc" id="L439">                idx = iter.next();</span>
-<span class="nc" id="L440">                sum += weights[idx];</span>
+<span class="nc" id="L459">        double sum = 0;</span>
+<span class="nc bnc" id="L460" title="All 2 branches missed.">        for (i = 0; i &lt; sets.size(); ++i) {</span>
+<span class="nc" id="L461">            set = sets.get(i);</span>
+<span class="nc" id="L462">            iter = set.iterator();</span>
+<span class="nc" id="L463">            sum = 0;</span>
+<span class="nc bnc" id="L464" title="All 2 branches missed.">            while (iter.hasNext()) {</span>
+<span class="nc" id="L465">                idx = iter.next();</span>
+<span class="nc" id="L466">                sum += weights[idx];</span>
             }
-<span class="nc" id="L442">            weightsSets[i] = sum;</span>
+<span class="nc" id="L468">            weightsSets[i] = sum;</span>
         }
-<span class="nc" id="L444">        return weightsSets;</span>
+<span class="nc" id="L470">        return weightsSets;</span>
     }
     
 }

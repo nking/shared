@@ -2,116 +2,238 @@
 
 import algorithms.misc.MiscMath0;
 
-<span class="nc" id="L5">public class GEVYFit implements IYFit {</span>
+/**
+ *
+ * @author nichole
+ */
+<span class="nc" id="L9">public class GEVYFit implements IYFit {</span>
 
-<span class="nc" id="L7">    protected double[] yfit = null;</span>
-<span class="nc" id="L8">    protected double[] x = null;</span>
-<span class="nc" id="L9">    protected double xScale = 1;</span>
-<span class="nc" id="L10">    protected double yScale = 1;</span>
-<span class="nc" id="L11">    protected int xPeakIndex = -1;</span>
+    /**
+     *
+     */
+<span class="nc" id="L14">    protected double[] yfit = null;</span>
+
+    /**
+     *
+     */
+<span class="nc" id="L19">    protected double[] x = null;</span>
+
+    /**
+     *
+     */
+<span class="nc" id="L24">    protected double xScale = 1;</span>
+
+    /**
+     *
+     */
+<span class="nc" id="L29">    protected double yScale = 1;</span>
+
+    /**
+     *
+     */
+<span class="nc" id="L34">    protected int xPeakIndex = -1;</span>
+
+    /**
+     *
+     */
     protected double k;
+
+    /**
+     *
+     */
     protected double sigma;
+
+    /**
+     *
+     */
     protected double mu;
-<span class="nc" id="L15">    protected double chiSqSum = Double.POSITIVE_INFINITY;</span>
-<span class="nc" id="L16">    protected double chiSqStatistic = Double.POSITIVE_INFINITY;</span>
+
+    /**
+     *
+     */
+<span class="nc" id="L54">    protected double chiSqSum = Double.POSITIVE_INFINITY;</span>
+
+    /**
+     *
+     */
+<span class="nc" id="L59">    protected double chiSqStatistic = Double.POSITIVE_INFINITY;</span>
     double kSolutionResolution;
     double sigmaSolutionResolution;
     double muSolutionResolution;
+
+    /**
+     *
+     */
     protected double yDataErrSq;
 
-<span class="nc" id="L22">    protected String[] parameterNames = new String[]{</span>
+    /**
+     *
+     */
+<span class="nc" id="L72">    protected String[] parameterNames = new String[]{</span>
         &quot;mu&quot;, &quot;sigma&quot;, &quot;k&quot;
     };
 
+    /**
+     *
+     @return
+     */
     public String[] getParameterNames() {
-<span class="nc" id="L27">        return parameterNames;</span>
+<span class="nc" id="L81">        return parameterNames;</span>
     }
 
+    /**
+     *
+     @return
+     */
     public double[] getParameters() {
-<span class="nc" id="L31">        return new double[]{mu, sigma, k};</span>
+<span class="nc" id="L89">        return new double[]{mu, sigma, k};</span>
     }
 
     public String toString() {
 
-<span class="nc" id="L36">        StringBuffer sb = new StringBuffer();</span>
-<span class="nc" id="L37">        sb.append(yfit.length).append(&quot; points, mu=&quot;).append(mu).append(&quot; sigma=&quot;).append(sigma)</span>
-<span class="nc" id="L38">            .append(&quot; k=&quot;).append(k).append(&quot; chiSqSum=&quot;).append(chiSqSum)</span>
-<span class="nc" id="L39">            .append(&quot; chiSqStatistic=&quot;).append(chiSqStatistic);</span>
+<span class="nc" id="L94">        StringBuffer sb = new StringBuffer();</span>
+<span class="nc" id="L95">        sb.append(yfit.length).append(&quot; points, mu=&quot;).append(mu).append(&quot; sigma=&quot;).append(sigma)</span>
+<span class="nc" id="L96">            .append(&quot; k=&quot;).append(k).append(&quot; chiSqSum=&quot;).append(chiSqSum)</span>
+<span class="nc" id="L97">            .append(&quot; chiSqStatistic=&quot;).append(chiSqStatistic);</span>
 
-<span class="nc" id="L41">        return sb.toString();</span>
+<span class="nc" id="L99">        return sb.toString();</span>
     }
 
+    /**
+     *
+     @return
+     */
     public double getXPeak() {
-<span class="nc bnc" id="L45" title="All 2 branches missed.">        if (xPeakIndex == -1) {</span>
-<span class="nc" id="L46">            xPeakIndex = MiscMath0.findYMaxIndex(yfit);</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">        if (xPeakIndex == -1) {</span>
+<span class="nc" id="L108">            xPeakIndex = MiscMath0.findYMaxIndex(yfit);</span>
         }
-<span class="nc" id="L48">        return xScale*x[xPeakIndex];</span>
+<span class="nc" id="L110">        return xScale*x[xPeakIndex];</span>
     }
     
+    /**
+     *
+     @return
+     */
     public int getXPeakIndex() {
-<span class="nc bnc" id="L52" title="All 2 branches missed.">        if (xPeakIndex == -1) {</span>
-<span class="nc" id="L53">            xPeakIndex = MiscMath0.findYMaxIndex(yfit);</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">        if (xPeakIndex == -1) {</span>
+<span class="nc" id="L119">            xPeakIndex = MiscMath0.findYMaxIndex(yfit);</span>
         }
-<span class="nc" id="L55">        return xPeakIndex;</span>
+<span class="nc" id="L121">        return xPeakIndex;</span>
     }
     
+    /**
+     *
+     @return
+     */
     public double[] getYFit() {
-<span class="nc" id="L59">        return yfit;</span>
+<span class="nc" id="L129">        return yfit;</span>
     }
 
+    /**
+     *
+     @return
+     */
     public double getK() {
-<span class="nc" id="L63">        return k;</span>
+<span class="nc" id="L137">        return k;</span>
     }
 
+    /**
+     *
+     @return
+     */
     public double getSigma() {
-<span class="nc" id="L67">        return sigma;</span>
+<span class="nc" id="L145">        return sigma;</span>
     }
 
+    /**
+     *
+     @return
+     */
     public double getMu() {
-<span class="nc" id="L71">        return mu;</span>
+<span class="nc" id="L153">        return mu;</span>
     }
 
+    /**
+     *
+     @return
+     */
     public double getKResolution() {
-<span class="nc" id="L75">        return kSolutionResolution;</span>
+<span class="nc" id="L161">        return kSolutionResolution;</span>
     }
 
+    /**
+     *
+     @return
+     */
     public double getSigmaResolution() {
-<span class="nc" id="L79">        return sigmaSolutionResolution;</span>
+<span class="nc" id="L169">        return sigmaSolutionResolution;</span>
     }
     
+    /**
+     *
+     @return
+     */
     public double getMuSolutionResolution() {
-<span class="nc" id="L83">        return muSolutionResolution;</span>
+<span class="nc" id="L177">        return muSolutionResolution;</span>
     }
 
+    /**
+     *
+     @return
+     */
     public double getChiSqSum() {
-<span class="nc" id="L87">        return chiSqSum;</span>
+<span class="nc" id="L185">        return chiSqSum;</span>
     }
 
+    /**
+     *
+     @return
+     */
     public double getYDataErrSq() {
-<span class="nc" id="L91">        return yDataErrSq;</span>
+<span class="nc" id="L193">        return yDataErrSq;</span>
     }
 
+    /**
+     *
+     @return
+     */
     public double getChiSqStatistic() {
         // minus one if mean was computed from the data
-<span class="nc bnc" id="L96" title="All 2 branches missed.">        if (yfit == null) {</span>
-<span class="nc" id="L97">            return chiSqStatistic;</span>
+<span class="nc bnc" id="L202" title="All 2 branches missed.">        if (yfit == null) {</span>
+<span class="nc" id="L203">            return chiSqStatistic;</span>
         }
-<span class="nc" id="L99">        return chiSqSum / (yfit.length - 3 - 1);</span>
+<span class="nc" id="L205">        return chiSqSum / (yfit.length - 3 - 1);</span>
     }
 
+    /**
+     *
+     @param index
+     @param isStepFunction
+     @return
+     */
     protected double calculateArea(int index, boolean isStepFunction) {
-<span class="nc" id="L103">        return calculateArea(x, yfit, index, isStepFunction, xScale, yScale);</span>
+<span class="nc" id="L215">        return calculateArea(x, yfit, index, isStepFunction, xScale, yScale);</span>
     }
 
+    /**
+     *
+     @param x
+     @param y
+     @param xyIndex
+     @param isStepFunction
+     @param xScaleFactor
+     @param yScaleFactor
+     @return
+     */
     protected static double calculateArea(double[] x, double[] y, int xyIndex,
          boolean isStepFunction, double xScaleFactor, double yScaleFactor) {
 
-<span class="nc bnc" id="L109" title="All 2 branches missed.">        if (x.length == 0) {</span>
-<span class="nc" id="L110">            return 0.0f;</span>
-<span class="nc bnc" id="L111" title="All 2 branches missed.">        } else if (x.length == 1) {</span>
-<span class="nc" id="L112">            double w = xScaleFactor * x[0];</span>
-<span class="nc" id="L113">            double h = yScaleFactor * y[0];</span>
-<span class="nc" id="L114">            return w * h;</span>
+<span class="nc bnc" id="L231" title="All 2 branches missed.">        if (x.length == 0) {</span>
+<span class="nc" id="L232">            return 0.0f;</span>
+<span class="nc bnc" id="L233" title="All 2 branches missed.">        } else if (x.length == 1) {</span>
+<span class="nc" id="L234">            double w = xScaleFactor * x[0];</span>
+<span class="nc" id="L235">            double h = yScaleFactor * y[0];</span>
+<span class="nc" id="L236">            return w * h;</span>
         }
         double x0, xmid, x1, y0, ymid, y1;
         /*                              *
@@ -124,157 +246,186 @@ import algorithms.misc.MiscMath0;
          *
          */
 
-<span class="nc" id="L127">        xmid = x[xyIndex];</span>
-<span class="nc" id="L128">        ymid = y[xyIndex];</span>
+<span class="nc" id="L249">        xmid = x[xyIndex];</span>
+<span class="nc" id="L250">        ymid = y[xyIndex];</span>
 
-<span class="nc bnc" id="L130" title="All 2 branches missed.">        if (xyIndex == 0) {</span>
-<span class="nc" id="L131">            double xDelta = ((x[xyIndex + 1] - x[xyIndex])/2.0f);</span>
-<span class="nc" id="L132">            x0 = x[xyIndex] - xDelta;</span>
-<span class="nc" id="L133">            x1 = x[xyIndex] + xDelta;</span>
-<span class="nc bnc" id="L134" title="All 2 branches missed.">            if (isStepFunction) {</span>
-<span class="nc" id="L135">                y0 = ymid;</span>
-<span class="nc" id="L136">                y1 = ymid;</span>
+<span class="nc bnc" id="L252" title="All 2 branches missed.">        if (xyIndex == 0) {</span>
+<span class="nc" id="L253">            double xDelta = ((x[xyIndex + 1] - x[xyIndex])/2.0f);</span>
+<span class="nc" id="L254">            x0 = x[xyIndex] - xDelta;</span>
+<span class="nc" id="L255">            x1 = x[xyIndex] + xDelta;</span>
+<span class="nc bnc" id="L256" title="All 2 branches missed.">            if (isStepFunction) {</span>
+<span class="nc" id="L257">                y0 = ymid;</span>
+<span class="nc" id="L258">                y1 = ymid;</span>
             } else {
-<span class="nc" id="L138">                double yDelta = (y[1] - y[0])/2.0f;</span>
-<span class="nc" id="L139">                y0 = y[0] - yDelta;</span>
-<span class="nc" id="L140">                y1 = y[0] + yDelta;</span>
+<span class="nc" id="L260">                double yDelta = (y[1] - y[0])/2.0f;</span>
+<span class="nc" id="L261">                y0 = y[0] - yDelta;</span>
+<span class="nc" id="L262">                y1 = y[0] + yDelta;</span>
             }
-<span class="nc bnc" id="L142" title="All 2 branches missed.">        } else if (xyIndex == (y.length - 1)) {</span>
-<span class="nc" id="L143">            double xDelta = ((x[xyIndex] - x[xyIndex - 1])/2.0f);</span>
-<span class="nc" id="L144">            x0 = x[xyIndex] - xDelta;</span>
-<span class="nc" id="L145">            x1 = x[xyIndex] + xDelta;</span>
-<span class="nc bnc" id="L146" title="All 2 branches missed.">            if (isStepFunction) {</span>
-<span class="nc" id="L147">                y0 = ymid;</span>
-<span class="nc" id="L148">                y1 = ymid;</span>
+<span class="nc bnc" id="L264" title="All 2 branches missed.">        } else if (xyIndex == (y.length - 1)) {</span>
+<span class="nc" id="L265">            double xDelta = ((x[xyIndex] - x[xyIndex - 1])/2.0f);</span>
+<span class="nc" id="L266">            x0 = x[xyIndex] - xDelta;</span>
+<span class="nc" id="L267">            x1 = x[xyIndex] + xDelta;</span>
+<span class="nc bnc" id="L268" title="All 2 branches missed.">            if (isStepFunction) {</span>
+<span class="nc" id="L269">                y0 = ymid;</span>
+<span class="nc" id="L270">                y1 = ymid;</span>
             } else {
-<span class="nc" id="L150">                double yDelta = (y[xyIndex - 1] - y[xyIndex])/2.0f;</span>
-<span class="nc" id="L151">                y0 = ymid + yDelta;</span>
-<span class="nc" id="L152">                y1 = ymid - yDelta;</span>
+<span class="nc" id="L272">                double yDelta = (y[xyIndex - 1] - y[xyIndex])/2.0f;</span>
+<span class="nc" id="L273">                y0 = ymid + yDelta;</span>
+<span class="nc" id="L274">                y1 = ymid - yDelta;</span>
             }
-<span class="nc" id="L154">        } else {</span>
-<span class="nc" id="L155">            x0 = ((x[xyIndex] + x[xyIndex - 1]) / 2.0f);</span>
-<span class="nc" id="L156">            x1 = ((x[xyIndex + 1] + x[xyIndex]) / 2.0f);</span>
-<span class="nc bnc" id="L157" title="All 2 branches missed.">            if (isStepFunction) {</span>
-<span class="nc" id="L158">                y0 = ymid;</span>
-<span class="nc" id="L159">                y1 = ymid;</span>
+<span class="nc" id="L276">        } else {</span>
+<span class="nc" id="L277">            x0 = ((x[xyIndex] + x[xyIndex - 1]) / 2.0f);</span>
+<span class="nc" id="L278">            x1 = ((x[xyIndex + 1] + x[xyIndex]) / 2.0f);</span>
+<span class="nc bnc" id="L279" title="All 2 branches missed.">            if (isStepFunction) {</span>
+<span class="nc" id="L280">                y0 = ymid;</span>
+<span class="nc" id="L281">                y1 = ymid;</span>
             } else {
-<span class="nc" id="L161">                y0 = (y[xyIndex - 1] + y[xyIndex]) / 2.0f;</span>
-<span class="nc" id="L162">                y1 = (y[xyIndex] + y[xyIndex + 1]) / 2.0f;</span>
+<span class="nc" id="L283">                y0 = (y[xyIndex - 1] + y[xyIndex]) / 2.0f;</span>
+<span class="nc" id="L284">                y1 = (y[xyIndex] + y[xyIndex + 1]) / 2.0f;</span>
             }
         }
-<span class="nc" id="L165">        double areaBase = xScaleFactor * (x1 - x0) * yScaleFactor * (ymid);</span>
-<span class="nc bnc" id="L166" title="All 2 branches missed.">        if (isStepFunction) {</span>
-<span class="nc" id="L167">            return areaBase;</span>
+<span class="nc" id="L287">        double areaBase = xScaleFactor * (x1 - x0) * yScaleFactor * (ymid);</span>
+<span class="nc bnc" id="L288" title="All 2 branches missed.">        if (isStepFunction) {</span>
+<span class="nc" id="L289">            return areaBase;</span>
         }
-<span class="nc" id="L169">        double areaTop0 = 0.5f * xScaleFactor * (xmid - x0) * yScaleFactor * (y0 - ymid);</span>
-<span class="nc" id="L170">        double areaTop1 = 0.5f * xScaleFactor * (x1 - xmid) * yScaleFactor * (y1 - ymid);</span>
-<span class="nc" id="L171">        double area = areaTop0 + areaTop1 + areaBase;</span>
-<span class="nc" id="L172">        return area;</span>
-    }
-
-    public double getX(int index) {
-<span class="nc" id="L176">        return xScale*x[index];</span>
+<span class="nc" id="L291">        double areaTop0 = 0.5f * xScaleFactor * (xmid - x0) * yScaleFactor * (y0 - ymid);</span>
+<span class="nc" id="L292">        double areaTop1 = 0.5f * xScaleFactor * (x1 - xmid) * yScaleFactor * (y1 - ymid);</span>
+<span class="nc" id="L293">        double area = areaTop0 + areaTop1 + areaBase;</span>
+<span class="nc" id="L294">        return area;</span>
     }
 
     /**
-     * @param yfit the yfit to set
+     *
+     @param index
+     @return
+     */
+    public double getX(int index) {
+<span class="nc" id="L303">        return xScale*x[index];</span>
+    }
+
+    /**
+     @param yfit the yfit to set
      */
     public void setYFit(double[] yfit) {
-<span class="nc" id="L183">        this.yfit = yfit;</span>
-<span class="nc" id="L184">    }</span>
-
-    public void setYScale(double scale) {
-<span class="nc" id="L187">        this.yScale = scale;</span>
-<span class="nc" id="L188">    }</span>
+<span class="nc" id="L310">        this.yfit = yfit;</span>
+<span class="nc" id="L311">    }</span>
 
     /**
-     * @return the x array of the fit
+     *
+     @param scale
+     */
+    public void setYScale(double scale) {
+<span class="nc" id="L318">        this.yScale = scale;</span>
+<span class="nc" id="L319">    }</span>
+
+    /**
+     @return the x array of the fit
      */
     public double[] getX() {
-<span class="nc" id="L194">        return x;</span>
+<span class="nc" id="L325">        return x;</span>
     }
 
     /**
-     * @param x array of the fit
+     @param x array of the fit
      */
     public void setX(double[] x) {
-<span class="nc" id="L201">        this.x = x;</span>
-<span class="nc" id="L202">    }</span>
-
-    public void setXScale(double scale) {
-<span class="nc" id="L205">        this.xScale = scale;</span>
-<span class="nc" id="L206">    }</span>
+<span class="nc" id="L332">        this.x = x;</span>
+<span class="nc" id="L333">    }</span>
 
     /**
-     * @param k the k to set
+     *
+     @param scale
+     */
+    public void setXScale(double scale) {
+<span class="nc" id="L340">        this.xScale = scale;</span>
+<span class="nc" id="L341">    }</span>
+
+    /**
+     @param k the k to set
      */
     public void setK(double k) {
-<span class="nc" id="L212">        this.k = k;</span>
-<span class="nc" id="L213">    }</span>
+<span class="nc" id="L347">        this.k = k;</span>
+<span class="nc" id="L348">    }</span>
 
     /**
-     * @param sigma the sigma to set
+     @param sigma the sigma to set
      */
     public void setSigma(double sigma) {
-<span class="nc" id="L219">        this.sigma = sigma;</span>
-<span class="nc" id="L220">    }</span>
+<span class="nc" id="L354">        this.sigma = sigma;</span>
+<span class="nc" id="L355">    }</span>
 
     /**
-     * @param mu the mu to set
+     @param mu the mu to set
      */
     public void setMu(double mu) {
-<span class="nc" id="L226">        this.mu = mu;</span>
-<span class="nc" id="L227">    }</span>
+<span class="nc" id="L361">        this.mu = mu;</span>
+<span class="nc" id="L362">    }</span>
 
     /**
-     * @param chiSq the chiSqSum to set
+     @param chiSq the chiSqSum to set
      */
     public void setChiSqSum(double chiSq) {
-<span class="nc" id="L233">        this.chiSqSum = chiSq;</span>
-<span class="nc" id="L234">    }</span>
+<span class="nc" id="L368">        this.chiSqSum = chiSq;</span>
+<span class="nc" id="L369">    }</span>
 
     /**
-     * @param chiSqStat the chiSqStatistic to set
+     @param chiSqStat the chiSqStatistic to set
      */
     public void setChiSqStatistic(double chiSqStat) {
-<span class="nc" id="L240">        this.chiSqStatistic = chiSqStat;</span>
-<span class="nc" id="L241">    }</span>
+<span class="nc" id="L375">        this.chiSqStatistic = chiSqStat;</span>
+<span class="nc" id="L376">    }</span>
 
     /**
-     * @param yErrSq the yDataErrSq to set
+     @param yErrSq the yDataErrSq to set
      */
     public void setYDataErrSq(double yErrSq) {
-<span class="nc" id="L247">        this.yDataErrSq = yErrSq;</span>
-<span class="nc" id="L248">    }</span>
+<span class="nc" id="L382">        this.yDataErrSq = yErrSq;</span>
+<span class="nc" id="L383">    }</span>
 
+    /**
+     *
+     @return
+     */
     public double[] getOriginalScaleX() {
-<span class="nc bnc" id="L251" title="All 2 branches missed.">        if (x == null) {</span>
-<span class="nc" id="L252">            return null;</span>
+<span class="nc bnc" id="L390" title="All 2 branches missed.">        if (x == null) {</span>
+<span class="nc" id="L391">            return null;</span>
         }
-<span class="nc" id="L254">        double[] xsc = new double[x.length];</span>
-<span class="nc bnc" id="L255" title="All 2 branches missed.">        for (int i = 0; i &lt; xsc.length; i++) {</span>
-<span class="nc" id="L256">            xsc[i] = x[i] * xScale;</span>
+<span class="nc" id="L393">        double[] xsc = new double[x.length];</span>
+<span class="nc bnc" id="L394" title="All 2 branches missed.">        for (int i = 0; i &lt; xsc.length; i++) {</span>
+<span class="nc" id="L395">            xsc[i] = x[i] * xScale;</span>
         }
-<span class="nc" id="L258">        return xsc;</span>
+<span class="nc" id="L397">        return xsc;</span>
     }
 
+    /**
+     *
+     @return
+     */
     public double[] getOriginalScaleYFit() {
-<span class="nc bnc" id="L262" title="All 2 branches missed.">        if (yfit == null) {</span>
-<span class="nc" id="L263">            return null;</span>
+<span class="nc bnc" id="L405" title="All 2 branches missed.">        if (yfit == null) {</span>
+<span class="nc" id="L406">            return null;</span>
         }
-<span class="nc" id="L265">        double[] ysc = new double[yfit.length];</span>
-<span class="nc bnc" id="L266" title="All 2 branches missed.">        for (int i = 0; i &lt; ysc.length; i++) {</span>
-<span class="nc" id="L267">            ysc[i] = yfit[i] * yScale;</span>
+<span class="nc" id="L408">        double[] ysc = new double[yfit.length];</span>
+<span class="nc bnc" id="L409" title="All 2 branches missed.">        for (int i = 0; i &lt; ysc.length; i++) {</span>
+<span class="nc" id="L410">            ysc[i] = yfit[i] * yScale;</span>
         }
-<span class="nc" id="L269">        return ysc;</span>
+<span class="nc" id="L412">        return ysc;</span>
     }
 
+    /**
+     *
+     @return
+     */
     public double getXScale() {
-<span class="nc" id="L273">        return xScale;</span>
+<span class="nc" id="L420">        return xScale;</span>
     }
 
+    /**
+     *
+     @return
+     */
     public double getYScale() {
-<span class="nc" id="L277">        return yScale;</span>
+<span class="nc" id="L428">        return yScale;</span>
     }
 
 }

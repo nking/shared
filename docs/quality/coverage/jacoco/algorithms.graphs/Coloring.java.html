@@ -1,0 +1,678 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Coloring.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.graphs</a> &gt; <span class="el_source">Coloring.java</span></div><h1>Coloring.java</h1><pre class="source lang-java linenums">package algorithms.graphs;
+
+import algorithms.util.PairInt;
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.iterator.TIntObjectIterator;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.list.linked.TIntLinkedList;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+
+import java.util.*;
+
+/**
+ The graph coloring problem (GCP) asks to color the n vertices of a given undirected graph G = (V, E), that is,
+ to map each vertex in V to a color in a given set of available colors K, in such a way that adjacent vertices
+ take different colors. The set of available colors is commonly mapped to the set of integers {1, . . . , |K|}.
+
+ In the decision version of the problem, also called the (vertex) k-coloring problem,
+ we are asked whether for some given k = |K| a k-coloring exists.
+
+ In the optimization version, we are asked for the smallest number k, called the chromatic number χ(G),
+ for which a k-coloring exists.
+
+ In general, the k-coloring problem is NP-complete [9]. For the optimization version, bad results exist also
+ in terms of approximation, for example, a ratios of n1−ε cannot be achieved in polynomial time unless ZPP=NP [8]
+&lt;pre&gt;
+ Reference:
+paper &quot;Efficiency issues in the RLF heuristic for graph coloring&quot;
+by Marco Chiarandini, Giulia Galbiati, and Stefano Gualandi,
+ MIC 2011: The IX Metaheuristics International Conference S1-47–1
+ &lt;/pre&gt;
+ * see also the interval partitioning methods in algorithms.scheduling.Misc.java
+ */
+<span class="pc" id="L36">public class Coloring {</span>
+
+    /**
+     * A polynomial time constructive algorithm to solve heuristically the graph coloring problem for vertexes.
+     * It doesn't exhibit guaranteed approximation ratios but is very fast and produces good solutions in practice.
+     * These features make them very appealing in practical applications.
+     * Recursive Largest First (RLF) algorithm has a strategy to sequentially color stable sets,
+     * that is, it sequentially builds sets of vertices that can take the same color.
+     * Computational studies on these algorithms show that RLF clearly outperforms the other two in terms of
+     * quality on a wide range of graph classes [5]. However, RLF comes with a higher computational cost,
+     * having a O(n^3) worst-case complexity,
+     &lt;pre&gt;
+     Reference:
+     paper &quot;Efficiency issues in the RLF heuristic for graph coloring&quot;
+     by Marco Chiarandini, Giulia Galbiati, and Stefano Gualandi,
+     MIC 2011: The IX Metaheuristics International Conference S1-47–1
+     &lt;/pre&gt;
+     * @param adjMap the graph represented as an adjacency map
+     * @param colorMap the output map having key=vertex, value= color where the range of color is [0, k)
+     * @return the number of colors k.
+     */
+    public static int recursiveLargestFirst(Map&lt;Integer, Set&lt;Integer&gt;&gt; adjMap, Map&lt;Integer, Integer&gt; colorMap) {
+
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">        if (colorMap == null) {</span>
+<span class="nc" id="L60">            throw new IllegalArgumentException(&quot;colorMap must be instantiated by caller&quot;);</span>
+        }
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">        if (adjMap == null) {</span>
+<span class="nc" id="L63">            return 0;</span>
+        }
+
+<span class="fc" id="L66">        adjMap = GraphUtil.copy(adjMap);</span>
+
+<span class="fc" id="L68">        Map&lt;Integer, Set&lt;Integer&gt;&gt; revAdjMap = GraphUtil.createReverseMapping(adjMap);</span>
+
+<span class="fc" id="L70">        int k = 0;</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">        while (!adjMap.isEmpty()) {</span>
+<span class="fc" id="L72">            findStableSet(adjMap, revAdjMap, k, colorMap);</span>
+<span class="fc" id="L73">            ++k;</span>
+        }
+<span class="fc" id="L75">        return k;</span>
+
+        //TODO: consider generating graphs in tests using these models:
+        //Erdo ̈s-Re ́nyi model (see, e.g., [7]).
+        //Culberson’s generator for weight based models to produce graphs specifying the parameters α and γ to be 0 and 1 respectively.
+
+        /*
+        NOTE:  A stable set is also known as an independent set, coclique or anticliqu.
+        It is a set of vertices in a graph, no two of which are adjacent.
+
+        from Chiarandini et al. 2011:
+
+        Let G[X] be the subgraph of G induced by the set of vertices X, i.e.,
+            G[X] = (X, {uv ∈ E(G)|u, v ∈ X}).
+        Denote by δX(v) the set of vertices adjacent to v in G[X ∪ v].
+        Let dX(v) = |δX(v)| be the degree of v induced by X.
+        Further, let P be the set of uncolored vertices
+        and U the set of vertices that cannot be selected for becoming part of the current stable set.
+
+        Initially, P is set equal to V, the set of vertices in the reduced graph passed to the
+        FINDSTABLESET procedure, U is empty and the degree induced by U for all vertices is equal to 0 (Line 2).
+
+        The procedure successively selects a vertex v to be colored (Lines 4 and 5),
+        moves its neighbors δP(v) from P to U (Line 8), reduces the input graph G (Lines 6 and 9),
+        and updates the degree induced by U of every vertex adjacent to a vertex that has moved from P to U .
+
+        Algorithm 1 is an iterative extraction of stable sets from the (reduced) graph G = (V,E).
+        The core ideas are given in Algorithm 2 that details the FINDSTABLESET procedure.
+
+        Algorithm 1 RECURSIVE LARGEST FIRST(G)
+           In G = (V, E) : input graph
+           Out k : upper bound on χ(G)
+           Out c : a coloring c:V 􏰄→K of G
+
+        1. k←0
+        2. while |V|&gt;0 do
+        3.    k ← k + 1 // increment the color
+        4.    FINDSTABLESET(V, E, k) // G=(V,E) is reduced
+        5. end while
+        6. return k
+
+        Algorithm 2 - procedure FINDSTABLESET(G, k)
+            In G = (V, E) : input graph (in output G is the reduced graph)
+            In k : color for current stable set
+            Var P : set of potential vertices for the stable set
+            Var U : set of vertices not in the current stable set
+
+        1:  P ← V, U ← ∅
+        2:  for all v∈P do d_U(v)←0
+        3:  while |P|&gt;0 do
+        4:      v ← argmax_{w∈P} d_U(w)  // vertex w/ max degree induced by U
+        5:      c(v) ← k // vertex v takes color k
+        6:      V←V\{v}
+        7:      for all w∈δ(v) do
+        8:          if w∈P then P←P\{w}, U←U∪{w} end if // move w from P to U
+        9:          E ← E\{v, w} // remove v from δ(w)
+        10:         for all u ∈ δ(w) do
+        11:             if u∈P then d_U(u)←d_U(u) + 1
+        12:         end for
+        13:     end for
+        14: end while
+
+         */
+    }
+
+    /**
+     * A polynomial time constructive algorithm to solve heuristically the graph coloring problem for vertexes.
+     * It doesn't exhibit guaranteed approximation ratios but is very fast and produces good solutions in practice.
+     * These features make them very appealing in practical applications.
+     * DSATUR [2] uses a dynamic order of the vertices,
+     * instead of a static precomputed order. The idea is to sequentially color the vertices with the
+     * smallest color, but the order is based on a more elaborated idea:
+     * the next vertex is the one with the highest saturation degree, that is,
+     * it has the highest degree induced by the colored vertices (ties are broken by the original degree,
+     * in non increasing order).
+     * The worst-case complexity is O(n^2).
+     &lt;pre&gt;
+     Reference:
+     paper &quot;Efficiency issues in the RLF heuristic for graph coloring&quot;
+     by Marco Chiarandini, Giulia Galbiati, and Stefano Gualandi,
+     MIC 2011: The IX Metaheuristics International Conference S1-47–1
+
+     Other references used in implementing the algorithm:
+         https://en.m.wikipedia.org/wiki/DSatur
+         and the DSatur implementation by R. M. R. Lewis, School of Mathematics, Cardiff University, Wales
+         http://rhydlewis.eu/gcol/
+     &lt;/pre&gt;
+     NOTE: dSatur is a good algorithm to learn whether a graph is bipartite in O(n^2).
+     * @param adjMap the graph represented as an adjacency map
+     * @param colorMap the output map having key=vertex, value= color where the range of color is [0, k)
+     * @return the number of colors k.
+     */
+    public static int dSatur(final Map&lt;Integer, Set&lt;Integer&gt;&gt; adjMap, final Map&lt;Integer, Integer&gt; colorMap) {
+
+<span class="pc bpc" id="L169" title="1 of 2 branches missed.">        if (colorMap == null) {</span>
+<span class="nc" id="L170">            throw new IllegalArgumentException(&quot;colorMap cannot be null&quot;);</span>
+        }
+
+<span class="fc" id="L173">        int n = adjMap.size();</span>
+
+        // The edge chromatic number is never more than △(G)+1 where is the maximum degree of the graph.
+<span class="fc" id="L176">        Map&lt;Integer, Integer&gt; degreeMap = GraphUtil.createDegreeMapForVertices(adjMap.keySet(), adjMap);</span>
+<span class="fc" id="L177">        int maxDegree = degreeMap.get(GraphUtil.findMaxDegreeVertex(degreeMap));</span>
+
+<span class="fc" id="L179">        Map&lt;Integer, Set&lt;Integer&gt;&gt; adjColors = new HashMap&lt;&gt;();</span>
+
+<span class="fc" id="L181">        SaturatedItem[] sItems = new SaturatedItem[n];</span>
+
+        // current largest color used
+<span class="fc" id="L184">        int k = 0;</span>
+
+<span class="fc" id="L186">        PriorityQueue&lt;SaturatedItem&gt; pQ = new PriorityQueue&lt;&gt;();</span>
+
+<span class="fc" id="L188">        Iterator&lt;Map.Entry&lt;Integer, Set&lt;Integer&gt;&gt;&gt; iter = adjMap.entrySet().iterator();</span>
+        Map.Entry&lt;Integer, Set&lt;Integer&gt;&gt; entry;
+        int i;
+<span class="fc bfc" id="L191" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L192">            entry = iter.next();</span>
+<span class="fc" id="L193">            i = entry.getKey();</span>
+
+<span class="fc" id="L195">            sItems[i] = new SaturatedItem(0, degreeMap.get(i), i);</span>
+<span class="fc" id="L196">            pQ.offer(sItems[i]);</span>
+
+<span class="fc" id="L198">            adjColors.put(i, new HashSet&lt;&gt;());</span>
+        }
+
+<span class="fc" id="L201">        boolean[] used = new boolean[maxDegree + 1];</span>
+
+        SaturatedItem s;
+        int u;
+        int c;
+        int d;
+        Set&lt;Integer&gt; uAdj;
+<span class="fc bfc" id="L208" title="All 2 branches covered.">        while (!pQ.isEmpty()) {</span>
+<span class="fc" id="L209">            s = pQ.poll();</span>
+<span class="fc" id="L210">            u = s.vertex;</span>
+
+            // get smallest feasible color, not used by adjacent vertexes
+<span class="fc" id="L213">            uAdj = adjMap.get(u);</span>
+<span class="fc" id="L214">            c = 0;</span>
+<span class="pc bpc" id="L215" title="1 of 2 branches missed.">            if (uAdj != null) {</span>
+<span class="fc" id="L216">                Arrays.fill(used, false);</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">                for (int v : uAdj) {</span>
+<span class="fc bfc" id="L218" title="All 2 branches covered.">                    if (colorMap.containsKey(v)) {</span>
+<span class="fc" id="L219">                        used[colorMap.get(v)] = true;</span>
+                    }
+<span class="fc" id="L221">                }</span>
+<span class="pc bpc" id="L222" title="1 of 2 branches missed.">                for (i = 0; i &lt; used.length; ++i) {</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">                    if (!used[i]) {</span>
+<span class="fc" id="L224">                        c = i;</span>
+<span class="fc" id="L225">                        break;</span>
+                    }
+                }
+            }
+
+<span class="fc" id="L230">            colorMap.put(u, c);</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">            if (c &gt; k) {</span>
+<span class="fc" id="L232">                k = c;</span>
+            }
+<span class="pc bpc" id="L234" title="1 of 2 branches missed.">            if (uAdj != null) {</span>
+<span class="fc bfc" id="L235" title="All 2 branches covered.">                for (int v : uAdj) {</span>
+<span class="fc bfc" id="L236" title="All 2 branches covered.">                    if (!colorMap.containsKey(v)) {</span>
+<span class="fc" id="L237">                        adjColors.get(v).add(c);</span>
+<span class="fc" id="L238">                        d = degreeMap.get(v) - 1;</span>
+<span class="fc" id="L239">                        degreeMap.put(v, d);</span>
+                        // for priority queue to change order need to remove and insert again.
+                        //TODO: modify fibonacci heap to use a comparator including the decreaseKey method
+<span class="fc" id="L242">                        sItems[v].deg = d;</span>
+<span class="fc" id="L243">                        pQ.remove(sItems[v]);</span>
+<span class="fc" id="L244">                        pQ.add(sItems[v]);</span>
+                    }
+<span class="fc" id="L246">                }</span>
+            }
+        }
+
+<span class="fc" id="L250">        return k + 1;</span>
+
+        /*
+        adapted from pseudocode in
+        https://en.m.wikipedia.org/wiki/DSatur
+        and the DSatur implementation by R. M. R. Lewis, School of Mathematics, Cardiff University, Wales
+        http://rhydlewis.eu/gcol/
+        http://rhydlewis.eu/resources/gCol.zip
+        Lewis, R. (2021) A Guide to Graph Colouring: Algorithms and Applications (second ed.).
+        Springer, isbn: 978-3-030-81053-5, doi: 10.1007/978-3-030-81054-2
+        The copyright on the web page http://rhydlewis.eu/gcol/   follows:
+        &lt;pre&gt;
+        8.   Copyright Notice
+         Redistribution and use in source and binary forms, with or without modification, of the code associated with
+         this document are permitted provided that a citation is made to the publication given at the start of this
+         document. Neither the name of the University nor the names of its contributors may be used to endorse or
+         promote products derived from this software without specific prior written permission. This software is
+         provided by the contributors “as is”' and any express or implied warranties, including, but not limited to,
+         the implied warranties of merchantability and fitness for a particular purpose are disclaimed. In no event
+         shall the contributors be liable for any direct, indirect, incidental, special, exemplary, or consequential
+         damages (including, but not limited to, procurement of substitute goods or services; loss of use, data, or
+         profits; or business interruption) however caused and on any theory of liability, whether in contract, strict
+         liability, or tort (including negligence or otherwise) arising in any way out of the use of this software,
+         even if advised of the possibility of such damage. This software is supplied without any support services.
+        &lt;/pre&gt;
+
+         */
+    }
+
+    /**
+     Find a nearly optimal edge coloring using the Misra &amp; Gries 1992 algorithm.
+     It uses at most one color more than the optimal and has a runtime complexity O(|V|*|E|).
+     In contrast, the optimal edge coloring, in general, is NP-complete.
+     &lt;pre&gt;
+     references used in implementing the algorithm:
+         https://en.m.wikipedia.org/wiki/Misra_%26_Gries_edge_coloring_algorithm
+         https://en.wikipedia.org/wiki/Vizing%27s_theorem
+     and
+         Liang, Shen and Hu 1996
+         &quot;Parallel Algorithms for the Edge-Coloring and Edge-Coloring Update Problems&quot;
+         JOURNAL OF PARALLEL AND DISTRIBUTED COMPUTING 32, 66–73 (1996) ARTICLE NO. 0005
+     and
+         https://www.boost.org/doc/libs/1_67_0/boost/graph/edge_coloring.hpp
+         which uses Boost Software License - Version 1.0 - August 17th, 2003
+     &lt;/pre&gt;
+     * @param adjMap adjacency map for a simple undirected graph (no self-loops and no more than 1 edge between same vertices).
+     *               It is expected that the invoker has already handled the bi-directional mappings in adjMap for edges (u,v) and (v,u).
+     * @param colorMap output map of edge colorings where key=edge vertexes and value is the color assigned to the edge
+     * @return the number of colors assigned to edges
+     */
+    public static int edgeColoringMisraGries(final Map&lt;Integer, Set&lt;Integer&gt;&gt; adjMap, final Map&lt;PairInt, Integer&gt; colorMap) {
+
+        //For building the &quot;fans&quot; we need a fixed ordering of the edges, presumably by label = vertex number which are integers here.
+
+        // key = vertex
+        // value = adjacent vertexes
+<span class="fc" id="L306">        TIntObjectMap&lt;TIntList&gt; adjMapOrdered = GraphUtil.copyToOrderedAdjMap(adjMap, true);</span>
+
+<span class="fc" id="L308">        int maxDegreeP1 = findMaxDegree(adjMapOrdered) + 1;</span>
+
+<span class="fc" id="L310">        Set&lt;PairInt&gt; edges = GraphUtil.extractEdgesUsingLexicographicOrder(adjMap);</span>
+
+        /*
+        https://en.m.wikipedia.org/wiki/Misra_%26_Gries_edge_coloring_algorithm
+        U = edges
+        while U ≠ ∅ do
+            Let (u, v) be any edge in U.
+            Let F[1:k] be a maximal fan of u starting at F[1] = v.
+            Let c be a color that is free on u and d be a color that is free on F[k].
+            Invert the cdu path
+            Let w ∈ V(G) be such that w ∈ F, F' = [F[1]...w] is a fan and d is free on w.
+            Rotate F' and set c(u, w) = d.
+            U:= U − {(u, v)}
+        end while
+         */
+        int j;
+<span class="fc" id="L326">        int maxColors = -1;</span>
+        PairInt edge;
+        int u;
+        int k;
+        int colorC;
+        int colorD;
+<span class="fc bfc" id="L332" title="All 2 branches covered.">        while (!edges.isEmpty()) {</span>
+
+<span class="fc" id="L334">            edge = edges.iterator().next();</span>
+
+<span class="fc" id="L336">            TIntList f = findMaximalFan(edge, adjMapOrdered, colorMap);</span>
+            int w;
+<span class="pc bnc" id="L338" title="All 2 branches missed.">            assert(!f.isEmpty());</span>
+<span class="fc" id="L339">            u = edge.getX();</span>
+<span class="fc" id="L340">            k = f.get(f.size() - 1);</span>
+
+            // for x.adj, find first missing colors in 0:max
+<span class="fc" id="L343">            colorC = findFreeColor(u, adjMapOrdered, colorMap, maxDegreeP1);</span>
+            // for k.adj, find first missing colors in 0:max
+<span class="fc" id="L345">            colorD = findFreeColor(k, adjMapOrdered, colorMap, maxDegreeP1);</span>
+
+            // invert cd path.  does nothing if no colors are set yet
+<span class="fc" id="L348">            invertCDPath(u, colorC, colorD, adjMapOrdered, colorMap, maxDegreeP1);</span>
+
+            // find the first member of f which has no adjacent vertexes of color colorD
+<span class="fc" id="L351">            w = -1;</span>
+<span class="pc bpc" id="L352" title="1 of 2 branches missed.">            for (j = 0; j &lt; f.size(); ++j) {</span>
+<span class="fc" id="L353">                w = f.get(j);</span>
+<span class="pc bpc" id="L354" title="1 of 2 branches missed.">                if (isFree(w, colorD, adjMapOrdered, colorMap)) {</span>
+                    // w.adjacent colors are not colorD
+<span class="fc" id="L356">                    break;</span>
+                }
+            }
+<span class="pc bpc" id="L359" title="1 of 2 branches missed.">            if (w &gt; -1) {</span>
+                // does nothing if f.get(0) == w
+<span class="fc" id="L361">                rotateFan(u, f.get(0), w, adjMapOrdered, colorMap);</span>
+
+                // assign color d to edge (u, w)
+<span class="fc" id="L364">                colorMap.put(new PairInt(u, w), colorD);</span>
+            }
+
+<span class="fc" id="L367">            maxColors = Math.max(maxColors, Math.max(colorC, colorD));</span>
+
+<span class="fc" id="L369">            edges.remove(edge);</span>
+<span class="fc" id="L370">        }</span>
+
+<span class="fc" id="L372">        return maxColors + 1;</span>
+    }
+
+    private static PairInt makeOrderedNode(int u, int v) {
+<span class="fc bfc" id="L376" title="All 2 branches covered.">        if (u &lt;= v) {</span>
+<span class="fc" id="L377">            return new PairInt(u, v);</span>
+        }
+<span class="fc" id="L379">        return new PairInt(v, u);</span>
+    }
+
+    private static int findFreeColor(int vertex, TIntObjectMap&lt;TIntList&gt; adjMapOrdered, Map&lt;PairInt, Integer&gt; colorMap,
+                                     int maxC) {
+<span class="fc" id="L384">        int c = 0;</span>
+<span class="pc bpc" id="L385" title="1 of 4 branches missed.">        while (c &lt; maxC &amp;&amp; !isFree(vertex, c, adjMapOrdered, colorMap)) {</span>
+<span class="fc" id="L386">            c++;</span>
+        }
+<span class="fc" id="L388">        return c;</span>
+    }
+
+    private static int findMaxDegree(TIntObjectMap&lt;TIntList&gt; adjMapOrdered) {
+<span class="pc bpc" id="L392" title="1 of 2 branches missed.">        if (adjMapOrdered == null) {</span>
+<span class="nc" id="L393">            throw new IllegalArgumentException(&quot;adjMapOrdered cannot be null&quot;);</span>
+        }
+<span class="fc" id="L395">        int max = 0;</span>
+        int s;
+<span class="fc" id="L397">        TIntObjectIterator&lt;TIntList&gt; iter = adjMapOrdered.iterator();</span>
+<span class="fc bfc" id="L398" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L399">            iter.advance();</span>
+<span class="fc" id="L400">            s = iter.value().size();</span>
+<span class="fc bfc" id="L401" title="All 2 branches covered.">            if (s &gt; max) {</span>
+<span class="fc" id="L402">                max = s;</span>
+            }
+        }
+<span class="fc" id="L405">        return max;</span>
+    }
+
+    private static void rotateFan(int vertex, int f0, int f1, TIntObjectMap&lt;TIntList&gt; adjMapOrdered,
+      Map&lt;PairInt, Integer&gt; colorMap) {
+<span class="pc bpc" id="L410" title="1 of 2 branches missed.">        if (f0 == f1) {</span>
+<span class="fc" id="L411">            return;</span>
+        }
+        // f0 and f1 are adjacent to vertex
+<span class="nc" id="L414">        PairInt previous = makeOrderedNode(vertex, f0);</span>
+        PairInt current;
+        int color;
+        PairInt chk;
+<span class="nc bnc" id="L418" title="All 2 branches missed.">        for (int b = f0 + 1; b &lt; f1; ++b) {</span>
+<span class="nc" id="L419">            current = new PairInt(vertex, b);</span>
+
+<span class="nc" id="L421">            chk = makeOrderedNode(vertex, b);</span>
+<span class="nc bnc" id="L422" title="All 2 branches missed.">            assert(colorMap.containsKey(chk));</span>
+<span class="nc" id="L423">            color = colorMap.get(chk);</span>
+
+            // assign color to previous
+<span class="nc" id="L426">            colorMap.put(previous, color);</span>
+        }
+<span class="nc" id="L428">    }</span>
+
+    private static void invertCDPath(int vertex, int colorC, int colorD,
+         TIntObjectMap&lt;TIntList&gt; adjMapOrdered, Map&lt;PairInt, Integer&gt; colorMap, int maxColors) {
+
+<span class="fc" id="L433">        TIntList adj = adjMapOrdered.get(vertex);</span>
+<span class="pc bpc" id="L434" title="1 of 2 branches missed.">        if (adj == null) {</span>
+<span class="nc" id="L435">            return;</span>
+        }
+        int v;
+        PairInt edge;
+        PairInt chk;
+<span class="fc bfc" id="L440" title="All 2 branches covered.">        for (int i = 0; i &lt; adj.size(); ++i) {</span>
+<span class="fc" id="L441">            v = adj.get(i);</span>
+<span class="fc" id="L442">            edge = new PairInt(vertex, v);</span>
+<span class="fc" id="L443">            chk = makeOrderedNode(vertex, v);</span>
+
+<span class="fc bfc" id="L445" title="All 4 branches covered.">            if (colorMap.containsKey(chk) &amp;&amp; colorMap.get(chk) == colorD) {</span>
+<span class="fc" id="L446">                invertCDPathRecursive(edge, colorD, colorC, adjMapOrdered, colorMap);</span>
+<span class="fc" id="L447">                return;</span>
+            }
+        }
+<span class="fc" id="L450">    }</span>
+
+    /**
+     * @param edge
+     * @param colorC
+     * @param colorD
+     * @param adjMapOrdered
+     * @param colorMap
+     */
+    private static void invertCDPathRecursive(PairInt edge, int colorC, int colorD,
+         TIntObjectMap&lt;TIntList&gt; adjMapOrdered, Map&lt;PairInt, Integer&gt; colorMap) {
+
+<span class="fc" id="L462">        int x = edge.getX();</span>
+<span class="fc" id="L463">        int v = edge.getY();</span>
+
+        // assign color d to edge
+<span class="fc" id="L466">        PairInt chk = makeOrderedNode(x, v);</span>
+<span class="fc" id="L467">        colorMap.put(chk, colorD);</span>
+
+<span class="fc" id="L469">        TIntList adj = adjMapOrdered.get(v);</span>
+<span class="pc bpc" id="L470" title="1 of 2 branches missed.">        if (adj == null) {</span>
+<span class="nc" id="L471">            return;</span>
+        }
+        int v2;
+        PairInt edge2;
+        PairInt chk2;
+<span class="fc bfc" id="L476" title="All 2 branches covered.">        for (int i = 0; i &lt; adj.size(); ++i) {</span>
+<span class="fc" id="L477">            v2 = adj.get(i);</span>
+<span class="fc" id="L478">            edge2 = new PairInt(v, v2);</span>
+<span class="fc" id="L479">            chk2 = makeOrderedNode(v, v2);</span>
+<span class="pc bpc" id="L480" title="1 of 6 branches missed.">            if (!chk.equals(chk2) &amp;&amp; colorMap.containsKey(chk2) &amp;&amp; colorMap.get(chk2) == colorD) {</span>
+<span class="fc" id="L481">                invertCDPathRecursive(edge2, colorD, colorC, adjMapOrdered, colorMap);</span>
+<span class="fc" id="L482">                return;</span>
+            }
+        }
+<span class="fc" id="L485">    }</span>
+
+    /**
+     Given an uncolored edge (u, v), the following procedure constructs a fan f of u
+     that is maximal in that it cannot be extended.
+     * @param edge
+     * @param adjMapOrdered map w/ key = vertex, value= adjacent vertexes
+     * @param cMap
+     * @return
+     */
+    private static TIntList findMaximalFan(PairInt edge, TIntObjectMap&lt;TIntList&gt; adjMapOrdered, Map&lt;PairInt, Integer&gt; cMap) {
+
+<span class="pc bpc" id="L497" title="1 of 2 branches missed.">        if (cMap.containsKey(edge)) {</span>
+<span class="nc" id="L498">            throw new IllegalArgumentException(&quot;edge has already been colored&quot;);</span>
+        }
+
+<span class="fc" id="L501">        int v = edge.getX();</span>
+
+<span class="fc" id="L503">        TIntSet inF = new TIntHashSet();</span>
+<span class="fc" id="L504">        TIntList f = new TIntArrayList();</span>
+
+<span class="fc" id="L506">        int xi = edge.getY();</span>
+<span class="fc" id="L507">        inF.add(xi);</span>
+<span class="fc" id="L508">        f.add(xi);</span>
+
+<span class="fc" id="L510">        TIntList vAdj = adjMapOrdered.get(v);</span>
+<span class="pc bpc" id="L511" title="2 of 4 branches missed.">        if (vAdj == null || vAdj.isEmpty()) {</span>
+<span class="nc" id="L512">            return f;</span>
+        }
+        int xii;
+        int i;
+        int cVXii;
+        TIntList xiAdj;
+<span class="fc bfc" id="L518" title="All 2 branches covered.">        for (i = 0; i &lt; vAdj.size(); ++i) {</span>
+<span class="fc" id="L519">            xii = vAdj.get(i);</span>
+<span class="fc bfc" id="L520" title="All 2 branches covered.">            if (inF.contains(xii)) {</span>
+<span class="fc" id="L521">                continue;</span>
+            }
+            // add xii if the color (v, xii) is not present in edges of xi
+            // set xi = xii
+
+<span class="fc" id="L526">            xiAdj = adjMapOrdered.get(xi);</span>
+<span class="pc bpc" id="L527" title="1 of 2 branches missed.">            if (xiAdj == null) {</span>
+<span class="nc" id="L528">                f.add(xii);</span>
+<span class="nc" id="L529">                xi = xii;</span>
+<span class="nc" id="L530">                continue;</span>
+            }
+
+<span class="fc" id="L533">            PairInt chk = makeOrderedNode(v, xii);</span>
+<span class="fc bfc" id="L534" title="All 2 branches covered.">            if (!cMap.containsKey(chk)) {</span>
+<span class="fc" id="L535">                break;</span>
+            }
+
+<span class="fc" id="L538">            cVXii = cMap.get(chk);</span>
+
+            //if xi edges do not have color of edge (v, xii), add xii
+<span class="fc bfc" id="L541" title="All 2 branches covered.">            if (isFree(xi, cVXii, adjMapOrdered, cMap)) {</span>
+<span class="fc" id="L542">                f.add(xii);</span>
+<span class="fc" id="L543">                xi = xii;</span>
+            }
+        }
+<span class="fc" id="L546">        return f;</span>
+    }
+
+    private static boolean isFree(int u, int color, TIntObjectMap&lt;TIntList&gt; adjMapOrdered, Map&lt;PairInt, Integer&gt; cMap) {
+<span class="fc" id="L550">        TIntList adj = adjMapOrdered.get(u);</span>
+<span class="pc bpc" id="L551" title="1 of 2 branches missed.">        if (adj == null) {</span>
+<span class="nc" id="L552">            return true;</span>
+        }
+        PairInt e;
+        int v;
+<span class="fc bfc" id="L556" title="All 2 branches covered.">        for (int i = 0; i &lt; adj.size(); ++i) {</span>
+<span class="fc" id="L557">            v = adj.get(i);</span>
+<span class="fc" id="L558">            e = makeOrderedNode(u, v);</span>
+<span class="fc bfc" id="L559" title="All 4 branches covered.">            if (cMap.containsKey(e) &amp;&amp; (cMap.get(e) == color)) {</span>
+<span class="fc" id="L560">                return false;</span>
+            }
+        }
+<span class="fc" id="L563">        return true;</span>
+    }
+
+    // NOTE:  A stable set is also known as an independent set, coclique or anticliqu.
+    //        It is a set of vertices in a graph, no two of which are adjacent.
+    private static void findStableSet(Map&lt;Integer, Set&lt;Integer&gt;&gt; adjMap,
+                                      Map&lt;Integer, Set&lt;Integer&gt;&gt; revAdjMap, final int k, Map&lt;Integer, Integer&gt; c) {
+
+<span class="fc" id="L571">        Set&lt;Integer&gt; p = new HashSet&lt;Integer&gt;(adjMap.keySet());</span>
+<span class="fc" id="L572">        Set&lt;Integer&gt; u = new HashSet&lt;Integer&gt;();</span>
+
+        // δX(v) = the set of vertices adjacent to v in G[X ∪ v].
+        // dX(v) = |δX(v)| be the degree of v induced by X.
+
+        //for all v∈P do d_U(v)←0
+<span class="fc" id="L578">        Map&lt;Integer, Integer&gt; degreeUMap = createDegreeMapForVertices(u, p, adjMap);</span>
+
+        Set&lt;Integer&gt; vAdj, wAdj;
+
+        int v;
+<span class="fc bfc" id="L583" title="All 2 branches covered.">        while (!p.isEmpty()) {</span>
+            //vertex with max degree induced by U
+            //v ← argmax_{w∈P} d_U(w)
+<span class="fc" id="L586">            v = GraphUtil.findMaxDegreeVertex(p, degreeUMap);</span>
+            /*if (v == -1) {
+                //find the vertex in G w/ the largest degree
+                v = GraphUtil.findMaxDegreeVertex(GraphUtil.createDegreeMapForVertices(p, adjMap));
+            }*/
+<span class="fc" id="L591">            c.put(v, k);</span>
+
+<span class="fc" id="L593">            vAdj = adjMap.get(v);</span>
+
+<span class="fc" id="L595">            p.remove(v);// p is only the uncolored vertexes, so remove v now</span>
+<span class="fc" id="L596">            GraphUtil.subtractVertex(v, adjMap, revAdjMap); // this removes v from V and E</span>
+
+            //δX(v) is the set of vertices adjacent to v in G[X ∪ v].
+            // δX(v) = adjMap.get(v)
+            // Let d_X(v) = |δX(v)| be the degree of v induced by X = adjMap.get(v).size()
+<span class="pc bpc" id="L601" title="1 of 2 branches missed.">            if (vAdj == null) {</span>
+<span class="nc" id="L602">                continue;</span>
+            }
+<span class="fc bfc" id="L604" title="All 2 branches covered.">            for (int w : vAdj) {</span>
+                //if w∈P then P←P\{w}, U←U∪{w}endif
+<span class="fc bfc" id="L606" title="All 2 branches covered.">                if (p.contains(w)) {</span>
+<span class="fc" id="L607">                    p.remove(w);</span>
+<span class="fc" id="L608">                    u.add(w);</span>
+                }
+
+                // remove v from δ(w).  This was already done above with GraphUtil.subtractVertex(v...
+                /*if (GraphUtil.removeEdge(v, w, adjMap)) {
+                    GraphUtil.removeEdge(w, v, revAdjMap);
+                }*/
+
+<span class="fc" id="L616">                wAdj = adjMap.get(w);</span>
+                // update degreeUMap
+<span class="pc bpc" id="L618" title="1 of 2 branches missed.">                if (wAdj == null) {</span>
+<span class="nc" id="L619">                    continue;</span>
+                }
+<span class="fc bfc" id="L621" title="All 2 branches covered.">                for (int uu : wAdj) {</span>
+<span class="fc bfc" id="L622" title="All 2 branches covered.">                    if (p.contains(uu)) {</span>
+<span class="pc bnc" id="L623" title="All 2 branches missed.">                        assert(degreeUMap.containsKey(uu));</span>
+<span class="fc" id="L624">                        degreeUMap.put(uu, degreeUMap.get(uu) + 1);</span>
+                    }
+<span class="fc" id="L626">                }</span>
+<span class="fc" id="L627">            }</span>
+        }
+<span class="fc" id="L629">    }</span>
+
+    private static Map&lt;Integer, Integer&gt; createDegreeMapForVertices(Set&lt;Integer&gt; subsetOfG, Set&lt;Integer&gt; targetVertices,
+                                                                   Map&lt;Integer, Set&lt;Integer&gt;&gt; g) {
+<span class="fc" id="L633">        Map&lt;Integer, Integer&gt; degreeMap = new HashMap&lt;Integer, Integer&gt;();</span>
+
+        int nA;
+<span class="fc bfc" id="L636" title="All 2 branches covered.">        for (int v : targetVertices) {</span>
+<span class="pc bpc" id="L637" title="3 of 4 branches missed.">            if (!subsetOfG.contains(v) || !g.containsKey(v)) {</span>
+<span class="fc" id="L638">                nA = 0;</span>
+            } else {
+<span class="nc" id="L640">                nA = g.get(v).size();</span>
+            }
+<span class="fc" id="L642">            degreeMap.put(v, nA);</span>
+<span class="fc" id="L643">        }</span>
+<span class="fc" id="L644">        return degreeMap;</span>
+    }
+
+    private static class SaturatedItem implements Comparable&lt;SaturatedItem&gt; {
+        int sat;
+        int deg;
+        int vertex;
+        public SaturatedItem(int saturation, int degree, int vertex) {
+            this.sat = saturation;
+            this.deg = degree;
+            this.vertex = vertex;
+        }
+        @Override
+        public int compareTo(SaturatedItem other) {
+            if (sat &gt; other.sat) {
+                return 1;
+            }
+            if (sat &lt; other.sat) {
+                return -1;
+            }
+            if (deg &gt; other.deg) {
+                return 1;
+            }
+            if (deg &lt; other.deg) {
+                return -1;
+            }
+            // they're equal, so pick one
+            if (vertex &gt; other.vertex) {
+                return 1;
+            }
+            return 0;
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

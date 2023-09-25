@@ -188,68 +188,73 @@ import java.util.logging.Logger;
     // the graph used in path algorithms.
 <span class="fc" id="L189">    private PathNodes pathNodes = null;</span>
     
-<span class="fc" id="L191">    public FlowNetwork(Graph g, TIntIntMap m) {</span>
+    /**
+     *
+     @param g
+     @param m
+     */
+<span class="fc" id="L196">    public FlowNetwork(Graph g, TIntIntMap m) {</span>
 
-<span class="fc" id="L193">        this.nLeft = g.getNLeft();</span>
-<span class="fc" id="L194">        this.nRight = g.getNRight();</span>
-<span class="fc" id="L195">        this.sourceNode = nLeft;</span>
-<span class="fc" id="L196">        this.sinkNode = nRight;</span>
-<span class="fc" id="L197">        pLeft = new float[nLeft + 1];</span>
-<span class="fc" id="L198">        pRight = new float[nRight + 1];</span>
+<span class="fc" id="L198">        this.nLeft = g.getNLeft();</span>
+<span class="fc" id="L199">        this.nRight = g.getNRight();</span>
+<span class="fc" id="L200">        this.sourceNode = nLeft;</span>
+<span class="fc" id="L201">        this.sinkNode = nRight;</span>
+<span class="fc" id="L202">        pLeft = new float[nLeft + 1];</span>
+<span class="fc" id="L203">        pRight = new float[nRight + 1];</span>
                 
-<span class="fc" id="L200">        TObjectIntIterator&lt;PairInt&gt; iter = g.getEdgeWeights().iterator();</span>
-<span class="fc bfc" id="L201" title="All 2 branches covered.">        for (int i = g.getEdgeWeights().size(); i-- &gt; 0;) {</span>
+<span class="fc" id="L205">        TObjectIntIterator&lt;PairInt&gt; iter = g.getEdgeWeights().iterator();</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">        for (int i = g.getEdgeWeights().size(); i-- &gt; 0;) {</span>
             
-<span class="fc" id="L203">            iter.advance();</span>
+<span class="fc" id="L208">            iter.advance();</span>
             
-<span class="fc" id="L205">            PairInt p = iter.key();</span>
+<span class="fc" id="L210">            PairInt p = iter.key();</span>
 
-<span class="fc" id="L207">            int idx1 = p.getX();</span>
-<span class="fc" id="L208">            int idx2 = p.getY();</span>
+<span class="fc" id="L212">            int idx1 = p.getX();</span>
+<span class="fc" id="L213">            int idx2 = p.getY();</span>
 
-<span class="fc" id="L210">            TIntSet indexes2 = forwardArcs.get(idx1);</span>
-<span class="fc bfc" id="L211" title="All 2 branches covered.">            if (indexes2 == null) {</span>
-<span class="fc" id="L212">                indexes2 = new TIntHashSet();</span>
-<span class="fc" id="L213">                forwardArcs.put(idx1, indexes2);</span>
+<span class="fc" id="L215">            TIntSet indexes2 = forwardArcs.get(idx1);</span>
+<span class="fc bfc" id="L216" title="All 2 branches covered.">            if (indexes2 == null) {</span>
+<span class="fc" id="L217">                indexes2 = new TIntHashSet();</span>
+<span class="fc" id="L218">                forwardArcs.put(idx1, indexes2);</span>
             }
-<span class="fc" id="L215">            indexes2.add(idx2);</span>
+<span class="fc" id="L220">            indexes2.add(idx2);</span>
 
-<span class="fc" id="L217">            int cost = g.getEdgeWeights().get(p);</span>
-<span class="fc" id="L218">            c.put(p, cost);</span>
-<span class="fc" id="L219">            f.put(p, 0);</span>
+<span class="fc" id="L222">            int cost = g.getEdgeWeights().get(p);</span>
+<span class="fc" id="L223">            c.put(p, cost);</span>
+<span class="fc" id="L224">            f.put(p, 0);</span>
 
-<span class="fc bfc" id="L221" title="All 2 branches covered.">            if (Math.abs(cost) &gt; maxC) {</span>
-<span class="fc" id="L222">                maxC = Math.abs(cost);</span>
+<span class="fc bfc" id="L226" title="All 2 branches covered.">            if (Math.abs(cost) &gt; maxC) {</span>
+<span class="fc" id="L227">                maxC = Math.abs(cost);</span>
             }
-<span class="fc bfc" id="L224" title="All 2 branches covered.">            if (Math.abs(cost) &lt; minC) {</span>
-<span class="fc" id="L225">                minC = Math.abs(cost);</span>
+<span class="fc bfc" id="L229" title="All 2 branches covered.">            if (Math.abs(cost) &lt; minC) {</span>
+<span class="fc" id="L230">                minC = Math.abs(cost);</span>
             }
 
-<span class="fc" id="L228">            sourceForwardArcs.add(idx1);</span>
-<span class="fc" id="L229">            sinkForwardArcs.add(idx2);</span>
+<span class="fc" id="L233">            sourceForwardArcs.add(idx1);</span>
+<span class="fc" id="L234">            sinkForwardArcs.add(idx2);</span>
             
             // set source and sink arcs to 0 and overwrite
             // those for matched vertexes in next block
-<span class="fc" id="L233">            sourceToLeftF.put(idx1, 0);</span>
-<span class="fc" id="L234">            rightToSinkF.put(idx2, 0);</span>
+<span class="fc" id="L238">            sourceToLeftF.put(idx1, 0);</span>
+<span class="fc" id="L239">            rightToSinkF.put(idx2, 0);</span>
             
             // cost of dummy edge is 0
-<span class="fc" id="L237">            sourceToLeftC.put(idx1, 0);</span>
-<span class="fc" id="L238">            rightToSinkC.put(idx2, 0);</span>
-<span class="fc" id="L239">        }</span>
+<span class="fc" id="L242">            sourceToLeftC.put(idx1, 0);</span>
+<span class="fc" id="L243">            rightToSinkC.put(idx2, 0);</span>
+<span class="fc" id="L244">        }</span>
         
-<span class="fc" id="L241">        TIntIntIterator iter2 = m.iterator();</span>
-<span class="fc bfc" id="L242" title="All 2 branches covered.">        for (int ii = m.size(); ii-- &gt; 0;) {</span>
-<span class="fc" id="L243">            iter2.advance();</span>
-<span class="fc" id="L244">            int leftIdx = iter2.key();</span>
-<span class="fc" id="L245">            int rightIdx = iter2.value();</span>
-<span class="fc" id="L246">            sourceToLeftF.put(leftIdx, 1);</span>
-<span class="fc" id="L247">            PairInt p = new PairInt(leftIdx, rightIdx);</span>
-<span class="fc" id="L248">            f.put(p, 1);</span>
-<span class="fc" id="L249">            rightToSinkF.put(rightIdx, 1);</span>
-<span class="fc" id="L250">        }</span>
+<span class="fc" id="L246">        TIntIntIterator iter2 = m.iterator();</span>
+<span class="fc bfc" id="L247" title="All 2 branches covered.">        for (int ii = m.size(); ii-- &gt; 0;) {</span>
+<span class="fc" id="L248">            iter2.advance();</span>
+<span class="fc" id="L249">            int leftIdx = iter2.key();</span>
+<span class="fc" id="L250">            int rightIdx = iter2.value();</span>
+<span class="fc" id="L251">            sourceToLeftF.put(leftIdx, 1);</span>
+<span class="fc" id="L252">            PairInt p = new PairInt(leftIdx, rightIdx);</span>
+<span class="fc" id="L253">            f.put(p, 1);</span>
+<span class="fc" id="L254">            rightToSinkF.put(rightIdx, 1);</span>
+<span class="fc" id="L255">        }</span>
 
-<span class="pc bnc" id="L252" title="All 2 branches missed.">        assert (maxC &gt; 1);</span>
+<span class="pc bnc" id="L257" title="All 2 branches missed.">        assert (maxC &gt; 1);</span>
 
         /*
         For each vertex x in X, there is a left-dummy arc |- -&gt; x, 
@@ -262,219 +267,271 @@ import java.util.logging.Logger;
            c(y, -|) := 0.            
         */
         
-<span class="fc" id="L265">    }</span>
+<span class="fc" id="L270">    }</span>
     
+    /**
+     *
+     @return
+     */
     public int getMaxC() {
-<span class="fc" id="L268">        return maxC;</span>
+<span class="fc" id="L277">        return maxC;</span>
     }
     
+    /**
+     *
+     @return
+     */
     public int getMinC() {
-<span class="fc" id="L272">        return minC;</span>
+<span class="fc" id="L285">        return minC;</span>
     }
 
     /**
      * &lt;pre&gt;
      * cp(f) = c(f) - |f|*(pd(|-) - pd(-|))
      * &lt;/pre&gt;
-     * @return 
+     @return 
      */
     public double calcNetCost() {
         
-<span class="nc" id="L283">        double cf = calcFluxCost();</span>
-<span class="nc" id="L284">        double flux = calcTotalFlow();</span>
+<span class="nc" id="L296">        double cf = calcFluxCost();</span>
+<span class="nc" id="L297">        double flux = calcTotalFlow();</span>
         
-<span class="nc" id="L286">        double cp = cf - (flux * (pLeft[sourceNode] - pRight[sinkNode]));</span>
+<span class="nc" id="L299">        double cp = cf - (flux * (pLeft[sourceNode] - pRight[sinkNode]));</span>
         
-<span class="nc" id="L288">        return cp;</span>
+<span class="nc" id="L301">        return cp;</span>
     }
     
     /**
      * total flow out of the source (or equivalently,
      * into the sink or equivalently out of all bipartite arcs).
-     * @return 
+     @return 
      */
     public double calcTotalFlow() {
         
         // excludes source and sink nodes too
         
-<span class="nc" id="L300">        double sum = 0;</span>
+<span class="nc" id="L313">        double sum = 0;</span>
         
-<span class="nc" id="L302">        TIntObjectIterator&lt;TIntSet&gt; iter3 = forwardArcs.iterator();</span>
-<span class="nc bnc" id="L303" title="All 2 branches missed.">        for (int ii = forwardArcs.size(); ii-- &gt; 0;) {</span>
-<span class="nc" id="L304">            iter3.advance();</span>
-<span class="nc" id="L305">            int idx1 = iter3.key();</span>
-<span class="nc" id="L306">            TIntSet idxs2 = iter3.value();</span>
+<span class="nc" id="L315">        TIntObjectIterator&lt;TIntSet&gt; iter3 = forwardArcs.iterator();</span>
+<span class="nc bnc" id="L316" title="All 2 branches missed.">        for (int ii = forwardArcs.size(); ii-- &gt; 0;) {</span>
+<span class="nc" id="L317">            iter3.advance();</span>
+<span class="nc" id="L318">            int idx1 = iter3.key();</span>
+<span class="nc" id="L319">            TIntSet idxs2 = iter3.value();</span>
             
-<span class="nc" id="L308">            TIntIterator iter4 = idxs2.iterator();</span>
-<span class="nc bnc" id="L309" title="All 2 branches missed.">            while (iter4.hasNext()) {</span>
-<span class="nc" id="L310">                int idx2 = iter4.next();</span>
-<span class="nc" id="L311">                PairInt p = new PairInt(idx1, idx2);</span>
-<span class="nc" id="L312">                float unitFlow = f.get(p);</span>
-<span class="nc" id="L313">                sum += unitFlow;</span>
-<span class="nc" id="L314">            }</span>
-<span class="nc" id="L315">        }</span>
+<span class="nc" id="L321">            TIntIterator iter4 = idxs2.iterator();</span>
+<span class="nc bnc" id="L322" title="All 2 branches missed.">            while (iter4.hasNext()) {</span>
+<span class="nc" id="L323">                int idx2 = iter4.next();</span>
+<span class="nc" id="L324">                PairInt p = new PairInt(idx1, idx2);</span>
+<span class="nc" id="L325">                float unitFlow = f.get(p);</span>
+<span class="nc" id="L326">                sum += unitFlow;</span>
+<span class="nc" id="L327">            }</span>
+<span class="nc" id="L328">        }</span>
         
-<span class="nc" id="L317">        return sum;</span>
+<span class="nc" id="L330">        return sum;</span>
     }
     
     /**
      * c(f) = summation over arcs of (f(v,w) * c(v,w))
-     * @return 
+     @return 
      */
     public double calcFluxCost() {
         
         // includes source and sink nodes too, but their costs are 0
         
-<span class="nc" id="L328">        double sum = 0;</span>
+<span class="nc" id="L341">        double sum = 0;</span>
         
-<span class="nc" id="L330">        TIntObjectIterator&lt;TIntSet&gt; iter = forwardArcs.iterator();</span>
-<span class="nc bnc" id="L331" title="All 2 branches missed.">        for (int i = forwardArcs.size(); i-- &gt; 0;) {</span>
+<span class="nc" id="L343">        TIntObjectIterator&lt;TIntSet&gt; iter = forwardArcs.iterator();</span>
+<span class="nc bnc" id="L344" title="All 2 branches missed.">        for (int i = forwardArcs.size(); i-- &gt; 0;) {</span>
             
-<span class="nc" id="L333">            iter.advance();</span>
-<span class="nc" id="L334">            int idx1 = iter.key();</span>
-<span class="nc" id="L335">            TIntIterator iter2 = iter.value().iterator();</span>
-<span class="nc bnc" id="L336" title="All 2 branches missed.">            while (iter2.hasNext()) {</span>
-<span class="nc" id="L337">                int idx2 = iter2.next();</span>
-<span class="nc" id="L338">                PairInt p = new PairInt(idx1, idx2);</span>
-<span class="nc" id="L339">                float unitFlow = f.get(p);</span>
-<span class="nc" id="L340">                float cost = c.get(p);</span>
-<span class="nc" id="L341">                sum += (unitFlow * cost);</span>
-<span class="nc" id="L342">            }</span>
-<span class="nc" id="L343">        }</span>
+<span class="nc" id="L346">            iter.advance();</span>
+<span class="nc" id="L347">            int idx1 = iter.key();</span>
+<span class="nc" id="L348">            TIntIterator iter2 = iter.value().iterator();</span>
+<span class="nc bnc" id="L349" title="All 2 branches missed.">            while (iter2.hasNext()) {</span>
+<span class="nc" id="L350">                int idx2 = iter2.next();</span>
+<span class="nc" id="L351">                PairInt p = new PairInt(idx1, idx2);</span>
+<span class="nc" id="L352">                float unitFlow = f.get(p);</span>
+<span class="nc" id="L353">                float cost = c.get(p);</span>
+<span class="nc" id="L354">                sum += (unitFlow * cost);</span>
+<span class="nc" id="L355">            }</span>
+<span class="nc" id="L356">        }</span>
         
-<span class="nc" id="L345">        TIntIterator iter2 = sourceForwardArcs.iterator();</span>
-<span class="nc bnc" id="L346" title="All 2 branches missed.">        while (iter2.hasNext()) {</span>
-<span class="nc" id="L347">            int idx1 = iter2.next();        </span>
-<span class="nc" id="L348">            float unitFlow = sourceToLeftF.get(idx1);</span>
-<span class="nc" id="L349">            float cost = sourceToLeftC.get(idx1);</span>
-<span class="nc" id="L350">            sum += (unitFlow * cost);</span>
-<span class="nc" id="L351">        }</span>
+<span class="nc" id="L358">        TIntIterator iter2 = sourceForwardArcs.iterator();</span>
+<span class="nc bnc" id="L359" title="All 2 branches missed.">        while (iter2.hasNext()) {</span>
+<span class="nc" id="L360">            int idx1 = iter2.next();        </span>
+<span class="nc" id="L361">            float unitFlow = sourceToLeftF.get(idx1);</span>
+<span class="nc" id="L362">            float cost = sourceToLeftC.get(idx1);</span>
+<span class="nc" id="L363">            sum += (unitFlow * cost);</span>
+<span class="nc" id="L364">        }</span>
         
-<span class="nc" id="L353">        iter2 = sinkForwardArcs.iterator();</span>
-<span class="nc bnc" id="L354" title="All 2 branches missed.">        while (iter2.hasNext()) {</span>
-<span class="nc" id="L355">            int idx1 = iter2.next();</span>
-<span class="nc" id="L356">            float unitFlow = rightToSinkF.get(idx1);</span>
-<span class="nc" id="L357">            float cost = rightToSinkC.get(idx1);</span>
-<span class="nc" id="L358">            sum += (unitFlow * cost);</span>
-<span class="nc" id="L359">        }</span>
+<span class="nc" id="L366">        iter2 = sinkForwardArcs.iterator();</span>
+<span class="nc bnc" id="L367" title="All 2 branches missed.">        while (iter2.hasNext()) {</span>
+<span class="nc" id="L368">            int idx1 = iter2.next();</span>
+<span class="nc" id="L369">            float unitFlow = rightToSinkF.get(idx1);</span>
+<span class="nc" id="L370">            float cost = rightToSinkC.get(idx1);</span>
+<span class="nc" id="L371">            sum += (unitFlow * cost);</span>
+<span class="nc" id="L372">        }</span>
         
-<span class="nc" id="L361">        return sum;</span>
+<span class="nc" id="L374">        return sum;</span>
     }
     
+    /**
+     *
+     @param idx
+     @return
+     */
     public float getSourceToLeftFlow(int idx) {
-<span class="fc" id="L365">        return sourceToLeftF.get(idx);</span>
+<span class="fc" id="L383">        return sourceToLeftF.get(idx);</span>
     }
+
+    /**
+     *
+     @param idx
+     @return
+     */
     public float getRightToSinkFlow(int idx) {
-<span class="nc" id="L368">        return rightToSinkF.get(idx);</span>
+<span class="nc" id="L392">        return rightToSinkF.get(idx);</span>
     }
+
+    /**
+     *
+     @param idx
+     @return
+     */
     public int getSourceToLeftCost(int idx) {
-<span class="fc" id="L371">        return sourceToLeftC.get(idx);</span>
+<span class="fc" id="L401">        return sourceToLeftC.get(idx);</span>
     }
     
+    /**
+     *
+     @param u
+     @param v
+     @return
+     */
     public float calcNetCost(int u, int v) {
 
-<span class="pc bpc" id="L376" title="1 of 2 branches missed.">        if (u == sourceNode) {</span>
-<span class="nc" id="L377">            return calcSourceNetCost(v);</span>
-<span class="pc bpc" id="L378" title="1 of 2 branches missed.">        } else if (v == sinkNode) {</span>
-<span class="nc" id="L379">            return calcSinkNetCost(u);</span>
+<span class="pc bpc" id="L412" title="1 of 2 branches missed.">        if (u == sourceNode) {</span>
+<span class="nc" id="L413">            return calcSourceNetCost(v);</span>
+<span class="pc bpc" id="L414" title="1 of 2 branches missed.">        } else if (v == sinkNode) {</span>
+<span class="nc" id="L415">            return calcSinkNetCost(u);</span>
         } 
        
-<span class="fc" id="L382">        PairInt p = new PairInt(u, v);</span>
-<span class="fc" id="L383">        int cost = c.get(p);</span>
-<span class="fc" id="L384">        float pdX = pLeft[u];</span>
-<span class="fc" id="L385">        float pdY = pRight[v];</span>
+<span class="fc" id="L418">        PairInt p = new PairInt(u, v);</span>
+<span class="fc" id="L419">        int cost = c.get(p);</span>
+<span class="fc" id="L420">        float pdX = pLeft[u];</span>
+<span class="fc" id="L421">        float pdY = pRight[v];</span>
         
-<span class="fc" id="L387">        float cp = cost - pdX + pdY;</span>
+<span class="fc" id="L423">        float cp = cost - pdX + pdY;</span>
 
-<span class="fc" id="L389">        return cp;</span>
+<span class="fc" id="L425">        return cp;</span>
     }
     
+    /**
+     *
+     @param u
+     @param v
+     @return
+     */
     public float getFlow(int u, int v) {
 
-<span class="fc bfc" id="L394" title="All 2 branches covered.">        if (u == sourceNode) {</span>
-<span class="fc" id="L395">            return sourceToLeftF.get(v);</span>
-<span class="pc bpc" id="L396" title="1 of 2 branches missed.">        } else if (v == sinkNode) {</span>
-<span class="fc" id="L397">            return rightToSinkF.get(u);</span>
+<span class="fc bfc" id="L436" title="All 2 branches covered.">        if (u == sourceNode) {</span>
+<span class="fc" id="L437">            return sourceToLeftF.get(v);</span>
+<span class="pc bpc" id="L438" title="1 of 2 branches missed.">        } else if (v == sinkNode) {</span>
+<span class="fc" id="L439">            return rightToSinkF.get(u);</span>
         } 
         
-<span class="nc" id="L400">        return f.get(new PairInt(u, v));</span>
+<span class="nc" id="L442">        return f.get(new PairInt(u, v));</span>
     }
     
+    /**
+     *
+     @param v
+     @return
+     */
     protected float calcSourceNetCost(int v) {
 
-<span class="fc" id="L405">        int cost = sourceToLeftC.get(v);</span>
-<span class="fc" id="L406">        float pdX = pLeft[sourceNode];</span>
-<span class="fc" id="L407">        float pdY = pLeft[v];</span>
+<span class="fc" id="L452">        int cost = sourceToLeftC.get(v);</span>
+<span class="fc" id="L453">        float pdX = pLeft[sourceNode];</span>
+<span class="fc" id="L454">        float pdY = pLeft[v];</span>
        
-<span class="fc" id="L409">        float cp = cost - pdX + pdY;</span>
+<span class="fc" id="L456">        float cp = cost - pdX + pdY;</span>
 
-<span class="fc" id="L411">        return cp;</span>
+<span class="fc" id="L458">        return cp;</span>
     }
 
+    /**
+     *
+     @param u
+     @return
+     */
     protected float calcSinkNetCost(int u) {
 
-<span class="fc" id="L416">        int cost = rightToSinkC.get(u);</span>
-<span class="fc" id="L417">        float pdX = pRight[u];</span>
-<span class="fc" id="L418">        float pdY = pRight[sinkNode];</span>
+<span class="fc" id="L468">        int cost = rightToSinkC.get(u);</span>
+<span class="fc" id="L469">        float pdX = pRight[u];</span>
+<span class="fc" id="L470">        float pdY = pRight[sinkNode];</span>
        
-<span class="fc" id="L420">        float cp = cost - pdX + pdY;</span>
+<span class="fc" id="L472">        float cp = cost - pdX + pdY;</span>
 
-<span class="fc" id="L422">        return cp;</span>
+<span class="fc" id="L474">        return cp;</span>
     }
 
+    /**
+     *
+     @param p
+     @return
+     */
     public float calcNetCost(PairInt p) {
-<span class="fc" id="L426">        return calcNetCost(p.getX(), p.getY());</span>
+<span class="fc" id="L483">        return calcNetCost(p.getX(), p.getY());</span>
     }
     
     /**
      * assertion, pg 44, I1.
      * The flux f on NG is a flow of value |f|=s
-     * @param s
-     * @return 
+     @param s
+     @return 
      */
     boolean assertFlowValue(int s) {
                 
         //Should this be for the integral flow only?
-<span class="nc" id="L438">        double flow = calcTotalFlow();</span>
+<span class="nc" id="L495">        double flow = calcTotalFlow();</span>
         
-<span class="nc" id="L440">        log.fine(&quot;assert I1: flow=&quot; + flow + &quot; s=&quot; + s);</span>
+<span class="nc" id="L497">        log.fine(&quot;assert I1: flow=&quot; + flow + &quot; s=&quot; + s);</span>
         
-<span class="nc bnc" id="L442" title="All 2 branches missed.">        return (Math.abs(flow - s) &lt; 1);</span>
+<span class="nc bnc" id="L499" title="All 2 branches missed.">        return (Math.abs(flow - s) &lt; 1);</span>
     }
     
     boolean printFlowValueIncludingSrcSnk(int s) {
         
-<span class="nc" id="L447">        log.fine(&quot;s=&quot; + s);</span>
+<span class="nc" id="L504">        log.fine(&quot;s=&quot; + s);</span>
         
-<span class="nc" id="L449">        double flow = 0;</span>
+<span class="nc" id="L506">        double flow = 0;</span>
         
-<span class="nc" id="L451">        flow += calcTotalFlow();</span>
+<span class="nc" id="L508">        flow += calcTotalFlow();</span>
         
-<span class="nc" id="L453">        log.fine(&quot;bipartite flow sum=&quot; + flow);</span>
+<span class="nc" id="L510">        log.fine(&quot;bipartite flow sum=&quot; + flow);</span>
         
-<span class="nc" id="L455">        flow += calcTotalSourceFlow();</span>
+<span class="nc" id="L512">        flow += calcTotalSourceFlow();</span>
         
-<span class="nc" id="L457">        log.fine(&quot;bipartite + source flow sum=&quot; + flow);</span>
+<span class="nc" id="L514">        log.fine(&quot;bipartite + source flow sum=&quot; + flow);</span>
         
-<span class="nc" id="L459">        flow += calcTotalSinkFlow();</span>
+<span class="nc" id="L516">        flow += calcTotalSinkFlow();</span>
         
-<span class="nc" id="L461">        log.fine(&quot;bipartite + source + sink flow sum=&quot; + flow);</span>
+<span class="nc" id="L518">        log.fine(&quot;bipartite + source + sink flow sum=&quot; + flow);</span>
     
-<span class="nc" id="L463">        return true;</span>
+<span class="nc" id="L520">        return true;</span>
     }
     
     /**
      * assert pg 52, I1'.
      * assert that flux f on NG is a flow of value |f|=s
-     * @param nMatchingsHK the number of matched
+     @param nMatchingsHK the number of matched
      * nodes from hopcroft-karp before refine is invoked.
-     * @return the number of surplus nodes which is the same
+     @return the number of surplus nodes which is the same
      * as the number of deficit nodes.  this may be smaller
      * than nMatchingsHK after an iteration of refine
      */
     boolean assertFlowValueIncludingSrcSnk(int nMatchingsHK) {
                 
-<span class="nc" id="L477">        double flow = 0;</span>
+<span class="nc" id="L534">        double flow = 0;</span>
         
         // NOTE: not completely sure about the intended assertion,
         // but I'm assuming that in refine, after zeroing
@@ -487,503 +544,515 @@ import java.util.logging.Logger;
         // that equals the number of hopcroftkarp matchings
         // minus the updated number of surplus matchings
         
-<span class="nc" id="L490">        flow += calcTotalFlow();</span>
+<span class="nc" id="L547">        flow += calcTotalFlow();</span>
         
-<span class="nc" id="L492">        log.fine(&quot;bipartite flow sum=&quot; + flow);</span>
+<span class="nc" id="L549">        log.fine(&quot;bipartite flow sum=&quot; + flow);</span>
         
         // nSurplus is the number of nodes, excluding the
         // sink where the flow into the node is larger
         // than the flow leaving the sink.
         
-<span class="nc" id="L498">        TIntHashSet surplus = new TIntHashSet();</span>
-<span class="nc" id="L499">        getSurplusRightIndexes(surplus);</span>
-<span class="nc bnc" id="L500" title="All 2 branches missed.">        assert(surplus.isEmpty());</span>
+<span class="nc" id="L555">        TIntHashSet surplus = new TIntHashSet();</span>
+<span class="nc" id="L556">        getSurplusRightIndexes(surplus);</span>
+<span class="nc bnc" id="L557" title="All 2 branches missed.">        assert(surplus.isEmpty());</span>
         
-<span class="nc" id="L502">        getSurplusLeftIndexes(surplus);</span>
+<span class="nc" id="L559">        getSurplusLeftIndexes(surplus);</span>
         
-<span class="nc" id="L504">        int nSurplus = surplus.size();</span>
+<span class="nc" id="L561">        int nSurplus = surplus.size();</span>
         
-<span class="nc" id="L506">        log.fine(&quot;s=&quot; + nMatchingsHK + &quot; h=&quot; + nSurplus);</span>
+<span class="nc" id="L563">        log.fine(&quot;s=&quot; + nMatchingsHK + &quot; h=&quot; + nSurplus);</span>
                 
-<span class="nc bnc" id="L508" title="All 2 branches missed.">        return (Math.abs(flow - (nMatchingsHK - nSurplus)) &lt; 1);</span>
+<span class="nc bnc" id="L565" title="All 2 branches missed.">        return (Math.abs(flow - (nMatchingsHK - nSurplus)) &lt; 1);</span>
     }
     
+    /**
+     *
+     @return
+     */
     public boolean printSurplusAndDeficit() {
     
-<span class="nc" id="L513">        TIntHashSet surplus = new TIntHashSet();</span>
-<span class="nc" id="L514">        getSurplusLeftIndexes(surplus);</span>
+<span class="nc" id="L574">        TIntHashSet surplus = new TIntHashSet();</span>
+<span class="nc" id="L575">        getSurplusLeftIndexes(surplus);</span>
         
-<span class="nc" id="L516">        TIntHashSet deficit = new TIntHashSet();</span>
-<span class="nc" id="L517">        getDeficitRightIndexes(deficit);</span>
+<span class="nc" id="L577">        TIntHashSet deficit = new TIntHashSet();</span>
+<span class="nc" id="L578">        getDeficitRightIndexes(deficit);</span>
         
-<span class="nc" id="L519">        StringBuilder sb = new StringBuilder(&quot;surplus=(&quot;);</span>
-<span class="nc" id="L520">        TIntIterator iter = surplus.iterator();</span>
-<span class="nc bnc" id="L521" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
-<span class="nc" id="L522">            int s = iter.next();</span>
-<span class="nc" id="L523">            sb.append(Integer.toString(s)).append(&quot;, &quot;);</span>
-<span class="nc" id="L524">        }</span>
-<span class="nc" id="L525">        sb.append(&quot;)&quot;);</span>
-<span class="nc" id="L526">        log.fine(sb.toString());</span>
+<span class="nc" id="L580">        StringBuilder sb = new StringBuilder(&quot;surplus=(&quot;);</span>
+<span class="nc" id="L581">        TIntIterator iter = surplus.iterator();</span>
+<span class="nc bnc" id="L582" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
+<span class="nc" id="L583">            int s = iter.next();</span>
+<span class="nc" id="L584">            sb.append(Integer.toString(s)).append(&quot;, &quot;);</span>
+<span class="nc" id="L585">        }</span>
+<span class="nc" id="L586">        sb.append(&quot;)&quot;);</span>
+<span class="nc" id="L587">        log.fine(sb.toString());</span>
         
-<span class="nc" id="L528">        sb = new StringBuilder(&quot;deficit=(&quot;);</span>
-<span class="nc" id="L529">        iter = deficit.iterator();</span>
-<span class="nc bnc" id="L530" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
-<span class="nc" id="L531">            int d = iter.next();</span>
-<span class="nc" id="L532">            sb.append(Integer.toString(d)).append(&quot;, &quot;);</span>
-<span class="nc" id="L533">        }</span>
-<span class="nc" id="L534">        sb.append(&quot;)&quot;);</span>
-<span class="nc" id="L535">        log.fine(sb.toString());</span>
+<span class="nc" id="L589">        sb = new StringBuilder(&quot;deficit=(&quot;);</span>
+<span class="nc" id="L590">        iter = deficit.iterator();</span>
+<span class="nc bnc" id="L591" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
+<span class="nc" id="L592">            int d = iter.next();</span>
+<span class="nc" id="L593">            sb.append(Integer.toString(d)).append(&quot;, &quot;);</span>
+<span class="nc" id="L594">        }</span>
+<span class="nc" id="L595">        sb.append(&quot;)&quot;);</span>
+<span class="nc" id="L596">        log.fine(sb.toString());</span>
         
-<span class="nc" id="L537">        return true;</span>
+<span class="nc" id="L598">        return true;</span>
     }
   
     double calcTotalSourceFlow() {
                 
-<span class="nc" id="L542">        double flow = 0;</span>
+<span class="nc" id="L603">        double flow = 0;</span>
         
-<span class="nc" id="L544">        TIntIterator iter = sourceForwardArcs.iterator();</span>
-<span class="nc bnc" id="L545" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
-<span class="nc" id="L546">            int idx = iter.next();</span>
-<span class="nc" id="L547">            float unitFlow = sourceToLeftF.get(idx);</span>
-<span class="nc" id="L548">            flow += unitFlow;</span>
-<span class="nc" id="L549">        }</span>
+<span class="nc" id="L605">        TIntIterator iter = sourceForwardArcs.iterator();</span>
+<span class="nc bnc" id="L606" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
+<span class="nc" id="L607">            int idx = iter.next();</span>
+<span class="nc" id="L608">            float unitFlow = sourceToLeftF.get(idx);</span>
+<span class="nc" id="L609">            flow += unitFlow;</span>
+<span class="nc" id="L610">        }</span>
                 
-<span class="nc" id="L551">        return flow;</span>
+<span class="nc" id="L612">        return flow;</span>
     }
     
     double calcTotalSinkFlow() {
                 
-<span class="nc" id="L556">        double flow = 0;</span>
+<span class="nc" id="L617">        double flow = 0;</span>
         
-<span class="nc" id="L558">        TIntIterator iter = sinkForwardArcs.iterator();</span>
-<span class="nc bnc" id="L559" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
-<span class="nc" id="L560">            int idx = iter.next();</span>
-<span class="nc" id="L561">            float unitFlow = rightToSinkF.get(idx);</span>
-<span class="nc" id="L562">            flow += unitFlow;</span>
-<span class="nc" id="L563">        }</span>
+<span class="nc" id="L619">        TIntIterator iter = sinkForwardArcs.iterator();</span>
+<span class="nc bnc" id="L620" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
+<span class="nc" id="L621">            int idx = iter.next();</span>
+<span class="nc" id="L622">            float unitFlow = rightToSinkF.get(idx);</span>
+<span class="nc" id="L623">            flow += unitFlow;</span>
+<span class="nc" id="L624">        }</span>
                 
-<span class="nc" id="L565">        return flow;</span>
+<span class="nc" id="L626">        return flow;</span>
     }
 
     /**
      * assert pg 44, I2.
      * the prices at all nodes are multiples of eps
-     * @param eps
-     * @return 
+     @param eps
+     @return 
      */
     boolean assertPricesAreQuantizedEps(float eps) {
         
-<span class="nc" id="L576">        double tolerance = 0.01;</span>
+<span class="nc" id="L637">        double tolerance = 0.01;</span>
         
-<span class="nc bnc" id="L578" title="All 2 branches missed.">        for (int i = 0; i &lt; pLeft.length; ++i) {</span>
-<span class="nc" id="L579">            float p = pLeft[i];</span>
-<span class="nc" id="L580">            float div = p/eps;</span>
-<span class="nc" id="L581">            double r = div - Math.floor(div);</span>
-<span class="nc bnc" id="L582" title="All 2 branches missed.">            if (r &gt; 0.05) {</span>
-<span class="nc" id="L583">                return false;</span>
+<span class="nc bnc" id="L639" title="All 2 branches missed.">        for (int i = 0; i &lt; pLeft.length; ++i) {</span>
+<span class="nc" id="L640">            float p = pLeft[i];</span>
+<span class="nc" id="L641">            float div = p/eps;</span>
+<span class="nc" id="L642">            double r = div - Math.floor(div);</span>
+<span class="nc bnc" id="L643" title="All 2 branches missed.">            if (r &gt; 0.05) {</span>
+<span class="nc" id="L644">                return false;</span>
             }
         }
         
-<span class="nc" id="L587">        return true;</span>
+<span class="nc" id="L648">        return true;</span>
     }
     
     /**
      * raise prices on all nodes so that every arc becomes eps-proper, 
      * for the resulting pseudoflow f
-     * @param eps
-     * @param q
+     @param eps
+     @param q
      */
     public void raisePricesUntilEpsProper(float eps, int q) {
         
-<span class="fc" id="L598">        float delta = (q - 1.f) * eps;</span>
+<span class="fc" id="L659">        float delta = (q - 1.f) * eps;</span>
         
-<span class="fc" id="L600">        float qEps = q * eps;</span>
+<span class="fc" id="L661">        float qEps = q * eps;</span>
         
-<span class="fc" id="L602">        log.fine(&quot;delta=&quot; + delta + &quot; qEps=&quot; + qEps);</span>
+<span class="fc" id="L663">        log.fine(&quot;delta=&quot; + delta + &quot; qEps=&quot; + qEps);</span>
         
         //see Figure 7.4, pg 53
         // looks like the price raise is multiples of (q-1)*eps
 
-<span class="fc" id="L607">        TIntIterator iter = sourceForwardArcs.iterator();</span>
+<span class="fc" id="L668">        TIntIterator iter = sourceForwardArcs.iterator();</span>
         // calc for source dummy arcs
-<span class="fc bfc" id="L609" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
-<span class="fc" id="L610">            int xIdx = iter.next();</span>
-<span class="fc" id="L611">            float unitFlow = sourceToLeftF.get(xIdx);</span>
-<span class="fc" id="L612">            float cp = calcSourceNetCost(xIdx);</span>
+<span class="fc bfc" id="L670" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L671">            int xIdx = iter.next();</span>
+<span class="fc" id="L672">            float unitFlow = sourceToLeftF.get(xIdx);</span>
+<span class="fc" id="L673">            float cp = calcSourceNetCost(xIdx);</span>
         
-<span class="fc bfc" id="L614" title="All 2 branches covered.">            if (unitFlow == 0) {</span>
+<span class="fc bfc" id="L675" title="All 2 branches covered.">            if (unitFlow == 0) {</span>
                 // idle, cp &gt; -qEps
                 //cp = cost - pdX + pdY so inr pdY
-<span class="fc" id="L617">                float count = 1.f;</span>
-<span class="pc bpc" id="L618" title="1 of 2 branches missed.">                while (cp &lt;= -qEps) {</span>
-<span class="nc" id="L619">                    pLeft[xIdx] += (count * delta);</span>
-<span class="nc" id="L620">                    cp = calcSourceNetCost(xIdx);</span>
-<span class="nc" id="L621">                    log.fine(&quot;raise price of left for source arc&quot; </span>
+<span class="fc" id="L678">                float count = 1.f;</span>
+<span class="pc bpc" id="L679" title="1 of 2 branches missed.">                while (cp &lt;= -qEps) {</span>
+<span class="nc" id="L680">                    pLeft[xIdx] += (count * delta);</span>
+<span class="nc" id="L681">                    cp = calcSourceNetCost(xIdx);</span>
+<span class="nc" id="L682">                    log.fine(&quot;raise price of left for source arc&quot; </span>
                         + xIdx + &quot; to cp=&quot; + cp);
                 }
-<span class="pc bpc" id="L624" title="1 of 2 branches missed.">            } else if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
+<span class="pc bpc" id="L685" title="1 of 2 branches missed.">            } else if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
                 // saturated
                 //cp = cost - pdX + pdY so incr pdX
-<span class="fc" id="L627">                float count = 1.f;</span>
-<span class="pc bpc" id="L628" title="1 of 2 branches missed.">                while (cp &gt; qEps) {</span>
-<span class="nc" id="L629">                    pLeft[sourceNode] += (count * delta);</span>
-<span class="nc" id="L630">                    cp = calcSourceNetCost(xIdx);</span>
-<span class="nc" id="L631">                    log.fine(&quot;lower price of left for source arc&quot; </span>
+<span class="fc" id="L688">                float count = 1.f;</span>
+<span class="pc bpc" id="L689" title="1 of 2 branches missed.">                while (cp &gt; qEps) {</span>
+<span class="nc" id="L690">                    pLeft[sourceNode] += (count * delta);</span>
+<span class="nc" id="L691">                    cp = calcSourceNetCost(xIdx);</span>
+<span class="nc" id="L692">                    log.fine(&quot;lower price of left for source arc&quot; </span>
                         + xIdx + &quot; to cp=&quot; + cp);
                 }
             }
-<span class="fc" id="L635">        }</span>
+<span class="fc" id="L696">        }</span>
         
-<span class="fc" id="L637">        TIntObjectIterator&lt;TIntSet&gt; iter2 = forwardArcs.iterator();</span>
-<span class="fc bfc" id="L638" title="All 2 branches covered.">        for (int ii = forwardArcs.size(); ii-- &gt; 0;) {</span>
-<span class="fc" id="L639">            iter2.advance();</span>
-<span class="fc" id="L640">            int idx1 = iter2.key();</span>
-<span class="fc" id="L641">            TIntIterator iter3 = iter2.value().iterator();</span>
-<span class="fc bfc" id="L642" title="All 2 branches covered.">            while (iter3.hasNext()) {</span>
-<span class="fc" id="L643">                int idx2 = iter3.next();</span>
-<span class="fc" id="L644">                PairInt p = new PairInt(idx1, idx2);</span>
-<span class="fc" id="L645">                float unitFlow = f.get(p);</span>
-<span class="fc" id="L646">                float cp = calcNetCost(p);</span>
-<span class="pc bpc" id="L647" title="1 of 2 branches missed.">                if (unitFlow == 0) {</span>
+<span class="fc" id="L698">        TIntObjectIterator&lt;TIntSet&gt; iter2 = forwardArcs.iterator();</span>
+<span class="fc bfc" id="L699" title="All 2 branches covered.">        for (int ii = forwardArcs.size(); ii-- &gt; 0;) {</span>
+<span class="fc" id="L700">            iter2.advance();</span>
+<span class="fc" id="L701">            int idx1 = iter2.key();</span>
+<span class="fc" id="L702">            TIntIterator iter3 = iter2.value().iterator();</span>
+<span class="fc bfc" id="L703" title="All 2 branches covered.">            while (iter3.hasNext()) {</span>
+<span class="fc" id="L704">                int idx2 = iter3.next();</span>
+<span class="fc" id="L705">                PairInt p = new PairInt(idx1, idx2);</span>
+<span class="fc" id="L706">                float unitFlow = f.get(p);</span>
+<span class="fc" id="L707">                float cp = calcNetCost(p);</span>
+<span class="pc bpc" id="L708" title="1 of 2 branches missed.">                if (unitFlow == 0) {</span>
                     // idle, cp &gt; -qEps
                     //cp = cost - pdX + pdY, so incr pdY
-<span class="fc" id="L650">                    float count = 1.f;</span>
-<span class="pc bpc" id="L651" title="1 of 2 branches missed.">                    while (cp &lt;= -qEps) {</span>
-<span class="nc" id="L652">                        pRight[idx2] += (count * delta);</span>
-<span class="nc" id="L653">                        cp = calcNetCost(p);</span>
-<span class="nc" id="L654">                        log.fine(&quot;raise price of right &quot; + idx2 +</span>
+<span class="fc" id="L711">                    float count = 1.f;</span>
+<span class="pc bpc" id="L712" title="1 of 2 branches missed.">                    while (cp &lt;= -qEps) {</span>
+<span class="nc" id="L713">                        pRight[idx2] += (count * delta);</span>
+<span class="nc" id="L714">                        cp = calcNetCost(p);</span>
+<span class="nc" id="L715">                        log.fine(&quot;raise price of right &quot; + idx2 +</span>
                             &quot; to cp=&quot; + cp);
                     }
-<span class="pc bnc" id="L657" title="All 2 branches missed.">                } else if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
+<span class="pc bnc" id="L718" title="All 2 branches missed.">                } else if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
                     // saturated, cp &lt;= qEps
                     //cp = cost - pdX + pdY, so incr pdX
-<span class="nc bnc" id="L660" title="All 2 branches missed.">                    while (cp &gt; qEps) {</span>
-<span class="nc" id="L661">                        float count = 1.f;</span>
-<span class="nc" id="L662">                        pLeft[idx1] += (count * delta);</span>
-<span class="nc" id="L663">                        cp = calcNetCost(p);</span>
-<span class="nc" id="L664">                        log.fine(&quot;lower price of left &quot; + idx1 +</span>
+<span class="nc bnc" id="L721" title="All 2 branches missed.">                    while (cp &gt; qEps) {</span>
+<span class="nc" id="L722">                        float count = 1.f;</span>
+<span class="nc" id="L723">                        pLeft[idx1] += (count * delta);</span>
+<span class="nc" id="L724">                        cp = calcNetCost(p);</span>
+<span class="nc" id="L725">                        log.fine(&quot;lower price of left &quot; + idx1 +</span>
                             &quot; to cp=&quot; + cp);
-<span class="nc" id="L666">                    }</span>
+<span class="nc" id="L727">                    }</span>
                 }
-<span class="fc" id="L668">            }</span>
-<span class="fc" id="L669">        }</span>
+<span class="fc" id="L729">            }</span>
+<span class="fc" id="L730">        }</span>
         
-<span class="fc" id="L671">        TIntIterator iter3 = sinkForwardArcs.iterator();</span>
+<span class="fc" id="L732">        TIntIterator iter3 = sinkForwardArcs.iterator();</span>
         // calc for sink dummy arcs
-<span class="fc bfc" id="L673" title="All 2 branches covered.">        while (iter3.hasNext()) {</span>
-<span class="fc" id="L674">            int yIdx = iter3.next();</span>
-<span class="fc" id="L675">            float unitFlow = rightToSinkF.get(yIdx);</span>
-<span class="fc" id="L676">            float cp = calcSinkNetCost(yIdx);</span>
+<span class="fc bfc" id="L734" title="All 2 branches covered.">        while (iter3.hasNext()) {</span>
+<span class="fc" id="L735">            int yIdx = iter3.next();</span>
+<span class="fc" id="L736">            float unitFlow = rightToSinkF.get(yIdx);</span>
+<span class="fc" id="L737">            float cp = calcSinkNetCost(yIdx);</span>
         
-<span class="pc bpc" id="L678" title="1 of 2 branches missed.">            if (unitFlow == 0) {</span>
+<span class="pc bpc" id="L739" title="1 of 2 branches missed.">            if (unitFlow == 0) {</span>
                 // idle, cp &gt; -qEps
                 //cp = cost - pdX + pdY so inr pdY
                 // where pdX is pRight and pdY is pRight[sink]
-<span class="nc" id="L682">                float count = 1.f;</span>
-<span class="nc bnc" id="L683" title="All 2 branches missed.">                while (cp &lt;= -qEps) {</span>
-<span class="nc" id="L684">                    pRight[sinkNode] += (count * delta);</span>
-<span class="nc" id="L685">                    cp = calcSinkNetCost(yIdx);</span>
-<span class="nc" id="L686">                    log.fine(&quot;raise price of right for sink arc&quot; </span>
+<span class="nc" id="L743">                float count = 1.f;</span>
+<span class="nc bnc" id="L744" title="All 2 branches missed.">                while (cp &lt;= -qEps) {</span>
+<span class="nc" id="L745">                    pRight[sinkNode] += (count * delta);</span>
+<span class="nc" id="L746">                    cp = calcSinkNetCost(yIdx);</span>
+<span class="nc" id="L747">                    log.fine(&quot;raise price of right for sink arc&quot; </span>
                         + sinkNode + &quot; to cp=&quot; + cp);
                 }
-<span class="pc bpc" id="L689" title="1 of 2 branches missed.">            } else if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
+<span class="pc bpc" id="L750" title="1 of 2 branches missed.">            } else if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
                 // saturated
                 //cp = cost - pdX + pdY so incr pdX
-<span class="fc" id="L692">                float count = 1.f;</span>
-<span class="pc bpc" id="L693" title="1 of 2 branches missed.">                while (cp &gt; qEps) {</span>
-<span class="nc" id="L694">                    pRight[yIdx] += (count * delta);</span>
-<span class="nc" id="L695">                    cp = calcSinkNetCost(yIdx);</span>
-<span class="nc" id="L696">                    log.fine(&quot;lower price of right for sink arc&quot; </span>
+<span class="fc" id="L753">                float count = 1.f;</span>
+<span class="pc bpc" id="L754" title="1 of 2 branches missed.">                while (cp &gt; qEps) {</span>
+<span class="nc" id="L755">                    pRight[yIdx] += (count * delta);</span>
+<span class="nc" id="L756">                    cp = calcSinkNetCost(yIdx);</span>
+<span class="nc" id="L757">                    log.fine(&quot;lower price of right for sink arc&quot; </span>
                         + yIdx + &quot; to cp=&quot; + cp);
                 }
             }
-<span class="fc" id="L700">        }</span>
-<span class="fc" id="L701">    }</span>
+<span class="fc" id="L761">        }</span>
+<span class="fc" id="L762">    }</span>
     
     /**
      * Every arc of NG, idle or saturated, is eps-proper.
      * all bipartite arcs are asserted, but not sink and source
-     * @param eps
-     * @return 
+     @param eps
+     @return 
      */
     boolean integralBipartiteFlowIsEpsProper(float eps) {
         
-<span class="nc" id="L711">        TIntObjectIterator&lt;TIntSet&gt; iter2 = forwardArcs.iterator();</span>
-<span class="nc bnc" id="L712" title="All 2 branches missed.">        for (int ii = forwardArcs.size(); ii-- &gt; 0;) {</span>
-<span class="nc" id="L713">            iter2.advance();</span>
-<span class="nc" id="L714">            int idx1 = iter2.key();</span>
-<span class="nc" id="L715">            TIntIterator iter3 = iter2.value().iterator();</span>
-<span class="nc bnc" id="L716" title="All 2 branches missed.">            while (iter3.hasNext()) {</span>
-<span class="nc" id="L717">                int idx2 = iter3.next();</span>
+<span class="nc" id="L772">        TIntObjectIterator&lt;TIntSet&gt; iter2 = forwardArcs.iterator();</span>
+<span class="nc bnc" id="L773" title="All 2 branches missed.">        for (int ii = forwardArcs.size(); ii-- &gt; 0;) {</span>
+<span class="nc" id="L774">            iter2.advance();</span>
+<span class="nc" id="L775">            int idx1 = iter2.key();</span>
+<span class="nc" id="L776">            TIntIterator iter3 = iter2.value().iterator();</span>
+<span class="nc bnc" id="L777" title="All 2 branches missed.">            while (iter3.hasNext()) {</span>
+<span class="nc" id="L778">                int idx2 = iter3.next();</span>
                                 
-<span class="nc" id="L719">                PairInt p = new PairInt(idx1, idx2);</span>
-<span class="nc" id="L720">                float unitFlow = f.get(p);</span>
-<span class="nc" id="L721">                int cp = (int)Math.ceil(calcNetCost(p));</span>
-<span class="nc bnc" id="L722" title="All 2 branches missed.">                if (unitFlow == 0) {</span>
+<span class="nc" id="L780">                PairInt p = new PairInt(idx1, idx2);</span>
+<span class="nc" id="L781">                float unitFlow = f.get(p);</span>
+<span class="nc" id="L782">                int cp = (int)Math.ceil(calcNetCost(p));</span>
+<span class="nc bnc" id="L783" title="All 2 branches missed.">                if (unitFlow == 0) {</span>
                     // idle, cp &gt; -epsT
-<span class="nc bnc" id="L724" title="All 2 branches missed.">                    if (cp &lt;= -eps) {</span>
-<span class="nc" id="L725">                        return false;</span>
+<span class="nc bnc" id="L785" title="All 2 branches missed.">                    if (cp &lt;= -eps) {</span>
+<span class="nc" id="L786">                        return false;</span>
                     }
-<span class="nc bnc" id="L727" title="All 2 branches missed.">                } else if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
+<span class="nc bnc" id="L788" title="All 2 branches missed.">                } else if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
                     // saturated
-<span class="nc bnc" id="L729" title="All 2 branches missed.">                    if (cp &gt; eps) {</span>
-<span class="nc" id="L730">                        return false;</span>
+<span class="nc bnc" id="L790" title="All 2 branches missed.">                    if (cp &gt; eps) {</span>
+<span class="nc" id="L791">                        return false;</span>
                     }
                 }
-<span class="nc" id="L733">            }</span>
-<span class="nc" id="L734">        }</span>
+<span class="nc" id="L794">            }</span>
+<span class="nc" id="L795">        }</span>
 
-<span class="nc" id="L736">        return true;</span>
+<span class="nc" id="L797">        return true;</span>
     }
     
     /**
      * assert pg 44 I3.
      * Every arc of NG, idle or saturated, is eps-proper.
      * all bipartite arcs and sink and source arcs should be eps-proper.
-     * @param eps
-     * @return 
+     @param eps
+     @return 
      */
     boolean integralFlowIsEpsProper(float eps) {
         
-<span class="nc" id="L748">        TIntObjectIterator&lt;TIntSet&gt; iter2 = forwardArcs.iterator();</span>
-<span class="nc bnc" id="L749" title="All 2 branches missed.">        for (int ii = forwardArcs.size(); ii-- &gt; 0;) {</span>
-<span class="nc" id="L750">            iter2.advance();</span>
-<span class="nc" id="L751">            int idx1 = iter2.key();</span>
-<span class="nc" id="L752">            TIntIterator iter3 = iter2.value().iterator();</span>
-<span class="nc bnc" id="L753" title="All 2 branches missed.">            while (iter3.hasNext()) {</span>
-<span class="nc" id="L754">                int idx2 = iter3.next();</span>
+<span class="nc" id="L809">        TIntObjectIterator&lt;TIntSet&gt; iter2 = forwardArcs.iterator();</span>
+<span class="nc bnc" id="L810" title="All 2 branches missed.">        for (int ii = forwardArcs.size(); ii-- &gt; 0;) {</span>
+<span class="nc" id="L811">            iter2.advance();</span>
+<span class="nc" id="L812">            int idx1 = iter2.key();</span>
+<span class="nc" id="L813">            TIntIterator iter3 = iter2.value().iterator();</span>
+<span class="nc bnc" id="L814" title="All 2 branches missed.">            while (iter3.hasNext()) {</span>
+<span class="nc" id="L815">                int idx2 = iter3.next();</span>
           
-<span class="nc" id="L756">                PairInt p = new PairInt(idx1, idx2);</span>
-<span class="nc" id="L757">                float unitFlow = f.get(p);</span>
-<span class="nc" id="L758">                int cp = (int)Math.ceil(calcNetCost(p));</span>
-<span class="nc bnc" id="L759" title="All 2 branches missed.">                if (unitFlow == 0) {</span>
+<span class="nc" id="L817">                PairInt p = new PairInt(idx1, idx2);</span>
+<span class="nc" id="L818">                float unitFlow = f.get(p);</span>
+<span class="nc" id="L819">                int cp = (int)Math.ceil(calcNetCost(p));</span>
+<span class="nc bnc" id="L820" title="All 2 branches missed.">                if (unitFlow == 0) {</span>
                     // idle, cp &gt; -epsT
-<span class="nc bnc" id="L761" title="All 2 branches missed.">                    if (cp &lt;= -eps) {</span>
-<span class="nc" id="L762">                        log.severe(String.format(</span>
+<span class="nc bnc" id="L822" title="All 2 branches missed.">                    if (cp &lt;= -eps) {</span>
+<span class="nc" id="L823">                        log.severe(String.format(</span>
                             &quot;NOT EPS-PROPER f=%.2f  cp=%.3f  eps=%.3f idx=%d to %d&quot;,
-<span class="nc" id="L764">                            unitFlow, cp, eps, idx1, idx2));</span>
-<span class="nc" id="L765">                        return false;</span>
+<span class="nc" id="L825">                            unitFlow, cp, eps, idx1, idx2));</span>
+<span class="nc" id="L826">                        return false;</span>
                     }
-<span class="nc bnc" id="L767" title="All 2 branches missed.">                } else if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
+<span class="nc bnc" id="L828" title="All 2 branches missed.">                } else if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
                     // saturated
-<span class="nc bnc" id="L769" title="All 2 branches missed.">                    if (cp &gt; eps) {</span>
-<span class="nc" id="L770">                        log.severe(String.format(</span>
+<span class="nc bnc" id="L830" title="All 2 branches missed.">                    if (cp &gt; eps) {</span>
+<span class="nc" id="L831">                        log.severe(String.format(</span>
                             &quot;NOT EPS-PROPER f=%.2f  cp=%.3f  eps=%.3f idx=%s td %d&quot;,
-<span class="nc" id="L772">                            unitFlow, cp, eps, idx1, idx2));</span>
-<span class="nc" id="L773">                        return false;</span>
+<span class="nc" id="L833">                            unitFlow, cp, eps, idx1, idx2));</span>
+<span class="nc" id="L834">                        return false;</span>
                     }
                 }
-<span class="nc" id="L776">            }</span>
-<span class="nc" id="L777">        }</span>
+<span class="nc" id="L837">            }</span>
+<span class="nc" id="L838">        }</span>
 
-<span class="nc" id="L779">        TIntIterator iter = sourceForwardArcs.iterator();</span>
-<span class="nc bnc" id="L780" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
-<span class="nc" id="L781">            int idx1 = iter.next();</span>
-<span class="nc" id="L782">            float unitFlow = sourceToLeftF.get(idx1);</span>
-<span class="nc" id="L783">            int cp = (int)Math.ceil(calcSourceNetCost(idx1));</span>
-<span class="nc bnc" id="L784" title="All 2 branches missed.">            if (unitFlow == 0) {</span>
+<span class="nc" id="L840">        TIntIterator iter = sourceForwardArcs.iterator();</span>
+<span class="nc bnc" id="L841" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
+<span class="nc" id="L842">            int idx1 = iter.next();</span>
+<span class="nc" id="L843">            float unitFlow = sourceToLeftF.get(idx1);</span>
+<span class="nc" id="L844">            int cp = (int)Math.ceil(calcSourceNetCost(idx1));</span>
+<span class="nc bnc" id="L845" title="All 2 branches missed.">            if (unitFlow == 0) {</span>
                 // idle, cp &gt; -epsT
-<span class="nc bnc" id="L786" title="All 2 branches missed.">                if (cp &lt;= -eps) {</span>
-<span class="nc" id="L787">                    log.severe(String.format(</span>
+<span class="nc bnc" id="L847" title="All 2 branches missed.">                if (cp &lt;= -eps) {</span>
+<span class="nc" id="L848">                    log.severe(String.format(</span>
                         &quot;NOT EPS-PROPER f=%.2f  cp=%.3f  eps=%.3f source to %d&quot;,
-<span class="nc" id="L789">                        unitFlow, cp, eps, idx1));</span>
+<span class="nc" id="L850">                        unitFlow, cp, eps, idx1));</span>
                 }
-<span class="nc bnc" id="L791" title="All 2 branches missed.">            } else if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
+<span class="nc bnc" id="L852" title="All 2 branches missed.">            } else if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
                 // saturated
-<span class="nc bnc" id="L793" title="All 2 branches missed.">                if (cp &gt; eps) {</span>
-<span class="nc" id="L794">                    log.severe(String.format(</span>
+<span class="nc bnc" id="L854" title="All 2 branches missed.">                if (cp &gt; eps) {</span>
+<span class="nc" id="L855">                    log.severe(String.format(</span>
                         &quot;NOT EPS-PROPER f=%.2f  cp=%.3f  eps=%.3f source to %d&quot;,
-<span class="nc" id="L796">                        unitFlow, cp, eps, idx1));</span>
-<span class="nc" id="L797">                    return false;</span>
+<span class="nc" id="L857">                        unitFlow, cp, eps, idx1));</span>
+<span class="nc" id="L858">                    return false;</span>
                 }
             }
-<span class="nc" id="L800">        }</span>
+<span class="nc" id="L861">        }</span>
         
-<span class="nc" id="L802">        TIntIterator iter1 = sinkForwardArcs.iterator();</span>
-<span class="nc bnc" id="L803" title="All 2 branches missed.">        while (iter1.hasNext()) {</span>
-<span class="nc" id="L804">            int idx1 = iter1.next();</span>
-<span class="nc" id="L805">            float unitFlow = rightToSinkF.get(idx1);</span>
-<span class="nc" id="L806">            int cp = (int)Math.ceil(calcSinkNetCost(idx1));</span>
-<span class="nc bnc" id="L807" title="All 2 branches missed.">            if (unitFlow == 0) {</span>
+<span class="nc" id="L863">        TIntIterator iter1 = sinkForwardArcs.iterator();</span>
+<span class="nc bnc" id="L864" title="All 2 branches missed.">        while (iter1.hasNext()) {</span>
+<span class="nc" id="L865">            int idx1 = iter1.next();</span>
+<span class="nc" id="L866">            float unitFlow = rightToSinkF.get(idx1);</span>
+<span class="nc" id="L867">            int cp = (int)Math.ceil(calcSinkNetCost(idx1));</span>
+<span class="nc bnc" id="L868" title="All 2 branches missed.">            if (unitFlow == 0) {</span>
                 // idle, cp &gt; -epsT
-<span class="nc bnc" id="L809" title="All 2 branches missed.">                if (cp &lt;= -eps) {</span>
-<span class="nc" id="L810">                    log.severe(String.format(</span>
+<span class="nc bnc" id="L870" title="All 2 branches missed.">                if (cp &lt;= -eps) {</span>
+<span class="nc" id="L871">                    log.severe(String.format(</span>
                         &quot;NOT EPS-PROPER f=%.2f  cp=%.3f  eps=%.3f %d to sink&quot;,
-<span class="nc" id="L812">                        unitFlow, cp, eps, idx1));</span>
-<span class="nc" id="L813">                    return false;</span>
+<span class="nc" id="L873">                        unitFlow, cp, eps, idx1));</span>
+<span class="nc" id="L874">                    return false;</span>
                 }
-<span class="nc bnc" id="L815" title="All 2 branches missed.">            } else if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
+<span class="nc bnc" id="L876" title="All 2 branches missed.">            } else if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
                 // saturated
-<span class="nc bnc" id="L817" title="All 2 branches missed.">                if (cp &gt; eps) {</span>
-<span class="nc" id="L818">                    log.severe(String.format(</span>
+<span class="nc bnc" id="L878" title="All 2 branches missed.">                if (cp &gt; eps) {</span>
+<span class="nc" id="L879">                    log.severe(String.format(</span>
                         &quot;NOT EPS-PROPER f=%.2f  cp=%.3f  eps=%.3f %d to sink&quot;,
-<span class="nc" id="L820">                        unitFlow, cp, eps, idx1));</span>
-<span class="nc" id="L821">                    return false;</span>
+<span class="nc" id="L881">                        unitFlow, cp, eps, idx1));</span>
+<span class="nc" id="L882">                    return false;</span>
                 }
             }
-<span class="nc" id="L824">        }</span>
+<span class="nc" id="L885">        }</span>
         
-<span class="nc" id="L826">        return true;</span>
+<span class="nc" id="L887">        return true;</span>
     }
     
     /**
      * Every arc of the network flow, idle or saturated, is proper.
-     * @return 
+     @return 
      */
     public boolean integralFlowIsProper() {
         
-<span class="fc" id="L835">        TIntObjectIterator&lt;TIntSet&gt; iter = forwardArcs.iterator();</span>
-<span class="fc bfc" id="L836" title="All 2 branches covered.">        for (int ii = forwardArcs.size(); ii-- &gt; 0;) {</span>
-<span class="fc" id="L837">            iter.advance();</span>
-<span class="fc" id="L838">            int idx1 = iter.key();</span>
-<span class="fc" id="L839">            TIntIterator iter2 = iter.value().iterator();</span>
-<span class="fc bfc" id="L840" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
-<span class="fc" id="L841">                int idx2 = iter2.next();</span>
-<span class="fc" id="L842">                PairInt p = new PairInt(idx1, idx2);</span>
-<span class="fc" id="L843">                float unitFlow = f.get(p);</span>
-<span class="fc" id="L844">                int cp = (int)Math.ceil(calcNetCost(p));</span>
-<span class="fc bfc" id="L845" title="All 2 branches covered.">                if (unitFlow == 0) {</span>
+<span class="fc" id="L896">        TIntObjectIterator&lt;TIntSet&gt; iter = forwardArcs.iterator();</span>
+<span class="fc bfc" id="L897" title="All 2 branches covered.">        for (int ii = forwardArcs.size(); ii-- &gt; 0;) {</span>
+<span class="fc" id="L898">            iter.advance();</span>
+<span class="fc" id="L899">            int idx1 = iter.key();</span>
+<span class="fc" id="L900">            TIntIterator iter2 = iter.value().iterator();</span>
+<span class="fc bfc" id="L901" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
+<span class="fc" id="L902">                int idx2 = iter2.next();</span>
+<span class="fc" id="L903">                PairInt p = new PairInt(idx1, idx2);</span>
+<span class="fc" id="L904">                float unitFlow = f.get(p);</span>
+<span class="fc" id="L905">                int cp = (int)Math.ceil(calcNetCost(p));</span>
+<span class="fc bfc" id="L906" title="All 2 branches covered.">                if (unitFlow == 0) {</span>
                     // idle, cp &gt;= 0
-<span class="pc bpc" id="L847" title="1 of 2 branches missed.">                    if (cp &lt; -0.0f) {</span>
-<span class="nc" id="L848">                        return false;</span>
+<span class="pc bpc" id="L908" title="1 of 2 branches missed.">                    if (cp &lt; -0.0f) {</span>
+<span class="nc" id="L909">                        return false;</span>
                     }
-<span class="pc bpc" id="L850" title="1 of 2 branches missed.">                } else if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
+<span class="pc bpc" id="L911" title="1 of 2 branches missed.">                } else if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
                     // saturated
-<span class="pc bpc" id="L852" title="1 of 2 branches missed.">                    if (cp &gt; 0.0f) {</span>
-<span class="nc" id="L853">                        return false;</span>
+<span class="pc bpc" id="L913" title="1 of 2 branches missed.">                    if (cp &gt; 0.0f) {</span>
+<span class="nc" id="L914">                        return false;</span>
                     }
                 }
-<span class="fc" id="L856">            }</span>
-<span class="fc" id="L857">        }</span>
+<span class="fc" id="L917">            }</span>
+<span class="fc" id="L918">        }</span>
 
-<span class="fc" id="L859">        return true;</span>
+<span class="fc" id="L920">        return true;</span>
     }
     
     /**
      * assert pg 44, I4.
      * Every saturated bipartite arc is eps-snug.
-     * @param eps
-     * @return 
+     @param eps
+     @return 
      */
     boolean assertSaturatedBipartiteIsEpsSnug(float eps) {
         
-<span class="nc" id="L870">        TIntObjectIterator&lt;TIntSet&gt; iter = forwardArcs.iterator();</span>
-<span class="nc bnc" id="L871" title="All 2 branches missed.">        for (int ii = forwardArcs.size(); ii-- &gt; 0;) {</span>
-<span class="nc" id="L872">            iter.advance();</span>
-<span class="nc" id="L873">            int idx1 = iter.key();</span>
+<span class="nc" id="L931">        TIntObjectIterator&lt;TIntSet&gt; iter = forwardArcs.iterator();</span>
+<span class="nc bnc" id="L932" title="All 2 branches missed.">        for (int ii = forwardArcs.size(); ii-- &gt; 0;) {</span>
+<span class="nc" id="L933">            iter.advance();</span>
+<span class="nc" id="L934">            int idx1 = iter.key();</span>
             
-<span class="nc bnc" id="L875" title="All 2 branches missed.">            if (idx1 == sourceNode) {</span>
-<span class="nc" id="L876">                continue;</span>
+<span class="nc bnc" id="L936" title="All 2 branches missed.">            if (idx1 == sourceNode) {</span>
+<span class="nc" id="L937">                continue;</span>
             }
             
-<span class="nc" id="L879">            TIntIterator iter3 = iter.value().iterator();</span>
-<span class="nc bnc" id="L880" title="All 2 branches missed.">            while (iter3.hasNext()) {</span>
-<span class="nc" id="L881">                int idx2 = iter3.next();            </span>
-<span class="nc bnc" id="L882" title="All 2 branches missed.">                if (idx2 == sinkNode) {</span>
-<span class="nc" id="L883">                    continue;</span>
+<span class="nc" id="L940">            TIntIterator iter3 = iter.value().iterator();</span>
+<span class="nc bnc" id="L941" title="All 2 branches missed.">            while (iter3.hasNext()) {</span>
+<span class="nc" id="L942">                int idx2 = iter3.next();            </span>
+<span class="nc bnc" id="L943" title="All 2 branches missed.">                if (idx2 == sinkNode) {</span>
+<span class="nc" id="L944">                    continue;</span>
                 }
-<span class="nc" id="L885">                PairInt p = new PairInt(idx1, idx2);</span>
-<span class="nc" id="L886">                float unitFlow = f.get(p);</span>
-<span class="nc" id="L887">                int cp = (int)Math.ceil(calcNetCost(p));</span>
-<span class="nc bnc" id="L888" title="All 2 branches missed.">                if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
+<span class="nc" id="L946">                PairInt p = new PairInt(idx1, idx2);</span>
+<span class="nc" id="L947">                float unitFlow = f.get(p);</span>
+<span class="nc" id="L948">                int cp = (int)Math.ceil(calcNetCost(p));</span>
+<span class="nc bnc" id="L949" title="All 2 branches missed.">                if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
                     // saturated
                     // snug is -eps &lt; cp &lt;= eps
-<span class="nc bnc" id="L891" title="All 4 branches missed.">                    if ((cp &lt;= -eps) || (cp &gt; eps)) {</span>
-<span class="nc" id="L892">                        log.severe(String.format(</span>
+<span class="nc bnc" id="L952" title="All 4 branches missed.">                    if ((cp &lt;= -eps) || (cp &gt; eps)) {</span>
+<span class="nc" id="L953">                        log.severe(String.format(</span>
                             &quot;NOT EPS-SNUG f=%.2f  cp=%.3f  eps=%.3f idx=%d to %d&quot;,
-<span class="nc" id="L894">                            unitFlow, cp, eps, idx1, idx2));</span>
-<span class="nc" id="L895">                        return false;</span>
+<span class="nc" id="L955">                            unitFlow, cp, eps, idx1, idx2));</span>
+<span class="nc" id="L956">                        return false;</span>
                     }
                 }
-<span class="nc" id="L898">            }</span>
-<span class="nc" id="L899">        }</span>
+<span class="nc" id="L959">            }</span>
+<span class="nc" id="L960">        }</span>
         
-<span class="nc" id="L901">        return true;</span>
+<span class="nc" id="L962">        return true;</span>
     }
     
+    /**
+     *
+     @param surplus
+     */
     public void getSurplusLeftIndexes(TIntSet surplus) {
 
-<span class="fc bfc" id="L906" title="All 2 branches covered.">        for (int i = 0; i &lt; nLeft; ++i) {</span>
+<span class="fc bfc" id="L971" title="All 2 branches covered.">        for (int i = 0; i &lt; nLeft; ++i) {</span>
                         
-<span class="fc" id="L908">            float flowInto = 0;</span>
-<span class="fc" id="L909">            float flowOutOf = 0;</span>
+<span class="fc" id="L973">            float flowInto = 0;</span>
+<span class="fc" id="L974">            float flowOutOf = 0;</span>
             // flow into left from source
-<span class="pc bpc" id="L911" title="1 of 2 branches missed.">            if (sourceForwardArcs.contains(i)) {</span>
-<span class="fc" id="L912">                flowInto += sourceToLeftF.get(i);</span>
+<span class="pc bpc" id="L976" title="1 of 2 branches missed.">            if (sourceForwardArcs.contains(i)) {</span>
+<span class="fc" id="L977">                flowInto += sourceToLeftF.get(i);</span>
             }
-<span class="fc" id="L914">            TIntSet set = forwardArcs.get(i);</span>
-<span class="pc bpc" id="L915" title="1 of 2 branches missed.">            if (set != null) {</span>
-<span class="fc" id="L916">                TIntIterator iter2 = set.iterator();</span>
-<span class="fc bfc" id="L917" title="All 2 branches covered.">                while (iter2.hasNext()) {</span>
-<span class="fc" id="L918">                    int idx2 = iter2.next();</span>
-<span class="fc" id="L919">                    PairInt p = new PairInt(i, idx2);</span>
-<span class="fc" id="L920">                    flowOutOf += f.get(p);</span>
-<span class="fc" id="L921">                }</span>
+<span class="fc" id="L979">            TIntSet set = forwardArcs.get(i);</span>
+<span class="pc bpc" id="L980" title="1 of 2 branches missed.">            if (set != null) {</span>
+<span class="fc" id="L981">                TIntIterator iter2 = set.iterator();</span>
+<span class="fc bfc" id="L982" title="All 2 branches covered.">                while (iter2.hasNext()) {</span>
+<span class="fc" id="L983">                    int idx2 = iter2.next();</span>
+<span class="fc" id="L984">                    PairInt p = new PairInt(i, idx2);</span>
+<span class="fc" id="L985">                    flowOutOf += f.get(p);</span>
+<span class="fc" id="L986">                }</span>
             }
-<span class="fc bfc" id="L923" title="All 2 branches covered.">            if (flowInto &gt; flowOutOf) {</span>
-<span class="fc" id="L924">                surplus.add(i);</span>
+<span class="fc bfc" id="L988" title="All 2 branches covered.">            if (flowInto &gt; flowOutOf) {</span>
+<span class="fc" id="L989">                surplus.add(i);</span>
             }
         }
-<span class="fc" id="L927">    }  </span>
+<span class="fc" id="L992">    }  </span>
     
+    /**
+     *
+     @param deficit
+     */
     public void getDeficitRightIndexes(TIntSet deficit) {
 
         // key = right, values = left
-<span class="fc" id="L932">        TIntObjectMap&lt;TIntSet&gt; revMap = MatrixUtil.createReverseMap(forwardArcs);</span>
+<span class="fc" id="L1001">        TIntObjectMap&lt;TIntSet&gt; revMap = MatrixUtil.createReverseMap(forwardArcs);</span>
         
-<span class="fc bfc" id="L934" title="All 2 branches covered.">        for (int i = 0; i &lt; nRight; ++i) {</span>
+<span class="fc bfc" id="L1003" title="All 2 branches covered.">        for (int i = 0; i &lt; nRight; ++i) {</span>
                         
-<span class="fc" id="L936">            float flowInto = 0;</span>
-<span class="fc" id="L937">            float flowOutOf = 0;</span>
+<span class="fc" id="L1005">            float flowInto = 0;</span>
+<span class="fc" id="L1006">            float flowOutOf = 0;</span>
             // flow out of right to sink
-<span class="pc bpc" id="L939" title="1 of 2 branches missed.">            if (sinkForwardArcs.contains(i)) {</span>
-<span class="fc" id="L940">                flowOutOf += rightToSinkF.get(i);</span>
+<span class="pc bpc" id="L1008" title="1 of 2 branches missed.">            if (sinkForwardArcs.contains(i)) {</span>
+<span class="fc" id="L1009">                flowOutOf += rightToSinkF.get(i);</span>
             }
-<span class="fc" id="L942">            TIntSet set = revMap.get(i);</span>
-<span class="pc bpc" id="L943" title="1 of 2 branches missed.">            if (set != null) {</span>
-<span class="fc" id="L944">                TIntIterator iter2 = set.iterator();</span>
-<span class="fc bfc" id="L945" title="All 2 branches covered.">                while (iter2.hasNext()) {</span>
-<span class="fc" id="L946">                    int left = iter2.next();                </span>
-<span class="fc" id="L947">                    PairInt p = new PairInt(left, i);</span>
-<span class="fc" id="L948">                    flowInto += f.get(p);</span>
-<span class="fc" id="L949">                }</span>
+<span class="fc" id="L1011">            TIntSet set = revMap.get(i);</span>
+<span class="pc bpc" id="L1012" title="1 of 2 branches missed.">            if (set != null) {</span>
+<span class="fc" id="L1013">                TIntIterator iter2 = set.iterator();</span>
+<span class="fc bfc" id="L1014" title="All 2 branches covered.">                while (iter2.hasNext()) {</span>
+<span class="fc" id="L1015">                    int left = iter2.next();                </span>
+<span class="fc" id="L1016">                    PairInt p = new PairInt(left, i);</span>
+<span class="fc" id="L1017">                    flowInto += f.get(p);</span>
+<span class="fc" id="L1018">                }</span>
             }
             
-<span class="fc bfc" id="L952" title="All 2 branches covered.">            if (flowInto &lt; flowOutOf) {</span>
-<span class="fc" id="L953">                deficit.add(i);</span>
+<span class="fc bfc" id="L1021" title="All 2 branches covered.">            if (flowInto &lt; flowOutOf) {</span>
+<span class="fc" id="L1022">                deficit.add(i);</span>
             }
         }
-<span class="fc" id="L956">    }</span>
+<span class="fc" id="L1025">    }</span>
     
     private void getSurplusRightIndexes(TIntSet surplus) {
 
-<span class="nc bnc" id="L960" title="All 2 branches missed.">        for (int i = 0; i &lt; nRight; ++i) {</span>
+<span class="nc bnc" id="L1029" title="All 2 branches missed.">        for (int i = 0; i &lt; nRight; ++i) {</span>
                         
-<span class="nc" id="L962">            float flowInto = 0;</span>
-<span class="nc" id="L963">            float flowOutOf = 0;</span>
+<span class="nc" id="L1031">            float flowInto = 0;</span>
+<span class="nc" id="L1032">            float flowOutOf = 0;</span>
             // flow into right from left node
             
-<span class="nc" id="L966">            TIntObjectIterator&lt;TIntSet&gt; iter2 = forwardArcs.iterator();</span>
-<span class="nc bnc" id="L967" title="All 2 branches missed.">            for (int ii = forwardArcs.size(); ii-- &gt; 0;) {</span>
-<span class="nc" id="L968">                iter2.advance();</span>
-<span class="nc" id="L969">                int idx1 = iter2.key();</span>
-<span class="nc" id="L970">                TIntSet set = iter2.value();</span>
-<span class="nc bnc" id="L971" title="All 2 branches missed.">                if (set.contains(i)) {</span>
-<span class="nc" id="L972">                    PairInt p = new PairInt(idx1, i);</span>
-<span class="nc" id="L973">                    flowInto += f.get(p);</span>
+<span class="nc" id="L1035">            TIntObjectIterator&lt;TIntSet&gt; iter2 = forwardArcs.iterator();</span>
+<span class="nc bnc" id="L1036" title="All 2 branches missed.">            for (int ii = forwardArcs.size(); ii-- &gt; 0;) {</span>
+<span class="nc" id="L1037">                iter2.advance();</span>
+<span class="nc" id="L1038">                int idx1 = iter2.key();</span>
+<span class="nc" id="L1039">                TIntSet set = iter2.value();</span>
+<span class="nc bnc" id="L1040" title="All 2 branches missed.">                if (set.contains(i)) {</span>
+<span class="nc" id="L1041">                    PairInt p = new PairInt(idx1, i);</span>
+<span class="nc" id="L1042">                    flowInto += f.get(p);</span>
                 }
-<span class="nc" id="L975">            }</span>
+<span class="nc" id="L1044">            }</span>
             
             // flow from right to sink            
-<span class="nc bnc" id="L978" title="All 2 branches missed.">            if (sinkForwardArcs.contains(i)) {</span>
-<span class="nc" id="L979">                flowOutOf += rightToSinkF.get(i);</span>
+<span class="nc bnc" id="L1047" title="All 2 branches missed.">            if (sinkForwardArcs.contains(i)) {</span>
+<span class="nc" id="L1048">                flowOutOf += rightToSinkF.get(i);</span>
             }
             
-<span class="nc bnc" id="L982" title="All 2 branches missed.">            if (flowInto &gt; flowOutOf) {</span>
-<span class="nc" id="L983">                surplus.add(i);</span>
+<span class="nc bnc" id="L1051" title="All 2 branches missed.">            if (flowInto &gt; flowOutOf) {</span>
+<span class="nc" id="L1052">                surplus.add(i);</span>
             }
         }
-<span class="nc" id="L986">    }  </span>
+<span class="nc" id="L1055">    }  </span>
     
     /*
      the flow network uses forward arcs with &quot;ceiling quantization&quot;.
@@ -996,335 +1065,446 @@ import java.util.logging.Logger;
      0 &lt; cp(v,w) &lt;= eps
      NOTE that eps-tight arcs are just barely eps-proper.
     */
+
+    /**
+     *
+     @return
+     */
+
     
     public TIntObjectHashMap&lt;TIntSet&gt; getForwardArcs() {
-<span class="fc" id="L1001">        return forwardArcs;</span>
-    }
-
-    public TObjectIntHashMap&lt;PairInt&gt; getCosts() {
-<span class="nc" id="L1005">        return c;</span>
-    }
-
-    public TObjectFloatHashMap&lt;PairInt&gt; getFlow() {
-<span class="fc" id="L1009">        return f;</span>
-    }
-
-    public void setLeftPrice(int idx, float value) {
-<span class="nc" id="L1013">        pLeft[idx] = value;</span>
-<span class="nc" id="L1014">    }</span>
-
-    public void setRightPrice(int idx, float value) {
-<span class="nc" id="L1017">        log.fine(&quot;add to right &quot; + idx + &quot; : &quot; + pRight[idx] </span>
-            + &quot;  + &quot; + value + &quot; = &quot; + (pRight[idx] + value));
-<span class="nc" id="L1019">        pRight[idx] = value;</span>
-<span class="nc" id="L1020">    }</span>
-    
-    public void addToLeftPrice(int idx, float value) {
-<span class="fc" id="L1023">        log.fine(&quot;add to left &quot; + idx + &quot; : &quot; + pLeft[idx] </span>
-            + &quot; + &quot; + value + &quot; = &quot; + (pLeft[idx] + value));
-<span class="fc" id="L1025">        pLeft[idx] += value;</span>
-<span class="fc" id="L1026">    }</span>
-
-    public void addToSourcePrice(float value) {
-<span class="nc" id="L1029">        log.fine(&quot;add to source : &quot; + pLeft[sourceNode] </span>
-            + &quot; + &quot; + value + &quot; = &quot; + (pLeft[sourceNode] + value));
-<span class="nc" id="L1031">        pLeft[sourceNode] += value;</span>
-<span class="nc" id="L1032">    }</span>
-
-    public void addToSinkPrice(float value) {
-<span class="nc" id="L1035">        log.fine(&quot;add to sink : &quot; + pLeft[sinkNode] </span>
-            + &quot; + &quot; + value + &quot; = &quot; + (pLeft[sinkNode] + value));
-<span class="nc" id="L1037">        pLeft[sinkNode] += value;</span>
-<span class="nc" id="L1038">    }</span>
-
-    public void addToRightPrice(int idx, float value) {
-<span class="nc" id="L1041">        pRight[idx] += value;</span>
-<span class="nc" id="L1042">    }</span>
-    
-    public float getLeftPrice(int idx) {
-<span class="fc" id="L1045">        return pLeft[idx];</span>
-    }
-
-    public float getRightPrice(int idx) {
-<span class="nc" id="L1049">        return pRight[idx];</span>
+<span class="fc" id="L1076">        return forwardArcs;</span>
     }
 
     /**
-     * @return the number of left vertices
+     *
+     @return
+     */
+    public TObjectIntHashMap&lt;PairInt&gt; getCosts() {
+<span class="nc" id="L1084">        return c;</span>
+    }
+
+    /**
+     *
+     @return
+     */
+    public TObjectFloatHashMap&lt;PairInt&gt; getFlow() {
+<span class="fc" id="L1092">        return f;</span>
+    }
+
+    /**
+     *
+     @param idx
+     @param value
+     */
+    public void setLeftPrice(int idx, float value) {
+<span class="nc" id="L1101">        pLeft[idx] = value;</span>
+<span class="nc" id="L1102">    }</span>
+
+    /**
+     *
+     @param idx
+     @param value
+     */
+    public void setRightPrice(int idx, float value) {
+<span class="nc" id="L1110">        log.fine(&quot;add to right &quot; + idx + &quot; : &quot; + pRight[idx] </span>
+            + &quot;  + &quot; + value + &quot; = &quot; + (pRight[idx] + value));
+<span class="nc" id="L1112">        pRight[idx] = value;</span>
+<span class="nc" id="L1113">    }</span>
+    
+    /**
+     *
+     @param idx
+     @param value
+     */
+    public void addToLeftPrice(int idx, float value) {
+<span class="fc" id="L1121">        log.fine(&quot;add to left &quot; + idx + &quot; : &quot; + pLeft[idx] </span>
+            + &quot; + &quot; + value + &quot; = &quot; + (pLeft[idx] + value));
+<span class="fc" id="L1123">        pLeft[idx] += value;</span>
+<span class="fc" id="L1124">    }</span>
+
+    /**
+     *
+     @param value
+     */
+    public void addToSourcePrice(float value) {
+<span class="nc" id="L1131">        log.fine(&quot;add to source : &quot; + pLeft[sourceNode] </span>
+            + &quot; + &quot; + value + &quot; = &quot; + (pLeft[sourceNode] + value));
+<span class="nc" id="L1133">        pLeft[sourceNode] += value;</span>
+<span class="nc" id="L1134">    }</span>
+
+    /**
+     *
+     @param value
+     */
+    public void addToSinkPrice(float value) {
+<span class="nc" id="L1141">        log.fine(&quot;add to sink : &quot; + pLeft[sinkNode] </span>
+            + &quot; + &quot; + value + &quot; = &quot; + (pLeft[sinkNode] + value));
+<span class="nc" id="L1143">        pLeft[sinkNode] += value;</span>
+<span class="nc" id="L1144">    }</span>
+
+    /**
+     *
+     @param idx
+     @param value
+     */
+    public void addToRightPrice(int idx, float value) {
+<span class="nc" id="L1152">        pRight[idx] += value;</span>
+<span class="nc" id="L1153">    }</span>
+    
+    /**
+     *
+     @param idx
+     @return
+     */
+    public float getLeftPrice(int idx) {
+<span class="fc" id="L1161">        return pLeft[idx];</span>
+    }
+
+    /**
+     *
+     @param idx
+     @return
+     */
+    public float getRightPrice(int idx) {
+<span class="nc" id="L1170">        return pRight[idx];</span>
+    }
+
+    /**
+     @return the number of left vertices
      */
     public int getNLeft() {
-<span class="fc" id="L1056">        return nLeft;</span>
+<span class="fc" id="L1177">        return nLeft;</span>
     }
 
     /**
-     * @return the number of right vertices
+     @return the number of right vertices
      */
     public int getNRight() {
-<span class="fc" id="L1063">        return nRight;</span>
+<span class="fc" id="L1184">        return nRight;</span>
     }
     
+    /**
+     *
+     @return
+     */
     public int getSinkNode() {
-<span class="fc" id="L1067">        return sinkNode;</span>
+<span class="fc" id="L1192">        return sinkNode;</span>
     }
     
+    /**
+     *
+     @return
+     */
     public int getSourceNode() {
-<span class="fc" id="L1071">        return sourceNode;</span>
+<span class="fc" id="L1200">        return sourceNode;</span>
     }
 
+    /**
+     *
+     @return
+     */
     public TIntSet getSourceForwardArcs() {
-<span class="fc" id="L1075">        return sourceForwardArcs;</span>
+<span class="fc" id="L1208">        return sourceForwardArcs;</span>
     }
 
+    /**
+     *
+     @return
+     */
     public TIntSet getSinkForwardArcs() {
-<span class="fc" id="L1079">        return sinkForwardArcs;</span>
+<span class="fc" id="L1216">        return sinkForwardArcs;</span>
     }
 
+    /**
+     *
+     @param idx
+     */
     public void augmentSourceToLeftFlowAndArc(int idx) {
         
-<span class="nc bnc" id="L1084" title="All 2 branches missed.">        if (sourceToLeftC.containsKey(idx)) {</span>
-<span class="nc" id="L1085">            float flow = sourceToLeftF.get(idx);</span>
-<span class="nc bnc" id="L1086" title="All 2 branches missed.">            if (Math.abs(flow) &lt; 0.01) {</span>
+<span class="nc bnc" id="L1225" title="All 2 branches missed.">        if (sourceToLeftC.containsKey(idx)) {</span>
+<span class="nc" id="L1226">            float flow = sourceToLeftF.get(idx);</span>
+<span class="nc bnc" id="L1227" title="All 2 branches missed.">            if (Math.abs(flow) &lt; 0.01) {</span>
                 // idle, so change to &quot;saturated&quot;
-<span class="nc" id="L1088">                sourceToLeftF.put(idx, 1);</span>
-<span class="nc" id="L1089">                sourceForwardArcs.add(idx);</span>
-<span class="nc bnc" id="L1090" title="All 2 branches missed.">            } else if (Math.abs(flow - 1.) &lt; 0.01) {</span>
+<span class="nc" id="L1229">                sourceToLeftF.put(idx, 1);</span>
+<span class="nc" id="L1230">                sourceForwardArcs.add(idx);</span>
+<span class="nc bnc" id="L1231" title="All 2 branches missed.">            } else if (Math.abs(flow - 1.) &lt; 0.01) {</span>
                 // saturated, so change to &quot;idle&quot;
-<span class="nc" id="L1092">                sourceToLeftF.put(idx, 0);</span>
+<span class="nc" id="L1233">                sourceToLeftF.put(idx, 0);</span>
                 //TODO: consider not removing this
                 //sourceForwardArcs.remove(index);
             } else {
-<span class="nc" id="L1096">                throw new IllegalStateException(</span>
+<span class="nc" id="L1237">                throw new IllegalStateException(</span>
                 &quot;Error in algorithm.  not expecting&quot;
                 + &quot; a fractional flow&quot;);
             }
         }
-<span class="nc" id="L1101">    }</span>
+<span class="nc" id="L1242">    }</span>
     
+    /**
+     *
+     @param idx
+     */
     public void augmentRightToSinkFlowAndArc(int idx) {
             
-<span class="nc bnc" id="L1105" title="All 2 branches missed.">        if (rightToSinkF.containsKey(idx)) {</span>
-<span class="nc" id="L1106">            float flow = rightToSinkF.get(idx);</span>
-<span class="nc bnc" id="L1107" title="All 2 branches missed.">            if (Math.abs(flow) &lt; 0.01) {</span>
+<span class="nc bnc" id="L1250" title="All 2 branches missed.">        if (rightToSinkF.containsKey(idx)) {</span>
+<span class="nc" id="L1251">            float flow = rightToSinkF.get(idx);</span>
+<span class="nc bnc" id="L1252" title="All 2 branches missed.">            if (Math.abs(flow) &lt; 0.01) {</span>
                 // idle, so change to &quot;saturated&quot;
-<span class="nc" id="L1109">                rightToSinkF.put(idx, 1);</span>
-<span class="nc" id="L1110">                sinkForwardArcs.add(idx);</span>
-<span class="nc bnc" id="L1111" title="All 2 branches missed.">            } else if (Math.abs(flow - 1.) &lt; 0.01) {</span>
+<span class="nc" id="L1254">                rightToSinkF.put(idx, 1);</span>
+<span class="nc" id="L1255">                sinkForwardArcs.add(idx);</span>
+<span class="nc bnc" id="L1256" title="All 2 branches missed.">            } else if (Math.abs(flow - 1.) &lt; 0.01) {</span>
                 // saturated, so change to &quot;idle&quot;
-<span class="nc" id="L1113">                rightToSinkF.put(idx, 0);</span>
+<span class="nc" id="L1258">                rightToSinkF.put(idx, 0);</span>
                 // TODO: consider not removing this:
                 //sinkForwardArcs.remove(idx);
             } else {
-<span class="nc" id="L1117">                throw new IllegalStateException(</span>
+<span class="nc" id="L1262">                throw new IllegalStateException(</span>
                     &quot;Error in algorithm.  not expecting&quot;
                     + &quot; a fractional flow&quot;);
             }
         }
-<span class="nc" id="L1122">    }</span>
+<span class="nc" id="L1267">    }</span>
     
+    /**
+     *
+     @param idx1
+     @param idx2
+     */
     public void augmentFlowAndArc(int idx1, int idx2) {
         
-<span class="pc bnc" id="L1126" title="All 2 branches missed.">        assert(forwardArcs.containsKey(idx1)</span>
-<span class="nc" id="L1127">            &amp;&amp; forwardArcs.get(idx1)</span>
-<span class="nc bnc" id="L1128" title="All 2 branches missed.">            .contains(idx2));</span>
+<span class="pc bnc" id="L1276" title="All 2 branches missed.">        assert(forwardArcs.containsKey(idx1)</span>
+<span class="nc" id="L1277">            &amp;&amp; forwardArcs.get(idx1)</span>
+<span class="nc bnc" id="L1278" title="All 2 branches missed.">            .contains(idx2));</span>
         
-<span class="fc" id="L1130">        PairInt p = new PairInt(idx1, idx2);</span>
+<span class="fc" id="L1280">        PairInt p = new PairInt(idx1, idx2);</span>
         
-<span class="fc" id="L1132">        float flow = f.get(p);</span>
-<span class="pc bpc" id="L1133" title="1 of 2 branches missed.">        if (Math.abs(flow - 1.) &lt; 0.01) {</span>
+<span class="fc" id="L1282">        float flow = f.get(p);</span>
+<span class="pc bpc" id="L1283" title="1 of 2 branches missed.">        if (Math.abs(flow - 1.) &lt; 0.01) {</span>
             // saturated, so change to &quot;idle&quot;
-<span class="nc" id="L1135">            f.put(p, 0);</span>
-<span class="pc bpc" id="L1136" title="1 of 2 branches missed.">        } else if (Math.abs(flow) &lt; 0.01) {</span>
+<span class="nc" id="L1285">            f.put(p, 0);</span>
+<span class="pc bpc" id="L1286" title="1 of 2 branches missed.">        } else if (Math.abs(flow) &lt; 0.01) {</span>
             // idle, so change to &quot;saturated&quot;
-<span class="fc" id="L1138">            f.put(p, 1);</span>
+<span class="fc" id="L1288">            f.put(p, 1);</span>
             
             // should the source and sink
             // arcs be reversed too?
             
         } else {
-<span class="nc" id="L1144">            throw new IllegalStateException(</span>
+<span class="nc" id="L1294">            throw new IllegalStateException(</span>
                 &quot;Error in algorithm.  not expecting&quot;
                 + &quot; a fractional flow&quot;);
         }
-<span class="fc" id="L1148">    }</span>
+<span class="fc" id="L1298">    }</span>
         
+    /**
+     *
+     @return
+     */
     public int calculateNumberOfSaturatedArcs() {
     
-<span class="nc" id="L1152">        int n = 0;</span>
+<span class="nc" id="L1306">        int n = 0;</span>
         
-<span class="nc" id="L1154">        TIntObjectIterator&lt;TIntSet&gt; iter = forwardArcs.iterator();</span>
-<span class="nc bnc" id="L1155" title="All 2 branches missed.">        for (int ii = forwardArcs.size(); ii-- &gt; 0;) {</span>
-<span class="nc" id="L1156">            iter.advance();</span>
-<span class="nc" id="L1157">            int idx1 = iter.key();</span>
-<span class="nc" id="L1158">            TIntSet rightIdxs = iter.value();</span>
-<span class="nc" id="L1159">            TIntIterator iter2 = rightIdxs.iterator();</span>
-<span class="nc bnc" id="L1160" title="All 2 branches missed.">            while (iter2.hasNext()) {</span>
-<span class="nc" id="L1161">                int idx2 = iter2.next();</span>
-<span class="nc" id="L1162">                PairInt p = new PairInt(idx1, idx2);</span>
-<span class="nc" id="L1163">                float unitFlow = f.get(p);</span>
-<span class="nc" id="L1164">                float cp = calcNetCost(p);</span>
-<span class="nc bnc" id="L1165" title="All 2 branches missed.">                if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
-<span class="nc" id="L1166">                    n++;</span>
+<span class="nc" id="L1308">        TIntObjectIterator&lt;TIntSet&gt; iter = forwardArcs.iterator();</span>
+<span class="nc bnc" id="L1309" title="All 2 branches missed.">        for (int ii = forwardArcs.size(); ii-- &gt; 0;) {</span>
+<span class="nc" id="L1310">            iter.advance();</span>
+<span class="nc" id="L1311">            int idx1 = iter.key();</span>
+<span class="nc" id="L1312">            TIntSet rightIdxs = iter.value();</span>
+<span class="nc" id="L1313">            TIntIterator iter2 = rightIdxs.iterator();</span>
+<span class="nc bnc" id="L1314" title="All 2 branches missed.">            while (iter2.hasNext()) {</span>
+<span class="nc" id="L1315">                int idx2 = iter2.next();</span>
+<span class="nc" id="L1316">                PairInt p = new PairInt(idx1, idx2);</span>
+<span class="nc" id="L1317">                float unitFlow = f.get(p);</span>
+<span class="nc" id="L1318">                float cp = calcNetCost(p);</span>
+<span class="nc bnc" id="L1319" title="All 2 branches missed.">                if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
+<span class="nc" id="L1320">                    n++;</span>
                 }
-<span class="nc" id="L1168">            }</span>
-<span class="nc" id="L1169">        }</span>
+<span class="nc" id="L1322">            }</span>
+<span class="nc" id="L1323">        }</span>
         
-<span class="nc" id="L1171">        return n;</span>
+<span class="nc" id="L1325">        return n;</span>
     }
 
+    /**
+     *
+     */
     public void printSaturatedLinks() {
 
-<span class="nc" id="L1176">        TIntObjectIterator&lt;TIntSet&gt; iter = forwardArcs.iterator();</span>
-<span class="nc bnc" id="L1177" title="All 2 branches missed.">        for (int ii = forwardArcs.size(); ii-- &gt; 0;) {</span>
-<span class="nc" id="L1178">            iter.advance();</span>
-<span class="nc" id="L1179">            int idx1 = iter.key();</span>
-<span class="nc" id="L1180">            TIntSet rightIdxs = iter.value();</span>
-<span class="nc" id="L1181">            TIntIterator iter2 = rightIdxs.iterator();</span>
-<span class="nc bnc" id="L1182" title="All 2 branches missed.">            while (iter2.hasNext()) {</span>
-<span class="nc" id="L1183">                int idx2 = iter2.next();</span>
-<span class="nc" id="L1184">                PairInt p = new PairInt(idx1, idx2);</span>
-<span class="nc" id="L1185">                float unitFlow = f.get(p);</span>
-<span class="nc" id="L1186">                float cp = calcNetCost(p);</span>
-<span class="nc bnc" id="L1187" title="All 2 branches missed.">                if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
+<span class="nc" id="L1333">        TIntObjectIterator&lt;TIntSet&gt; iter = forwardArcs.iterator();</span>
+<span class="nc bnc" id="L1334" title="All 2 branches missed.">        for (int ii = forwardArcs.size(); ii-- &gt; 0;) {</span>
+<span class="nc" id="L1335">            iter.advance();</span>
+<span class="nc" id="L1336">            int idx1 = iter.key();</span>
+<span class="nc" id="L1337">            TIntSet rightIdxs = iter.value();</span>
+<span class="nc" id="L1338">            TIntIterator iter2 = rightIdxs.iterator();</span>
+<span class="nc bnc" id="L1339" title="All 2 branches missed.">            while (iter2.hasNext()) {</span>
+<span class="nc" id="L1340">                int idx2 = iter2.next();</span>
+<span class="nc" id="L1341">                PairInt p = new PairInt(idx1, idx2);</span>
+<span class="nc" id="L1342">                float unitFlow = f.get(p);</span>
+<span class="nc" id="L1343">                float cp = calcNetCost(p);</span>
+<span class="nc bnc" id="L1344" title="All 2 branches missed.">                if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
                     // saturated are matched arcs
-<span class="nc" id="L1189">                    log.fine(&quot;saturated bipartite arc from &quot; +</span>
+<span class="nc" id="L1346">                    log.fine(&quot;saturated bipartite arc from &quot; +</span>
                         idx1 + &quot; to &quot; + idx2);
                 }
-<span class="nc" id="L1192">            }</span>
-<span class="nc" id="L1193">        }</span>
+<span class="nc" id="L1349">            }</span>
+<span class="nc" id="L1350">        }</span>
         
-<span class="nc" id="L1195">    }</span>
+<span class="nc" id="L1352">    }</span>
     
+    /**
+     *
+     */
     public void printNetCosts() {
 
-<span class="nc" id="L1199">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L1359">        StringBuilder sb = new StringBuilder();</span>
         
-<span class="nc" id="L1201">        TIntObjectIterator&lt;TIntSet&gt; iter = forwardArcs.iterator();</span>
-<span class="nc bnc" id="L1202" title="All 2 branches missed.">        for (int ii = forwardArcs.size(); ii-- &gt; 0;) {</span>
-<span class="nc" id="L1203">            iter.advance();</span>
-<span class="nc" id="L1204">            int idx1 = iter.key();</span>
-<span class="nc" id="L1205">            TIntSet rightIdxs = iter.value();</span>
-<span class="nc" id="L1206">            TIntIterator iter2 = rightIdxs.iterator();</span>
-<span class="nc bnc" id="L1207" title="All 2 branches missed.">            while (iter2.hasNext()) {</span>
-<span class="nc" id="L1208">                int idx2 = iter2.next();</span>
-<span class="nc" id="L1209">                PairInt p = new PairInt(idx1, idx2);</span>
-<span class="nc" id="L1210">                float unitFlow = f.get(p);</span>
-<span class="nc" id="L1211">                float cp = calcNetCost(p);</span>
+<span class="nc" id="L1361">        TIntObjectIterator&lt;TIntSet&gt; iter = forwardArcs.iterator();</span>
+<span class="nc bnc" id="L1362" title="All 2 branches missed.">        for (int ii = forwardArcs.size(); ii-- &gt; 0;) {</span>
+<span class="nc" id="L1363">            iter.advance();</span>
+<span class="nc" id="L1364">            int idx1 = iter.key();</span>
+<span class="nc" id="L1365">            TIntSet rightIdxs = iter.value();</span>
+<span class="nc" id="L1366">            TIntIterator iter2 = rightIdxs.iterator();</span>
+<span class="nc bnc" id="L1367" title="All 2 branches missed.">            while (iter2.hasNext()) {</span>
+<span class="nc" id="L1368">                int idx2 = iter2.next();</span>
+<span class="nc" id="L1369">                PairInt p = new PairInt(idx1, idx2);</span>
+<span class="nc" id="L1370">                float unitFlow = f.get(p);</span>
+<span class="nc" id="L1371">                float cp = calcNetCost(p);</span>
 
-<span class="nc" id="L1213">                sb.append(String.format(&quot;%d to %d cp=%.2f f=%.2f\n&quot;,</span>
-<span class="nc" id="L1214">                    idx1, idx2, cp, unitFlow));</span>
-<span class="nc" id="L1215">            }</span>
-<span class="nc" id="L1216">        }</span>
-<span class="nc" id="L1217">        log.fine(sb.toString());</span>
+<span class="nc" id="L1373">                sb.append(String.format(&quot;%d to %d cp=%.2f f=%.2f\n&quot;,</span>
+<span class="nc" id="L1374">                    idx1, idx2, cp, unitFlow));</span>
+<span class="nc" id="L1375">            }</span>
+<span class="nc" id="L1376">        }</span>
+<span class="nc" id="L1377">        log.fine(sb.toString());</span>
 
-<span class="nc" id="L1219">        sb = new StringBuilder();</span>
+<span class="nc" id="L1379">        sb = new StringBuilder();</span>
 
-<span class="nc" id="L1221">        TIntIterator iter2 = sourceForwardArcs.iterator();</span>
-<span class="nc bnc" id="L1222" title="All 2 branches missed.">        while (iter2.hasNext()) {</span>
-<span class="nc" id="L1223">            int idx1 = iter2.next();</span>
+<span class="nc" id="L1381">        TIntIterator iter2 = sourceForwardArcs.iterator();</span>
+<span class="nc bnc" id="L1382" title="All 2 branches missed.">        while (iter2.hasNext()) {</span>
+<span class="nc" id="L1383">            int idx1 = iter2.next();</span>
 
-<span class="nc" id="L1225">            float unitFlow = sourceToLeftF.get(idx1);</span>
-<span class="nc" id="L1226">            float cp = calcSourceNetCost(idx1);</span>
-<span class="nc" id="L1227">            sb.append(String.format(&quot;source to %d cp=%.2f f=%.2f\n&quot;,</span>
-<span class="nc" id="L1228">                idx1, cp, unitFlow));</span>
-<span class="nc" id="L1229">        }</span>
-<span class="nc" id="L1230">        log.fine(sb.toString());</span>
+<span class="nc" id="L1385">            float unitFlow = sourceToLeftF.get(idx1);</span>
+<span class="nc" id="L1386">            float cp = calcSourceNetCost(idx1);</span>
+<span class="nc" id="L1387">            sb.append(String.format(&quot;source to %d cp=%.2f f=%.2f\n&quot;,</span>
+<span class="nc" id="L1388">                idx1, cp, unitFlow));</span>
+<span class="nc" id="L1389">        }</span>
+<span class="nc" id="L1390">        log.fine(sb.toString());</span>
 
-<span class="nc" id="L1232">        sb = new StringBuilder();</span>
-<span class="nc" id="L1233">        iter2 = sinkForwardArcs.iterator();</span>
-<span class="nc bnc" id="L1234" title="All 2 branches missed.">        while (iter2.hasNext()) {</span>
-<span class="nc" id="L1235">            int idx1 = iter2.next();</span>
-<span class="nc" id="L1236">            float unitFlow = rightToSinkF.get(idx1);</span>
-<span class="nc" id="L1237">            float cp = calcSinkNetCost(idx1);</span>
-<span class="nc" id="L1238">            sb.append(String.format(&quot;%d to sink cp=%.2f f=%.2f\n&quot;,</span>
-<span class="nc" id="L1239">                idx1, cp, unitFlow));</span>
-<span class="nc" id="L1240">        }</span>
-<span class="nc" id="L1241">        log.fine(sb.toString());</span>
-<span class="nc" id="L1242">    }</span>
+<span class="nc" id="L1392">        sb = new StringBuilder();</span>
+<span class="nc" id="L1393">        iter2 = sinkForwardArcs.iterator();</span>
+<span class="nc bnc" id="L1394" title="All 2 branches missed.">        while (iter2.hasNext()) {</span>
+<span class="nc" id="L1395">            int idx1 = iter2.next();</span>
+<span class="nc" id="L1396">            float unitFlow = rightToSinkF.get(idx1);</span>
+<span class="nc" id="L1397">            float cp = calcSinkNetCost(idx1);</span>
+<span class="nc" id="L1398">            sb.append(String.format(&quot;%d to sink cp=%.2f f=%.2f\n&quot;,</span>
+<span class="nc" id="L1399">                idx1, cp, unitFlow));</span>
+<span class="nc" id="L1400">        }</span>
+<span class="nc" id="L1401">        log.fine(sb.toString());</span>
+<span class="nc" id="L1402">    }</span>
 
+    /**
+     *
+     @return
+     */
     public TIntIntMap extractMatches() {
 
-<span class="fc" id="L1246">        TIntIntMap m = new TIntIntHashMap();</span>
+<span class="fc" id="L1410">        TIntIntMap m = new TIntIntHashMap();</span>
 
-<span class="fc" id="L1248">        TIntObjectIterator&lt;TIntSet&gt; iter = forwardArcs.iterator();</span>
-<span class="fc bfc" id="L1249" title="All 2 branches covered.">        for (int ii = forwardArcs.size(); ii-- &gt; 0;) {</span>
-<span class="fc" id="L1250">            iter.advance();</span>
-<span class="fc" id="L1251">            int idx1 = iter.key();</span>
-<span class="fc" id="L1252">            TIntSet rightIdxs = iter.value();</span>
-<span class="fc" id="L1253">            TIntIterator iter2 = rightIdxs.iterator();</span>
-<span class="fc bfc" id="L1254" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
-<span class="fc" id="L1255">                int idx2 = iter2.next();</span>
-<span class="fc" id="L1256">                PairInt p = new PairInt(idx1, idx2);</span>
-<span class="fc" id="L1257">                float unitFlow = f.get(p);</span>
-<span class="fc" id="L1258">                float cp = calcNetCost(p);</span>
-<span class="fc bfc" id="L1259" title="All 2 branches covered.">                if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
-<span class="fc" id="L1260">                    m.put(idx1, idx2);</span>
+<span class="fc" id="L1412">        TIntObjectIterator&lt;TIntSet&gt; iter = forwardArcs.iterator();</span>
+<span class="fc bfc" id="L1413" title="All 2 branches covered.">        for (int ii = forwardArcs.size(); ii-- &gt; 0;) {</span>
+<span class="fc" id="L1414">            iter.advance();</span>
+<span class="fc" id="L1415">            int idx1 = iter.key();</span>
+<span class="fc" id="L1416">            TIntSet rightIdxs = iter.value();</span>
+<span class="fc" id="L1417">            TIntIterator iter2 = rightIdxs.iterator();</span>
+<span class="fc bfc" id="L1418" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
+<span class="fc" id="L1419">                int idx2 = iter2.next();</span>
+<span class="fc" id="L1420">                PairInt p = new PairInt(idx1, idx2);</span>
+<span class="fc" id="L1421">                float unitFlow = f.get(p);</span>
+<span class="fc" id="L1422">                float cp = calcNetCost(p);</span>
+<span class="fc bfc" id="L1423" title="All 2 branches covered.">                if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
+<span class="fc" id="L1424">                    m.put(idx1, idx2);</span>
                 }
-<span class="fc" id="L1262">            }</span>
-<span class="fc" id="L1263">        }</span>
+<span class="fc" id="L1426">            }</span>
+<span class="fc" id="L1427">        }</span>
         
-<span class="fc" id="L1265">        return m;</span>
+<span class="fc" id="L1429">        return m;</span>
     }
 
     /**
      * given value, modify prices such that
      * //pd^~(v) = math.floor(pd(v) + value)
-     * @param value
+     @param value
      */
     public void addToAllPrices(float value) {
 
-<span class="nc bnc" id="L1275" title="All 2 branches missed.">        for (int i = 0; i &lt; nLeft; ++i) {</span>
-<span class="nc" id="L1276">            pLeft[i] = (float)Math.floor(pLeft[i] + value);</span>
+<span class="nc bnc" id="L1439" title="All 2 branches missed.">        for (int i = 0; i &lt; nLeft; ++i) {</span>
+<span class="nc" id="L1440">            pLeft[i] = (float)Math.floor(pLeft[i] + value);</span>
         }
         
-<span class="nc bnc" id="L1279" title="All 2 branches missed.">        for (int i = 0; i &lt; nRight; ++i) {</span>
-<span class="nc" id="L1280">            pRight[i] = (float)Math.floor(pRight[i] + value);</span>
+<span class="nc bnc" id="L1443" title="All 2 branches missed.">        for (int i = 0; i &lt; nRight; ++i) {</span>
+<span class="nc" id="L1444">            pRight[i] = (float)Math.floor(pRight[i] + value);</span>
         }
-<span class="nc" id="L1282">    }</span>
+<span class="nc" id="L1446">    }</span>
 
+    /**
+     *
+     @param outPutSurplus
+     @param outPutDeficit
+     */
     public void zeroTheMatchedBipartiteFlow(TIntSet outPutSurplus, 
         TIntSet outPutDeficit) {
         
-<span class="fc" id="L1287">        outPutSurplus.clear();</span>
-<span class="fc" id="L1288">        outPutDeficit.clear();</span>
+<span class="fc" id="L1456">        outPutSurplus.clear();</span>
+<span class="fc" id="L1457">        outPutDeficit.clear();</span>
 
-<span class="fc" id="L1290">        TIntObjectIterator&lt;TIntSet&gt; iter = forwardArcs.iterator();</span>
-<span class="fc bfc" id="L1291" title="All 2 branches covered.">        for (int ii = forwardArcs.size(); ii-- &gt; 0;) {</span>
-<span class="fc" id="L1292">            iter.advance();</span>
-<span class="fc" id="L1293">            int idx1 = iter.key();</span>
-<span class="fc" id="L1294">            TIntSet rightIdxs = iter.value();</span>
-<span class="fc" id="L1295">            TIntIterator iter2 = rightIdxs.iterator();</span>
-<span class="fc bfc" id="L1296" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
-<span class="fc" id="L1297">                int idx2 = iter2.next();</span>
-<span class="fc" id="L1298">                PairInt p = new PairInt(idx1, idx2);</span>
-<span class="fc" id="L1299">                float unitFlow = f.get(p);</span>
-<span class="fc" id="L1300">                float cp = calcNetCost(p);</span>
+<span class="fc" id="L1459">        TIntObjectIterator&lt;TIntSet&gt; iter = forwardArcs.iterator();</span>
+<span class="fc bfc" id="L1460" title="All 2 branches covered.">        for (int ii = forwardArcs.size(); ii-- &gt; 0;) {</span>
+<span class="fc" id="L1461">            iter.advance();</span>
+<span class="fc" id="L1462">            int idx1 = iter.key();</span>
+<span class="fc" id="L1463">            TIntSet rightIdxs = iter.value();</span>
+<span class="fc" id="L1464">            TIntIterator iter2 = rightIdxs.iterator();</span>
+<span class="fc bfc" id="L1465" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
+<span class="fc" id="L1466">                int idx2 = iter2.next();</span>
+<span class="fc" id="L1467">                PairInt p = new PairInt(idx1, idx2);</span>
+<span class="fc" id="L1468">                float unitFlow = f.get(p);</span>
+<span class="fc" id="L1469">                float cp = calcNetCost(p);</span>
         
-<span class="fc bfc" id="L1302" title="All 2 branches covered.">                if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
+<span class="fc bfc" id="L1471" title="All 2 branches covered.">                if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
                     // saturated are matched arcs
-<span class="fc" id="L1304">                    outPutSurplus.add(idx1);</span>
-<span class="fc" id="L1305">                    outPutDeficit.add(idx2);</span>
-<span class="fc" id="L1306">                    f.put(p, 0);</span>
+<span class="fc" id="L1473">                    outPutSurplus.add(idx1);</span>
+<span class="fc" id="L1474">                    outPutDeficit.add(idx2);</span>
+<span class="fc" id="L1475">                    f.put(p, 0);</span>
                 }
-<span class="fc" id="L1308">            }</span>
-<span class="fc" id="L1309">        }</span>
-<span class="fc" id="L1310">    }</span>
+<span class="fc" id="L1477">            }</span>
+<span class="fc" id="L1478">        }</span>
+<span class="fc" id="L1479">    }</span>
 
+    /**
+     *
+     */
     public void createPathNodes() {
-<span class="pc bpc" id="L1313" title="1 of 2 branches missed.">        if (pathNodes == null) {</span>
-<span class="fc" id="L1314">            pathNodes = new PathNodes(nLeft, nRight);</span>
+<span class="pc bpc" id="L1485" title="1 of 2 branches missed.">        if (pathNodes == null) {</span>
+<span class="fc" id="L1486">            pathNodes = new PathNodes(nLeft, nRight);</span>
         }
-<span class="fc" id="L1316">    }</span>
+<span class="fc" id="L1488">    }</span>
     
+    /**
+     *
+     @param key
+     */
     public void resetPathNodes(long key) {
-<span class="pc bpc" id="L1319" title="1 of 2 branches missed.">        if (pathNodes == null) {</span>
-<span class="nc" id="L1320">            pathNodes = new PathNodes(nLeft, nRight);</span>
+<span class="pc bpc" id="L1495" title="1 of 2 branches missed.">        if (pathNodes == null) {</span>
+<span class="nc" id="L1496">            pathNodes = new PathNodes(nLeft, nRight);</span>
         } else {
-<span class="fc" id="L1322">            pathNodes.resetNodeExceptData(key);</span>
+<span class="fc" id="L1498">            pathNodes.resetNodeExceptData(key);</span>
         }
-<span class="fc" id="L1324">    }</span>
+<span class="fc" id="L1500">    }</span>
     
+    /**
+     *
+     @return
+     */
     public PathNodes getPathNodes() {
-<span class="fc" id="L1327">        return pathNodes;</span>
+<span class="fc" id="L1507">        return pathNodes;</span>
     }
     
 }

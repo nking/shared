@@ -99,21 +99,34 @@ public class ElasticNet {
 <span class="fc" id="L99">    private double[] Xy = null;</span>
 
     // coef selection = 0 for 'cyclic' else '1' for random.
+
+    /**
+     *
+     */
     public static enum Selection {
-        CYCLIC, RANDOM;
+
+        /**
+         *
+         */
+        CYCLIC,
+
+        /**
+         *
+         */
+        RANDOM;
     }
-<span class="fc" id="L105">    private Selection selection = Selection.CYCLIC;</span>
+<span class="fc" id="L118">    private Selection selection = Selection.CYCLIC;</span>
 
     /**
      When set to ``True``, reuse the solution of the previous call to fit as
         initialization, otherwise, just erase the previous solution.
     */
-<span class="fc" id="L111">    private boolean warmStart = false;</span>
+<span class="fc" id="L124">    private boolean warmStart = false;</span>
 
     // dualGaps is a scalar because y is one dimensional in this edted class
     private double dualGap;
-<span class="fc" id="L115">    private TIntArrayList nIter = new TIntArrayList();</span>
-<span class="fc" id="L116">    private boolean positive = false;</span>
+<span class="fc" id="L128">    private TIntArrayList nIter = new TIntArrayList();</span>
+<span class="fc" id="L129">    private boolean positive = false;</span>
 
     /*
     random_state : int, RandomState instance, or None (default)
@@ -121,22 +134,22 @@ public class ElasticNet {
                 a random feature to update. Useful only when selection is set to
                  'random'.
     */
-<span class="fc" id="L124">    private Random rng = null;</span>
-<span class="fc" id="L125">    private long ranSeed = 0;</span>
+<span class="fc" id="L137">    private Random rng = null;</span>
+<span class="fc" id="L138">    private long ranSeed = 0;</span>
 
-<span class="fc" id="L127">    private int verbose = 0;</span>
+<span class="fc" id="L140">    private int verbose = 0;</span>
 
-<span class="fc" id="L129">    private Logger log = Logger.getLogger(this.getClass().getName());</span>
+<span class="fc" id="L142">    private Logger log = Logger.getLogger(this.getClass().getName());</span>
 
     /**
      alpha = a + b and l1_ratio = a / (a + b).
       when l1_ratio .eq. 1, the penalty is the lasso penalty.
       note, should not use l1_ratio .lte. 0.01.
      NOTE also, that for alpha .eq. 0, the algorithm does not converge well.
-     * @param alpha
-     * @param l1Ratio
+     @param alpha
+     @param l1Ratio
      */
-<span class="fc" id="L139">    public ElasticNet(double alpha, double l1Ratio) {</span>
+<span class="fc" id="L152">    public ElasticNet(double alpha, double l1Ratio) {</span>
 
         /*
         default scipy values:
@@ -146,24 +159,24 @@ public class ElasticNet {
          random_state=None, selection='cyclic'):
         */
 
-<span class="fc" id="L149">        this.alpha = alpha;</span>
-<span class="fc" id="L150">        this.l1Ratio = l1Ratio;</span>
+<span class="fc" id="L162">        this.alpha = alpha;</span>
+<span class="fc" id="L163">        this.l1Ratio = l1Ratio;</span>
 
-<span class="fc" id="L152">        this.eps = 1.e-3;</span>
+<span class="fc" id="L165">        this.eps = 1.e-3;</span>
 
-<span class="fc" id="L154">        this.nMaxIter = 1000;</span>
-<span class="fc" id="L155">    }</span>
+<span class="fc" id="L167">        this.nMaxIter = 1000;</span>
+<span class="fc" id="L168">    }</span>
 
     /**
       alpha = a + b and l1_ratio = a / (a + b).
       when l1_ratio .eq. 1, the penalty is the lasso penalty.
       note, should not use l1_ratio .lte. 0.01.
       NOTE also, that for alpha .eq. 0, the algorithm does not converge well.
-     * @param alpha
-     * @param l1Ratio
-     * @param maxIter
+     @param alpha
+     @param l1Ratio
+     @param maxIter
      */
-<span class="fc" id="L166">    public ElasticNet(double alpha, double l1Ratio, int maxIter) {</span>
+<span class="fc" id="L179">    public ElasticNet(double alpha, double l1Ratio, int maxIter) {</span>
 
         /*
         default scipy values:
@@ -173,29 +186,29 @@ public class ElasticNet {
          random_state=None, selection='cyclic'):
         */
 
-<span class="fc" id="L176">        this.alpha = alpha;</span>
-<span class="fc" id="L177">        this.l1Ratio = l1Ratio;</span>
+<span class="fc" id="L189">        this.alpha = alpha;</span>
+<span class="fc" id="L190">        this.l1Ratio = l1Ratio;</span>
 
-<span class="fc" id="L179">        this.eps = 1.e-3;</span>
+<span class="fc" id="L192">        this.eps = 1.e-3;</span>
 
-<span class="fc" id="L181">        this.nMaxIter = maxIter;</span>
-<span class="fc" id="L182">    }</span>
+<span class="fc" id="L194">        this.nMaxIter = maxIter;</span>
+<span class="fc" id="L195">    }</span>
 
     /**
      * default is 0 produces no extra logging, v=1 results in more logging,
      * while v &gt;= 2 produces most logging.
-     * @param v
+     @param v
      */
     public void setVerbosity(int v) {
-<span class="nc" id="L190">        this.verbose = v;</span>
-<span class="nc" id="L191">    }</span>
+<span class="nc" id="L203">        this.verbose = v;</span>
+<span class="nc" id="L204">    }</span>
 
     /**
      *
-     * @param x each column of x is the data and any operation performed
+     @param x each column of x is the data and any operation performed
      * upon it.  for example, to fit a 2nd order polynomial,
      * x[*][0] is xdata[*] and x[*][1] is xdata[*]^2.
-     * @param y
+     @param y
      */
     public void fit(double[][] x, double[] y) {
 
@@ -205,8 +218,8 @@ public class ElasticNet {
         //   that is, the data for a single coefficient
         //   would be present in a row
 
-<span class="fc" id="L208">        this.X = Arrays.copyOf(x, x.length);</span>
-<span class="fc" id="L209">        this.y = Arrays.copyOf(y, y.length);</span>
+<span class="fc" id="L221">        this.X = Arrays.copyOf(x, x.length);</span>
+<span class="fc" id="L222">        this.y = Arrays.copyOf(y, y.length);</span>
 
         /*
         Coordinate descent:
@@ -215,18 +228,18 @@ public class ElasticNet {
         pattern).
         */
 
-<span class="fc" id="L218">        int nXData = this.X.length;</span>
-<span class="fc" id="L219">        int nCoef = this.X[0].length;</span>
+<span class="fc" id="L231">        int nXData = this.X.length;</span>
+<span class="fc" id="L232">        int nCoef = this.X[0].length;</span>
 
-<span class="fc" id="L221">        PreFitResults preFitResults = preFit(this.X, this.y, null,</span>
+<span class="fc" id="L234">        PreFitResults preFitResults = preFit(this.X, this.y, null,</span>
             doNormalize, doFitIntercept, true);
 
-<span class="fc" id="L224">        this.X = preFitResults.X;</span>
-<span class="fc" id="L225">        this.y = preFitResults.y;</span>
-<span class="fc" id="L226">        double[] XMean = preFitResults.XMean;</span>
-<span class="fc" id="L227">        double[] XStdv = preFitResults.XStdv;</span>
-<span class="fc" id="L228">        this.Xy = preFitResults.Xy;</span>
-<span class="fc" id="L229">        double yMean = preFitResults.yMean;</span>
+<span class="fc" id="L237">        this.X = preFitResults.X;</span>
+<span class="fc" id="L238">        this.y = preFitResults.y;</span>
+<span class="fc" id="L239">        double[] XMean = preFitResults.XMean;</span>
+<span class="fc" id="L240">        double[] XStdv = preFitResults.XStdv;</span>
+<span class="fc" id="L241">        this.Xy = preFitResults.Xy;</span>
+<span class="fc" id="L242">        double yMean = preFitResults.yMean;</span>
 
         /*
         leaving this here to edit in future if want to change to allow y
@@ -237,46 +250,46 @@ public class ElasticNet {
             Xy = Xy[:, np.newaxis]
         */
 
-<span class="fc" id="L240">        int nSamples = nXData;</span>
-<span class="fc" id="L241">        int nFeatures = nCoef;</span>
+<span class="fc" id="L253">        int nSamples = nXData;</span>
+<span class="fc" id="L254">        int nFeatures = nCoef;</span>
 
         // length of 2nd dimension of y, which is restricted to 1 dimension
         //    for now
-<span class="fc" id="L245">        final int nTargets = 1;</span>
+<span class="fc" id="L258">        final int nTargets = 1;</span>
 
-<span class="pc bpc" id="L247" title="1 of 4 branches missed.">        if (!warmStart || coef == null) {</span>
-<span class="fc" id="L248">            coef = new double[nCoef];</span>
+<span class="pc bpc" id="L260" title="1 of 4 branches missed.">        if (!warmStart || coef == null) {</span>
+<span class="fc" id="L261">            coef = new double[nCoef];</span>
         } else {
             // copy to detach from instance present elsewhere?
-<span class="fc" id="L251">            coef = Arrays.copyOf(coef, coef.length);</span>
+<span class="fc" id="L264">            coef = Arrays.copyOf(coef, coef.length);</span>
         }
 
-<span class="fc" id="L254">        this.nIter = new TIntArrayList(nTargets);</span>
+<span class="fc" id="L267">        this.nIter = new TIntArrayList(nTargets);</span>
 
-<span class="fc" id="L256">        double[] thisXy = null;</span>
-<span class="fc" id="L257">        double[][]thisCoef = null;</span>
-<span class="fc" id="L258">        double[] thisDualGaps = null;</span>
-<span class="fc" id="L259">        TIntArrayList thisNIter = null;</span>
+<span class="fc" id="L269">        double[] thisXy = null;</span>
+<span class="fc" id="L270">        double[][]thisCoef = null;</span>
+<span class="fc" id="L271">        double[] thisDualGaps = null;</span>
+<span class="fc" id="L272">        TIntArrayList thisNIter = null;</span>
 
         //int nAlphas = 0;
-<span class="fc" id="L262">        double[] alphas = new double[]{alpha};</span>
-<span class="fc" id="L263">        int nAlphas = alphas.length;</span>
+<span class="fc" id="L275">        double[] alphas = new double[]{alpha};</span>
+<span class="fc" id="L276">        int nAlphas = alphas.length;</span>
         
         // edited for y being one dimension
-<span class="pc bpc" id="L266" title="1 of 2 branches missed.">        if (Xy != null) {</span>
-<span class="nc" id="L267">            thisXy = Arrays.copyOf(Xy, Xy.length);</span>
+<span class="pc bpc" id="L279" title="1 of 2 branches missed.">        if (Xy != null) {</span>
+<span class="nc" id="L280">            thisXy = Arrays.copyOf(Xy, Xy.length);</span>
             // avoding NPEs below
-<span class="nc" id="L269">            thisDualGaps = new double[]{ Double.NEGATIVE_INFINITY};</span>
-<span class="nc" id="L270">            thisNIter = new TIntArrayList();</span>
-<span class="nc" id="L271">            thisNIter.add(Integer.MIN_VALUE);</span>
-<span class="nc" id="L272">            thisCoef = new double[nFeatures][nAlphas];</span>
-<span class="nc bnc" id="L273" title="All 2 branches missed.">            for (int i = 0; i &lt; nFeatures; ++i) {</span>
-<span class="nc" id="L274">                thisCoef[i] = new double[nAlphas];</span>
+<span class="nc" id="L282">            thisDualGaps = new double[]{ Double.NEGATIVE_INFINITY};</span>
+<span class="nc" id="L283">            thisNIter = new TIntArrayList();</span>
+<span class="nc" id="L284">            thisNIter.add(Integer.MIN_VALUE);</span>
+<span class="nc" id="L285">            thisCoef = new double[nFeatures][nAlphas];</span>
+<span class="nc bnc" id="L286" title="All 2 branches missed.">            for (int i = 0; i &lt; nFeatures; ++i) {</span>
+<span class="nc" id="L287">                thisCoef[i] = new double[nAlphas];</span>
             }
         } else {
             // call to enet_path on line 272 of coordinate_descent.py
-<span class="fc" id="L278">            PathResults pathResults =</span>
-<span class="fc" id="L279">                enetPath(</span>
+<span class="fc" id="L291">            PathResults pathResults =</span>
+<span class="fc" id="L292">                enetPath(</span>
                     X, y,
                     l1Ratio,
                     0, //eps=0,
@@ -298,44 +311,48 @@ public class ElasticNet {
 
             //_, this_coef, this_dual_gap, this_iter = \
 
-<span class="fc" id="L301">            thisCoef = pathResults.coefs;</span>
-<span class="fc" id="L302">            thisDualGaps = pathResults.dualGaps; // this length is nAlphas which was 0 before bugfix, and is now 1</span>
-<span class="fc" id="L303">            thisNIter = pathResults.nIters;      //  same here</span>
+<span class="fc" id="L314">            thisCoef = pathResults.coefs;</span>
+<span class="fc" id="L315">            thisDualGaps = pathResults.dualGaps; // this length is nAlphas which was 0 before bugfix, and is now 1</span>
+<span class="fc" id="L316">            thisNIter = pathResults.nIters;      //  same here</span>
         }
 
         //coef_[k] = this_coef[:, 0]
-<span class="fc bfc" id="L307" title="All 2 branches covered.">        for (int ii = 0; ii &lt; coef.length; ++ii) {</span>
-<span class="fc" id="L308">            this.coef[ii] = thisCoef[ii][0];</span>
+<span class="fc bfc" id="L320" title="All 2 branches covered.">        for (int ii = 0; ii &lt; coef.length; ++ii) {</span>
+<span class="fc" id="L321">            this.coef[ii] = thisCoef[ii][0];</span>
         }
        
-<span class="fc" id="L311">        this.dualGap = thisDualGaps[0];</span>
-<span class="fc" id="L312">        this.nIter.add(thisNIter.get(0));</span>
+<span class="fc" id="L324">        this.dualGap = thisDualGaps[0];</span>
+<span class="fc" id="L325">        this.nIter.add(thisNIter.get(0));</span>
 
         if (nTargets == 1) {
             //self.n_iter_ = self.n_iter_[0]
-<span class="fc" id="L316">            this.nIter.remove(1, this.nIter.size() - 1);</span>
+<span class="fc" id="L329">            this.nIter.remove(1, this.nIter.size() - 1);</span>
         }
 
-<span class="fc" id="L319">        setIntercept(XMean, yMean, XStdv);</span>
-<span class="fc" id="L320">    }</span>
+<span class="fc" id="L332">        setIntercept(XMean, yMean, XStdv);</span>
+<span class="fc" id="L333">    }</span>
 
+    /**
+     *
+     @param sel
+     */
     public void setSeletion(Selection sel) {
-<span class="pc bpc" id="L323" title="1 of 2 branches missed.">        if (sel == null) {</span>
-<span class="nc" id="L324">            throw new IllegalArgumentException(&quot;sel cannot be null&quot;);</span>
+<span class="pc bpc" id="L340" title="1 of 2 branches missed.">        if (sel == null) {</span>
+<span class="nc" id="L341">            throw new IllegalArgumentException(&quot;sel cannot be null&quot;);</span>
         }
-<span class="fc" id="L326">        this.selection = sel;</span>
-<span class="fc" id="L327">    }</span>
+<span class="fc" id="L343">        this.selection = sel;</span>
+<span class="fc" id="L344">    }</span>
 
     /**
      * Predict using the linear model
      * 
-     * @param testData 2 dimensional data of format [nSamples[nFeatures]
+     @param testData 2 dimensional data of format [nSamples[nFeatures]
      * where features is the coefficients for polynomial regression, for
      * example.
-     * @return 
+     @return 
      */
     public double[] predict(double[][] testData) {
-<span class="fc" id="L338">        return decision_function(testData);            </span>
+<span class="fc" id="L355">        return decision_function(testData);            </span>
     }
     
     /**
@@ -343,64 +360,91 @@ public class ElasticNet {
 
         The confidence score for a sample is the signed distance of that
         sample to the hyperplane.
-      
-     * @param testData
-     * @return 
+     @param XD      
+     @param testData
+     @return 
      */
     private double[] decision_function(double[][] XD) {
     
-<span class="fc" id="L352">        int nFeatures = coef.length;</span>
-<span class="pc bpc" id="L353" title="1 of 2 branches missed.">        if (XD[0].length != nFeatures) {</span>
-<span class="nc" id="L354">            throw new IllegalArgumentException(</span>
+<span class="fc" id="L369">        int nFeatures = coef.length;</span>
+<span class="pc bpc" id="L370" title="1 of 2 branches missed.">        if (XD[0].length != nFeatures) {</span>
+<span class="nc" id="L371">            throw new IllegalArgumentException(</span>
                 &quot;X has &quot; + XD[0].length + 
                 &quot; features per sample; expecting &quot; + nFeatures);
         }
         
-<span class="fc" id="L359">        double[] scores = new double[XD.length];</span>
-<span class="fc bfc" id="L360" title="All 2 branches covered.">        for (int row = 0; row &lt; XD.length; ++row) {</span>
-<span class="fc" id="L361">            double sum = 0;</span>
-<span class="fc bfc" id="L362" title="All 2 branches covered.">            for (int col = 0; col &lt; nFeatures; ++col) {</span>
-<span class="fc" id="L363">                sum += XD[row][col] * coef[col];</span>
+<span class="fc" id="L376">        double[] scores = new double[XD.length];</span>
+<span class="fc bfc" id="L377" title="All 2 branches covered.">        for (int row = 0; row &lt; XD.length; ++row) {</span>
+<span class="fc" id="L378">            double sum = 0;</span>
+<span class="fc bfc" id="L379" title="All 2 branches covered.">            for (int col = 0; col &lt; nFeatures; ++col) {</span>
+<span class="fc" id="L380">                sum += XD[row][col] * coef[col];</span>
             }
-<span class="fc" id="L365">            scores[row] = sum + intercept;</span>
+<span class="fc" id="L382">            scores[row] = sum + intercept;</span>
         }
 
-<span class="fc" id="L368">        return scores;</span>
+<span class="fc" id="L385">        return scores;</span>
     }
     
+    /**
+     *
+     @return
+     */
     public double getIntercept() {
-<span class="fc" id="L372">        return intercept;</span>
+<span class="fc" id="L393">        return intercept;</span>
     }
 
+    /**
+     *
+     @return
+     */
     public double[] getCoef() {
-<span class="fc" id="L376">        return coef;</span>
+<span class="fc" id="L401">        return coef;</span>
     }
     
+    /**
+     *
+     @return
+     */
     public double getDualGap() {
-<span class="nc" id="L380">        return dualGap;</span>
+<span class="nc" id="L409">        return dualGap;</span>
     }
 
+    /**
+     *
+     @param n
+     */
     public void setNMaxIter(int n) {
-<span class="nc" id="L384">        this.nMaxIter = n;</span>
-<span class="nc" id="L385">    }</span>
+<span class="nc" id="L417">        this.nMaxIter = n;</span>
+<span class="nc" id="L418">    }</span>
 
+    /**
+     *
+     @param tolerance
+     */
     public void setTol(double tolerance) {
-<span class="nc" id="L388">        this.tol = tolerance;</span>
-<span class="nc" id="L389">    }</span>
+<span class="nc" id="L425">        this.tol = tolerance;</span>
+<span class="nc" id="L426">    }</span>
 
+    /**
+     *
+     @param pos
+     */
     public void setPositiveParam(boolean pos) {
-<span class="nc" id="L392">        this.positive = pos;</span>
-<span class="nc" id="L393">    }</span>
+<span class="nc" id="L433">        this.positive = pos;</span>
+<span class="nc" id="L434">    }</span>
     
+    /**
+     *
+     */
     public void setToUseWarmStart() {
-<span class="fc" id="L396">        this.warmStart = true;</span>
-<span class="fc" id="L397">    }</span>
+<span class="fc" id="L440">        this.warmStart = true;</span>
+<span class="fc" id="L441">    }</span>
 
     private CenResults _centerData(double[][] X2, double[] y2,
         boolean fitIntercept2, boolean normalize2,
         boolean doCopy) {
 
-<span class="fc" id="L403">        boolean doSampleWeight = false;</span>
+<span class="fc" id="L447">        boolean doSampleWeight = false;</span>
 
         /*
         Centers data to have mean zero along axis 0. This is here because
@@ -410,114 +454,121 @@ public class ElasticNet {
         is zero, and not the mean itself
         */
 
-<span class="fc" id="L413">        int nXData = X2.length;</span>
-<span class="fc" id="L414">        int nCoef = X2[0].length;</span>
+<span class="fc" id="L457">        int nXData = X2.length;</span>
+<span class="fc" id="L458">        int nCoef = X2[0].length;</span>
 
-<span class="fc" id="L416">        CenResults results = new CenResults();</span>
-<span class="fc" id="L417">        results.XMean = new double[nCoef];</span>
-<span class="fc" id="L418">        results.XStdv = new double[nCoef];</span>
+<span class="fc" id="L460">        CenResults results = new CenResults();</span>
+<span class="fc" id="L461">        results.XMean = new double[nCoef];</span>
+<span class="fc" id="L462">        results.XStdv = new double[nCoef];</span>
 
-<span class="fc bfc" id="L420" title="All 2 branches covered.">        if (doCopy) {</span>
-<span class="fc" id="L421">            results.X = MatrixUtil.copy(X2);</span>
-<span class="fc" id="L422">            results.y = Arrays.copyOf(y2, y2.length);</span>
+<span class="fc bfc" id="L464" title="All 2 branches covered.">        if (doCopy) {</span>
+<span class="fc" id="L465">            results.X = MatrixUtil.copy(X2);</span>
+<span class="fc" id="L466">            results.y = Arrays.copyOf(y2, y2.length);</span>
         } else {
-<span class="fc" id="L424">           results.X = X2;</span>
-<span class="fc" id="L425">           results.y = y2;</span>
+<span class="fc" id="L468">           results.X = X2;</span>
+<span class="fc" id="L469">           results.y = y2;</span>
         }
 
-<span class="fc bfc" id="L428" title="All 2 branches covered.">        if (fitIntercept2) {</span>
-<span class="fc bfc" id="L429" title="All 2 branches covered.">            for (int i = 0; i &lt; nCoef; ++i) {</span>
-<span class="fc" id="L430">                double sum = 0;</span>
-<span class="fc bfc" id="L431" title="All 2 branches covered.">                for (int i0 = 0; i0 &lt; nXData; ++i0) {</span>
-<span class="fc" id="L432">                    sum += results.X[i0][i];</span>
+<span class="fc bfc" id="L472" title="All 2 branches covered.">        if (fitIntercept2) {</span>
+<span class="fc bfc" id="L473" title="All 2 branches covered.">            for (int i = 0; i &lt; nCoef; ++i) {</span>
+<span class="fc" id="L474">                double sum = 0;</span>
+<span class="fc bfc" id="L475" title="All 2 branches covered.">                for (int i0 = 0; i0 &lt; nXData; ++i0) {</span>
+<span class="fc" id="L476">                    sum += results.X[i0][i];</span>
                 }
-<span class="fc" id="L434">                double mean = sum / (double)nXData;</span>
-<span class="fc" id="L435">                results.XMean[i] = mean;</span>
-<span class="fc bfc" id="L436" title="All 2 branches covered.">                for (int i0 = 0; i0 &lt; nXData; ++i0) {</span>
-<span class="fc" id="L437">                    results.X[i0][i] -= mean;</span>
+<span class="fc" id="L478">                double mean = sum / (double)nXData;</span>
+<span class="fc" id="L479">                results.XMean[i] = mean;</span>
+<span class="fc bfc" id="L480" title="All 2 branches covered.">                for (int i0 = 0; i0 &lt; nXData; ++i0) {</span>
+<span class="fc" id="L481">                    results.X[i0][i] -= mean;</span>
                 }
-<span class="pc bpc" id="L439" title="1 of 2 branches missed.">                if (normalize2) {</span>
-<span class="nc" id="L440">                    sum = 0;</span>
-<span class="nc bnc" id="L441" title="All 2 branches missed.">                    for (int i0 = 0; i0 &lt; nXData; ++i0) {</span>
-<span class="nc" id="L442">                        sum += results.X[i0][i] * results.X[i0][i];</span>
+<span class="pc bpc" id="L483" title="1 of 2 branches missed.">                if (normalize2) {</span>
+<span class="nc" id="L484">                    sum = 0;</span>
+<span class="nc bnc" id="L485" title="All 2 branches missed.">                    for (int i0 = 0; i0 &lt; nXData; ++i0) {</span>
+<span class="nc" id="L486">                        sum += results.X[i0][i] * results.X[i0][i];</span>
                     }
-<span class="nc" id="L444">                    sum = Math.sqrt(sum);</span>
-<span class="nc" id="L445">                    results.XStdv[i] = sum;</span>
-<span class="nc bnc" id="L446" title="All 2 branches missed.">                    if (sum != 0) {</span>
-<span class="nc bnc" id="L447" title="All 2 branches missed.">                        for (int i0 = 0; i0 &lt; nXData; ++i0) {</span>
-<span class="nc" id="L448">                            results.X[i0][i] /= sum;</span>
+<span class="nc" id="L488">                    sum = Math.sqrt(sum);</span>
+<span class="nc" id="L489">                    results.XStdv[i] = sum;</span>
+<span class="nc bnc" id="L490" title="All 2 branches missed.">                    if (sum != 0) {</span>
+<span class="nc bnc" id="L491" title="All 2 branches missed.">                        for (int i0 = 0; i0 &lt; nXData; ++i0) {</span>
+<span class="nc" id="L492">                            results.X[i0][i] /= sum;</span>
                         }
                     }
                 } else {
-<span class="fc" id="L452">                    results.XStdv[i] = 1;</span>
+<span class="fc" id="L496">                    results.XStdv[i] = 1;</span>
                 }
             }
-<span class="fc" id="L455">            double sum = 0;</span>
-<span class="fc bfc" id="L456" title="All 2 branches covered.">            for (int i0 = 0; i0 &lt; nXData; ++i0) {</span>
-<span class="fc" id="L457">                sum += results.y[i0];</span>
+<span class="fc" id="L499">            double sum = 0;</span>
+<span class="fc bfc" id="L500" title="All 2 branches covered.">            for (int i0 = 0; i0 &lt; nXData; ++i0) {</span>
+<span class="fc" id="L501">                sum += results.y[i0];</span>
             }
-<span class="fc" id="L459">            sum /= (double)nXData;</span>
-<span class="fc" id="L460">            results.yMean = sum;</span>
-<span class="fc bfc" id="L461" title="All 2 branches covered.">            for (int i0 = 0; i0 &lt; nXData; ++i0) {</span>
-<span class="fc" id="L462">                results.y[i0] -= sum;</span>
+<span class="fc" id="L503">            sum /= (double)nXData;</span>
+<span class="fc" id="L504">            results.yMean = sum;</span>
+<span class="fc bfc" id="L505" title="All 2 branches covered.">            for (int i0 = 0; i0 &lt; nXData; ++i0) {</span>
+<span class="fc" id="L506">                results.y[i0] -= sum;</span>
             }
-<span class="fc" id="L464">        } else {</span>
-<span class="fc" id="L465">            Arrays.fill(results.XMean, 0);</span>
-<span class="fc" id="L466">            Arrays.fill(results.XStdv, 1);</span>
-<span class="fc" id="L467">            results.yMean = 0;</span>
+<span class="fc" id="L508">        } else {</span>
+<span class="fc" id="L509">            Arrays.fill(results.XMean, 0);</span>
+<span class="fc" id="L510">            Arrays.fill(results.XStdv, 1);</span>
+<span class="fc" id="L511">            results.yMean = 0;</span>
         }
 
-<span class="fc" id="L470">        return results;</span>
+<span class="fc" id="L514">        return results;</span>
     }
 
     private boolean allClose(double[] a, double value) {
-<span class="nc" id="L474">        double rtol=1.e-5;</span>
-<span class="nc" id="L475">        double atol=1.e-8;</span>
-<span class="nc bnc" id="L476" title="All 2 branches missed.">        for (double a0 : a) {</span>
-<span class="nc bnc" id="L477" title="All 2 branches missed.">           if (!(Math.abs(a0 - value) &lt;= (atol + rtol * Math.abs(value)))) {</span>
-<span class="nc" id="L478">               return false;</span>
+<span class="nc" id="L518">        double rtol=1.e-5;</span>
+<span class="nc" id="L519">        double atol=1.e-8;</span>
+<span class="nc bnc" id="L520" title="All 2 branches missed.">        for (double a0 : a) {</span>
+<span class="nc bnc" id="L521" title="All 2 branches missed.">           if (!(Math.abs(a0 - value) &lt;= (atol + rtol * Math.abs(value)))) {</span>
+<span class="nc" id="L522">               return false;</span>
            }
         }
-<span class="nc" id="L481">        return true;</span>
+<span class="nc" id="L525">        return true;</span>
     }
     
+    /**
+     *
+     @param a
+     @param b
+     @return
+     */
     public static boolean allClose(double[] a, double[] b) {
-<span class="fc" id="L485">        double rtol = 1.e-5;</span>
-<span class="fc" id="L486">        double atol = 1.e-8;</span>
-<span class="fc bfc" id="L487" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L488">            double a0 = a[i];</span>
-<span class="fc" id="L489">            double b0 = b[i];</span>
-<span class="pc bpc" id="L490" title="1 of 2 branches missed.">            if (!(Math.abs(a0 - b0) &lt;= (atol + rtol * Math.abs(b0)))) {</span>
-<span class="nc" id="L491">                return false;</span>
+<span class="fc" id="L535">        double rtol = 1.e-5;</span>
+<span class="fc" id="L536">        double atol = 1.e-8;</span>
+<span class="fc bfc" id="L537" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L538">            double a0 = a[i];</span>
+<span class="fc" id="L539">            double b0 = b[i];</span>
+<span class="pc bpc" id="L540" title="1 of 2 branches missed.">            if (!(Math.abs(a0 - b0) &lt;= (atol + rtol * Math.abs(b0)))) {</span>
+<span class="nc" id="L541">                return false;</span>
             }
         }
-<span class="fc" id="L494">        return true;</span>
+<span class="fc" id="L544">        return true;</span>
     }
 
     /**
      * NOTE that for now, y2 and this.y are restricted to being a single
      * dimension, that is, a vector.
      *
-     * @param X2
-     * @param y2
-     * @param l1Ratio2
-     * @param eps2
-     * @param nAlphas2
-     * @param alphas2
-     * @param thisXy
-     * @param fitIntercept2
-     * @param normalize2
-     * @param copyX2
-     * @param verbose2
-     * @param tol2
-     * @param positive2
-     * @param XMean2
-     * @param XStdv2
-     * @param returnNIter
-     * @param coef2
-     * @param nMaxIter2
-     * @param selection2
-     * @return
+     @param X2
+     @param y2
+     @param l1Ratio2
+     @param eps2
+     @param nAlphas2
+     @param alphas2
+     @param Xy2
+     @param thisXy
+     @param fitIntercept2
+     @param copyX2
+     @param verbose2
+     @param tol2
+     @param positive2
+     @param XMean2
+     @param XStdv2
+     @param returnNIter
+     @param coefInit
+     @param coef2
+     @param nMaxIter2
+     @param selection2
+     @return
      */
     private PathResults enetPath(
         double[][] X2, double[] y2,
@@ -556,80 +607,80 @@ public class ElasticNet {
 
         //NOTE: have removed sparse matrix support
 
-<span class="pc bpc" id="L559" title="1 of 2 branches missed.">        if (fitIntercept2) {</span>
-<span class="nc" id="L560">            log.warning(&quot;scipy deprecates this feature, so will consider removing it&quot;</span>
+<span class="pc bpc" id="L610" title="1 of 2 branches missed.">        if (fitIntercept2) {</span>
+<span class="nc" id="L611">            log.warning(&quot;scipy deprecates this feature, so will consider removing it&quot;</span>
                 + &quot;after a look at associcated logic&quot;);
         }
 
-<span class="pc bpc" id="L564" title="1 of 2 branches missed.">        if (copyX2) {</span>
-<span class="fc" id="L565">            X2 = Arrays.copyOf(X2, X2.length);</span>
+<span class="pc bpc" id="L615" title="1 of 2 branches missed.">        if (copyX2) {</span>
+<span class="fc" id="L616">            X2 = Arrays.copyOf(X2, X2.length);</span>
         }
 
-<span class="fc" id="L568">        int nSamples = X2.length;</span>
-<span class="fc" id="L569">        int nFeatures = X2[0].length;</span>
+<span class="fc" id="L619">        int nSamples = X2.length;</span>
+<span class="fc" id="L620">        int nFeatures = X2[0].length;</span>
 
         //NOTE: in future, if edit for y dimension &gt; 1, will need to make
         // changes here
 
-<span class="fc" id="L574">        PreFitResults preFitResults =</span>
-<span class="fc" id="L575">            preFit(X2, y2, Xy2, normalize2, fitIntercept2, false);</span>
+<span class="fc" id="L625">        PreFitResults preFitResults =</span>
+<span class="fc" id="L626">            preFit(X2, y2, Xy2, normalize2, fitIntercept2, false);</span>
 
         //TODO: revisit the code and algorithm to see if the intention is to
         //   populate these arrays instead of reset them assuming
         //   that the size remains constant
-<span class="fc" id="L580">        X2 = preFitResults.X;</span>
-<span class="fc" id="L581">        y2 = preFitResults.y;</span>
-<span class="fc" id="L582">        XMean2 = preFitResults.XMean;</span>
-<span class="fc" id="L583">        XStdv2 = preFitResults.XStdv;</span>
-<span class="fc" id="L584">        Xy2 = preFitResults.Xy;</span>
-<span class="fc" id="L585">        double yMean2 = preFitResults.yMean;</span>
+<span class="fc" id="L631">        X2 = preFitResults.X;</span>
+<span class="fc" id="L632">        y2 = preFitResults.y;</span>
+<span class="fc" id="L633">        XMean2 = preFitResults.XMean;</span>
+<span class="fc" id="L634">        XStdv2 = preFitResults.XStdv;</span>
+<span class="fc" id="L635">        Xy2 = preFitResults.Xy;</span>
+<span class="fc" id="L636">        double yMean2 = preFitResults.yMean;</span>
 
-<span class="pc bpc" id="L587" title="1 of 2 branches missed.">        if (alphas2 == null) {</span>
-<span class="nc" id="L588">            alphas2 = _alphaGrid(X2, y2, Xy2, l1Ratio2, false, eps2, nAlphas2,</span>
+<span class="pc bpc" id="L638" title="1 of 2 branches missed.">        if (alphas2 == null) {</span>
+<span class="nc" id="L639">            alphas2 = _alphaGrid(X2, y2, Xy2, l1Ratio2, false, eps2, nAlphas2,</span>
                 false, false);
         } else {
-<span class="fc" id="L591">            Arrays.sort(alphas2);</span>
+<span class="fc" id="L642">            Arrays.sort(alphas2);</span>
         }
 
-<span class="fc" id="L594">        nAlphas2 = alphas2.length;</span>
+<span class="fc" id="L645">        nAlphas2 = alphas2.length;</span>
 
         //tol = params.get('tol', 1e-4)
         //positive = params.get('positive', False)
         //max_iter = params.get('max_iter', 1000)
-<span class="fc" id="L599">        TIntArrayList nIters2 = new TIntArrayList();</span>
-<span class="fc" id="L600">        double[] dualGaps2 = new double[nAlphas2];</span>
+<span class="fc" id="L650">        TIntArrayList nIters2 = new TIntArrayList();</span>
+<span class="fc" id="L651">        double[] dualGaps2 = new double[nAlphas2];</span>
 
-<span class="fc" id="L602">        boolean useRandom = false;</span>
-<span class="fc bfc" id="L603" title="All 2 branches covered.">        if (selection2.equals(Selection.RANDOM)) {</span>
-<span class="pc bpc" id="L604" title="1 of 2 branches missed.">            if (rng == null) {</span>
-<span class="fc" id="L605">                this.rng = Misc0.getSecureRandom();</span>
-<span class="fc" id="L606">                this.ranSeed = System.nanoTime();</span>
-<span class="fc" id="L607">                this.rng.setSeed(ranSeed);</span>
+<span class="fc" id="L653">        boolean useRandom = false;</span>
+<span class="fc bfc" id="L654" title="All 2 branches covered.">        if (selection2.equals(Selection.RANDOM)) {</span>
+<span class="pc bpc" id="L655" title="1 of 2 branches missed.">            if (rng == null) {</span>
+<span class="fc" id="L656">                this.rng = Misc0.getSecureRandom();</span>
+<span class="fc" id="L657">                this.ranSeed = System.nanoTime();</span>
+<span class="fc" id="L658">                this.rng.setSeed(ranSeed);</span>
             }
-<span class="fc" id="L609">            useRandom = true;</span>
+<span class="fc" id="L660">            useRandom = true;</span>
         }
 
         //TODO: consider rewriting arrays so that a row
         //   holds the coefficients for a given alpha
-<span class="fc" id="L614">        double[][] coefs = new double[nFeatures][nAlphas2];</span>
-<span class="fc bfc" id="L615" title="All 2 branches covered.">        for (int i = 0; i &lt; nFeatures; ++i) {</span>
-<span class="fc" id="L616">            coefs[i] = new double[nAlphas2];</span>
+<span class="fc" id="L665">        double[][] coefs = new double[nFeatures][nAlphas2];</span>
+<span class="fc bfc" id="L666" title="All 2 branches covered.">        for (int i = 0; i &lt; nFeatures; ++i) {</span>
+<span class="fc" id="L667">            coefs[i] = new double[nAlphas2];</span>
         }
 
-<span class="pc bpc" id="L619" title="1 of 2 branches missed.">        if (coefInit == null) {</span>
+<span class="pc bpc" id="L670" title="1 of 2 branches missed.">        if (coefInit == null) {</span>
             //coef_ = np.asfortranarray(np.zeros(coefs.shape[:-1]))
-<span class="nc bnc" id="L621" title="All 2 branches missed.">            if (this.coef == null) {</span>
-<span class="nc" id="L622">                this.coef = new double[nFeatures];</span>
+<span class="nc bnc" id="L672" title="All 2 branches missed.">            if (this.coef == null) {</span>
+<span class="nc" id="L673">                this.coef = new double[nFeatures];</span>
             }
-<span class="nc bnc" id="L624" title="All 2 branches missed.">            for (int i = 0; i &lt; nFeatures; ++i) {</span>
-<span class="nc" id="L625">                this.coef[i] = coefs[i][coefs.length - 1];</span>
+<span class="nc bnc" id="L675" title="All 2 branches missed.">            for (int i = 0; i &lt; nFeatures; ++i) {</span>
+<span class="nc" id="L676">                this.coef[i] = coefs[i][coefs.length - 1];</span>
             }
         } else {
             //coef_ = np.asfortranarray(coef_init)
-<span class="pc bpc" id="L629" title="1 of 2 branches missed.">            if (this.coef == null) {</span>
-<span class="nc" id="L630">                this.coef = Arrays.copyOf(coefInit, coefInit.length);</span>
+<span class="pc bpc" id="L680" title="1 of 2 branches missed.">            if (this.coef == null) {</span>
+<span class="nc" id="L681">                this.coef = Arrays.copyOf(coefInit, coefInit.length);</span>
             } else {
-<span class="fc" id="L632">                System.arraycopy(coefInit, 0, this.coef, 0, coefInit.length);</span>
+<span class="fc" id="L683">                System.arraycopy(coefInit, 0, this.coef, 0, coefInit.length);</span>
             }
         }
 
@@ -637,47 +688,47 @@ public class ElasticNet {
 
         //NOTE: have removed logic for multiple output, y dimension &gt; 1
         //NOTE: have removed logic for return_models
-<span class="fc bfc" id="L640" title="All 2 branches covered.">        for (int i = 0; i &lt; alphas2.length; ++i) {</span>
-<span class="fc" id="L641">            double a = alphas2[i];</span>
-<span class="fc" id="L642">            double l1Reg = a * l1Ratio2 * nSamples;</span>
-<span class="fc" id="L643">            double l2Reg = a * (1.0 - l1Ratio2) * nSamples;</span>
+<span class="fc bfc" id="L691" title="All 2 branches covered.">        for (int i = 0; i &lt; alphas2.length; ++i) {</span>
+<span class="fc" id="L692">            double a = alphas2[i];</span>
+<span class="fc" id="L693">            double l1Reg = a * l1Ratio2 * nSamples;</span>
+<span class="fc" id="L694">            double l2Reg = a * (1.0 - l1Ratio2) * nSamples;</span>
 
-<span class="fc" id="L645">            model = enet_coordinate_descent(</span>
+<span class="fc" id="L696">            model = enet_coordinate_descent(</span>
                 this.coef, l1Reg, l2Reg, X2, y2, nMaxIter2, tol2,
                 useRandom, positive2);
 
-<span class="fc" id="L649">            this.coef = model.w;</span>
-<span class="fc" id="L650">            double dualGap = model.gap;</span>
+<span class="fc" id="L700">            this.coef = model.w;</span>
+<span class="fc" id="L701">            double dualGap = model.gap;</span>
 
             //NOTE: assign tol to this.eps??
-<span class="fc" id="L653">            tol2 = model.tol;</span>
-<span class="fc" id="L654">            int nIter2 = model.nIter;</span>
+<span class="fc" id="L704">            tol2 = model.tol;</span>
+<span class="fc" id="L705">            int nIter2 = model.nIter;</span>
 
             //n_iters.append(n_iter_)
-<span class="fc" id="L657">            nIters2.add(nIter2);</span>
+<span class="fc" id="L708">            nIters2.add(nIter2);</span>
 
             //coefs[..., i] = coef_
-<span class="fc bfc" id="L660" title="All 2 branches covered.">            for (int ii = 0; ii &lt; coef.length; ++ii) {</span>
-<span class="fc" id="L661">                coefs[ii][i] = coef[ii];</span>
+<span class="fc bfc" id="L711" title="All 2 branches covered.">            for (int ii = 0; ii &lt; coef.length; ++ii) {</span>
+<span class="fc" id="L712">                coefs[ii][i] = coef[ii];</span>
             }
 
             //dual_gaps[i] = dual_gap_
-<span class="fc" id="L665">            dualGaps2[i] = dualGap;</span>
+<span class="fc" id="L716">            dualGaps2[i] = dualGap;</span>
 
-<span class="fc bfc" id="L667" title="All 2 branches covered.">            if (dualGap &gt; tol2) {</span>
-<span class="fc" id="L668">                log.warning(&quot;Objective did not converge.&quot; +</span>
+<span class="fc bfc" id="L718" title="All 2 branches covered.">            if (dualGap &gt; tol2) {</span>
+<span class="fc" id="L719">                log.warning(&quot;Objective did not converge.&quot; +</span>
                     &quot; You might want&quot; +
                     &quot; to increase the number of iterations&quot;);
             }
 
-<span class="pc bpc" id="L673" title="3 of 4 branches missed.">            if (verbose2 &amp;&amp; verbose &gt; 0) {</span>
-<span class="nc bnc" id="L674" title="All 2 branches missed.">                if (verbose &gt; 2) {</span>
-<span class="nc" id="L675">                    log.info(&quot;i=&quot; + i + &quot; nAlphas=&quot; + nAlphas2);</span>
-<span class="nc" id="L676">                    log.info(model.toString());</span>
-<span class="nc bnc" id="L677" title="All 2 branches missed.">                } else if (verbose &gt; 1) {</span>
-<span class="nc" id="L678">                    log.info(&quot;i=&quot; + i + &quot; nAlphas=&quot; + nAlphas2);</span>
+<span class="pc bpc" id="L724" title="3 of 4 branches missed.">            if (verbose2 &amp;&amp; verbose &gt; 0) {</span>
+<span class="nc bnc" id="L725" title="All 2 branches missed.">                if (verbose &gt; 2) {</span>
+<span class="nc" id="L726">                    log.info(&quot;i=&quot; + i + &quot; nAlphas=&quot; + nAlphas2);</span>
+<span class="nc" id="L727">                    log.info(model.toString());</span>
+<span class="nc bnc" id="L728" title="All 2 branches missed.">                } else if (verbose &gt; 1) {</span>
+<span class="nc" id="L729">                    log.info(&quot;i=&quot; + i + &quot; nAlphas=&quot; + nAlphas2);</span>
                 } else {
-<span class="nc" id="L680">                    log.info(&quot;.&quot;);</span>
+<span class="nc" id="L731">                    log.info(&quot;.&quot;);</span>
                 }
             }
         }
@@ -689,24 +740,24 @@ public class ElasticNet {
             return alphas, coefs, dual_gaps
         */
 
-<span class="fc" id="L692">        PathResults results = new PathResults();</span>
-<span class="fc" id="L693">        results.alphas = alphas2;</span>
-<span class="fc" id="L694">        results.coefs = coefs;</span>
-<span class="fc" id="L695">        results.dualGaps = dualGaps2;</span>
-<span class="fc" id="L696">        results.nIters = nIters2;</span>
+<span class="fc" id="L743">        PathResults results = new PathResults();</span>
+<span class="fc" id="L744">        results.alphas = alphas2;</span>
+<span class="fc" id="L745">        results.coefs = coefs;</span>
+<span class="fc" id="L746">        results.dualGaps = dualGaps2;</span>
+<span class="fc" id="L747">        results.nIters = nIters2;</span>
 
-<span class="fc" id="L698">        return results;</span>
+<span class="fc" id="L749">        return results;</span>
     }
 
     /**
      *
-     * @param X2
-     * @param y2
-     * @param Xy2  can be null
-     * @param normalize2
-     * @param fitIntercept2
-     * @param doCopy
-     * @return
+     @param X2
+     @param y2
+     @param Xy2  can be null
+     @param normalize2
+     @param fitIntercept2
+     @param doCopy
+     @return
      */
     private PreFitResults preFit(double[][] X2, double[] y2, double[] Xy2,
         boolean normalize2,
@@ -715,43 +766,44 @@ public class ElasticNet {
         //NOTE: should change local variable names to ones
         //   different from instance var names
 
-<span class="fc" id="L718">        CenResults cr = _centerData(X2, y2, fitIntercept2, normalize2, doCopy);</span>
+<span class="fc" id="L769">        CenResults cr = _centerData(X2, y2, fitIntercept2, normalize2, doCopy);</span>
 
-<span class="fc" id="L720">        int nXData = X2.length;</span>
-<span class="fc" id="L721">        int nCoef = X2[0].length;</span>
+<span class="fc" id="L771">        int nXData = X2.length;</span>
+<span class="fc" id="L772">        int nCoef = X2[0].length;</span>
 
-<span class="fc" id="L723">        X2 = cr.X;</span>
-<span class="fc" id="L724">        y2 = cr.y;</span>
-<span class="fc" id="L725">        double[] XMean2 = cr.XMean;</span>
-<span class="fc" id="L726">        double[] XStdv2 = cr.XStdv;</span>
-<span class="fc" id="L727">        double yMean2 = cr.yMean;</span>
+<span class="fc" id="L774">        X2 = cr.X;</span>
+<span class="fc" id="L775">        y2 = cr.y;</span>
+<span class="fc" id="L776">        double[] XMean2 = cr.XMean;</span>
+<span class="fc" id="L777">        double[] XStdv2 = cr.XStdv;</span>
+<span class="fc" id="L778">        double yMean2 = cr.yMean;</span>
 
         //cannot use Xy if precompute is not Gram
-<span class="fc" id="L730">        Xy2 = null;</span>
+<span class="fc" id="L781">        Xy2 = null;</span>
 
-<span class="fc" id="L732">        PreFitResults results = new PreFitResults();</span>
-<span class="fc" id="L733">        results.X = X2;</span>
-<span class="fc" id="L734">        results.XMean = XMean2;</span>
-<span class="fc" id="L735">        results.XStdv = XStdv2;</span>
-<span class="fc" id="L736">        results.Xy = Xy2;</span>
-<span class="fc" id="L737">        results.y = y2;</span>
-<span class="fc" id="L738">        results.yMean = yMean2;</span>
+<span class="fc" id="L783">        PreFitResults results = new PreFitResults();</span>
+<span class="fc" id="L784">        results.X = X2;</span>
+<span class="fc" id="L785">        results.XMean = XMean2;</span>
+<span class="fc" id="L786">        results.XStdv = XStdv2;</span>
+<span class="fc" id="L787">        results.Xy = Xy2;</span>
+<span class="fc" id="L788">        results.y = y2;</span>
+<span class="fc" id="L789">        results.yMean = yMean2;</span>
 
-<span class="fc" id="L740">        return results;</span>
+<span class="fc" id="L791">        return results;</span>
     }
 
     /**
      * Compute the grid of alpha values for elastic net parameter search
-     * @param X2
-     * @param Y2
-     * @param Xy2 can be null
-     * @param l1Ratio2
-     * @param fitIntercept2
-     * @param eps2
-     * @param nAlphas2
-     * @param normalize2
-     * @param copyX2
-     * @return 
+     @param X2
+     @param y2
+     @param Y2
+     @param Xy2 can be null
+     @param l1Ratio2
+     @param fitIntercept2
+     @param eps2
+     @param nAlphas2
+     @param normalize2
+     @param copyX2
+     @return 
      */
     private double[] _alphaGrid(double[][] X2, double[] y2,
         double[] Xy2, double l1Ratio2, boolean fitIntercept2,
@@ -763,34 +815,34 @@ public class ElasticNet {
             eps=1e-3, n_alphas=100, normalize=False, copy_X=True):
         */
 
-<span class="nc" id="L766">        int nXData = X.length;</span>
-<span class="nc" id="L767">        int nSamples = y2.length;</span>
+<span class="nc" id="L818">        int nXData = X.length;</span>
+<span class="nc" id="L819">        int nSamples = y2.length;</span>
 
         //NOTE: have removed sparse matrix possibility from class
-<span class="nc bnc" id="L770" title="All 2 branches missed.">        if (Xy2 == null) {</span>
-<span class="nc bnc" id="L771" title="All 4 branches missed.">            if (copyX2 &amp;&amp; fitIntercept2) {</span>
-<span class="nc" id="L772">                X2 = Arrays.copyOf(X2, X2.length);</span>
+<span class="nc bnc" id="L822" title="All 2 branches missed.">        if (Xy2 == null) {</span>
+<span class="nc bnc" id="L823" title="All 4 branches missed.">            if (copyX2 &amp;&amp; fitIntercept2) {</span>
+<span class="nc" id="L824">                X2 = Arrays.copyOf(X2, X2.length);</span>
             }
-<span class="nc" id="L774">            CenResults cr = _centerData(X2, y2, fitIntercept2, normalize2, false);</span>
-<span class="nc" id="L775">            X2 = cr.X;</span>
-<span class="nc" id="L776">            y2 = cr.y;</span>
+<span class="nc" id="L826">            CenResults cr = _centerData(X2, y2, fitIntercept2, normalize2, false);</span>
+<span class="nc" id="L827">            X2 = cr.X;</span>
+<span class="nc" id="L828">            y2 = cr.y;</span>
 
-<span class="nc" id="L778">            Xy2 = MatrixUtil.multiplyMatrixByColumnVector(</span>
-<span class="nc" id="L779">                MatrixUtil.transpose(X2), y2);</span>
-<span class="nc" id="L780">        } else {</span>
-<span class="nc" id="L781">            Xy2 = Arrays.copyOf(Xy2, Xy2.length);</span>
+<span class="nc" id="L830">            Xy2 = MatrixUtil.multiplyMatrixByColumnVector(</span>
+<span class="nc" id="L831">                MatrixUtil.transpose(X2), y2);</span>
+<span class="nc" id="L832">        } else {</span>
+<span class="nc" id="L833">            Xy2 = Arrays.copyOf(Xy2, Xy2.length);</span>
         }
 
-<span class="nc" id="L784">        double alphaMax = Math.sqrt(MatrixUtil.innerProduct(Xy2, Xy2)) /</span>
+<span class="nc" id="L836">        double alphaMax = Math.sqrt(MatrixUtil.innerProduct(Xy2, Xy2)) /</span>
             (nSamples * l1Ratio2);
 
-<span class="nc" id="L787">        double start = Math.log(alphaMax * eps)/Math.log(10);</span>
+<span class="nc" id="L839">        double start = Math.log(alphaMax * eps)/Math.log(10);</span>
 
-<span class="nc" id="L789">        double stop = Math.log(alphaMax)/Math.log(10);</span>
+<span class="nc" id="L841">        double stop = Math.log(alphaMax)/Math.log(10);</span>
 
-<span class="nc" id="L791">        TDoubleList a2 = MiscMath0.logspace((float)start, (float)stop, nAlphas2, true);</span>
+<span class="nc" id="L843">        TDoubleList a2 = MiscMath0.logspace((float)start, (float)stop, nAlphas2, true);</span>
 
-<span class="nc" id="L793">        return a2.toArray(new double[a2.size()]);</span>
+<span class="nc" id="L845">        return a2.toArray(new double[a2.size()]);</span>
     }
 
     private static class CenResults {
@@ -831,7 +883,16 @@ public class ElasticNet {
               Manoj Kumar &lt;manojkumarsivaraj334@gmail.com&gt;
 
      License: BSD 3 clause
-
+     @param w
+     @param useRandom
+     @param beta2
+     @param alpha2
+     @param y2
+     @param tol2
+     @param X2
+     @param positive2
+     @param nMaxIter2
+     @return 
     */
     private CDescResults enet_coordinate_descent(
         double[] w,
@@ -841,112 +902,112 @@ public class ElasticNet {
         boolean useRandom, boolean positive2
         ) {
 
-<span class="fc" id="L844">        int nSamples = X2.length;</span>
-<span class="fc" id="L845">        int nFeatures = X2[0].length; // nCoef</span>
-<span class="fc" id="L846">        int nTasks = y2.length;</span>
+<span class="fc" id="L905">        int nSamples = X2.length;</span>
+<span class="fc" id="L906">        int nFeatures = X2[0].length; // nCoef</span>
+<span class="fc" id="L907">        int nTasks = y2.length;</span>
 
-<span class="fc" id="L848">        double d_w_tol = tol2;</span>
+<span class="fc" id="L909">        double d_w_tol = tol2;</span>
 
         //cdef np.ndarray[floating, ndim=1] norm_cols_X = (X**2).sum(axis=0)
-<span class="fc" id="L851">        double[] normColsX = new double[nFeatures];</span>
-<span class="fc bfc" id="L852" title="All 2 branches covered.">        for (int i = 0; i &lt; nFeatures; ++i) {</span>
-<span class="fc" id="L853">            double sum = 0;</span>
-<span class="fc bfc" id="L854" title="All 2 branches covered.">            for (int i0 = 0; i0 &lt; nSamples; ++i0) {</span>
-<span class="fc" id="L855">                sum += (X2[i0][i] * X2[i0][i]);</span>
+<span class="fc" id="L912">        double[] normColsX = new double[nFeatures];</span>
+<span class="fc bfc" id="L913" title="All 2 branches covered.">        for (int i = 0; i &lt; nFeatures; ++i) {</span>
+<span class="fc" id="L914">            double sum = 0;</span>
+<span class="fc bfc" id="L915" title="All 2 branches covered.">            for (int i0 = 0; i0 &lt; nSamples; ++i0) {</span>
+<span class="fc" id="L916">                sum += (X2[i0][i] * X2[i0][i]);</span>
             }
-<span class="fc" id="L857">            normColsX[i] = sum;</span>
+<span class="fc" id="L918">            normColsX[i] = sum;</span>
         }
 
         // init values of the residuals
-<span class="fc" id="L861">        double[] r = new double[nSamples];</span>
-<span class="fc" id="L862">        double[] XtA = new double[nFeatures];</span>
+<span class="fc" id="L922">        double[] r = new double[nSamples];</span>
+<span class="fc" id="L923">        double[] XtA = new double[nFeatures];</span>
 
         // R = y - np.dot(X, w)
-<span class="fc bfc" id="L865" title="All 2 branches covered.">        for (int i = 0; i &lt; nSamples; ++i) {</span>
+<span class="fc bfc" id="L926" title="All 2 branches covered.">        for (int i = 0; i &lt; nSamples; ++i) {</span>
 
             //double v = dot(nFeatures,  &amp; X_data[i], nSamples, w_data, 1);
             // X2[i] is column of length nFeatures, that is coefficients
             // w[i] is the coefficient
-<span class="fc" id="L870">            double dot = 0;</span>
-<span class="fc bfc" id="L871" title="All 2 branches covered.">            for (int j = 0; j &lt; nFeatures; ++j) {</span>
-<span class="fc" id="L872">                dot += (X2[i][j] * w[j]);</span>
+<span class="fc" id="L931">            double dot = 0;</span>
+<span class="fc bfc" id="L932" title="All 2 branches covered.">            for (int j = 0; j &lt; nFeatures; ++j) {</span>
+<span class="fc" id="L933">                dot += (X2[i][j] * w[j]);</span>
             }
 
-<span class="fc" id="L875">            r[i] = y2[i] - dot;</span>
+<span class="fc" id="L936">            r[i] = y2[i] - dot;</span>
         }
 
         // tol *= np.dot(y, y)
-<span class="fc" id="L879">        tol2 *= (MatrixUtil.innerProduct(y2, y2));</span>
+<span class="fc" id="L940">        tol2 *= (MatrixUtil.innerProduct(y2, y2));</span>
 
         int ii, nIter2;
         double w_ii;
         double t;
-<span class="fc" id="L884">        double gap = Double.NEGATIVE_INFINITY;</span>
+<span class="fc" id="L945">        double gap = Double.NEGATIVE_INFINITY;</span>
 
-<span class="fc bfc" id="L886" title="All 2 branches covered.">        for (nIter2 = 0; nIter2 &lt; nMaxIter2; ++nIter2) {</span>
-<span class="fc" id="L887">            double w_max = 0.0;</span>
-<span class="fc" id="L888">            double d_w_max = 0.0;</span>
+<span class="fc bfc" id="L947" title="All 2 branches covered.">        for (nIter2 = 0; nIter2 &lt; nMaxIter2; ++nIter2) {</span>
+<span class="fc" id="L948">            double w_max = 0.0;</span>
+<span class="fc" id="L949">            double d_w_max = 0.0;</span>
 
-<span class="fc bfc" id="L890" title="All 2 branches covered.">            for (int fIter = 0; fIter &lt; nFeatures; ++fIter) {</span>
+<span class="fc bfc" id="L951" title="All 2 branches covered.">            for (int fIter = 0; fIter &lt; nFeatures; ++fIter) {</span>
 
-<span class="fc bfc" id="L892" title="All 2 branches covered.">                if (useRandom) {</span>
+<span class="fc bfc" id="L953" title="All 2 branches covered.">                if (useRandom) {</span>
                     //ii = rand_int(n_features, rand_r_state)
-<span class="fc" id="L894">                    ii = rng.nextInt(nFeatures);</span>
+<span class="fc" id="L955">                    ii = rng.nextInt(nFeatures);</span>
                 } else {
-<span class="fc" id="L896">                    ii = fIter;</span>
+<span class="fc" id="L957">                    ii = fIter;</span>
                 }
 
-<span class="fc bfc" id="L899" title="All 2 branches covered.">                if (normColsX[ii] == 0.0) {</span>
-<span class="fc" id="L900">                    continue;</span>
+<span class="fc bfc" id="L960" title="All 2 branches covered.">                if (normColsX[ii] == 0.0) {</span>
+<span class="fc" id="L961">                    continue;</span>
                 }
 
                 // Store previous value
-<span class="fc" id="L904">                w_ii = w[ii];</span>
+<span class="fc" id="L965">                w_ii = w[ii];</span>
 
-<span class="fc bfc" id="L906" title="All 2 branches covered.">                if (w_ii != 0.0) {</span>
+<span class="fc bfc" id="L967" title="All 2 branches covered.">                if (w_ii != 0.0) {</span>
                     // R += w_ii * X[:,ii]
                     //axpy(nSamples, w_ii, X2[ii * nSamples], 1, r, 1)
-<span class="fc bfc" id="L909" title="All 2 branches covered.">                    for (int j = 0; j &lt; nSamples; ++j) {</span>
-<span class="fc" id="L910">                        r[j] += (X2[j][ii] * w_ii);</span>
+<span class="fc bfc" id="L970" title="All 2 branches covered.">                    for (int j = 0; j &lt; nSamples; ++j) {</span>
+<span class="fc" id="L971">                        r[j] += (X2[j][ii] * w_ii);</span>
                     }
                 }
 
                 //# tmp = (X[:,ii]*R).sum()
                 //tmp = dot(nSamples,  &amp; X_data[ii * nSamples], 1, R_data, 1)
-<span class="fc" id="L916">                double tmp = 0;</span>
-<span class="fc bfc" id="L917" title="All 2 branches covered.">                for (int j = 0; j &lt; nSamples; ++j) {</span>
-<span class="fc" id="L918">                    tmp += (X2[j][ii] * r[j]);</span>
+<span class="fc" id="L977">                double tmp = 0;</span>
+<span class="fc bfc" id="L978" title="All 2 branches covered.">                for (int j = 0; j &lt; nSamples; ++j) {</span>
+<span class="fc" id="L979">                    tmp += (X2[j][ii] * r[j]);</span>
                 }
 
-<span class="pc bpc" id="L921" title="3 of 4 branches missed.">                if (positive2 &amp;&amp; tmp &lt; 0) {</span>
-<span class="nc" id="L922">                    w[ii] = 0.0;</span>
+<span class="pc bpc" id="L982" title="3 of 4 branches missed.">                if (positive2 &amp;&amp; tmp &lt; 0) {</span>
+<span class="nc" id="L983">                    w[ii] = 0.0;</span>
                 } else {
-<span class="fc" id="L924">                    w[ii] =</span>
-<span class="fc" id="L925">                        (fsign(tmp) * fmax(Math.abs(tmp) - alpha2, 0)</span>
+<span class="fc" id="L985">                    w[ii] =</span>
+<span class="fc" id="L986">                        (fsign(tmp) * fmax(Math.abs(tmp) - alpha2, 0)</span>
                         / (normColsX[ii] + beta2));
                 }
 
-<span class="fc bfc" id="L929" title="All 2 branches covered.">                if (w[ii] != 0.0) {</span>
+<span class="fc bfc" id="L990" title="All 2 branches covered.">                if (w[ii] != 0.0) {</span>
                     //# R -= w[ii] * X[:,ii] # Update residual
                     //axpy(nSamples, -w[ii],  &amp; X_data[ii * nSamples], 1,
                     //    R_data, 1)
-<span class="fc bfc" id="L933" title="All 2 branches covered.">                    for (int j = 0; j &lt; nSamples; ++j) {</span>
-<span class="fc" id="L934">                        r[j] -= (X2[j][ii] * w[ii]);</span>
+<span class="fc bfc" id="L994" title="All 2 branches covered.">                    for (int j = 0; j &lt; nSamples; ++j) {</span>
+<span class="fc" id="L995">                        r[j] -= (X2[j][ii] * w[ii]);</span>
                     }
                 }
 
                 //# update the maximum absolute coefficient update
-<span class="fc" id="L939">                double d_w_ii = Math.abs(w[ii] - w_ii);</span>
-<span class="fc bfc" id="L940" title="All 2 branches covered.">                if (d_w_ii &gt; d_w_max) {</span>
-<span class="fc" id="L941">                    d_w_max = d_w_ii;</span>
+<span class="fc" id="L1000">                double d_w_ii = Math.abs(w[ii] - w_ii);</span>
+<span class="fc bfc" id="L1001" title="All 2 branches covered.">                if (d_w_ii &gt; d_w_max) {</span>
+<span class="fc" id="L1002">                    d_w_max = d_w_ii;</span>
                 }
 
-<span class="fc bfc" id="L944" title="All 2 branches covered.">                if (Math.abs(w[ii]) &gt; w_max) {</span>
-<span class="fc" id="L945">                    w_max = Math.abs(w[ii]);</span>
+<span class="fc bfc" id="L1005" title="All 2 branches covered.">                if (Math.abs(w[ii]) &gt; w_max) {</span>
+<span class="fc" id="L1006">                    w_max = Math.abs(w[ii]);</span>
                 }
             }
 
-<span class="pc bpc" id="L949" title="1 of 6 branches missed.">            if (w_max == 0.0 ||</span>
+<span class="pc bpc" id="L1010" title="1 of 6 branches missed.">            if (w_max == 0.0 ||</span>
                 d_w_max / w_max &lt; d_w_tol ||
                 nIter2 == nMaxIter2 - 1) {
                 //# the biggest coordinate update of this iteration was smaller
@@ -955,61 +1016,61 @@ public class ElasticNet {
                 //# stopping criterion
 
                 //# XtA = np.dot(X.T, R) - beta * w
-<span class="fc bfc" id="L958" title="All 2 branches covered.">                for (int i = 0; i &lt; nFeatures; ++i) {</span>
+<span class="fc bfc" id="L1019" title="All 2 branches covered.">                for (int i = 0; i &lt; nFeatures; ++i) {</span>
                     //XtA[i] = dot(nSamples,  &amp; X_data[i * nSamples],
                     //    1, R_data, 1)
                     // - beta * w[i];
-<span class="fc" id="L962">                    double dot = 0;</span>
-<span class="fc bfc" id="L963" title="All 2 branches covered.">                    for (int j = 0; j &lt; nSamples; ++j) {</span>
-<span class="fc" id="L964">                        dot += (X2[j][i] * r[j]);</span>
+<span class="fc" id="L1023">                    double dot = 0;</span>
+<span class="fc bfc" id="L1024" title="All 2 branches covered.">                    for (int j = 0; j &lt; nSamples; ++j) {</span>
+<span class="fc" id="L1025">                        dot += (X2[j][i] * r[j]);</span>
                     }
-<span class="fc" id="L966">                    XtA[i] = dot - beta2 * w[i];</span>
+<span class="fc" id="L1027">                    XtA[i] = dot - beta2 * w[i];</span>
                 }
 
                 double dual_norm_XtA;
-<span class="pc bpc" id="L970" title="1 of 2 branches missed.">                if (positive2) {</span>
-<span class="nc" id="L971">                    dual_norm_XtA = max(XtA);</span>
+<span class="pc bpc" id="L1031" title="1 of 2 branches missed.">                if (positive2) {</span>
+<span class="nc" id="L1032">                    dual_norm_XtA = max(XtA);</span>
                 } else {
-<span class="fc" id="L973">                   dual_norm_XtA = absMax(XtA);</span>
+<span class="fc" id="L1034">                   dual_norm_XtA = absMax(XtA);</span>
                 }
 
                 //# R_norm2 = np.dot(R, R)
-<span class="fc" id="L977">                double rNorm2 = MatrixUtil.innerProduct(r, r);</span>
+<span class="fc" id="L1038">                double rNorm2 = MatrixUtil.innerProduct(r, r);</span>
 
                 //# w_norm2 = np.dot(w, w)
-<span class="fc" id="L980">                double wNorm2 = MatrixUtil.innerProduct(w, w);</span>
+<span class="fc" id="L1041">                double wNorm2 = MatrixUtil.innerProduct(w, w);</span>
 
 
-<span class="fc bfc" id="L983" title="All 2 branches covered.">                if (dual_norm_XtA &gt; alpha2) {</span>
-<span class="fc" id="L984">                    t = alpha2 / dual_norm_XtA;</span>
-<span class="fc" id="L985">                    double aNorm2 = rNorm2 * (t * t);</span>
-<span class="fc" id="L986">                    gap = 0.5 * (rNorm2 + aNorm2);</span>
-<span class="fc" id="L987">                } else {</span>
-<span class="fc" id="L988">                    t = 1.0;</span>
-<span class="fc" id="L989">                    gap = rNorm2;</span>
+<span class="fc bfc" id="L1044" title="All 2 branches covered.">                if (dual_norm_XtA &gt; alpha2) {</span>
+<span class="fc" id="L1045">                    t = alpha2 / dual_norm_XtA;</span>
+<span class="fc" id="L1046">                    double aNorm2 = rNorm2 * (t * t);</span>
+<span class="fc" id="L1047">                    gap = 0.5 * (rNorm2 + aNorm2);</span>
+<span class="fc" id="L1048">                } else {</span>
+<span class="fc" id="L1049">                    t = 1.0;</span>
+<span class="fc" id="L1050">                    gap = rNorm2;</span>
                 }
 
-<span class="fc" id="L992">                double l1Norm = asum(w);</span>
+<span class="fc" id="L1053">                double l1Norm = asum(w);</span>
 
-<span class="fc" id="L994">                double rDotY = MatrixUtil.innerProduct(r, y2);</span>
+<span class="fc" id="L1055">                double rDotY = MatrixUtil.innerProduct(r, y2);</span>
                 //# np.dot(R.T, y)
-<span class="fc" id="L996">                gap += (alpha2 * l1Norm</span>
+<span class="fc" id="L1057">                gap += (alpha2 * l1Norm</span>
                     - t * rDotY + 0.5 * beta2 * (1 + t*t) * (wNorm2));
 
-<span class="fc bfc" id="L999" title="All 2 branches covered.">                if (gap &lt; tol2) {</span>
+<span class="fc bfc" id="L1060" title="All 2 branches covered.">                if (gap &lt; tol2) {</span>
                     //# return if we reached desired tolerance
-<span class="fc" id="L1001">                    break;</span>
+<span class="fc" id="L1062">                    break;</span>
                 }
             }
         }
 
-<span class="fc" id="L1006">        CDescResults results = new CDescResults();</span>
-<span class="fc" id="L1007">        results.w = w;</span>
-<span class="fc" id="L1008">        results.gap = gap;</span>
-<span class="fc" id="L1009">        results.tol = tol2;</span>
-<span class="fc" id="L1010">        results.nIter = nIter2 + 1;</span>
+<span class="fc" id="L1067">        CDescResults results = new CDescResults();</span>
+<span class="fc" id="L1068">        results.w = w;</span>
+<span class="fc" id="L1069">        results.gap = gap;</span>
+<span class="fc" id="L1070">        results.tol = tol2;</span>
+<span class="fc" id="L1071">        results.nIter = nIter2 + 1;</span>
 
-<span class="fc" id="L1012">        return results;</span>
+<span class="fc" id="L1073">        return results;</span>
     }
 
     private static class CDescResults {
@@ -1036,70 +1097,74 @@ public class ElasticNet {
     }
 
     private double fsign(double f) {
-<span class="pc bpc" id="L1039" title="1 of 2 branches missed.">        if (f == 0) {</span>
-<span class="nc" id="L1040">            return 0;</span>
-<span class="fc bfc" id="L1041" title="All 2 branches covered.">        } else if (f &gt; 0) {</span>
-<span class="fc" id="L1042">            return 1.0;</span>
+<span class="pc bpc" id="L1100" title="1 of 2 branches missed.">        if (f == 0) {</span>
+<span class="nc" id="L1101">            return 0;</span>
+<span class="fc bfc" id="L1102" title="All 2 branches covered.">        } else if (f &gt; 0) {</span>
+<span class="fc" id="L1103">            return 1.0;</span>
         } else {
-<span class="fc" id="L1044">            return -1.0;</span>
+<span class="fc" id="L1105">            return -1.0;</span>
         }
     }
 
     private double fmax(double x, double y) {
-<span class="fc bfc" id="L1049" title="All 2 branches covered.">        if (x &gt; y) {</span>
-<span class="fc" id="L1050">            return x;</span>
+<span class="fc bfc" id="L1110" title="All 2 branches covered.">        if (x &gt; y) {</span>
+<span class="fc" id="L1111">            return x;</span>
         } else {
-<span class="fc" id="L1052">            return y;</span>
+<span class="fc" id="L1113">            return y;</span>
         }
     }
 
     private double max(double[] a) {
         int i;
-<span class="nc" id="L1058">        double m = a[0];</span>
+<span class="nc" id="L1119">        double m = a[0];</span>
         double d;
-<span class="nc bnc" id="L1060" title="All 2 branches missed.">        for (i = 1; i &lt; a.length; ++i) {</span>
-<span class="nc" id="L1061">            d = a[i];</span>
-<span class="nc bnc" id="L1062" title="All 2 branches missed.">            if (d &gt; m) {</span>
-<span class="nc" id="L1063">                m = d;</span>
+<span class="nc bnc" id="L1121" title="All 2 branches missed.">        for (i = 1; i &lt; a.length; ++i) {</span>
+<span class="nc" id="L1122">            d = a[i];</span>
+<span class="nc bnc" id="L1123" title="All 2 branches missed.">            if (d &gt; m) {</span>
+<span class="nc" id="L1124">                m = d;</span>
             }
         }
-<span class="nc" id="L1066">        return m;</span>
+<span class="nc" id="L1127">        return m;</span>
     }
 
     private double absMax(double[] a) {
         int i;
-<span class="fc" id="L1071">        double m = Math.abs(a[0]);</span>
+<span class="fc" id="L1132">        double m = Math.abs(a[0]);</span>
         double d;
-<span class="fc bfc" id="L1073" title="All 2 branches covered.">        for (i = 1; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L1074">            d = Math.abs(a[i]);</span>
-<span class="fc bfc" id="L1075" title="All 2 branches covered.">            if (d &gt; m) {</span>
-<span class="fc" id="L1076">                m = d;</span>
+<span class="fc bfc" id="L1134" title="All 2 branches covered.">        for (i = 1; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L1135">            d = Math.abs(a[i]);</span>
+<span class="fc bfc" id="L1136" title="All 2 branches covered.">            if (d &gt; m) {</span>
+<span class="fc" id="L1137">                m = d;</span>
             }
         }
-<span class="fc" id="L1079">        return m;</span>
+<span class="fc" id="L1140">        return m;</span>
     }
 
     private double asum(double[] a) {
-<span class="fc" id="L1083">        double sum = 0;</span>
-<span class="fc bfc" id="L1084" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L1085">            sum += Math.abs(a[i]);</span>
+<span class="fc" id="L1144">        double sum = 0;</span>
+<span class="fc bfc" id="L1145" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L1146">            sum += Math.abs(a[i]);</span>
         }
-<span class="fc" id="L1087">        return sum;</span>
+<span class="fc" id="L1148">        return sum;</span>
     }
 
     private void setIntercept(double[] XMean, double yMean, double[] XStdv) {
-<span class="pc bpc" id="L1091" title="1 of 2 branches missed.">        if (doFitIntercept) {</span>
-<span class="fc bfc" id="L1092" title="All 2 branches covered.">            for (int i = 0; i &lt; coef.length; ++i) {</span>
-<span class="fc" id="L1093">                coef[i] /= XStdv[i];</span>
+<span class="pc bpc" id="L1152" title="1 of 2 branches missed.">        if (doFitIntercept) {</span>
+<span class="fc bfc" id="L1153" title="All 2 branches covered.">            for (int i = 0; i &lt; coef.length; ++i) {</span>
+<span class="fc" id="L1154">                coef[i] /= XStdv[i];</span>
             }
-<span class="fc" id="L1095">            this.intercept = yMean - MatrixUtil.innerProduct(XMean, coef);</span>
+<span class="fc" id="L1156">            this.intercept = yMean - MatrixUtil.innerProduct(XMean, coef);</span>
         } else {
-<span class="nc" id="L1097">            this.intercept = 0.;</span>
+<span class="nc" id="L1158">            this.intercept = 0.;</span>
         }
-<span class="fc" id="L1099">    }</span>
+<span class="fc" id="L1160">    }</span>
     
+    /**
+     *
+     @return
+     */
     public TIntArrayList _nIters() {
-<span class="fc" id="L1102">        return nIter;</span>
+<span class="fc" id="L1167">        return nIter;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

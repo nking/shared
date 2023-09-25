@@ -9,14 +9,14 @@ import java.util.Stack;
 
 /**
  Hierholzer’s Algorithm to create a euler circuit from a directed graph.
-  Euler circuit is a path that traverses every edge of a graph, and the path 
-  ends on the starting vertex.
- * &lt;pre&gt;
- * The implementation follows from:
- * https://www.geeksforgeeks.org/hierholzers-algorithm-directed-graph/
- * written by
- * https://in.linkedin.com/in/ashutosh-kumar-9527a7105
- *
+ Euler circuit is a path that traverses every edge of a graph, and the path
+ ends on the starting vertex.  Edges are only included once, but vertexes can be included more than once.
+ &lt;pre&gt;
+ The implementation follows from:
+ https://www.geeksforgeeks.org/hierholzers-algorithm-directed-graph/
+ written by
+ https://in.linkedin.com/in/ashutosh-kumar-9527a7105
+
    Geeks For Geeks  has a liberal copyright policy at:
    https://www.geeksforgeeks.org/copyright-information/?ref=footer
    an excerpt:
@@ -41,8 +41,8 @@ import java.util.Stack;
      create a euler circuit from a directed graph.
      Euler circuit is a path that traverses every edge of a graph, and the path 
      ends on the starting vertex.
-     * @param g adjacency list of directed graph
-     * @return 
+     @param g adjacency list of directed graph
+     @return 
      */
     public int[] createCircuit(TIntObjectMap&lt;TIntSet&gt; g) {
 <span class="pc bpc" id="L48" title="1 of 2 branches missed.">        if (g.isEmpty()) {</span>
@@ -59,9 +59,9 @@ import java.util.Stack;
      create a euler circuit from a directed graph.
      Euler circuit is a path that traverses every edge of a graph, and the path 
      ends on the starting vertex.
-     * @param g adjacency list of directed graph
-     * @param startNode
-     * @return 
+     @param g adjacency list of directed graph
+     @param startNode
+     @return 
      */
     public int[] createCircuit(TIntObjectMap&lt;TIntSet&gt; g, int startNode) {
 <span class="pc bpc" id="L67" title="1 of 2 branches missed.">        if (g.isEmpty()) {</span>

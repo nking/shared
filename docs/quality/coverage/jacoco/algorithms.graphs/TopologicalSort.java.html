@@ -40,7 +40,7 @@ public class TopologicalSort {
 
     /**
      * 
-     * @param dag 
+     @param dag 
      */
 <span class="fc" id="L45">    public TopologicalSort(SimpleLinkedListNode[] dag){</span>
 <span class="pc bpc" id="L46" title="2 of 4 branches missed.">        if (dag == null || dag.length == 0) {</span>
@@ -56,7 +56,7 @@ public class TopologicalSort {
      * 
      * implemented following Cormen, Leiserson, Rivest, and Stein &quot;Introduction To Algorithms&quot;.
      * Runtime complexity is &lt;em&gt;O(V + E)&lt;/em&gt;.
-     * @return indexes ordered by finish time of traversal
+     @return indexes ordered by finish time of traversal
      */
     public int[] sort() {
          //- call DFS(G) to compute finish times for each vertex v, f[v]

@@ -1,0 +1,1529 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MMIC.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">thirdparty.kit.MMCA</a> &gt; <span class="el_source">MMIC.java</span></div><h1>MMIC.java</h1><pre class="source lang-java linenums">package thirdparty.kit.MMCA;
+
+import java.util.*;
+
+/**
+Java source code (April 2014) by Hoang-Vu Nguyen
+downloaded from https://eda.mmci.uni-saarland.de/prj/mac/mac.zip
+
+Nguyen, H-V, Müller, E, Vreeken, J &amp; Böhm, K 
+Multivariate Maximal Correlation Analysis. 
+In: Proceedings of the International Conference on Machine Learning (ICML), 
+pp 775-783, JMLR: W&amp;CP vol.32, 2014. 
+
+@author Hoang-Vu Nguyen
+
+ added in this project is some amount of documentation.
+*/
+<span class="nc" id="L18">public class MMIC </span>
+{
+	@SuppressWarnings(&quot;unchecked&quot;)
+	/**
+	 * runtime complexity is of MAC is O(d^2 * N^(1.5))
+	 when the default ε of 0.5 is used.
+	 d-dimensional data set D with real-valued dimensions {X_i}_i=[1.d] and N data points.
+	 @param dataMatrix holds the data points of the dataset
+	 @param CRES cumulative residual entropy?
+	 it resembles equation(5) of nyugen et al. 2014 which is from Nyugen et al. 2013.
+	 It's used in estimating the CMI (cumulative mutual information).
+	 Cumulative Residual Entropy is another algorithm,
+	 whose authors are Rao et al. 2004:
+	 Cumulative Residual Entropy: A New Measure of Information.
+	 &quot;an alternative measure of uncertainty that extends Shannon entropy to random variables with continuous distributions.&quot;
+	 */
+	public static ArrayList&lt;MacroBin&gt;[] discretizeData(DataMatrix dataMatrix, double[] CRES) throws Exception
+	{
+		// initialize discretized data
+<span class="nc" id="L37">		Constants.DISC_DATA = new int[dataMatrix.rows][dataMatrix.cols];</span>
+		
+		// get all dimension
+<span class="nc" id="L40">		int numCols = dataMatrix.cols;</span>
+<span class="nc" id="L41">		ArrayList&lt;Integer&gt; dims = new ArrayList&lt;Integer&gt;();</span>
+<span class="nc bnc" id="L42" title="All 2 branches missed.">		for (int i = 0; i &lt; numCols; i++)</span>
+<span class="nc" id="L43">			dims.add(Integer.valueOf(i));</span>
+		
+		// initialize the list of cells and respective member points
+<span class="nc" id="L46">		ArrayList&lt;ArrayList&lt;Integer&gt;&gt; cells = new ArrayList&lt;ArrayList&lt;Integer&gt;&gt;();</span>
+<span class="nc" id="L47">		ArrayList&lt;ArrayList&lt;Integer&gt;&gt; cellPointIDs = new ArrayList&lt;ArrayList&lt;Integer&gt;&gt;();</span>
+		
+		// choose two most correlated dimensions
+<span class="nc" id="L50">		int numDims = dims.size();</span>
+<span class="nc" id="L51">		double maxPairContrast = Double.NEGATIVE_INFINITY;</span>
+<span class="nc" id="L52">		ArrayList&lt;Integer&gt; maxPair = new ArrayList&lt;Integer&gt;();</span>
+		double tmpContrast;
+		int dim1;
+		int dim2;
+<span class="nc" id="L56">		ArrayList&lt;MacroBin&gt;[] maxPairBinnings = new ArrayList[2];</span>
+<span class="nc" id="L57">		double[] maxCorrelation = new double[1];</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">		for (int i = 0; i &lt; numDims; i++)</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">			for (int j = i + 1; j &lt; numDims; j++)</span>
+			{
+<span class="nc" id="L61">				dim1 = dims.get(i);</span>
+<span class="nc" id="L62">				dim2 = dims.get(j);</span>
+				
+<span class="nc" id="L64">				ArrayList&lt;MacroBin&gt;[] tmpBinnings = MICBinningForTwoDims(dim1, dim2, dataMatrix, maxCorrelation);</span>
+<span class="nc" id="L65">				tmpContrast = maxCorrelation[0];</span>
+				
+				/*double[] a;
+				int n = tmpBinnings[0].size();
+				tmpContrast = CRES[dim1] + CRES[dim2];
+				for (int binID = 0; binID &lt; n; binID++)
+				{
+					a = new double[tmpBinnings[0].get(binID).pointIDs.size()];
+					for (int pid = 0; pid &lt; a.length; pid++)
+						a[pid] = dataMatrix.data.get(tmpBinnings[0].get(binID).pointIDs.get(pid)).measures[dim2];
+					tmpContrast -= a.length * computeCRE(a, false) / dataMatrix.rows;
+				}
+				
+				n = tmpBinnings[1].size();
+				for (int binID = 0; binID &lt; n; binID++)
+				{
+					a = new double[tmpBinnings[1].get(binID).pointIDs.size()];
+					for (int pid = 0; pid &lt; a.length; pid++)
+						a[pid] = dataMatrix.data.get(tmpBinnings[1].get(binID).pointIDs.get(pid)).measures[dim1];
+					tmpContrast -= a.length * computeCRE(a, false) / dataMatrix.rows;
+				}*/
+				
+<span class="nc bnc" id="L87" title="All 2 branches missed.">				if (tmpContrast &gt; maxPairContrast)</span>
+				{
+<span class="nc" id="L89">					maxPairContrast = tmpContrast;</span>
+<span class="nc" id="L90">					maxPair.clear();</span>
+<span class="nc" id="L91">					maxPair.add(Integer.valueOf(dim1));</span>
+<span class="nc" id="L92">					maxPair.add(Integer.valueOf(dim2));</span>
+<span class="nc" id="L93">					maxPairBinnings[0] = tmpBinnings[0];</span>
+<span class="nc" id="L94">					maxPairBinnings[1] = tmpBinnings[1];</span>
+				}
+			}
+		
+		// discretize two best dimensions
+<span class="nc" id="L99">		ArrayList&lt;MacroBin&gt;[] existingMacroBins = new ArrayList[numCols];</span>
+<span class="nc" id="L100">		ArrayList&lt;Integer&gt; processedDims = new ArrayList&lt;Integer&gt;();</span>
+<span class="nc" id="L101">		int firstDim = maxPair.get(0);</span>
+<span class="nc" id="L102">		int secondDim = maxPair.get(1);</span>
+		//System.out.println(firstDim + &quot; --- &quot; + secondDim);
+		
+<span class="nc" id="L105">		existingMacroBins[firstDim] = maxPairBinnings[0];</span>
+<span class="nc" id="L106">		updateDiscreteData(firstDim, existingMacroBins[firstDim], Constants.DISC_DATA);</span>
+<span class="nc" id="L107">		updateCells(existingMacroBins[firstDim], cells, cellPointIDs);</span>
+<span class="nc" id="L108">		double sumSingleEntropies = 0;</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">		for (int binID = 0; binID &lt; existingMacroBins[firstDim].size(); binID++)</span>
+<span class="nc" id="L110">			sumSingleEntropies -= (existingMacroBins[firstDim].get(binID).pointIDs.size() * 1.0 / dataMatrix.rows) * Math.log(existingMacroBins[firstDim].get(binID).pointIDs.size() * 1.0 / dataMatrix.rows) / Math.log(2); </span>
+<span class="nc" id="L111">		processedDims.add(Integer.valueOf(firstDim));</span>
+		
+<span class="nc" id="L113">		existingMacroBins[secondDim] = maxPairBinnings[1];</span>
+<span class="nc" id="L114">		updateDiscreteData(secondDim, existingMacroBins[secondDim], Constants.DISC_DATA);</span>
+<span class="nc" id="L115">		updateCells(existingMacroBins[secondDim], cells, cellPointIDs);</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">		for (int binID = 0; binID &lt; existingMacroBins[secondDim].size(); binID++)</span>
+<span class="nc" id="L117">			sumSingleEntropies -= (existingMacroBins[secondDim].get(binID).pointIDs.size() * 1.0 / dataMatrix.rows) * Math.log(existingMacroBins[secondDim].get(binID).pointIDs.size() * 1.0 / dataMatrix.rows) / Math.log(2);</span>
+<span class="nc" id="L118">		int n = cellPointIDs.size();</span>
+<span class="nc" id="L119">		double jointEntropy = 0;</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">		for (int cid = 0; cid &lt; n; cid++)</span>
+<span class="nc" id="L121">			jointEntropy -= (cellPointIDs.get(cid).size() * 1.0 / dataMatrix.rows) * Math.log(cellPointIDs.get(cid).size() * 1.0 / dataMatrix.rows) / Math.log(2);</span>
+<span class="nc" id="L122">		processedDims.add(Integer.valueOf(secondDim));</span>
+		
+		//System.out.println(&quot;dim &quot; + firstDim + &quot;: number of bins = &quot; + existingMacroBins[firstDim].size());
+		//System.out.println(&quot;dim &quot; + secondDim + &quot;: number of bins = &quot; + existingMacroBins[secondDim].size());
+		//System.out.println(&quot;---------------&quot;);
+		
+		// get the remaining dimensions
+<span class="nc" id="L129">		ArrayList&lt;Integer&gt; remainingDims = new ArrayList&lt;Integer&gt;();</span>
+		int curDim;
+<span class="nc bnc" id="L131" title="All 2 branches missed.">		for (int i = 0; i &lt; numDims; i++)</span>
+		{
+<span class="nc" id="L133">			curDim = dims.get(i);</span>
+<span class="nc bnc" id="L134" title="All 4 branches missed.">			if (curDim != firstDim &amp;&amp; curDim != secondDim)</span>
+<span class="nc" id="L135">				remainingDims.add(Integer.valueOf(i));</span>
+		}
+		
+		// discretize each of the remaining dimensions
+<span class="nc" id="L139">		int curLength = 2;</span>
+		int tmpDim;
+		ArrayList&lt;Double&gt; tmpResult;
+		ArrayList&lt;MicroBin&gt; initialMicroBins;
+		ArrayList&lt;MacroBin&gt; candidateMacroBins;
+<span class="nc" id="L144">		ArrayList&lt;Double&gt; distinctValues = new ArrayList&lt;Double&gt;();</span>
+<span class="nc" id="L145">		ArrayList&lt;Integer&gt; distinctValueSupports = new ArrayList&lt;Integer&gt;();</span>
+<span class="nc" id="L146">		ArrayList&lt;ArrayList&lt;Integer&gt;&gt; memberPointIDs = new ArrayList&lt;ArrayList&lt;Integer&gt;&gt;();</span>
+<span class="nc" id="L147">		int B = (int)Math.pow(dataMatrix.rows, Constants.ALPHA);</span>
+		int MAX_BINS;
+<span class="nc" id="L149">		int maxNumBinsSoFar = (int)Math.max(existingMacroBins[firstDim].size(), existingMacroBins[secondDim].size());</span>
+<span class="nc" id="L150">		SortedObject[] sos = null;</span>
+<span class="nc" id="L151">		int INIT_BIN_COUNT = 0;</span>
+<span class="nc bnc" id="L152" title="All 2 branches missed.">		if (Constants.CLUMPS == Integer.MAX_VALUE)</span>
+<span class="nc" id="L153">			INIT_BIN_COUNT = Integer.MAX_VALUE;</span>
+		else
+<span class="nc" id="L155">			INIT_BIN_COUNT = Constants.CLUMPS * B / 2;</span>
+<span class="nc bnc" id="L156" title="All 2 branches missed.">		while (curLength &lt; numDims)</span>
+		{
+<span class="nc" id="L158">			distinctValues.clear();</span>
+<span class="nc" id="L159">			distinctValueSupports.clear();</span>
+<span class="nc" id="L160">			memberPointIDs.clear();</span>
+			
+<span class="nc" id="L162">			tmpResult = computeContrastSpecial(dataMatrix, maxPair, remainingDims, CRES, cellPointIDs, processedDims, existingMacroBins, sumSingleEntropies, jointEntropy);</span>
+<span class="nc" id="L163">			tmpDim = tmpResult.get(0).intValue();</span>
+			
+<span class="nc" id="L165">			sos = getDistinctValues(tmpDim, dataMatrix, distinctValues, distinctValueSupports, memberPointIDs);</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">			if (INIT_BIN_COUNT == Integer.MAX_VALUE)</span>
+<span class="nc" id="L167">				initialMicroBins = constructAllBins(dataMatrix, distinctValues, distinctValueSupports, memberPointIDs);</span>
+			else
+<span class="nc" id="L169">				initialMicroBins = findEqualFrequencyBinning(tmpDim, dataMatrix, INIT_BIN_COUNT, sos);</span>
+<span class="nc" id="L170">			candidateMacroBins = convertMicroToMacroBins(initialMicroBins);</span>
+			
+			// discretize tmpDim
+<span class="nc" id="L173">			MAX_BINS = B / maxNumBinsSoFar;</span>
+<span class="nc" id="L174">			existingMacroBins[tmpDim] = MMICBinning(tmpDim, MAX_BINS, dataMatrix, processedDims, existingMacroBins, candidateMacroBins, cells, cellPointIDs, Constants.DISC_DATA, sumSingleEntropies, jointEntropy);</span>
+<span class="nc" id="L175">			updateDiscreteData(tmpDim, existingMacroBins[tmpDim], Constants.DISC_DATA);</span>
+<span class="nc" id="L176">			updateCells(existingMacroBins[tmpDim], cells, cellPointIDs);</span>
+<span class="nc" id="L177">			n = cellPointIDs.size();</span>
+<span class="nc" id="L178">			jointEntropy = 0;</span>
+<span class="nc bnc" id="L179" title="All 2 branches missed.">			for (int cid = 0; cid &lt; n; cid++)</span>
+<span class="nc" id="L180">				jointEntropy -= (cellPointIDs.get(cid).size() * 1.0 / dataMatrix.rows) * Math.log(cellPointIDs.get(cid).size() * 1.0 / dataMatrix.rows) / Math.log(2);</span>
+<span class="nc" id="L181">			processedDims.add(Integer.valueOf(tmpDim));</span>
+<span class="nc bnc" id="L182" title="All 2 branches missed.">			for (int binID = 0; binID &lt; existingMacroBins[tmpDim].size(); binID++)</span>
+<span class="nc" id="L183">				sumSingleEntropies -= (existingMacroBins[tmpDim].get(binID).pointIDs.size() * 1.0 / dataMatrix.rows) * Math.log(existingMacroBins[tmpDim].get(binID).pointIDs.size() * 1.0 / dataMatrix.rows) / Math.log(2);</span>
+<span class="nc" id="L184">			maxNumBinsSoFar = (int)Math.max(maxNumBinsSoFar, existingMacroBins[tmpDim].size());</span>
+			
+<span class="nc" id="L186">			curLength++;</span>
+		}
+		
+		// compute joint entropy
+<span class="nc" id="L190">		n = cellPointIDs.size();</span>
+<span class="nc" id="L191">		Constants.MTC = sumSingleEntropies;</span>
+<span class="nc bnc" id="L192" title="All 2 branches missed.">		for (int cid = 0; cid &lt; n; cid++)</span>
+<span class="nc" id="L193">			Constants.MTC += (cellPointIDs.get(cid).size() * 1.0 / dataMatrix.rows) * Math.log(cellPointIDs.get(cid).size() * 1.0 / dataMatrix.rows) / Math.log(2);</span>
+		
+		// normalize MTC
+<span class="nc" id="L196">		double sumLog = 0;</span>
+<span class="nc" id="L197">		double maxLog = Double.NEGATIVE_INFINITY;</span>
+		double val;
+<span class="nc bnc" id="L199" title="All 2 branches missed.">		for (int i = 0; i &lt; dataMatrix.cols; i++)</span>
+		{
+<span class="nc" id="L201">			val = Math.log(existingMacroBins[i].size()) / Math.log(2);</span>
+<span class="nc" id="L202">			sumLog += val;</span>
+<span class="nc bnc" id="L203" title="All 2 branches missed.">			if (val &gt; maxLog)</span>
+<span class="nc" id="L204">				maxLog = val;</span>
+		}
+<span class="nc" id="L206">		Constants.MTC = Constants.MTC / (sumLog - maxLog);</span>
+		
+<span class="nc" id="L208">		return existingMacroBins;</span>
+	}
+	
+	public static void updateCells(ArrayList&lt;MacroBin&gt; macroBins, ArrayList&lt;ArrayList&lt;Integer&gt;&gt; cells, ArrayList&lt;ArrayList&lt;Integer&gt;&gt; cellPointIDs)
+	{
+<span class="nc" id="L213">		int numBins = macroBins.size();</span>
+<span class="nc" id="L214">		int curNumCells = cells.size();</span>
+		int curCellSize;
+		int binNumPoints;
+		int count;
+		int pointID;
+		int cellPointID;
+<span class="nc" id="L220">		ArrayList&lt;Integer&gt; newCell = null;</span>
+<span class="nc" id="L221">		ArrayList&lt;Integer&gt; newCellPointIDs = null;</span>
+<span class="nc" id="L222">		ArrayList&lt;Integer&gt; curCell = null;</span>
+<span class="nc" id="L223">		ArrayList&lt;Integer&gt; curCellPointIDs = null;</span>
+<span class="nc" id="L224">		ArrayList&lt;ArrayList&lt;Integer&gt;&gt; newListCells = new ArrayList&lt;ArrayList&lt;Integer&gt;&gt;();</span>
+<span class="nc" id="L225">		ArrayList&lt;ArrayList&lt;Integer&gt;&gt; newListCellPointIDs = new ArrayList&lt;ArrayList&lt;Integer&gt;&gt;();</span>
+<span class="nc" id="L226">		MacroBin bin = null;</span>
+<span class="nc bnc" id="L227" title="All 2 branches missed.">		for (int i = 0; i &lt; numBins; i++)</span>
+		{
+<span class="nc" id="L229">			bin = macroBins.get(i);</span>
+<span class="nc" id="L230">			binNumPoints = bin.numPoints;</span>
+<span class="nc bnc" id="L231" title="All 2 branches missed.">			if (curNumCells &gt; 0)</span>
+			{
+<span class="nc bnc" id="L233" title="All 2 branches missed.">				for (int j = 0; j &lt; curNumCells; j++)</span>
+				{
+					// create the new cell
+<span class="nc" id="L236">					newCell = new ArrayList&lt;Integer&gt;();</span>
+<span class="nc" id="L237">					curCell = cells.get(j);</span>
+<span class="nc" id="L238">					curCellSize = curCell.size();</span>
+<span class="nc bnc" id="L239" title="All 2 branches missed.">					for (int z = 0; z &lt; curCellSize; z++)</span>
+<span class="nc" id="L240">						newCell.add(Integer.valueOf(curCell.get(z)));</span>
+<span class="nc" id="L241">					newCell.add(Integer.valueOf(i));</span>
+					
+					// update point IDs of the new cell
+<span class="nc" id="L244">					curCellPointIDs = cellPointIDs.get(j);</span>
+<span class="nc" id="L245">					count = curCellPointIDs.size();</span>
+<span class="nc" id="L246">					newCellPointIDs = new ArrayList&lt;Integer&gt;();</span>
+<span class="nc bnc" id="L247" title="All 2 branches missed.">					for (int h = 0; h &lt; binNumPoints; h++)</span>
+					{
+<span class="nc" id="L249">						pointID = bin.pointIDs.get(h);</span>
+<span class="nc bnc" id="L250" title="All 2 branches missed.">						for (int k = 0; k &lt; count; k++)</span>
+						{
+<span class="nc" id="L252">							cellPointID = curCellPointIDs.get(k);</span>
+<span class="nc bnc" id="L253" title="All 2 branches missed.">							if (pointID == cellPointID)</span>
+							{
+<span class="nc" id="L255">								newCellPointIDs.add(Integer.valueOf(pointID));</span>
+<span class="nc" id="L256">								break;</span>
+							}
+						} // end for
+					} // end for
+					
+					// add the new cell only if it is non-empty
+<span class="nc bnc" id="L262" title="All 2 branches missed.">					if (newCellPointIDs.size() &gt; 0)</span>
+					{
+<span class="nc" id="L264">						newListCellPointIDs.add(newCellPointIDs);</span>
+<span class="nc" id="L265">						newListCells.add(newCell);</span>
+					}
+				} // end for
+			}
+			else
+			{
+<span class="nc" id="L271">				newCell = new ArrayList&lt;Integer&gt;();</span>
+<span class="nc" id="L272">				newCell.add(Integer.valueOf(i));</span>
+<span class="nc" id="L273">				cells.add(newCell);</span>
+				
+<span class="nc" id="L275">				binNumPoints = bin.numPoints;</span>
+<span class="nc" id="L276">				newCellPointIDs = new ArrayList&lt;Integer&gt;();</span>
+<span class="nc bnc" id="L277" title="All 2 branches missed.">				for (int h = 0; h &lt; binNumPoints; h++)</span>
+				{
+<span class="nc" id="L279">					pointID = bin.pointIDs.get(h);</span>
+<span class="nc" id="L280">					newCellPointIDs.add(Integer.valueOf(pointID));</span>
+				}
+<span class="nc" id="L282">				cellPointIDs.add(newCellPointIDs);</span>
+			}
+		} // end for
+		
+		// copy the information to cells
+<span class="nc bnc" id="L287" title="All 2 branches missed.">		if (curNumCells &gt; 0)</span>
+		{
+<span class="nc" id="L289">			cells.clear();</span>
+<span class="nc" id="L290">			cellPointIDs.clear();</span>
+<span class="nc" id="L291">			curNumCells = newListCells.size();</span>
+<span class="nc bnc" id="L292" title="All 2 branches missed.">			for (int i = 0; i &lt; curNumCells; i++)</span>
+			{
+<span class="nc" id="L294">				cells.add(newListCells.get(i));</span>
+<span class="nc" id="L295">				cellPointIDs.add(newListCellPointIDs.get(i));</span>
+			}
+		}
+<span class="nc" id="L298">	}</span>
+	
+	public static void updateDiscreteData(int curDim, ArrayList&lt;MacroBin&gt; macroBins, int[][] discreteData)
+	{
+<span class="nc" id="L302">		int numMacroBins = macroBins.size();</span>
+<span class="nc" id="L303">		MacroBin macroBin = null;</span>
+		int numPoints;
+		int pointID;
+<span class="nc bnc" id="L306" title="All 2 branches missed.">		for (int i = 0; i &lt; numMacroBins; i++)</span>
+		{
+<span class="nc" id="L308">			macroBin = macroBins.get(i);</span>
+<span class="nc" id="L309">			numPoints = macroBin.pointIDs.size();</span>
+<span class="nc bnc" id="L310" title="All 2 branches missed.">			for (int j = 0; j &lt; numPoints; j++)</span>
+			{
+<span class="nc" id="L312">				pointID = macroBin.pointIDs.get(j);</span>
+<span class="nc" id="L313">				discreteData[pointID][curDim] = i;</span>
+			}
+		}
+<span class="nc" id="L316">	}</span>
+	
+	@SuppressWarnings(&quot;unchecked&quot;)
+	public static ArrayList&lt;MacroBin&gt;[] CMIBinning(int firstDim, int secondDim, int MAX_BINS, DataMatrix dataMatrix, ArrayList&lt;MacroBin&gt; candidateMacroBins) throws Exception
+	{
+<span class="nc" id="L321">		ArrayList&lt;MacroBin&gt;[] ret = new ArrayList[MAX_BINS + 1];</span>
+		
+		// create the table for dynamic programming to store already solved sub-problems
+<span class="nc" id="L324">		int numTotalMacroBins = candidateMacroBins.size();</span>
+<span class="nc" id="L325">		ArrayList&lt;MacroBin&gt;[][] dynamicBinnings = new ArrayList[numTotalMacroBins + 1][MAX_BINS + 1];</span>
+<span class="nc" id="L326">		double[][] dynamicBinningCosts = new double[numTotalMacroBins + 1][MAX_BINS + 1];</span>
+<span class="nc" id="L327">		int[][] dynamicNumPoints = new int[numTotalMacroBins + 1][MAX_BINS + 1];</span>
+		
+		// find optimal binning of size 2
+<span class="nc" id="L330">		MacroBin tmpMergeMacroBin = null;</span>
+<span class="nc" id="L331">		MacroBin tmpMergeMacroBinRight = null;</span>
+		double tmpCost;
+		double[] a, b;
+<span class="nc bnc" id="L334" title="All 2 branches missed.">		for (int numFirstMacroBins = 2; numFirstMacroBins &lt;= numTotalMacroBins; numFirstMacroBins++)</span>
+		{
+<span class="nc" id="L336">			dynamicBinningCosts[numFirstMacroBins][2] = Double.POSITIVE_INFINITY;</span>
+			
+			// loop through each possible bin position
+			// maxIndex contains the minimum bin index of the right macro bin
+<span class="nc bnc" id="L340" title="All 2 branches missed.">			for (int maxIndex = 1; maxIndex &lt; numFirstMacroBins; maxIndex++)</span>
+			{
+				// merge all macro bins from position 0 to (maxIndex - 1)
+<span class="nc" id="L343">				tmpMergeMacroBin = cloneBin(candidateMacroBins.get(0));</span>
+<span class="nc bnc" id="L344" title="All 2 branches missed.">				for (int i = 1; i &lt; maxIndex; i++)</span>
+<span class="nc" id="L345">					tmpMergeMacroBin = mergeMacroBins(tmpMergeMacroBin, candidateMacroBins.get(i));</span>
+				
+				// merge all macro bins from position maxIndex to (numFirstMacroBins - 1)
+<span class="nc" id="L348">				tmpMergeMacroBinRight = cloneBin(candidateMacroBins.get(maxIndex));</span>
+<span class="nc bnc" id="L349" title="All 2 branches missed.">				for (int i = maxIndex + 1; i &lt; numFirstMacroBins; i++)</span>
+<span class="nc" id="L350">					tmpMergeMacroBinRight = mergeMacroBins(tmpMergeMacroBinRight, candidateMacroBins.get(i));</span>
+				
+				// populate values for CMI computation
+<span class="nc" id="L353">				a = new double[tmpMergeMacroBin.numPoints];</span>
+<span class="nc" id="L354">				b = new double[tmpMergeMacroBinRight.numPoints];</span>
+<span class="nc bnc" id="L355" title="All 2 branches missed.">				for (int i = 0; i &lt; tmpMergeMacroBin.numPoints; i++)</span>
+<span class="nc" id="L356">					a[i] = dataMatrix.data.get(tmpMergeMacroBin.pointIDs.get(i)).measures[firstDim];</span>
+<span class="nc bnc" id="L357" title="All 2 branches missed.">				for (int i = 0; i &lt; tmpMergeMacroBinRight.numPoints; i++)</span>
+<span class="nc" id="L358">					b[i] = dataMatrix.data.get(tmpMergeMacroBinRight.pointIDs.get(i)).measures[firstDim];</span>
+				
+				// compute the coding cost of the temporary binning
+<span class="nc" id="L361">				tmpCost = (tmpMergeMacroBin.numPoints * computeCRE(a, false) + tmpMergeMacroBinRight.numPoints * computeCRE(b, false)) / (tmpMergeMacroBin.numPoints + tmpMergeMacroBinRight.numPoints);</span>
+				
+				// if the cost is less than the current cost, then update the cost, the binning, and the total number of points of the binning
+<span class="nc bnc" id="L364" title="All 2 branches missed.">				if (tmpCost &lt; dynamicBinningCosts[numFirstMacroBins][2])</span>
+				{
+<span class="nc" id="L366">					dynamicBinningCosts[numFirstMacroBins][2] = tmpCost;</span>
+<span class="nc" id="L367">					dynamicNumPoints[numFirstMacroBins][2] = tmpMergeMacroBin.numPoints + tmpMergeMacroBinRight.numPoints;</span>
+<span class="nc bnc" id="L368" title="All 2 branches missed.">					if (dynamicBinnings[numFirstMacroBins][2] == null)</span>
+<span class="nc" id="L369">						dynamicBinnings[numFirstMacroBins][2] = new ArrayList&lt;MacroBin&gt;();</span>
+					else
+<span class="nc" id="L371">						dynamicBinnings[numFirstMacroBins][2].clear();</span>
+<span class="nc" id="L372">					dynamicBinnings[numFirstMacroBins][2].add(tmpMergeMacroBin);</span>
+<span class="nc" id="L373">					dynamicBinnings[numFirstMacroBins][2].add(tmpMergeMacroBinRight);</span>
+				}
+			} // end for
+			
+			//System.out.println(&quot;numFirstMacroBins = &quot; + numFirstMacroBins);
+		} // end for
+		
+		// build the rest of the table
+		// for each (numMacroBins, numFirstMacroBins) pairs, find the binning that yields the smallest cost
+		int tmpTotalNumPoints;
+		int optimalPosition;
+<span class="nc" id="L384">		MacroBin optimalNewBin = null;</span>
+<span class="nc bnc" id="L385" title="All 2 branches missed.">		for (int numMacroBins = 3; numMacroBins &lt;= MAX_BINS; numMacroBins++)</span>
+		{
+<span class="nc bnc" id="L387" title="All 2 branches missed.">			for (int numFirstMacroBins = numMacroBins; numFirstMacroBins &lt;= numTotalMacroBins; numFirstMacroBins++)</span>
+			{
+<span class="nc" id="L389">				dynamicBinningCosts[numFirstMacroBins][numMacroBins] = Double.POSITIVE_INFINITY;</span>
+<span class="nc" id="L390">				optimalPosition = -1;</span>
+<span class="nc" id="L391">				optimalNewBin = null;</span>
+				
+				// loop through each possible bin position
+<span class="nc bnc" id="L394" title="All 2 branches missed.">				for (int maxIndex = numMacroBins - 1; maxIndex &lt; numFirstMacroBins; maxIndex++)</span>
+				{
+					// merge all the macro bins from position maxIndex to (numFirstMacroBins - 1)
+<span class="nc" id="L397">					tmpMergeMacroBinRight = cloneBin(candidateMacroBins.get(maxIndex));</span>
+<span class="nc bnc" id="L398" title="All 2 branches missed.">					for (int i = maxIndex + 1; i &lt; numFirstMacroBins; i++)</span>
+<span class="nc" id="L399">						tmpMergeMacroBinRight = mergeMacroBins(tmpMergeMacroBinRight, candidateMacroBins.get(i));</span>
+					
+					// compute the total number of data points
+<span class="nc" id="L402">					tmpTotalNumPoints = dynamicNumPoints[maxIndex][numMacroBins - 1] + tmpMergeMacroBinRight.numPoints;</span>
+					
+					// retrieve the stored results
+<span class="nc" id="L405">					tmpCost = dynamicNumPoints[maxIndex][numMacroBins - 1] * (dynamicBinningCosts[maxIndex][numMacroBins - 1])  / tmpTotalNumPoints;</span>
+					
+					// compute the entropy of tmpMergeMacroBinRight
+<span class="nc" id="L408">					a = new double[tmpMergeMacroBinRight.numPoints];</span>
+<span class="nc bnc" id="L409" title="All 2 branches missed.">					for (int h = 0; h &lt; tmpMergeMacroBinRight.numPoints; h++)</span>
+<span class="nc" id="L410">						a[h] = dataMatrix.data.get(tmpMergeMacroBinRight.pointIDs.get(h)).measures[firstDim];;</span>
+					
+					// increase cost
+<span class="nc" id="L413">					tmpCost += tmpMergeMacroBinRight.numPoints * computeCRE(a, false) / tmpTotalNumPoints;</span>
+					
+					// if the new cost is less than the current cost, then update the binning
+<span class="nc bnc" id="L416" title="All 2 branches missed.">					if (tmpCost &lt; 0)</span>
+<span class="nc" id="L417">						tmpCost = 0;</span>
+<span class="nc bnc" id="L418" title="All 2 branches missed.">					if (tmpCost &lt; dynamicBinningCosts[numFirstMacroBins][numMacroBins])</span>
+					{
+<span class="nc" id="L420">						dynamicBinningCosts[numFirstMacroBins][numMacroBins] = tmpCost;</span>
+<span class="nc" id="L421">						dynamicNumPoints[numFirstMacroBins][numMacroBins] = tmpTotalNumPoints;</span>
+<span class="nc" id="L422">						optimalPosition = maxIndex;</span>
+<span class="nc" id="L423">						optimalNewBin = tmpMergeMacroBinRight;</span>
+					} // end if
+				} // end for
+				
+				// update the table's entry with the binning yielding the smallest cost
+<span class="nc" id="L428">				dynamicBinnings[numFirstMacroBins][numMacroBins] = new ArrayList&lt;MacroBin&gt;();</span>
+<span class="nc bnc" id="L429" title="All 2 branches missed.">				for (int i = 0; i &lt; numMacroBins - 1; i++)</span>
+				{
+<span class="nc" id="L431">					tmpMergeMacroBin = cloneBin(dynamicBinnings[optimalPosition][numMacroBins - 1].get(i));</span>
+<span class="nc" id="L432">					dynamicBinnings[numFirstMacroBins][numMacroBins].add(tmpMergeMacroBin);</span>
+				}
+<span class="nc" id="L434">				dynamicBinnings[numFirstMacroBins][numMacroBins].add(optimalNewBin);</span>
+				
+				//System.out.println(&quot;numMacroBins = &quot; + numMacroBins + &quot; --- numFirstMacroBins = &quot; + numFirstMacroBins);
+			} // end for
+		} // end for
+		
+<span class="nc bnc" id="L440" title="All 2 branches missed.">		for (int numMacroBins = 2; numMacroBins &lt;= MAX_BINS; numMacroBins++)</span>
+<span class="nc" id="L441">			ret[numMacroBins] = dynamicBinnings[numTotalMacroBins][numMacroBins];</span>
+		
+		//System.out.println(&quot;---CMI dynamic programming---&quot;);
+		//System.out.println(&quot;firstDim = &quot; + firstDim + &quot;, secondDim = &quot; + secondDim);
+		//System.out.println();
+		
+<span class="nc" id="L447">		return ret;</span>
+	}
+	
+	@SuppressWarnings(&quot;unchecked&quot;)
+	public static ArrayList&lt;MacroBin&gt;[] MICBinningForTwoDims(int firstDim, int secondDim, DataMatrix dataMatrix, double[] maxCorrelation) throws Exception
+	{
+<span class="nc" id="L453">		ArrayList&lt;ArrayList&lt;Integer&gt;&gt; cells = new ArrayList&lt;ArrayList&lt;Integer&gt;&gt;();</span>
+<span class="nc" id="L454">		ArrayList&lt;ArrayList&lt;Integer&gt;&gt; cellPointIDs = new ArrayList&lt;ArrayList&lt;Integer&gt;&gt;();</span>
+		ArrayList&lt;MacroBin&gt; candidateMacroBinsFirst;
+		ArrayList&lt;MacroBin&gt; candidateMacroBinsSecond;
+		ArrayList&lt;MicroBin&gt; initialMicroBinsFirst;
+		ArrayList&lt;MicroBin&gt; initialMicroBinsSecond;
+<span class="nc" id="L459">		ArrayList&lt;Double&gt; distinctValuesFirstDim = new ArrayList&lt;Double&gt;();</span>
+<span class="nc" id="L460">		ArrayList&lt;Integer&gt; distinctValueSupportsFirstDim = new ArrayList&lt;Integer&gt;();</span>
+<span class="nc" id="L461">		ArrayList&lt;ArrayList&lt;Integer&gt;&gt; memberPointIDsFirstDim = new ArrayList&lt;ArrayList&lt;Integer&gt;&gt;();</span>
+<span class="nc" id="L462">		ArrayList&lt;Double&gt; distinctValuesSecondDim = new ArrayList&lt;Double&gt;();</span>
+<span class="nc" id="L463">		ArrayList&lt;Integer&gt; distinctValueSupportsSecondDim = new ArrayList&lt;Integer&gt;();</span>
+<span class="nc" id="L464">		ArrayList&lt;ArrayList&lt;Integer&gt;&gt; memberPointIDsSecondDim = new ArrayList&lt;ArrayList&lt;Integer&gt;&gt;();</span>
+		
+<span class="nc" id="L466">		int B = (int)Math.pow(dataMatrix.rows, Constants.ALPHA);</span>
+<span class="nc" id="L467">		int INIT_BIN_COUNT = 0;</span>
+<span class="nc bnc" id="L468" title="All 2 branches missed.">		if (Constants.CLUMPS == Integer.MAX_VALUE)</span>
+<span class="nc" id="L469">			INIT_BIN_COUNT = Integer.MAX_VALUE;</span>
+		else
+<span class="nc" id="L471">			INIT_BIN_COUNT = Constants.CLUMPS * B / 2;</span>
+		
+		// get distinct values
+<span class="nc" id="L474">		SortedObject[] sos1 = getDistinctValues(firstDim, dataMatrix, distinctValuesFirstDim, distinctValueSupportsFirstDim, memberPointIDsFirstDim);</span>
+<span class="nc" id="L475">		SortedObject[] sos2 = getDistinctValues(secondDim, dataMatrix, distinctValuesSecondDim, distinctValueSupportsSecondDim, memberPointIDsSecondDim);</span>
+		
+		// get initial bins
+<span class="nc bnc" id="L478" title="All 2 branches missed.">		if (INIT_BIN_COUNT == Integer.MAX_VALUE)</span>
+<span class="nc" id="L479">			initialMicroBinsFirst = constructAllBins(dataMatrix, distinctValuesFirstDim, distinctValueSupportsFirstDim, memberPointIDsFirstDim);</span>
+		else
+<span class="nc" id="L481">			initialMicroBinsFirst = findEqualFrequencyBinning(firstDim, dataMatrix, INIT_BIN_COUNT, sos1);</span>
+<span class="nc" id="L482">		candidateMacroBinsFirst = convertMicroToMacroBins(initialMicroBinsFirst);</span>
+<span class="nc bnc" id="L483" title="All 2 branches missed.">		if (INIT_BIN_COUNT == Integer.MAX_VALUE)</span>
+<span class="nc" id="L484">			initialMicroBinsSecond = constructAllBins(dataMatrix, distinctValuesSecondDim, distinctValueSupportsSecondDim, memberPointIDsSecondDim);</span>
+		else
+<span class="nc" id="L486">			initialMicroBinsSecond = findEqualFrequencyBinning(secondDim, dataMatrix, INIT_BIN_COUNT, sos2);</span>
+<span class="nc" id="L487">		candidateMacroBinsSecond = convertMicroToMacroBins(initialMicroBinsSecond);</span>
+<span class="nc" id="L488">		System.out.println(&quot;candidateMacroBinsFirst = &quot; + candidateMacroBinsFirst.size());</span>
+<span class="nc" id="L489">		System.out.println(&quot;candidateMacroBinsSecond = &quot; + candidateMacroBinsSecond.size());</span>
+		
+		// discretize two dimensions
+<span class="nc" id="L492">		ArrayList&lt;MacroBin&gt;[] OPTIMAL_BINS = new ArrayList[2];</span>
+<span class="nc" id="L493">		int MAX_BINS = B / 2;</span>
+<span class="nc" id="L494">		System.out.println(&quot;MAX_BINS = &quot; + MAX_BINS);</span>
+<span class="nc" id="L495">		ArrayList&lt;MacroBin&gt;[] firstBinningList = CMIBinning(secondDim, firstDim, MAX_BINS, dataMatrix, candidateMacroBinsFirst);</span>
+<span class="nc" id="L496">		ArrayList&lt;MacroBin&gt;[] secondBinningList = CMIBinning(firstDim, secondDim, MAX_BINS, dataMatrix, candidateMacroBinsSecond);</span>
+		int limit;
+		int n;
+		double sumSingleEntropies, jointEntropy;
+<span class="nc" id="L500">		double maxCost = Double.NEGATIVE_INFINITY;</span>
+<span class="nc" id="L501">		int maxX = -1;</span>
+<span class="nc" id="L502">		int maxY = -1;</span>
+		double cost;
+<span class="nc bnc" id="L504" title="All 2 branches missed.">		for (int x = 2; x &lt;= MAX_BINS; x++)</span>
+		{
+<span class="nc bnc" id="L506" title="All 2 branches missed.">			if (firstBinningList[x] == null)</span>
+<span class="nc" id="L507">				continue;</span>
+			
+<span class="nc" id="L509">			limit = B / x;</span>
+<span class="nc bnc" id="L510" title="All 2 branches missed.">			if (limit &lt; 2)</span>
+<span class="nc" id="L511">				limit = 2;</span>
+<span class="nc bnc" id="L512" title="All 2 branches missed.">			if (limit &gt; MAX_BINS)</span>
+<span class="nc" id="L513">				limit = MAX_BINS;</span>
+			
+<span class="nc bnc" id="L515" title="All 2 branches missed.">			for (int y = 2; y &lt;= limit; y++)</span>
+			{
+<span class="nc bnc" id="L517" title="All 2 branches missed.">				if (secondBinningList[y] == null)</span>
+<span class="nc" id="L518">					continue;</span>
+				
+<span class="nc" id="L520">				cells.clear();</span>
+<span class="nc" id="L521">				cellPointIDs.clear();</span>
+<span class="nc" id="L522">				updateCells(firstBinningList[x], cells, cellPointIDs);</span>
+<span class="nc" id="L523">				updateCells(secondBinningList[y], cells, cellPointIDs);</span>
+<span class="nc" id="L524">				n = cellPointIDs.size();</span>
+<span class="nc" id="L525">				jointEntropy = 0;</span>
+<span class="nc bnc" id="L526" title="All 2 branches missed.">				for (int cid = 0; cid &lt; n; cid++)</span>
+<span class="nc" id="L527">					jointEntropy -= (cellPointIDs.get(cid).size() * 1.0 / dataMatrix.rows) * Math.log(cellPointIDs.get(cid).size() * 1.0 / dataMatrix.rows) / Math.log(2);</span>
+<span class="nc" id="L528">				sumSingleEntropies = 0;</span>
+<span class="nc bnc" id="L529" title="All 2 branches missed.">				for (int binID = 0; binID &lt; firstBinningList[x].size(); binID++)</span>
+<span class="nc" id="L530">					sumSingleEntropies -= (firstBinningList[x].get(binID).pointIDs.size() * 1.0 / dataMatrix.rows) * Math.log(firstBinningList[x].get(binID).pointIDs.size() * 1.0 / dataMatrix.rows) / Math.log(2);</span>
+<span class="nc bnc" id="L531" title="All 2 branches missed.">				for (int binID = 0; binID &lt; secondBinningList[y].size(); binID++)</span>
+<span class="nc" id="L532">					sumSingleEntropies -= (secondBinningList[y].get(binID).pointIDs.size() * 1.0 / dataMatrix.rows) * Math.log(secondBinningList[y].get(binID).pointIDs.size() * 1.0 / dataMatrix.rows) / Math.log(2);</span>
+				
+<span class="nc" id="L534">				cost = (sumSingleEntropies - jointEntropy) / Math.min(Math.log(x) / Math.log(2), Math.log(y) / Math.log(2));</span>
+<span class="nc bnc" id="L535" title="All 2 branches missed.">				if (cost &lt; 0)</span>
+<span class="nc" id="L536">					cost = 0;</span>
+				
+<span class="nc bnc" id="L538" title="All 2 branches missed.">				if (cost &gt; maxCost)</span>
+				{
+<span class="nc" id="L540">					maxCost = cost;</span>
+<span class="nc" id="L541">					maxX = x;</span>
+<span class="nc" id="L542">					maxY = y;</span>
+				}
+			}
+		}
+<span class="nc" id="L546">		OPTIMAL_BINS[0] = firstBinningList[maxX];</span>
+<span class="nc" id="L547">		OPTIMAL_BINS[1] = secondBinningList[maxY];</span>
+<span class="nc" id="L548">		maxCorrelation[0] = maxCost;</span>
+		//System.out.println(&quot;maxCost = &quot; + maxCost);
+		//System.out.println(&quot;-----------&quot;);
+<span class="nc" id="L551">		return OPTIMAL_BINS;</span>
+	}
+	
+	public static ArrayList&lt;MacroBin&gt; convertMicroToMacroBins(ArrayList&lt;MicroBin&gt; initialMicroBins)
+	{
+<span class="nc" id="L556">		ArrayList&lt;MacroBin&gt; ret = new ArrayList&lt;MacroBin&gt;();</span>
+		
+		// for each micro bin, create a macro bin containing it
+<span class="nc" id="L559">		int numMicroBins = initialMicroBins.size();</span>
+		int pointID;
+<span class="nc" id="L561">		MacroBin tmpMacroBin = null;</span>
+<span class="nc" id="L562">		MicroBin tmpMicroBin = null;</span>
+<span class="nc bnc" id="L563" title="All 2 branches missed.">		for (int i = 0; i &lt; numMicroBins; i++)</span>
+		{
+<span class="nc" id="L565">			tmpMicroBin = initialMicroBins.get(i);</span>
+<span class="nc" id="L566">			tmpMacroBin = new MacroBin(tmpMicroBin.lowerBound, tmpMicroBin.upperBound);</span>
+<span class="nc" id="L567">			tmpMacroBin.numPoints = tmpMicroBin.pointIDs.size();</span>
+<span class="nc" id="L568">			tmpMacroBin.microBinIDs.add(Integer.valueOf(i));</span>
+<span class="nc bnc" id="L569" title="All 2 branches missed.">			for (int j = 0; j &lt; tmpMacroBin.numPoints; j++)</span>
+			{
+<span class="nc" id="L571">				pointID = tmpMicroBin.pointIDs.get(j);</span>
+<span class="nc" id="L572">				tmpMacroBin.pointIDs.add(Integer.valueOf(pointID));</span>
+			}
+<span class="nc" id="L574">			ret.add(tmpMacroBin);</span>
+		}
+		
+<span class="nc" id="L577">		return ret;</span>
+	}
+	
+	public static SortedObject[] getDistinctValues(int curDim, DataMatrix dataMatrix, ArrayList&lt;Double&gt; distinctValues, ArrayList&lt;Integer&gt; distinctValueSupports, ArrayList&lt;ArrayList&lt;Integer&gt;&gt; memberPointIDs)
+	{
+		// sort the data along the curDim dimension in ascending order
+<span class="nc" id="L583">		int numRows = dataMatrix.rows;</span>
+<span class="nc" id="L584">		DataPoint curPoint = null;</span>
+<span class="nc" id="L585">		SortedObjectComparator c = new SortedObjectComparator();</span>
+<span class="nc" id="L586">		SortedObject[] tmp = new SortedObject[numRows];</span>
+<span class="nc bnc" id="L587" title="All 2 branches missed.">		for (int i = 0; i &lt; numRows; i++)</span>
+		{
+<span class="nc" id="L589">			curPoint = dataMatrix.data.get(i);</span>
+<span class="nc" id="L590">			tmp[i] = new SortedObject(i, curPoint.measures[curDim]);</span>
+		}
+<span class="nc" id="L592">		Arrays.sort(tmp, c);</span>
+		 
+		// get distinct values, the supports of distinct values, and IDs of member points of distinct values
+		int curCount;
+<span class="nc" id="L596">		double curVal = tmp[0].value;</span>
+<span class="nc" id="L597">		distinctValues.add(Double.valueOf(curVal));</span>
+<span class="nc" id="L598">		curCount = 1;</span>
+<span class="nc" id="L599">		ArrayList&lt;Integer&gt; tmpPointIDs = new ArrayList&lt;Integer&gt;();</span>
+<span class="nc" id="L600">		tmpPointIDs.add(Integer.valueOf(tmp[0].index));</span>
+<span class="nc bnc" id="L601" title="All 2 branches missed.">		for (int i = 1; i &lt; numRows; i++)</span>
+		{
+<span class="nc bnc" id="L603" title="All 2 branches missed.">			if (tmp[i].value == curVal)</span>
+			{
+<span class="nc" id="L605">				curCount++;</span>
+<span class="nc" id="L606">				tmpPointIDs.add(Integer.valueOf(tmp[i].index));</span>
+<span class="nc bnc" id="L607" title="All 2 branches missed.">				if (i == numRows - 1)</span>
+				{
+<span class="nc" id="L609">					distinctValueSupports.add(Integer.valueOf(curCount));</span>
+<span class="nc" id="L610">					memberPointIDs.add(tmpPointIDs);</span>
+				}
+			}
+			else
+			{
+<span class="nc" id="L615">				distinctValueSupports.add(Integer.valueOf(curCount));</span>
+<span class="nc" id="L616">				memberPointIDs.add(tmpPointIDs);</span>
+<span class="nc" id="L617">				curVal = tmp[i].value;</span>
+<span class="nc" id="L618">				distinctValues.add(Double.valueOf(curVal));</span>
+<span class="nc" id="L619">				curCount = 1;</span>
+<span class="nc" id="L620">				tmpPointIDs = new ArrayList&lt;Integer&gt;();</span>
+<span class="nc" id="L621">				tmpPointIDs.add(Integer.valueOf(tmp[i].index));</span>
+<span class="nc bnc" id="L622" title="All 2 branches missed.">				if (i == numRows - 1)</span>
+				{
+<span class="nc" id="L624">					distinctValueSupports.add(Integer.valueOf(curCount));</span>
+<span class="nc" id="L625">					memberPointIDs.add(tmpPointIDs);</span>
+				}
+			}
+		} // end for
+		
+<span class="nc" id="L630">		return tmp;</span>
+	}
+	
+	@SuppressWarnings(&quot;unchecked&quot;)
+	public static ArrayList&lt;MacroBin&gt; MMICBinning(int curDim, int MAX_BINS, DataMatrix dataMatrix, ArrayList&lt;Integer&gt; processedDims, ArrayList&lt;MacroBin&gt;[] existingMacroBins, ArrayList&lt;MacroBin&gt; candidateMacroBins, ArrayList&lt;ArrayList&lt;Integer&gt;&gt; cells, ArrayList&lt;ArrayList&lt;Integer&gt;&gt; cellPointIDs, int[][] discreteData, double sumSingleEntropies, double jointEntropy) throws Exception
+	{
+<span class="nc" id="L636">		ArrayList&lt;MacroBin&gt; ret = new ArrayList&lt;MacroBin&gt;();</span>
+		
+<span class="nc" id="L638">		double logBase = Math.log(Constants.LOG_BASE);</span>
+<span class="nc" id="L639">		int numProcessedDims = processedDims.size();</span>
+<span class="nc" id="L640">		int[] procDims = new int[numProcessedDims];</span>
+<span class="nc" id="L641">		double sumLog = 0;</span>
+<span class="nc" id="L642">		double maxLog = Double.NEGATIVE_INFINITY;</span>
+		double val;
+<span class="nc bnc" id="L644" title="All 2 branches missed.">		for (int i = 0; i &lt; numProcessedDims; i++)</span>
+		{
+<span class="nc" id="L646">			procDims[i] = processedDims.get(i);</span>
+<span class="nc" id="L647">			val = Math.log(existingMacroBins[procDims[i]].size()) / logBase;</span>
+<span class="nc" id="L648">			sumLog += val;</span>
+<span class="nc bnc" id="L649" title="All 2 branches missed.">			if (val &gt; maxLog)</span>
+<span class="nc" id="L650">				maxLog = val;</span>
+		}
+		
+		// create the table for dynamic programming to store already solved sub-problems
+<span class="nc" id="L654">		int numTotalMacroBins = candidateMacroBins.size();</span>
+<span class="nc" id="L655">		ArrayList&lt;MacroBin&gt;[][] dynamicBinnings = new ArrayList[numTotalMacroBins + 1][MAX_BINS + 1];</span>
+<span class="nc" id="L656">		double[][] dynamicBinningCosts = new double[numTotalMacroBins + 1][MAX_BINS + 1];</span>
+<span class="nc" id="L657">		int[][] dynamicNumPoints = new int[numTotalMacroBins + 1][MAX_BINS + 1];</span>
+		
+		// find optimal binning of size 2
+<span class="nc" id="L660">		MacroBin tmpMergeMacroBin = null;</span>
+<span class="nc" id="L661">		MacroBin tmpMergeMacroBinRight = null;</span>
+		double tmpCost;
+<span class="nc" id="L663">		ArrayList&lt;MacroBin&gt; tmpMacroBins = new ArrayList&lt;MacroBin&gt;();</span>
+<span class="nc" id="L664">		ArrayList&lt;Integer&gt; pointIDs = new ArrayList&lt;Integer&gt;();</span>
+		int pointID;
+<span class="nc" id="L666">		int[] counts = null;</span>
+<span class="nc bnc" id="L667" title="All 2 branches missed.">		for (int numFirstMacroBins = 2; numFirstMacroBins &lt;= numTotalMacroBins; numFirstMacroBins++)</span>
+		{
+<span class="nc" id="L669">			dynamicBinningCosts[numFirstMacroBins][2] = Double.NEGATIVE_INFINITY;</span>
+<span class="nc" id="L670">			pointIDs.clear();</span>
+			
+			// loop through each possible bin position
+			// maxIndex contains the minimum bin index of the right macro bin
+<span class="nc bnc" id="L674" title="All 2 branches missed.">			for (int maxIndex = 1; maxIndex &lt; numFirstMacroBins; maxIndex++)</span>
+			{
+				// clear the temporary binning
+<span class="nc" id="L677">				tmpMacroBins.clear();</span>
+				
+				// merge all macro bins from position 0 to (maxIndex - 1)
+<span class="nc" id="L680">				tmpMergeMacroBin = cloneBin(candidateMacroBins.get(0));</span>
+<span class="nc bnc" id="L681" title="All 2 branches missed.">				for (int i = 1; i &lt; maxIndex; i++)</span>
+<span class="nc" id="L682">					tmpMergeMacroBin = mergeMacroBins(tmpMergeMacroBin, candidateMacroBins.get(i));</span>
+				
+				// merge all macro bins from position maxIndex to (numFirstMacroBins - 1)
+<span class="nc" id="L685">				tmpMergeMacroBinRight = cloneBin(candidateMacroBins.get(maxIndex));</span>
+<span class="nc bnc" id="L686" title="All 2 branches missed.">				for (int i = maxIndex + 1; i &lt; numFirstMacroBins; i++)</span>
+<span class="nc" id="L687">					tmpMergeMacroBinRight = mergeMacroBins(tmpMergeMacroBinRight, candidateMacroBins.get(i));</span>
+				
+				// populate pointIDs
+<span class="nc bnc" id="L690" title="All 2 branches missed.">				if (maxIndex == 1)</span>
+				{
+<span class="nc bnc" id="L692" title="All 2 branches missed.">					for (int i = 0; i &lt; tmpMergeMacroBin.numPoints; i++)</span>
+<span class="nc" id="L693">						pointIDs.add(Integer.valueOf(tmpMergeMacroBin.pointIDs.get(i)));</span>
+					
+<span class="nc bnc" id="L695" title="All 2 branches missed.">					for (int i = 0; i &lt; tmpMergeMacroBinRight.numPoints; i++)</span>
+<span class="nc" id="L696">						pointIDs.add(Integer.valueOf(tmpMergeMacroBinRight.pointIDs.get(i)));</span>
+				}
+				
+				// add two new macro bins to the temporary binning
+<span class="nc" id="L700">				tmpMacroBins.add(tmpMergeMacroBin);</span>
+<span class="nc" id="L701">				tmpMacroBins.add(tmpMergeMacroBinRight);</span>
+				
+				// compute the coding cost of the temporary binning
+<span class="nc" id="L704">				tmpCost = computeCorrelation(dataMatrix, procDims, discreteData, curDim, tmpMacroBins, tmpMergeMacroBin.numPoints + tmpMergeMacroBinRight.numPoints, dataMatrix.rows, cells, cellPointIDs);</span>
+				
+				// if the cost is larger than the current cost, then update the cost, the binning, and the total number of points of the binning
+<span class="nc bnc" id="L707" title="All 2 branches missed.">				if (tmpCost &gt; dynamicBinningCosts[numFirstMacroBins][2])</span>
+				{
+<span class="nc" id="L709">					dynamicBinningCosts[numFirstMacroBins][2] = tmpCost;</span>
+<span class="nc" id="L710">					dynamicNumPoints[numFirstMacroBins][2] = tmpMergeMacroBin.numPoints + tmpMergeMacroBinRight.numPoints;</span>
+<span class="nc bnc" id="L711" title="All 2 branches missed.">					if (dynamicBinnings[numFirstMacroBins][2] == null)</span>
+<span class="nc" id="L712">						dynamicBinnings[numFirstMacroBins][2] = new ArrayList&lt;MacroBin&gt;();</span>
+					else
+<span class="nc" id="L714">						dynamicBinnings[numFirstMacroBins][2].clear();</span>
+<span class="nc" id="L715">					dynamicBinnings[numFirstMacroBins][2].add(tmpMergeMacroBin);</span>
+<span class="nc" id="L716">					dynamicBinnings[numFirstMacroBins][2].add(tmpMergeMacroBinRight);</span>
+				}
+			} // end for
+			
+			//System.out.println(&quot;numFirstMacroBins = &quot; + numFirstMacroBins);
+		} // end for
+		
+<span class="nc bnc" id="L723" title="All 2 branches missed.">		for (int numFirstMacroBins = 2; numFirstMacroBins &lt;= numTotalMacroBins; numFirstMacroBins++)</span>
+		{
+<span class="nc" id="L725">			dynamicBinningCosts[numFirstMacroBins][2] += sumSingleEntropies;</span>
+<span class="nc bnc" id="L726" title="All 2 branches missed.">			if (Math.abs(dynamicBinningCosts[numFirstMacroBins][2]) &lt; Constants.MAX_ERROR)</span>
+<span class="nc" id="L727">				dynamicBinningCosts[numFirstMacroBins][2] = 0;</span>
+<span class="nc bnc" id="L728" title="All 2 branches missed.">			if (dynamicBinningCosts[numFirstMacroBins][2] &lt; 0)</span>
+<span class="nc" id="L729">				dynamicBinningCosts[numFirstMacroBins][2] = 0;</span>
+				//throw new Exception(&quot;negative entropy = &quot; + dynamicBinningCosts[numFirstMacroBins][2]);
+		}
+		
+		// build the rest of the table
+		// for each (numMacroBins, numFirstMacroBins) pairs, find the binning that yields the smallest cost
+		int tmpTotalNumPoints;
+		int optimalPosition;
+<span class="nc" id="L737">		MacroBin optimalNewBin = null;</span>
+<span class="nc" id="L738">		int numCells = cellPointIDs.size();</span>
+<span class="nc" id="L739">		counts = new int[numCells];</span>
+<span class="nc" id="L740">		ArrayList&lt;Integer&gt; curCell = null;</span>
+<span class="nc" id="L741">		ArrayList&lt;Integer&gt; cellIDs = new ArrayList&lt;Integer&gt;();</span>
+		int curBinID;
+		int cellBinID;
+		int totalPoints;
+		boolean match;
+<span class="nc bnc" id="L746" title="All 2 branches missed.">		for (int numMacroBins = 3; numMacroBins &lt;= MAX_BINS; numMacroBins++)</span>
+		{
+<span class="nc bnc" id="L748" title="All 2 branches missed.">			for (int numFirstMacroBins = numMacroBins; numFirstMacroBins &lt;= numTotalMacroBins; numFirstMacroBins++)</span>
+			{
+<span class="nc" id="L750">				dynamicBinningCosts[numFirstMacroBins][numMacroBins] = Double.NEGATIVE_INFINITY;</span>
+<span class="nc" id="L751">				optimalPosition = -1;</span>
+<span class="nc" id="L752">				optimalNewBin = null;</span>
+				
+				// loop through each possible bin position
+<span class="nc bnc" id="L755" title="All 2 branches missed.">				for (int maxIndex = numMacroBins - 1; maxIndex &lt; numFirstMacroBins; maxIndex++)</span>
+				{
+					// merge all the macro bins from position maxIndex to (numFirstMacroBins - 1)
+<span class="nc" id="L758">					tmpMergeMacroBinRight = cloneBin(candidateMacroBins.get(maxIndex));</span>
+<span class="nc bnc" id="L759" title="All 2 branches missed.">					for (int i = maxIndex + 1; i &lt; numFirstMacroBins; i++)</span>
+<span class="nc" id="L760">						tmpMergeMacroBinRight = mergeMacroBins(tmpMergeMacroBinRight, candidateMacroBins.get(i));</span>
+					
+					// compute the total number of data points
+<span class="nc" id="L763">					tmpTotalNumPoints = dynamicNumPoints[maxIndex][numMacroBins - 1] + tmpMergeMacroBinRight.numPoints;</span>
+					
+					// retrieve the stored results
+<span class="nc" id="L766">					tmpCost = dynamicNumPoints[maxIndex][numMacroBins - 1] * (dynamicBinningCosts[maxIndex][numMacroBins - 1] - sumSingleEntropies) / tmpTotalNumPoints;</span>
+					
+					// clear point counts
+<span class="nc bnc" id="L769" title="All 2 branches missed.">					for (int j = 0; j &lt; numCells; j++)</span>
+<span class="nc" id="L770">						counts[j] = 0;</span>
+					
+					// compute the entropy of tmpMergeMacroBinRight
+<span class="nc" id="L773">					totalPoints = 0;</span>
+<span class="nc bnc" id="L774" title="All 2 branches missed.">					for (int h = 0; h &lt; tmpMergeMacroBinRight.numPoints; h++)</span>
+					{
+<span class="nc" id="L776">						pointID = tmpMergeMacroBinRight.pointIDs.get(h);</span>
+<span class="nc" id="L777">						cellIDs.clear();</span>
+<span class="nc bnc" id="L778" title="All 2 branches missed.">						for (int k = 0; k &lt; numProcessedDims; k++)</span>
+<span class="nc" id="L779">							cellIDs.add(Integer.valueOf(discreteData[pointID][procDims[k]]));</span>
+						
+<span class="nc bnc" id="L781" title="All 2 branches missed.">						for (int j = 0; j &lt; numCells; j++)</span>
+						{
+<span class="nc bnc" id="L783" title="All 2 branches missed.">							if (h == 0)</span>
+<span class="nc" id="L784">								counts[j] = 0;</span>
+							
+<span class="nc" id="L786">							curCell = cells.get(j);</span>
+<span class="nc" id="L787">							match = true;</span>
+<span class="nc bnc" id="L788" title="All 2 branches missed.">							for (int k = 0; k &lt; numProcessedDims; k++)</span>
+							{
+<span class="nc" id="L790">								curBinID = cellIDs.get(k);</span>
+<span class="nc" id="L791">								cellBinID = curCell.get(k);</span>
+<span class="nc bnc" id="L792" title="All 2 branches missed.">								if (curBinID != cellBinID)</span>
+								{
+<span class="nc" id="L794">									match = false;</span>
+<span class="nc" id="L795">									break;</span>
+								}
+							} // end for
+							
+<span class="nc bnc" id="L799" title="All 2 branches missed.">							if (match == true)</span>
+							{
+<span class="nc" id="L801">								counts[j]++;</span>
+<span class="nc" id="L802">								break;</span>
+							}
+						} // end for
+					} // end for
+					
+					// increase cost
+<span class="nc bnc" id="L808" title="All 2 branches missed.">					for (int j = 0; j &lt; numCells; j++)</span>
+					{
+<span class="nc" id="L810">						totalPoints += counts[j];</span>
+<span class="nc bnc" id="L811" title="All 2 branches missed.">						if (counts[j] &gt; 0)</span>
+<span class="nc" id="L812">							tmpCost += (tmpMergeMacroBinRight.numPoints * 1.0 / tmpTotalNumPoints) * (counts[j] * 1.0 / tmpMergeMacroBinRight.numPoints) * Math.log(counts[j] * 1.0 / tmpMergeMacroBinRight.numPoints) / logBase;</span>
+					}
+					
+					// this serves as control check
+<span class="nc bnc" id="L816" title="All 2 branches missed.">					if (totalPoints != tmpMergeMacroBinRight.numPoints)</span>
+					{
+						//System.out.println(totalPoints + &quot; --- &quot; + tmpMergeMacroBinRight.numPoints);
+<span class="nc" id="L819">						throw new Exception(&quot;total points not match&quot;);</span>
+					}
+						
+					// if the new cost is larger than the current cost, then update the binning
+<span class="nc" id="L823">					tmpCost += sumSingleEntropies;</span>
+<span class="nc bnc" id="L824" title="All 2 branches missed.">					if (tmpCost &lt; 0)</span>
+<span class="nc" id="L825">						tmpCost = 0;</span>
+<span class="nc bnc" id="L826" title="All 2 branches missed.">					if (tmpCost &gt; dynamicBinningCosts[numFirstMacroBins][numMacroBins])</span>
+					{
+<span class="nc" id="L828">						dynamicBinningCosts[numFirstMacroBins][numMacroBins] = tmpCost;</span>
+<span class="nc" id="L829">						dynamicNumPoints[numFirstMacroBins][numMacroBins] = tmpTotalNumPoints;</span>
+<span class="nc" id="L830">						optimalPosition = maxIndex;</span>
+<span class="nc" id="L831">						optimalNewBin = tmpMergeMacroBinRight;</span>
+					} // end if
+				} // end for
+				
+				// update the table's entry with the binning yielding the largest cost
+<span class="nc" id="L836">				dynamicBinnings[numFirstMacroBins][numMacroBins] = new ArrayList&lt;MacroBin&gt;();</span>
+<span class="nc bnc" id="L837" title="All 2 branches missed.">				for (int i = 0; i &lt; numMacroBins - 1; i++)</span>
+				{
+<span class="nc" id="L839">					tmpMergeMacroBin = cloneBin(dynamicBinnings[optimalPosition][numMacroBins - 1].get(i));</span>
+<span class="nc" id="L840">					dynamicBinnings[numFirstMacroBins][numMacroBins].add(tmpMergeMacroBin);</span>
+				}
+<span class="nc" id="L842">				dynamicBinnings[numFirstMacroBins][numMacroBins].add(optimalNewBin);</span>
+				
+				//System.out.println(&quot;numMacroBins = &quot; + numMacroBins + &quot; --- numFirstMacroBins = &quot; + numFirstMacroBins);
+			} // end for
+		} // end for
+		
+<span class="nc" id="L848">		double maxCost = Double.NEGATIVE_INFINITY;</span>
+<span class="nc" id="L849">		int maxNumMacroBins = -1;</span>
+		double normalizedCost;
+<span class="nc bnc" id="L851" title="All 2 branches missed.">		for (int numMacroBins = 2; numMacroBins &lt;= MAX_BINS; numMacroBins++)</span>
+		{
+<span class="nc" id="L853">			val = Math.log(numMacroBins) / logBase;</span>
+<span class="nc" id="L854">			normalizedCost = dynamicBinningCosts[numTotalMacroBins][numMacroBins] / (sumLog + val - Math.max(maxLog, val));</span>
+			
+<span class="nc bnc" id="L856" title="All 2 branches missed.">			if (normalizedCost &gt; maxCost)</span>
+			{
+<span class="nc" id="L858">				maxCost = normalizedCost;</span>
+<span class="nc" id="L859">				maxNumMacroBins = numMacroBins;</span>
+			}
+		}
+<span class="nc bnc" id="L862" title="All 2 branches missed.">		for (int i = 0; i &lt; maxNumMacroBins; i++)</span>
+<span class="nc" id="L863">			ret.add(dynamicBinnings[numTotalMacroBins][maxNumMacroBins].get(i));</span>
+		
+		//System.out.println(&quot;dim &quot; + curDim + &quot;: number of bins = &quot; + maxNumMacroBins);
+		//System.out.println(&quot;Cost = &quot; + maxCost);
+		//System.out.println(&quot;-----------&quot;);
+		
+<span class="nc" id="L869">		return ret;</span>
+	}
+	
+	// clone a macro bin
+	public static MacroBin cloneBin(MacroBin a)
+	{
+		// init the new macro bin
+<span class="nc" id="L876">		MacroBin ret = new MacroBin(a.lowerBound, a.upperBound);</span>
+		
+		// get the total number of data points
+<span class="nc" id="L879">		ret.numPoints = a.numPoints;</span>
+<span class="nc bnc" id="L880" title="All 2 branches missed.">		for (int i = 0; i &lt; a.numPoints; i++)</span>
+<span class="nc" id="L881">			ret.pointIDs.add(Integer.valueOf(a.pointIDs.get(i)));</span>
+		
+		// get the IDs of micro bins
+<span class="nc" id="L884">		int numMicroBinsA = a.microBinIDs.size();</span>
+<span class="nc bnc" id="L885" title="All 2 branches missed.">		for (int i = 0; i &lt; numMicroBinsA; i++)</span>
+<span class="nc" id="L886">			ret.microBinIDs.add(Integer.valueOf(a.microBinIDs.get(i)));</span>
+		
+<span class="nc" id="L888">		return ret;</span>
+	}
+	
+	// merge two macro bins
+	public static MacroBin mergeMacroBins(MacroBin a, MacroBin b) throws Exception
+	{	
+		// init the new macro bin
+<span class="nc bnc" id="L895" title="All 2 branches missed.">		if (a.lowerBound &gt; b.upperBound)</span>
+<span class="nc" id="L896">			throw new Exception(&quot;Invalid bin merge&quot;);</span>
+		
+<span class="nc" id="L898">		MacroBin ret = new MacroBin(a.lowerBound, b.upperBound);</span>
+		
+		// get the total number of data points
+<span class="nc" id="L901">		ret.numPoints = a.numPoints + b.numPoints;</span>
+<span class="nc" id="L902">		ret.pointIDs = a.pointIDs;</span>
+<span class="nc bnc" id="L903" title="All 2 branches missed.">		for (int i = 0; i &lt; b.numPoints; i++)</span>
+<span class="nc" id="L904">			ret.pointIDs.add(Integer.valueOf(b.pointIDs.get(i)));</span>
+		
+		// get the IDs of micro bins
+<span class="nc" id="L907">		int numMicroBinsB = b.microBinIDs.size();</span>
+<span class="nc" id="L908">		ret.microBinIDs = a.microBinIDs;</span>
+<span class="nc bnc" id="L909" title="All 2 branches missed.">		for (int i = 0; i &lt; numMicroBinsB; i++)</span>
+<span class="nc" id="L910">			ret.microBinIDs.add(Integer.valueOf(b.microBinIDs.get(i)));</span>
+		
+<span class="nc" id="L912">		return ret;</span>
+	}
+	
+	public static double computeCorrelation(DataMatrix dataMatrix, int[] procDims, int[][] discreteData, int curDim, ArrayList&lt;MacroBin&gt; bins, int numPointsSoFar, int N, ArrayList&lt;ArrayList&lt;Integer&gt;&gt; cells, ArrayList&lt;ArrayList&lt;Integer&gt;&gt; cellPointIDs) throws Exception
+	{
+		// the total coding cost
+<span class="nc" id="L918">		double ret = 0;</span>
+<span class="nc" id="L919">		double logBase = Math.log(Constants.LOG_BASE);</span>
+		
+		// get the total number of macro bins
+<span class="nc" id="L922">		int numBins = bins.size();</span>
+		
+		// iterate through each macro bins
+<span class="nc" id="L925">		MacroBin tmpBin = null;</span>
+<span class="nc" id="L926">		int numCells = cellPointIDs.size();</span>
+		int binNumPoints;
+		int pointID;
+		int totalPoints;
+<span class="nc" id="L930">		int[] counts = new int[numCells];</span>
+<span class="nc" id="L931">		ArrayList&lt;Integer&gt; curCell = null;</span>
+<span class="nc" id="L932">		ArrayList&lt;Integer&gt; cellIDs = new ArrayList&lt;Integer&gt;();</span>
+		int curBinID;
+		int cellBinID;
+		boolean match;
+<span class="nc" id="L936">		int numProcessedDims = procDims.length;</span>
+<span class="nc" id="L937">		double correlation = 0;</span>
+<span class="nc bnc" id="L938" title="All 2 branches missed.">		for (int i = 0; i &lt; numBins; i++)</span>
+		{
+			// get the macro bin
+<span class="nc" id="L941">			tmpBin = bins.get(i);</span>
+<span class="nc" id="L942">			binNumPoints = tmpBin.numPoints;</span>
+<span class="nc" id="L943">			correlation -= (binNumPoints * 1.0 / numPointsSoFar) * Math.log((binNumPoints * 1.0 / numPointsSoFar)) / logBase;</span>
+			
+			// clear point counts
+<span class="nc bnc" id="L946" title="All 2 branches missed.">			for (int j = 0; j &lt; numCells; j++)</span>
+<span class="nc" id="L947">				counts[j] = 0;</span>
+			
+			// compute the entropy of tmpMergeMacroBinRight
+<span class="nc" id="L950">			totalPoints = 0;</span>
+<span class="nc bnc" id="L951" title="All 2 branches missed.">			for (int h = 0; h &lt; binNumPoints; h++)</span>
+			{
+<span class="nc" id="L953">				pointID = tmpBin.pointIDs.get(h);</span>
+<span class="nc" id="L954">				cellIDs.clear();</span>
+<span class="nc bnc" id="L955" title="All 2 branches missed.">				for (int k = 0; k &lt; numProcessedDims; k++)</span>
+<span class="nc" id="L956">					cellIDs.add(Integer.valueOf(discreteData[pointID][procDims[k]]));</span>
+				
+<span class="nc bnc" id="L958" title="All 2 branches missed.">				for (int j = 0; j &lt; numCells; j++)</span>
+				{
+<span class="nc" id="L960">					curCell = cells.get(j);</span>
+<span class="nc" id="L961">					match = true;</span>
+<span class="nc bnc" id="L962" title="All 2 branches missed.">					for (int k = 0; k &lt; numProcessedDims; k++)</span>
+					{
+<span class="nc" id="L964">						curBinID = cellIDs.get(k);</span>
+<span class="nc" id="L965">						cellBinID = curCell.get(k);</span>
+<span class="nc bnc" id="L966" title="All 2 branches missed.">						if (curBinID != cellBinID)</span>
+						{
+<span class="nc" id="L968">							match = false;</span>
+<span class="nc" id="L969">							break;</span>
+						}
+					} // end for
+					
+<span class="nc bnc" id="L973" title="All 2 branches missed.">					if (match == true)</span>
+					{
+<span class="nc" id="L975">						counts[j]++;</span>
+<span class="nc" id="L976">						break;</span>
+					}
+				} // end for
+			} // end for
+			
+			// increase correlation
+<span class="nc bnc" id="L982" title="All 2 branches missed.">			for (int j = 0; j &lt; numCells; j++)</span>
+			{
+<span class="nc" id="L984">				totalPoints += counts[j];</span>
+<span class="nc bnc" id="L985" title="All 2 branches missed.">				if (counts[j] &gt; 0)</span>
+<span class="nc" id="L986">					correlation += (counts[j] * 1.0 / numPointsSoFar) * Math.log(counts[j] * 1.0 / numPointsSoFar) / logBase;</span>
+			}
+			
+			// this serves as control check
+<span class="nc bnc" id="L990" title="All 2 branches missed.">			if (totalPoints != binNumPoints)</span>
+			{
+				//System.out.println(totalPoints + &quot; --- &quot; + binNumPoints);
+<span class="nc" id="L993">				throw new Exception(&quot;total points not match&quot;);</span>
+			}
+		} // end for
+		
+		// get the total coding cost
+<span class="nc" id="L998">		ret = correlation;</span>
+<span class="nc" id="L999">		return ret;</span>
+	}
+	
+	// divide a dimension into equal-frequency bins
+	public static ArrayList&lt;MicroBin&gt; findEqualFrequencyBinning(int curDim, DataMatrix dataMatrix, int numDesiredBins, SortedObject[] tmp)
+	{
+<span class="nc" id="L1005">		ArrayList&lt;MicroBin&gt; ret = new  ArrayList&lt;MicroBin&gt;();</span>
+<span class="nc" id="L1006">		int numRows = dataMatrix.rows;</span>
+<span class="nc" id="L1007">		int numCols = dataMatrix.cols;</span>
+		
+		int lowerIndex;
+		int upperIndex;
+<span class="nc" id="L1011">		MicroBin tmpBin = null;</span>
+		
+		// number of distinct values per bin
+<span class="nc" id="L1014">		int totalNumBins = numDesiredBins;</span>
+<span class="nc bnc" id="L1015" title="All 2 branches missed.">		if (numDesiredBins &gt; numRows)</span>
+<span class="nc" id="L1016">			totalNumBins = numRows;</span>
+<span class="nc" id="L1017">		int binCount = (int)Math.floor(numRows * 1.0 / totalNumBins);</span>
+		
+<span class="nc bnc" id="L1019" title="All 2 branches missed.">		for (int i = 0; i &lt; totalNumBins; i++)</span>
+		{
+			// lower and upper indices of distinct values
+<span class="nc" id="L1022">			lowerIndex = i * binCount;</span>
+<span class="nc bnc" id="L1023" title="All 2 branches missed.">			if (i &lt; totalNumBins - 1)</span>
+<span class="nc" id="L1024">				upperIndex = (i + 1) * binCount - 1;</span>
+			else
+<span class="nc" id="L1026">				upperIndex = numRows - 1;</span>
+			
+			// get the bin's lower and upper bounds
+<span class="nc bnc" id="L1029" title="All 2 branches missed.">			if (i == 0)</span>
+<span class="nc" id="L1030">				tmpBin = new MicroBin(tmp[lowerIndex].value - 1, tmp[upperIndex].value);</span>
+			else
+<span class="nc" id="L1032">				tmpBin = new MicroBin(tmp[lowerIndex].value, tmp[upperIndex].value);</span>
+			
+			// calculate the bin's data matrix, index matrix, means, and devs
+<span class="nc bnc" id="L1035" title="All 2 branches missed.">			for (int j = 0; j &lt; numCols - 1; j++)	// set up the bin's multivariate dimensions</span>
+<span class="nc" id="L1036">				tmpBin.dims.add(Integer.valueOf(j));</span>
+			
+			// get current value and add the corresponding points to the bin
+<span class="nc" id="L1039">			tmpBin.pointIDs.add(Integer.valueOf(tmp[lowerIndex].index));</span>
+			
+			// loop through the remaining value
+<span class="nc bnc" id="L1042" title="All 2 branches missed.">			for (int j = lowerIndex + 1; j &lt;= upperIndex; j++)</span>
+<span class="nc" id="L1043">				tmpBin.pointIDs.add(Integer.valueOf(tmp[j].index));</span>
+			
+			// add the bin to the list of bins
+<span class="nc" id="L1046">			ret.add(tmpBin);</span>
+		} // end for
+		
+<span class="nc" id="L1049">		return ret;</span>
+	}
+	
+	public static ArrayList&lt;MicroBin&gt; constructAllBins(DataMatrix dataMatrix, ArrayList&lt;Double&gt; distinctValues, ArrayList&lt;Integer&gt; distinctValueSupports, ArrayList&lt;ArrayList&lt;Integer&gt;&gt; memberPointIDs)
+	{
+<span class="nc" id="L1054">		ArrayList&lt;MicroBin&gt; ret = new  ArrayList&lt;MicroBin&gt;();</span>
+<span class="nc" id="L1055">		int numCols = dataMatrix.cols;</span>
+<span class="nc" id="L1056">		MicroBin tmpBin = null;</span>
+		
+		// number of distinct values per bin
+<span class="nc" id="L1059">		int totalNumBins = distinctValues.size();</span>
+<span class="nc bnc" id="L1060" title="All 2 branches missed.">		for (int i = 0; i &lt; totalNumBins; i++)</span>
+		{
+			// get the bin's lower and upper bounds
+<span class="nc bnc" id="L1063" title="All 2 branches missed.">			if (i == 0)</span>
+<span class="nc" id="L1064">				tmpBin = new MicroBin(distinctValues.get(i) - 1, distinctValues.get(i));</span>
+			else
+<span class="nc" id="L1066">				tmpBin = new MicroBin(distinctValues.get(i - 1), distinctValues.get(i));</span>
+			
+			// calculate the bin's data matrix, index matrix, means, and devs
+<span class="nc bnc" id="L1069" title="All 2 branches missed.">			for (int j = 0; j &lt; numCols - 1; j++)	// set up the bin's multivariate dimensions</span>
+<span class="nc" id="L1070">				tmpBin.dims.add(Integer.valueOf(j));</span>
+			
+			// get current value and add the corresponding points to the bin
+<span class="nc" id="L1073">			int n = memberPointIDs.get(i).size();</span>
+<span class="nc bnc" id="L1074" title="All 2 branches missed.">			for (int pid = 0; pid &lt; n; pid++)</span>
+<span class="nc" id="L1075">				tmpBin.pointIDs.add(Integer.valueOf(memberPointIDs.get(i).get(pid)));</span>
+			
+			// add the bin to the list of bins
+<span class="nc" id="L1078">			ret.add(tmpBin);</span>
+		} // end for
+		
+<span class="nc" id="L1081">		return ret;</span>
+	}
+	
+	public static ArrayList&lt;Double&gt; computeContrastSpecial(DataMatrix dataMatrix, ArrayList&lt;Integer&gt; dims, ArrayList&lt;Integer&gt; frontDims, double[] CRES, ArrayList&lt;ArrayList&lt;Integer&gt;&gt; cellPointIDs, ArrayList&lt;Integer&gt; processedDims, ArrayList&lt;MacroBin&gt;[] existingMacroBins, double sumSingleEntropies, double jointEntropy) throws Exception
+	{
+<span class="nc" id="L1086">		double logBase = Math.log(Constants.LOG_BASE);</span>
+<span class="nc" id="L1087">		int numProcessedDims = processedDims.size();</span>
+<span class="nc" id="L1088">		int[] procDims = new int[numProcessedDims];</span>
+<span class="nc" id="L1089">		double sumLog = 0;</span>
+<span class="nc" id="L1090">		double maxLog = Double.NEGATIVE_INFINITY;</span>
+		double val;
+<span class="nc bnc" id="L1092" title="All 2 branches missed.">		for (int i = 0; i &lt; numProcessedDims; i++)</span>
+		{
+<span class="nc" id="L1094">			procDims[i] = processedDims.get(i);</span>
+<span class="nc" id="L1095">			val = Math.log(existingMacroBins[procDims[i]].size()) / logBase;</span>
+<span class="nc" id="L1096">			sumLog += val;</span>
+<span class="nc bnc" id="L1097" title="All 2 branches missed.">			if (val &gt; maxLog)</span>
+<span class="nc" id="L1098">				maxLog = val;</span>
+		}
+		
+<span class="nc" id="L1101">		int rows = dataMatrix.rows;</span>
+		int curNumPoints;
+<span class="nc" id="L1103">		double[] vals = null;</span>
+		int curDim;
+<span class="nc" id="L1105">		int numFrontDims = frontDims.size();</span>
+<span class="nc" id="L1106">		int numCells = cellPointIDs.size();</span>
+<span class="nc" id="L1107">		ArrayList&lt;Integer&gt; curCell = null;</span>
+		double ce;
+<span class="nc" id="L1109">		double maxCE = Double.NEGATIVE_INFINITY;</span>
+<span class="nc" id="L1110">		int maxPos = -1;</span>
+<span class="nc bnc" id="L1111" title="All 2 branches missed.">		for (int i = 0; i &lt; numFrontDims; i++)</span>
+		{
+<span class="nc" id="L1113">			curDim = frontDims.get(i);</span>
+<span class="nc" id="L1114">			ce = 0;</span>
+<span class="nc bnc" id="L1115" title="All 2 branches missed.">			for (int j = 0; j &lt; numCells; j++)</span>
+			{
+<span class="nc" id="L1117">				curCell = cellPointIDs.get(j);</span>
+<span class="nc" id="L1118">				curNumPoints = curCell.size();</span>
+<span class="nc" id="L1119">				vals = new double[curNumPoints];</span>
+<span class="nc bnc" id="L1120" title="All 2 branches missed.">				for (int k = 0; k &lt; curNumPoints; k++)</span>
+<span class="nc" id="L1121">					vals[k] = dataMatrix.data.get(curCell.get(k)).measures[curDim];</span>
+			
+<span class="nc" id="L1123">				ce += curNumPoints * computeCRE(vals, false) / rows;</span>
+			} // end for
+			
+<span class="nc" id="L1126">			double surrogate = (sumSingleEntropies + CRES[curDim] - ce - jointEntropy) / (CRES[curDim] + sumLog - maxLog);</span>
+<span class="nc bnc" id="L1127" title="All 2 branches missed.">			if (surrogate &gt; maxCE)</span>
+			{
+<span class="nc" id="L1129">				maxCE = ce;</span>
+<span class="nc" id="L1130">				maxPos = i;</span>
+			}
+		}
+		
+<span class="nc" id="L1134">		int selectedDim = frontDims.get(maxPos);</span>
+<span class="nc" id="L1135">		dims.add(Integer.valueOf(selectedDim));</span>
+<span class="nc" id="L1136">		frontDims.remove(maxPos);</span>
+<span class="nc" id="L1137">		ArrayList&lt;Double&gt; ret = new ArrayList&lt;Double&gt;();</span>
+<span class="nc" id="L1138">		ret.add(Double.valueOf(selectedDim));</span>
+<span class="nc" id="L1139">		ret.add(Double.valueOf(Math.max(maxCE, 0)));</span>
+		
+<span class="nc" id="L1141">		return ret;</span>
+	}
+	
+	@SuppressWarnings(&quot;unchecked&quot;)
+	public static ArrayList&lt;MacroBin&gt;[] MICOrgBinningForTwoDims(int firstDim, int secondDim, DataMatrix dataMatrix, ArrayList&lt;MacroBin&gt;[] existingMacroBins, int[][] discreteData, double[] maxCorrelation) throws Exception
+	{
+<span class="nc" id="L1147">		ArrayList&lt;Integer&gt; processedDims = new ArrayList&lt;Integer&gt;();</span>
+		ArrayList&lt;MacroBin&gt; candidateMacroBinsFirst;
+		ArrayList&lt;MacroBin&gt; candidateMacroBinsSecond;
+		ArrayList&lt;MicroBin&gt; initialMicroBinsFirst;
+		ArrayList&lt;MicroBin&gt; initialMicroBinsSecond;
+		ArrayList&lt;MicroBin&gt; initialMicroBins;
+<span class="nc" id="L1153">		ArrayList&lt;ArrayList&lt;Integer&gt;&gt; cells = new ArrayList&lt;ArrayList&lt;Integer&gt;&gt;();</span>
+<span class="nc" id="L1154">		ArrayList&lt;ArrayList&lt;Integer&gt;&gt; cellPointIDs = new ArrayList&lt;ArrayList&lt;Integer&gt;&gt;();</span>
+<span class="nc" id="L1155">		ArrayList&lt;Double&gt; distinctValuesFirstDim = new ArrayList&lt;Double&gt;();</span>
+<span class="nc" id="L1156">		ArrayList&lt;Integer&gt; distinctValueSupportsFirstDim = new ArrayList&lt;Integer&gt;();</span>
+<span class="nc" id="L1157">		ArrayList&lt;ArrayList&lt;Integer&gt;&gt; memberPointIDsFirstDim = new ArrayList&lt;ArrayList&lt;Integer&gt;&gt;();</span>
+<span class="nc" id="L1158">		ArrayList&lt;Double&gt; distinctValuesSecondDim = new ArrayList&lt;Double&gt;();</span>
+<span class="nc" id="L1159">		ArrayList&lt;Integer&gt; distinctValueSupportsSecondDim = new ArrayList&lt;Integer&gt;();</span>
+<span class="nc" id="L1160">		ArrayList&lt;ArrayList&lt;Integer&gt;&gt; memberPointIDsSecondDim = new ArrayList&lt;ArrayList&lt;Integer&gt;&gt;();</span>
+		
+<span class="nc" id="L1162">		int B = (int)Math.pow(dataMatrix.rows, Constants.ALPHA);</span>
+<span class="nc" id="L1163">		int INIT_BIN_COUNT = 0;</span>
+<span class="nc bnc" id="L1164" title="All 2 branches missed.">		if (Constants.CLUMPS == Integer.MAX_VALUE)</span>
+<span class="nc" id="L1165">			INIT_BIN_COUNT = Integer.MAX_VALUE;</span>
+		else
+<span class="nc" id="L1167">			INIT_BIN_COUNT = Constants.CLUMPS * B / 2;</span>
+		
+		// get distinct values
+<span class="nc" id="L1170">		SortedObject[] sos1 = getDistinctValues(firstDim, dataMatrix, distinctValuesFirstDim, distinctValueSupportsFirstDim, memberPointIDsFirstDim);</span>
+<span class="nc" id="L1171">		SortedObject[] sos2 = getDistinctValues(secondDim, dataMatrix, distinctValuesSecondDim, distinctValueSupportsSecondDim, memberPointIDsSecondDim);</span>
+		
+		// get initial bins
+<span class="nc bnc" id="L1174" title="All 2 branches missed.">		if (INIT_BIN_COUNT == Integer.MAX_VALUE)</span>
+<span class="nc" id="L1175">			initialMicroBinsFirst = constructAllBins(dataMatrix, distinctValuesFirstDim, distinctValueSupportsFirstDim, memberPointIDsFirstDim);</span>
+		else
+<span class="nc" id="L1177">			initialMicroBinsFirst = findEqualFrequencyBinning(firstDim, dataMatrix, INIT_BIN_COUNT, sos1);</span>
+<span class="nc" id="L1178">		candidateMacroBinsFirst = convertMicroToMacroBins(initialMicroBinsFirst);</span>
+<span class="nc bnc" id="L1179" title="All 2 branches missed.">		if (INIT_BIN_COUNT == Integer.MAX_VALUE)</span>
+<span class="nc" id="L1180">			initialMicroBinsSecond = constructAllBins(dataMatrix, distinctValuesSecondDim, distinctValueSupportsSecondDim, memberPointIDsSecondDim);</span>
+		else
+<span class="nc" id="L1182">			initialMicroBinsSecond = findEqualFrequencyBinning(secondDim, dataMatrix, INIT_BIN_COUNT, sos2);</span>
+<span class="nc" id="L1183">		candidateMacroBinsSecond = convertMicroToMacroBins(initialMicroBinsSecond);</span>
+		
+<span class="nc" id="L1185">		int BHalf = B / 2;</span>
+		int x, y;
+<span class="nc" id="L1187">		double MAX_CORRELATION = Double.NEGATIVE_INFINITY;</span>
+<span class="nc" id="L1188">		ArrayList&lt;MacroBin&gt; OPTIMAL_BINS_FIRST = new ArrayList&lt;MacroBin&gt;();</span>
+<span class="nc" id="L1189">		ArrayList&lt;MacroBin&gt; OPTIMAL_BINS_SECOND = new ArrayList&lt;MacroBin&gt;();</span>
+		
+		// process first dimension
+<span class="nc" id="L1192">		processedDims.clear();</span>
+<span class="nc" id="L1193">		processedDims.add(Integer.valueOf(firstDim));</span>
+		ArrayList&lt;MacroBin&gt; tmpOptimal;
+<span class="nc" id="L1195">		double[] tmpOptimalCost = new double[1];</span>
+		int numBins;
+		double sumSingleEntropies;
+<span class="nc bnc" id="L1198" title="All 2 branches missed.">		for (x = 2; x &lt;= BHalf; x++)</span>
+		{
+<span class="nc" id="L1200">			cells.clear();</span>
+<span class="nc" id="L1201">			cellPointIDs.clear();</span>
+<span class="nc" id="L1202">			initialMicroBins = findEqualFrequencyBinning(firstDim, dataMatrix, x, sos1);</span>
+<span class="nc" id="L1203">			existingMacroBins[firstDim] = convertMicroToMacroBins(initialMicroBins);</span>
+<span class="nc" id="L1204">			updateCells(existingMacroBins[firstDim], cells, cellPointIDs);</span>
+<span class="nc" id="L1205">			updateDiscreteData(firstDim, existingMacroBins[firstDim], discreteData);</span>
+			
+<span class="nc" id="L1207">			y = B / x;</span>
+<span class="nc" id="L1208">			sumSingleEntropies = 0;</span>
+<span class="nc bnc" id="L1209" title="All 2 branches missed.">			for (int binID = 0; binID &lt; existingMacroBins[firstDim].size(); binID++)</span>
+<span class="nc" id="L1210">				sumSingleEntropies -= (existingMacroBins[firstDim].get(binID).pointIDs.size() * 1.0 / dataMatrix.rows) * Math.log(existingMacroBins[firstDim].get(binID).pointIDs.size() * 1.0 / dataMatrix.rows) / Math.log(2); </span>
+<span class="nc" id="L1211">			tmpOptimal = MMICBinning(secondDim, y, dataMatrix, processedDims, existingMacroBins, candidateMacroBinsSecond, initialMicroBinsSecond, cells, cellPointIDs, tmpOptimalCost, discreteData, sumSingleEntropies);</span>
+<span class="nc bnc" id="L1212" title="All 2 branches missed.">			if (tmpOptimalCost[0] &gt; MAX_CORRELATION)</span>
+			{
+<span class="nc" id="L1214">				MAX_CORRELATION = tmpOptimalCost[0];</span>
+				
+<span class="nc" id="L1216">				OPTIMAL_BINS_FIRST.clear();</span>
+<span class="nc" id="L1217">				numBins = existingMacroBins[firstDim].size();</span>
+<span class="nc bnc" id="L1218" title="All 2 branches missed.">				for (int i = 0; i &lt; numBins; i++)</span>
+<span class="nc" id="L1219">					OPTIMAL_BINS_FIRST.add(existingMacroBins[firstDim].get(i));</span>
+				
+<span class="nc" id="L1221">				OPTIMAL_BINS_SECOND.clear();</span>
+<span class="nc" id="L1222">				numBins = tmpOptimal.size();</span>
+<span class="nc bnc" id="L1223" title="All 2 branches missed.">				for (int i = 0; i &lt; numBins; i++)</span>
+<span class="nc" id="L1224">					OPTIMAL_BINS_SECOND.add(tmpOptimal.get(i));</span>
+			}
+		}
+		
+		// process second dimension
+<span class="nc" id="L1229">		processedDims.clear();</span>
+<span class="nc" id="L1230">		processedDims.add(Integer.valueOf(secondDim));</span>
+<span class="nc bnc" id="L1231" title="All 2 branches missed.">		for (y = 2; y &lt;= BHalf; y++)</span>
+		{
+<span class="nc" id="L1233">			cells.clear();</span>
+<span class="nc" id="L1234">			cellPointIDs.clear();</span>
+<span class="nc" id="L1235">			initialMicroBins = findEqualFrequencyBinning(secondDim, dataMatrix, y, sos2);</span>
+<span class="nc" id="L1236">			existingMacroBins[secondDim] = convertMicroToMacroBins(initialMicroBins);</span>
+<span class="nc" id="L1237">			updateCells(existingMacroBins[secondDim], cells, cellPointIDs);</span>
+<span class="nc" id="L1238">			updateDiscreteData(secondDim, existingMacroBins[secondDim], discreteData);</span>
+			
+<span class="nc" id="L1240">			x = B / y;</span>
+<span class="nc" id="L1241">			sumSingleEntropies = 0;</span>
+<span class="nc bnc" id="L1242" title="All 2 branches missed.">			for (int binID = 0; binID &lt; existingMacroBins[secondDim].size(); binID++)</span>
+<span class="nc" id="L1243">				sumSingleEntropies -= (existingMacroBins[secondDim].get(binID).pointIDs.size() * 1.0 / dataMatrix.rows) * Math.log(existingMacroBins[secondDim].get(binID).pointIDs.size() * 1.0 / dataMatrix.rows) / Math.log(2);</span>
+<span class="nc" id="L1244">			tmpOptimal = MMICBinning(firstDim, x, dataMatrix, processedDims, existingMacroBins, candidateMacroBinsFirst, initialMicroBinsFirst, cells, cellPointIDs, tmpOptimalCost, discreteData, sumSingleEntropies);</span>
+<span class="nc bnc" id="L1245" title="All 2 branches missed.">			if (tmpOptimalCost[0] &gt; MAX_CORRELATION)</span>
+			{
+<span class="nc" id="L1247">				MAX_CORRELATION = tmpOptimalCost[0];</span>
+				
+<span class="nc" id="L1249">				OPTIMAL_BINS_FIRST.clear();</span>
+<span class="nc" id="L1250">				numBins = tmpOptimal.size();</span>
+<span class="nc bnc" id="L1251" title="All 2 branches missed.">				for (int i = 0; i &lt; numBins; i++)</span>
+<span class="nc" id="L1252">					OPTIMAL_BINS_FIRST.add(tmpOptimal.get(i));</span>
+				
+<span class="nc" id="L1254">				OPTIMAL_BINS_SECOND.clear();</span>
+<span class="nc" id="L1255">				numBins = existingMacroBins[secondDim].size();</span>
+<span class="nc bnc" id="L1256" title="All 2 branches missed.">				for (int i = 0; i &lt; numBins; i++)</span>
+<span class="nc" id="L1257">					OPTIMAL_BINS_SECOND.add(existingMacroBins[secondDim].get(i));</span>
+			}
+		}
+		
+<span class="nc" id="L1261">		maxCorrelation[0] = MAX_CORRELATION;</span>
+<span class="nc" id="L1262">		ArrayList&lt;MacroBin&gt;[] OPTIMAL_BINS = new ArrayList[2];</span>
+<span class="nc" id="L1263">		OPTIMAL_BINS[0] = OPTIMAL_BINS_FIRST;</span>
+<span class="nc" id="L1264">		OPTIMAL_BINS[1] = OPTIMAL_BINS_SECOND;</span>
+<span class="nc" id="L1265">		return OPTIMAL_BINS;</span>
+	}
+	
+	@SuppressWarnings(&quot;unchecked&quot;)
+	public static ArrayList&lt;MacroBin&gt; MMICBinning(int curDim, int MAX_BINS, DataMatrix dataMatrix, ArrayList&lt;Integer&gt; processedDims, ArrayList&lt;MacroBin&gt;[] existingMacroBins, ArrayList&lt;MacroBin&gt; candidateMacroBins, ArrayList&lt;MicroBin&gt; initialBins, ArrayList&lt;ArrayList&lt;Integer&gt;&gt; cells, ArrayList&lt;ArrayList&lt;Integer&gt;&gt; cellPointIDs, double[] cost, int[][] discreteData, double sumSingleEntropies) throws Exception
+	{
+<span class="nc" id="L1271">		ArrayList&lt;MacroBin&gt; ret = new ArrayList&lt;MacroBin&gt;();</span>
+		
+<span class="nc" id="L1273">		double logBase = Math.log(Constants.LOG_BASE);</span>
+<span class="nc" id="L1274">		int numProcessedDims = processedDims.size();</span>
+<span class="nc" id="L1275">		int[] procDims = new int[numProcessedDims];</span>
+<span class="nc" id="L1276">		double sumLog = 0;</span>
+<span class="nc" id="L1277">		double maxLog = Double.NEGATIVE_INFINITY;</span>
+		double val;
+<span class="nc bnc" id="L1279" title="All 2 branches missed.">		for (int i = 0; i &lt; numProcessedDims; i++)</span>
+		{
+<span class="nc" id="L1281">			procDims[i] = processedDims.get(i);</span>
+<span class="nc" id="L1282">			val = Math.log(existingMacroBins[procDims[i]].size()) / logBase;</span>
+<span class="nc" id="L1283">			sumLog += val;</span>
+<span class="nc bnc" id="L1284" title="All 2 branches missed.">			if (val &gt; maxLog)</span>
+<span class="nc" id="L1285">				maxLog = val;</span>
+		}
+		
+		// create the table for dynamic programming to store already solved sub-problems
+<span class="nc" id="L1289">		int numTotalMacroBins = candidateMacroBins.size();</span>
+<span class="nc" id="L1290">		ArrayList&lt;MacroBin&gt;[][] dynamicBinnings = new ArrayList[numTotalMacroBins + 1][MAX_BINS + 1];</span>
+<span class="nc" id="L1291">		double[][] dynamicBinningCosts = new double[numTotalMacroBins + 1][MAX_BINS + 1];</span>
+<span class="nc" id="L1292">		int[][] dynamicNumPoints = new int[numTotalMacroBins + 1][MAX_BINS + 1];</span>
+		
+		// find optimal binning of size 2
+<span class="nc" id="L1295">		MacroBin tmpMergeMacroBin = null;</span>
+<span class="nc" id="L1296">		MacroBin tmpMergeMacroBinRight = null;</span>
+		double tmpCost;
+<span class="nc" id="L1298">		ArrayList&lt;MacroBin&gt; tmpMacroBins = new ArrayList&lt;MacroBin&gt;();</span>
+<span class="nc" id="L1299">		ArrayList&lt;Integer&gt; pointIDs = new ArrayList&lt;Integer&gt;();</span>
+		int pointID;
+<span class="nc" id="L1301">		int[] counts = null;</span>
+<span class="nc bnc" id="L1302" title="All 2 branches missed.">		for (int numFirstMacroBins = 2; numFirstMacroBins &lt;= numTotalMacroBins; numFirstMacroBins++)</span>
+		{
+<span class="nc" id="L1304">			dynamicBinningCosts[numFirstMacroBins][2] = Double.NEGATIVE_INFINITY;</span>
+<span class="nc" id="L1305">			pointIDs.clear();</span>
+			
+			// loop through each possible bin position
+			// maxIndex contains the minimum bin index of the right macro bin
+<span class="nc bnc" id="L1309" title="All 2 branches missed.">			for (int maxIndex = 1; maxIndex &lt; numFirstMacroBins; maxIndex++)</span>
+			{
+				// clear the temporary binning
+<span class="nc" id="L1312">				tmpMacroBins.clear();</span>
+				
+				// merge all macro bins from position 0 to (maxIndex - 1)
+<span class="nc" id="L1315">				tmpMergeMacroBin = cloneBin(candidateMacroBins.get(0));</span>
+<span class="nc bnc" id="L1316" title="All 2 branches missed.">				for (int i = 1; i &lt; maxIndex; i++)</span>
+<span class="nc" id="L1317">					tmpMergeMacroBin = mergeMacroBins(tmpMergeMacroBin, candidateMacroBins.get(i));</span>
+				
+				// merge all macro bins from position maxIndex to (numFirstMacroBins - 1)
+<span class="nc" id="L1320">				tmpMergeMacroBinRight = cloneBin(candidateMacroBins.get(maxIndex));</span>
+<span class="nc bnc" id="L1321" title="All 2 branches missed.">				for (int i = maxIndex + 1; i &lt; numFirstMacroBins; i++)</span>
+<span class="nc" id="L1322">					tmpMergeMacroBinRight = mergeMacroBins(tmpMergeMacroBinRight, candidateMacroBins.get(i));</span>
+				
+				// populate pointIDs
+<span class="nc bnc" id="L1325" title="All 2 branches missed.">				if (maxIndex == 1)</span>
+				{
+<span class="nc bnc" id="L1327" title="All 2 branches missed.">					for (int i = 0; i &lt; tmpMergeMacroBin.numPoints; i++)</span>
+<span class="nc" id="L1328">						pointIDs.add(Integer.valueOf(tmpMergeMacroBin.pointIDs.get(i)));</span>
+					
+<span class="nc bnc" id="L1330" title="All 2 branches missed.">					for (int i = 0; i &lt; tmpMergeMacroBinRight.numPoints; i++)</span>
+<span class="nc" id="L1331">						pointIDs.add(Integer.valueOf(tmpMergeMacroBinRight.pointIDs.get(i)));</span>
+				}
+				
+				// add two new macro bins to the temporary binning
+<span class="nc" id="L1335">				tmpMacroBins.add(tmpMergeMacroBin);</span>
+<span class="nc" id="L1336">				tmpMacroBins.add(tmpMergeMacroBinRight);</span>
+				
+				// compute the coding cost of the temporary binning
+<span class="nc" id="L1339">				tmpCost = computeCorrelation(dataMatrix, procDims, discreteData, curDim, tmpMacroBins, tmpMergeMacroBin.numPoints + tmpMergeMacroBinRight.numPoints, dataMatrix.rows, cells, cellPointIDs);</span>
+				// if the cost is less than the current cost, then update the cost, the binning, and the total number of points of the binning
+<span class="nc bnc" id="L1341" title="All 2 branches missed.">				if (tmpCost &gt; dynamicBinningCosts[numFirstMacroBins][2])</span>
+				{
+<span class="nc" id="L1343">					dynamicBinningCosts[numFirstMacroBins][2] = tmpCost;</span>
+<span class="nc" id="L1344">					dynamicNumPoints[numFirstMacroBins][2] = tmpMergeMacroBin.numPoints + tmpMergeMacroBinRight.numPoints;</span>
+<span class="nc bnc" id="L1345" title="All 2 branches missed.">					if (dynamicBinnings[numFirstMacroBins][2] == null)</span>
+<span class="nc" id="L1346">						dynamicBinnings[numFirstMacroBins][2] = new ArrayList&lt;MacroBin&gt;();</span>
+					else
+<span class="nc" id="L1348">						dynamicBinnings[numFirstMacroBins][2].clear();</span>
+<span class="nc" id="L1349">					dynamicBinnings[numFirstMacroBins][2].add(tmpMergeMacroBin);</span>
+<span class="nc" id="L1350">					dynamicBinnings[numFirstMacroBins][2].add(tmpMergeMacroBinRight);</span>
+				}
+			} // end for
+			
+			//System.out.println(&quot;numFirstMacroBins = &quot; + numFirstMacroBins);
+		} // end for
+		
+<span class="nc bnc" id="L1357" title="All 2 branches missed.">		for (int numFirstMacroBins = 2; numFirstMacroBins &lt;= numTotalMacroBins; numFirstMacroBins++)</span>
+		{
+<span class="nc" id="L1359">			dynamicBinningCosts[numFirstMacroBins][2] += sumSingleEntropies;</span>
+<span class="nc bnc" id="L1360" title="All 2 branches missed.">			if (Math.abs(dynamicBinningCosts[numFirstMacroBins][2]) &lt; Constants.MAX_ERROR)</span>
+<span class="nc" id="L1361">				dynamicBinningCosts[numFirstMacroBins][2] = 0;</span>
+<span class="nc bnc" id="L1362" title="All 2 branches missed.">			if (dynamicBinningCosts[numFirstMacroBins][2] &lt; 0)</span>
+<span class="nc" id="L1363">				dynamicBinningCosts[numFirstMacroBins][2] = 0;</span>
+		}
+		
+		// build the rest of the table
+		// for each (numMacroBins, numFirstMacroBins) pairs, find the binning that yields the smallest cost
+		int tmpTotalNumPoints;
+		int optimalPosition;
+<span class="nc" id="L1370">		MacroBin optimalNewBin = null;</span>
+<span class="nc" id="L1371">		int numCells = cellPointIDs.size();</span>
+<span class="nc" id="L1372">		counts = new int[numCells];</span>
+		//ArrayList&lt;Integer&gt; curCellPointIDs = null;
+<span class="nc" id="L1374">		ArrayList&lt;Integer&gt; curCell = null;</span>
+<span class="nc" id="L1375">		ArrayList&lt;Integer&gt; cellIDs = new ArrayList&lt;Integer&gt;();</span>
+		int curBinID;
+		int cellBinID;
+		int totalPoints;
+		boolean match;
+<span class="nc bnc" id="L1380" title="All 2 branches missed.">		for (int numMacroBins = 3; numMacroBins &lt;= MAX_BINS; numMacroBins++)</span>
+		{
+<span class="nc bnc" id="L1382" title="All 2 branches missed.">			for (int numFirstMacroBins = numMacroBins; numFirstMacroBins &lt;= numTotalMacroBins; numFirstMacroBins++)</span>
+			{
+<span class="nc" id="L1384">				dynamicBinningCosts[numFirstMacroBins][numMacroBins] = Double.NEGATIVE_INFINITY;</span>
+<span class="nc" id="L1385">				optimalPosition = -1;</span>
+<span class="nc" id="L1386">				optimalNewBin = null;</span>
+				
+				// loop through each possible bin position
+<span class="nc bnc" id="L1389" title="All 2 branches missed.">				for (int maxIndex = numMacroBins - 1; maxIndex &lt; numFirstMacroBins; maxIndex++)</span>
+				{
+					// merge all the macro bins from position maxIndex to (numFirstMacroBins - 1)
+<span class="nc" id="L1392">					tmpMergeMacroBinRight = cloneBin(candidateMacroBins.get(maxIndex));</span>
+<span class="nc bnc" id="L1393" title="All 2 branches missed.">					for (int i = maxIndex + 1; i &lt; numFirstMacroBins; i++)</span>
+<span class="nc" id="L1394">						tmpMergeMacroBinRight = mergeMacroBins(tmpMergeMacroBinRight, candidateMacroBins.get(i));</span>
+					
+					// compute the total number of data points
+<span class="nc" id="L1397">					tmpTotalNumPoints = dynamicNumPoints[maxIndex][numMacroBins - 1] + tmpMergeMacroBinRight.numPoints;</span>
+					
+					// retrieve the stored results
+<span class="nc" id="L1400">					tmpCost = dynamicNumPoints[maxIndex][numMacroBins - 1] * (dynamicBinningCosts[maxIndex][numMacroBins - 1] - sumSingleEntropies) / tmpTotalNumPoints;</span>
+					
+					// clear point counts
+<span class="nc bnc" id="L1403" title="All 2 branches missed.">					for (int j = 0; j &lt; numCells; j++)</span>
+<span class="nc" id="L1404">						counts[j] = 0;</span>
+					
+					// compute the entropy of tmpMergeMacroBinRight
+<span class="nc" id="L1407">					totalPoints = 0;</span>
+<span class="nc bnc" id="L1408" title="All 2 branches missed.">					for (int h = 0; h &lt; tmpMergeMacroBinRight.numPoints; h++)</span>
+					{
+<span class="nc" id="L1410">						pointID = tmpMergeMacroBinRight.pointIDs.get(h);</span>
+<span class="nc" id="L1411">						cellIDs.clear();</span>
+<span class="nc bnc" id="L1412" title="All 2 branches missed.">						for (int k = 0; k &lt; numProcessedDims; k++)</span>
+<span class="nc" id="L1413">							cellIDs.add(Integer.valueOf(discreteData[pointID][procDims[k]]));</span>
+						
+<span class="nc bnc" id="L1415" title="All 2 branches missed.">						for (int j = 0; j &lt; numCells; j++)</span>
+						{
+<span class="nc bnc" id="L1417" title="All 2 branches missed.">							if (h == 0)</span>
+<span class="nc" id="L1418">								counts[j] = 0;</span>
+							
+<span class="nc" id="L1420">							curCell = cells.get(j);</span>
+<span class="nc" id="L1421">							match = true;</span>
+<span class="nc bnc" id="L1422" title="All 2 branches missed.">							for (int k = 0; k &lt; numProcessedDims; k++)</span>
+							{
+<span class="nc" id="L1424">								curBinID = cellIDs.get(k);</span>
+<span class="nc" id="L1425">								cellBinID = curCell.get(k);</span>
+<span class="nc bnc" id="L1426" title="All 2 branches missed.">								if (curBinID != cellBinID)</span>
+								{
+<span class="nc" id="L1428">									match = false;</span>
+<span class="nc" id="L1429">									break;</span>
+								}
+							} // end for
+							
+<span class="nc bnc" id="L1433" title="All 2 branches missed.">							if (match == true)</span>
+							{
+<span class="nc" id="L1435">								counts[j]++;</span>
+<span class="nc" id="L1436">								break;</span>
+							}
+						} // end for
+					} // end for
+					
+					// increase cost
+<span class="nc bnc" id="L1442" title="All 2 branches missed.">					for (int j = 0; j &lt; numCells; j++)</span>
+					{
+<span class="nc" id="L1444">						totalPoints += counts[j];</span>
+<span class="nc bnc" id="L1445" title="All 2 branches missed.">						if (counts[j] &gt; 0)</span>
+<span class="nc" id="L1446">							tmpCost += (tmpMergeMacroBinRight.numPoints * 1.0 / tmpTotalNumPoints) * (counts[j] * 1.0 / tmpMergeMacroBinRight.numPoints) * Math.log(counts[j] * 1.0 / tmpMergeMacroBinRight.numPoints) / logBase;</span>
+					}
+					
+					// this serves as control check
+<span class="nc bnc" id="L1450" title="All 2 branches missed.">					if (totalPoints != tmpMergeMacroBinRight.numPoints)</span>
+					{
+						//System.out.println(totalPoints + &quot; --- &quot; + tmpMergeMacroBinRight.numPoints);
+<span class="nc" id="L1453">						throw new Exception(&quot;total points not match&quot;);</span>
+					}
+						
+					// if the new cost is larger than the current cost, then update the binning
+<span class="nc" id="L1457">					tmpCost += sumSingleEntropies;</span>
+<span class="nc bnc" id="L1458" title="All 2 branches missed.">					if (tmpCost &lt; 0)</span>
+						//throw new Exception(&quot;negative entropy = &quot; + tmpCost);
+<span class="nc" id="L1460">						tmpCost = 0;</span>
+						
+<span class="nc bnc" id="L1462" title="All 2 branches missed.">					if (tmpCost &gt; dynamicBinningCosts[numFirstMacroBins][numMacroBins])</span>
+					{
+<span class="nc" id="L1464">						dynamicBinningCosts[numFirstMacroBins][numMacroBins] = tmpCost;</span>
+<span class="nc" id="L1465">						dynamicNumPoints[numFirstMacroBins][numMacroBins] = tmpTotalNumPoints;</span>
+<span class="nc" id="L1466">						optimalPosition = maxIndex;</span>
+<span class="nc" id="L1467">						optimalNewBin = tmpMergeMacroBinRight;</span>
+					} // end if
+				} // end for
+				
+				// update the table's entry with the binning yielding the smallesy cost
+<span class="nc" id="L1472">				dynamicBinnings[numFirstMacroBins][numMacroBins] = new ArrayList&lt;MacroBin&gt;();</span>
+<span class="nc bnc" id="L1473" title="All 2 branches missed.">				for (int i = 0; i &lt; numMacroBins - 1; i++)</span>
+				{
+<span class="nc" id="L1475">					tmpMergeMacroBin = cloneBin(dynamicBinnings[optimalPosition][numMacroBins - 1].get(i));</span>
+<span class="nc" id="L1476">					dynamicBinnings[numFirstMacroBins][numMacroBins].add(tmpMergeMacroBin);</span>
+				}
+<span class="nc" id="L1478">				dynamicBinnings[numFirstMacroBins][numMacroBins].add(optimalNewBin);</span>
+				
+				//System.out.println(&quot;numMacroBins = &quot; + numMacroBins + &quot; --- numFirstMacroBins = &quot; + numFirstMacroBins);
+			} // end for
+		} // end for
+		
+<span class="nc" id="L1484">		double maxCost = Double.NEGATIVE_INFINITY;</span>
+<span class="nc" id="L1485">		int maxNumMacroBins = -1;</span>
+		double normalizedCost;
+<span class="nc bnc" id="L1487" title="All 2 branches missed.">		for (int numMacroBins = 2; numMacroBins &lt;= MAX_BINS; numMacroBins++)</span>
+		{
+<span class="nc" id="L1489">			val = Math.log(numMacroBins) / logBase;</span>
+<span class="nc" id="L1490">			normalizedCost = dynamicBinningCosts[numTotalMacroBins][numMacroBins] / (sumLog + val - Math.max(maxLog, val));</span>
+<span class="nc bnc" id="L1491" title="All 4 branches missed.">			if (normalizedCost &lt; 0 || normalizedCost &gt; 1)</span>
+<span class="nc" id="L1492">				throw new Exception(&quot;out of range cost = &quot; + normalizedCost);</span>
+			
+<span class="nc bnc" id="L1494" title="All 2 branches missed.">			if (normalizedCost &gt; maxCost)</span>
+			{
+<span class="nc" id="L1496">				maxCost = normalizedCost;</span>
+<span class="nc" id="L1497">				maxNumMacroBins = numMacroBins;</span>
+			}
+		}
+<span class="nc bnc" id="L1500" title="All 2 branches missed.">		for (int i = 0; i &lt; maxNumMacroBins; i++)</span>
+<span class="nc" id="L1501">			ret.add(dynamicBinnings[numTotalMacroBins][maxNumMacroBins].get(i));</span>
+<span class="nc" id="L1502">		cost[0] = maxCost;</span>
+		
+		//System.out.println(&quot;dim &quot; + curDim + &quot;: number of bins = &quot; + maxNumMacroBins);
+		//System.out.println(&quot;Cost = &quot; + maxCost);
+		//System.out.println(&quot;-----------&quot;);
+		
+<span class="nc" id="L1508">		return ret;</span>
+	}
+	
+	public static double computeCRE(double[] vals, boolean hasSorted)
+	{
+<span class="nc bnc" id="L1513" title="All 2 branches missed.">		if (vals.length &lt;= 1)</span>
+<span class="nc" id="L1514">			return 0;</span>
+			
+<span class="nc" id="L1516">		int num_items = vals.length;</span>
+<span class="nc bnc" id="L1517" title="All 2 branches missed.">		if (hasSorted == false)</span>
+<span class="nc" id="L1518">			Arrays.sort(vals);</span>
+		
+<span class="nc" id="L1520">		double cre = 0;</span>
+<span class="nc" id="L1521">		double logBase = Math.log(Constants.LOG_BASE);</span>
+<span class="nc bnc" id="L1522" title="All 2 branches missed.">		for (int i = 0; i &lt; num_items - 1; i++)</span>
+<span class="nc bnc" id="L1523" title="All 2 branches missed.">			if (vals[i + 1] != vals[i])</span>
+<span class="nc" id="L1524">				cre += (vals[i + 1] - vals[i]) * ((i + 1) / (1.0 * num_items)) * Math.log((i + 1) / (1.0 * num_items)) / logBase;</span>
+		
+<span class="nc" id="L1526">		return -cre;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -33,8 +33,8 @@ import java.util.Arrays;
      * whose values are above a calculated lowThreshold and a 
      * fixed factor 2.5 above
      * one of the adjacent minima.
-     * @param values
-     * @return 
+     @param values
+     @return 
      */
     public int[] findPeaks(float[] values) {
                 
@@ -47,9 +47,9 @@ import java.util.Arrays;
      * copies and sorts values, then takes the fraction*values.length
      * first indexes and calculates the mean for them and returns it.
      * 
-     * @param values
-     * @param fraction
-     * @return 
+     @param values
+     @param fraction fraction of sorted values to determine the mean of, i.e. range is [0, fraction*n)
+     @return 
      */
     public float calculateMeanOfSmallest(float[] values, float fraction) {
         
@@ -74,9 +74,9 @@ import java.util.Arrays;
      * copies and sorts values, then takes the fraction*values.length
      * first indexes and calculates the mean for them and returns it.
      * 
-     * @param values
-     * @param fraction
-     * @return 
+     @param values
+     @param fraction fraction of sorted values to determine the mean of, i.e. range is [0, fraction*n)
+     @return 
      */
     public float calculateMeanOfSmallest(int[] values, float fraction) {
         
@@ -102,10 +102,10 @@ import java.util.Arrays;
      * values are above lowThreshold and a factor factorAboveMin above
      * one of the adjacent minima.
      * 
-     * @param values
-     * @param lowThreshold
-     * @param factorAboveMin
-     * @return an array with indexes of peak values.  if none were found an empty
+     @param values
+     @param lowThreshold
+     @param factorAboveMin
+     @return an array with indexes of peak values.  if none were found an empty
      * array is returned.
      */
     public int[] findPeaks(float[] values, float lowThreshold, 
@@ -187,9 +187,9 @@ import java.util.Arrays;
      * and return their indexes.  the negative values are -1*index for a minima
      * while positive indexes are the indexes of maxima.
      * 
-     * @param values
-     * @param lowThreshold
-     * @return 
+     @param values
+     @param lowThreshold
+     @return 
      */
     public int[] findMinimaMaxima(float[] values, float lowThreshold) {
         

@@ -5,7 +5,11 @@ import algorithms.misc.MiscMath0;
 
 import java.util.logging.Logger;
 
-<span class="nc" id="L8">public class DerivGumbel {</span>
+/**
+ *
+ * @author nichole
+ */
+<span class="nc" id="L12">public class DerivGumbel {</span>
 
     /*&lt;pre&gt;
 
@@ -78,90 +82,209 @@ import java.util.logging.Logger;
      * &lt;/pre&gt;
      */
 
-<span class="nc" id="L81">    protected static Logger log = Logger.getLogger(DerivGumbel.class.getName());</span>
+    /**
+     *
+     */
 
+
+<span class="nc" id="L90">    protected static Logger log = Logger.getLogger(DerivGumbel.class.getName());</span>
+
+    /**
+     *
+     @param sigma
+     @return
+     */
     protected static double calcDZDX(double sigma) {
-<span class="nc" id="L84">        return 1./sigma;</span>
+<span class="nc" id="L98">        return 1./sigma;</span>
     }
+
+    /**
+     *
+     @param mu
+     @param sigma
+     @param x
+     @return
+     */
     protected static double calcDZDSigma(double mu, double sigma, double x) {
-<span class="nc" id="L87">        return -(x-mu)/(sigma*sigma);</span>
+<span class="nc" id="L109">        return -(x-mu)/(sigma*sigma);</span>
     }
+
+    /**
+     *
+     @param sigma
+     @return
+     */
     protected static double calcDZDMu(double sigma) {
-<span class="nc" id="L90">        return -1./sigma;</span>
+<span class="nc" id="L118">        return -1./sigma;</span>
     }
+
+    /**
+     *
+     @param mu
+     @param sigma
+     @param x
+     @return
+     */
     protected static double calcZ(double mu, double sigma, double x) {
-<span class="nc" id="L93">        return (x-mu)/sigma;</span>
+<span class="nc" id="L129">        return (x-mu)/sigma;</span>
     }
 
     /**
      * f1 = exp(-z)
-     * @param mu
-     * @param sigma
-     * @param x
-     * @return
+     @param mu
+     @param sigma
+     @param x
+     @return
      */
     protected static double calcF1(double mu, double sigma, double x) {
-<span class="nc" id="L104">        return Math.exp(-1. * calcZ(mu, sigma, x));</span>
+<span class="nc" id="L140">        return Math.exp(-1. * calcZ(mu, sigma, x));</span>
     }
     /**
      * f1 = exp(-z)
-     * @param z
-     * @return
+     @param z
+     @return
      */
     protected static double calcF1(double z) {
-<span class="nc" id="L112">        return Math.exp(-z);</span>
+<span class="nc" id="L148">        return Math.exp(-z);</span>
     }
+
+    /**
+     *
+     @param mu
+     @param sigma
+     @param x
+     @return
+     */
     protected static double calcDF1DX(double mu, double sigma, double x) {
         //f1 * (-1) * dz/dx
-<span class="nc" id="L116">        double f1 = calcF1(mu, sigma, x);</span>
-<span class="nc" id="L117">        return calcDF1DX(f1, sigma);</span>
+<span class="nc" id="L160">        double f1 = calcF1(mu, sigma, x);</span>
+<span class="nc" id="L161">        return calcDF1DX(f1, sigma);</span>
     }
+
+    /**
+     *
+     @param f1
+     @param sigma
+     @return
+     */
     protected static double calcDF1DX(double f1, double sigma) {
         //f1 * (-1) * dz/dx
-<span class="nc" id="L121">        double dzdx = calcDZDX(sigma);</span>
-<span class="nc" id="L122">        return -1. * f1 * dzdx;</span>
+<span class="nc" id="L172">        double dzdx = calcDZDX(sigma);</span>
+<span class="nc" id="L173">        return -1. * f1 * dzdx;</span>
     }
+
+    /**
+     *
+     @param mu
+     @param sigma
+     @param x
+     @return
+     */
     protected static double calcDF1DSigma(double mu, double sigma, double x) {
         //f1 * (-1) * dz/dsigma
-<span class="nc" id="L126">        double f1 = calcF1(mu, sigma, x);</span>
-<span class="nc" id="L127">        return calcDF1DSigma(f1, mu, sigma, x);</span>
+<span class="nc" id="L185">        double f1 = calcF1(mu, sigma, x);</span>
+<span class="nc" id="L186">        return calcDF1DSigma(f1, mu, sigma, x);</span>
     }
+
+    /**
+     *
+     @param f1
+     @param mu
+     @param sigma
+     @param x
+     @return
+     */
     protected static double calcDF1DSigma(double f1, double mu, double sigma, double x) {
         //f1 * (-1) * dz/dsigma
-<span class="nc" id="L131">        double dzdsigma = calcDZDSigma(mu, sigma, x);</span>
-<span class="nc" id="L132">        return -1. * f1 * dzdsigma;</span>
+<span class="nc" id="L199">        double dzdsigma = calcDZDSigma(mu, sigma, x);</span>
+<span class="nc" id="L200">        return -1. * f1 * dzdsigma;</span>
     }
+
+    /**
+     *
+     @param mu
+     @param sigma
+     @param x
+     @return
+     */
     protected static double calcDF1DMu(double mu, double sigma, double x) {
         //f1 * (-1) * dz/dmu
-<span class="nc" id="L136">        double f1 = calcF1(mu, sigma, x);</span>
-<span class="nc" id="L137">        return calcDF1DMu(f1, sigma);</span>
+<span class="nc" id="L212">        double f1 = calcF1(mu, sigma, x);</span>
+<span class="nc" id="L213">        return calcDF1DMu(f1, sigma);</span>
     }
+
+    /**
+     *
+     @param f1
+     @param sigma
+     @return
+     */
     protected static double calcDF1DMu(double f1, double sigma) {
         //f1 * (-1) * dz/dmu
-<span class="nc" id="L141">        double dzdmu = calcDZDMu(sigma);</span>
-<span class="nc" id="L142">        return -1. * f1 * dzdmu;</span>
+<span class="nc" id="L224">        double dzdmu = calcDZDMu(sigma);</span>
+<span class="nc" id="L225">        return -1. * f1 * dzdmu;</span>
     }
 
+    /**
+     *
+     @param f1
+     @return
+     */
     protected static double calcF2(double f1) {
         //exp(-f1)
-<span class="nc" id="L147">        return Math.exp(-f1);</span>
-    }
-    protected static double calcDF2DX(double f1, double f2, double sigma) {
-        //f2 * (-1) * df1/dx
-<span class="nc" id="L151">        double df1dx = calcDF1DX(f1, sigma);</span>
-<span class="nc" id="L152">        return -f2 * df1dx;</span>
-    }
-    protected static double calcDF2DSigma(double f1, double f2, double mu, double sigma, double x) {
-        //f2 * (-1) * df1/dsigma
-<span class="nc" id="L156">        double df1dsigma = calcDF1DSigma(f1, mu, sigma, x);</span>
-<span class="nc" id="L157">        return -f2 * df1dsigma;</span>
-    }
-    protected static double calcDF2DMu(double f1, double f2, double sigma) {
-        //f2 * (-1) * df1/dmu
-<span class="nc" id="L161">        double df1dmu = calcDF1DMu(f1, sigma);</span>
-<span class="nc" id="L162">        return -f2 * df1dmu;</span>
+<span class="nc" id="L235">        return Math.exp(-f1);</span>
     }
 
+    /**
+     *
+     @param f1
+     @param f2
+     @param sigma
+     @return
+     */
+    protected static double calcDF2DX(double f1, double f2, double sigma) {
+        //f2 * (-1) * df1/dx
+<span class="nc" id="L247">        double df1dx = calcDF1DX(f1, sigma);</span>
+<span class="nc" id="L248">        return -f2 * df1dx;</span>
+    }
+
+    /**
+     *
+     @param f1
+     @param f2
+     @param mu
+     @param sigma
+     @param x
+     @return
+     */
+    protected static double calcDF2DSigma(double f1, double f2, double mu, double sigma, double x) {
+        //f2 * (-1) * df1/dsigma
+<span class="nc" id="L262">        double df1dsigma = calcDF1DSigma(f1, mu, sigma, x);</span>
+<span class="nc" id="L263">        return -f2 * df1dsigma;</span>
+    }
+
+    /**
+     *
+     @param f1
+     @param f2
+     @param sigma
+     @return
+     */
+    protected static double calcDF2DMu(double f1, double f2, double sigma) {
+        //f2 * (-1) * df1/dmu
+<span class="nc" id="L275">        double df1dmu = calcDF1DMu(f1, sigma);</span>
+<span class="nc" id="L276">        return -f2 * df1dmu;</span>
+    }
+
+    /**
+     *
+     @param yConst
+     @param z
+     @param f1
+     @param f2
+     @param sigma
+     @return
+     */
     public static double derivWRTX(double yConst, double z, double f1, double f2, double sigma) {
 
         /*
@@ -169,14 +292,22 @@ import java.util.logging.Logger;
          *   dy/dx = ------ * ( f1 * df2/dx + f2 * df1/dx )
          *            sigma
          */
-<span class="nc" id="L172">        double df2dx = calcDF2DX(f1, f2, sigma);</span>
-<span class="nc" id="L173">        double df1dx = calcDF1DX(f1, sigma);</span>
+<span class="nc" id="L295">        double df2dx = calcDF2DX(f1, f2, sigma);</span>
+<span class="nc" id="L296">        double df1dx = calcDF1DX(f1, sigma);</span>
 
-<span class="nc" id="L175">        double dfdx = (yConst/sigma) * (f1 * df2dx + f2 * df1dx);</span>
+<span class="nc" id="L298">        double dfdx = (yConst/sigma) * (f1 * df2dx + f2 * df1dx);</span>
 
-<span class="nc" id="L177">        return dfdx;</span>
+<span class="nc" id="L300">        return dfdx;</span>
     }
 
+    /**
+     *
+     @param yConst
+     @param mu
+     @param sigma
+     @param x
+     @return
+     */
     public static double derivWRTMu(double yConst, double mu, double sigma, double x) {
 
         /*
@@ -184,12 +315,22 @@ import java.util.logging.Logger;
          *   dy/dmu =  ------ * ( f1 * df2/dmu + f2 * df1/dmu )
          *             sigma
          */
-<span class="nc" id="L187">        double z = calcZ(mu, sigma, x);</span>
-<span class="nc" id="L188">        double f1 = calcF1(z);</span>
-<span class="nc" id="L189">        double f2 = calcF2(f1);</span>
+<span class="nc" id="L318">        double z = calcZ(mu, sigma, x);</span>
+<span class="nc" id="L319">        double f1 = calcF1(z);</span>
+<span class="nc" id="L320">        double f2 = calcF2(f1);</span>
 
-<span class="nc" id="L191">        return derivWRTMu(z, f1, f2, yConst, sigma);</span>
+<span class="nc" id="L322">        return derivWRTMu(z, f1, f2, yConst, sigma);</span>
     }
+
+    /**
+     *
+     @param z
+     @param f1
+     @param f2
+     @param yConst
+     @param sigma
+     @return
+     */
     public static double derivWRTMu(double z, double f1, double f2, double yConst, double sigma) {
 
         /*
@@ -197,14 +338,22 @@ import java.util.logging.Logger;
          *   dy/dmu =  ------ * ( f1 * df2/dmu + f2 * df1/dmu )
          *             sigma
          */
-<span class="nc" id="L200">        double df2dmu = calcDF2DMu(f1, f2, sigma);</span>
-<span class="nc" id="L201">        double df1dmu = calcDF1DMu(f1, sigma);</span>
+<span class="nc" id="L341">        double df2dmu = calcDF2DMu(f1, f2, sigma);</span>
+<span class="nc" id="L342">        double df1dmu = calcDF1DMu(f1, sigma);</span>
 
-<span class="nc" id="L203">        double dfdmu = (yConst/sigma) * (f1 * df2dmu + f2 * df1dmu);</span>
+<span class="nc" id="L344">        double dfdmu = (yConst/sigma) * (f1 * df2dmu + f2 * df1dmu);</span>
 
-<span class="nc" id="L205">        return dfdmu;</span>
+<span class="nc" id="L346">        return dfdmu;</span>
     }
 
+    /**
+     *
+     @param yConst
+     @param mu
+     @param sigma
+     @param x
+     @return
+     */
     public static double derivWRTSigma(double yConst, double mu, double sigma, double x) {
 
         /*
@@ -215,13 +364,24 @@ import java.util.logging.Logger;
 
         dy/dsigma = (  df0/dsigma * f1 * f2 ) + ( df1/dsigma * f0 * f2 ) + (df2/dsigma * f0 * f1 )
         */
-<span class="nc" id="L218">        double z = calcZ(mu, sigma, x);</span>
-<span class="nc" id="L219">        double f1 = calcF1(z);</span>
-<span class="nc" id="L220">        double f2 = calcF2(f1);</span>
+<span class="nc" id="L367">        double z = calcZ(mu, sigma, x);</span>
+<span class="nc" id="L368">        double f1 = calcF1(z);</span>
+<span class="nc" id="L369">        double f2 = calcF2(f1);</span>
 
-<span class="nc" id="L222">        return derivWRTSigma(z, f1, f2, yConst, mu, sigma, x);</span>
+<span class="nc" id="L371">        return derivWRTSigma(z, f1, f2, yConst, mu, sigma, x);</span>
     }
 
+    /**
+     *
+     @param z
+     @param f1
+     @param f2
+     @param yConst
+     @param mu
+     @param sigma
+     @param x
+     @return
+     */
     public static double derivWRTSigma(double z, double f1, double f2, double yConst, double mu, double sigma, double x) {
 
         /*
@@ -232,23 +392,31 @@ import java.util.logging.Logger;
 
         dy/dsigma = (  df0/dsigma * f1 * f2 ) + ( df1/dsigma * f0 * f2 ) + (df2/dsigma * f0 * f1 )
         */
-<span class="nc" id="L235">        double f0 = yConst/sigma;</span>
-<span class="nc" id="L236">        double df0dsigma = -f0/sigma;</span>
-<span class="nc" id="L237">        double df2dsigma = calcDF2DSigma(f1, f2, mu, sigma, x);</span>
-<span class="nc" id="L238">        double df1dsigma = calcDF1DSigma(f1, mu, sigma, x);</span>
+<span class="nc" id="L395">        double f0 = yConst/sigma;</span>
+<span class="nc" id="L396">        double df0dsigma = -f0/sigma;</span>
+<span class="nc" id="L397">        double df2dsigma = calcDF2DSigma(f1, f2, mu, sigma, x);</span>
+<span class="nc" id="L398">        double df1dsigma = calcDF1DSigma(f1, mu, sigma, x);</span>
 
-<span class="nc" id="L240">        double dfdsigma = (df0dsigma * f1 * f2) + (df1dsigma * f0 * f2) + (df2dsigma * f0 * f1);</span>
+<span class="nc" id="L400">        double dfdsigma = (df0dsigma * f1 * f2) + (df1dsigma * f0 * f2) + (df2dsigma * f0 * f1);</span>
 
-<span class="nc" id="L242">        return dfdsigma;</span>
+<span class="nc" id="L402">        return dfdsigma;</span>
     }
 
+    /**
+     *
+     @param yConst
+     @param f1
+     @param f2
+     @param sigma
+     @return
+     */
     public static double calcYFit(double yConst, double f1, double f2, double sigma) {
         /*
          *           yconst
          *   yfit = ------ * f1 * f2
          *           sigma
          */
-<span class="nc" id="L251">        return (yConst/sigma) * f1 * f2;</span>
+<span class="nc" id="L419">        return (yConst/sigma) * f1 * f2;</span>
     }
 
     //===============
@@ -258,80 +426,82 @@ import java.util.logging.Logger;
      * The first, d0, was computed with param - delta.
      * The second, d1, was computed with param.
      * The third, d2, was computed with param + delta.
-     * @param d0
-     * @param d1
-     * @param d2
-     * @param delta
-     * @return
+     @param d0
+     @param d1
+     @param d2
+     @param delta
+     @return
      */
     protected static Double estimateDerivUsingDelta(Double d0, Double d1, Double d2, double delta) {
 
-<span class="nc bnc" id="L269" title="All 6 branches missed.">        if (d0 != null &amp;&amp; d1 != null &amp;&amp; d2 != null) {</span>
+<span class="nc bnc" id="L437" title="All 6 branches missed.">        if (d0 != null &amp;&amp; d1 != null &amp;&amp; d2 != null) {</span>
 
-<span class="nc" id="L271">            double delta0 = d1.doubleValue() - d0.doubleValue();</span>
-<span class="nc" id="L272">            double delta1 = d2.doubleValue() - d1.doubleValue();</span>
+<span class="nc" id="L439">            double delta0 = d1.doubleValue() - d0.doubleValue();</span>
+<span class="nc" id="L440">            double delta1 = d2.doubleValue() - d1.doubleValue();</span>
 
-<span class="nc" id="L274">            double d = (delta0 + delta1)/2.;</span>
+<span class="nc" id="L442">            double d = (delta0 + delta1)/2.;</span>
 
-<span class="nc" id="L276">            return (d/delta);</span>
+<span class="nc" id="L444">            return (d/delta);</span>
 
-<span class="nc bnc" id="L278" title="All 4 branches missed.">        } else if (d1 != null &amp;&amp; d2 != null) {</span>
+<span class="nc bnc" id="L446" title="All 4 branches missed.">        } else if (d1 != null &amp;&amp; d2 != null) {</span>
 
-<span class="nc" id="L280">            double d = d2.doubleValue() - d1.doubleValue();</span>
+<span class="nc" id="L448">            double d = d2.doubleValue() - d1.doubleValue();</span>
 
-<span class="nc" id="L282">            return (d/delta);</span>
+<span class="nc" id="L450">            return (d/delta);</span>
 
-<span class="nc bnc" id="L284" title="All 4 branches missed.">        } else if (d0 != null &amp;&amp; d1 != null) {</span>
+<span class="nc bnc" id="L452" title="All 4 branches missed.">        } else if (d0 != null &amp;&amp; d1 != null) {</span>
 
-<span class="nc" id="L286">            double d = d1.doubleValue() - d0.doubleValue();</span>
+<span class="nc" id="L454">            double d = d1.doubleValue() - d0.doubleValue();</span>
 
-<span class="nc" id="L288">            return (d/delta);</span>
+<span class="nc" id="L456">            return (d/delta);</span>
 
-<span class="nc bnc" id="L290" title="All 4 branches missed.">        } else if (d0 != null &amp;&amp; d2 != null) {</span>
+<span class="nc bnc" id="L458" title="All 4 branches missed.">        } else if (d0 != null &amp;&amp; d2 != null) {</span>
 
-<span class="nc" id="L292">            double d = d2.doubleValue() - d0.doubleValue();</span>
+<span class="nc" id="L460">            double d = d2.doubleValue() - d0.doubleValue();</span>
 
-<span class="nc" id="L294">            return (d/delta);</span>
+<span class="nc" id="L462">            return (d/delta);</span>
 
         } else {
 
-<span class="nc" id="L298">            return null;</span>
+<span class="nc" id="L466">            return null;</span>
         }
     }
 
     /**
      * calculate d/dsigma of Gumbel using the finite difference method
      *
-     * @param mu
-     * @param sigma
-     * @param x
-     * @return
+     @param mu
+     @param sigma
+     @param x
+     @param factor
+     @return
      */
     static Double estimateDerivUsingDeltaSigma(double mu, double sigma, double x, double factor) {
 
-<span class="nc" id="L312">        double delta = factor*sigma;</span>
-<span class="nc" id="L313">        Double d0 = Gumbel.pdf(x, mu, (sigma - delta));</span>
-<span class="nc" id="L314">        Double d1 = Gumbel.pdf(x, mu, sigma);</span>
-<span class="nc" id="L315">        Double d2 = Gumbel.pdf(x, mu, (sigma + delta));</span>
-<span class="nc" id="L316">        return estimateDerivUsingDelta(d0, d1, d2, delta);</span>
+<span class="nc" id="L481">        double delta = factor*sigma;</span>
+<span class="nc" id="L482">        Double d0 = Gumbel.pdf(x, mu, (sigma - delta));</span>
+<span class="nc" id="L483">        Double d1 = Gumbel.pdf(x, mu, sigma);</span>
+<span class="nc" id="L484">        Double d2 = Gumbel.pdf(x, mu, (sigma + delta));</span>
+<span class="nc" id="L485">        return estimateDerivUsingDelta(d0, d1, d2, delta);</span>
     }
 
     /**
      * estimate d/dmu of GEV using the difference between GEVs given minor changes in k
      *
-     * @param mu
-     * @param sigma
-     * @param x
-     * @return
+     @param mu
+     @param sigma
+     @param x
+     @param factor
+     @return
      */
     static Double estimateDerivUsingDeltaMu(double mu, double sigma, double x, double factor) {
 
-<span class="nc" id="L329">        double deltaMu = factor*mu;</span>
-<span class="nc" id="L330">        Double d0 = Gumbel.pdf(x, (mu - deltaMu), sigma);</span>
-<span class="nc" id="L331">        Double d1 = Gumbel.pdf(x, mu, sigma);</span>
-<span class="nc" id="L332">        Double d2 = Gumbel.pdf(x, (mu + deltaMu), sigma);</span>
+<span class="nc" id="L499">        double deltaMu = factor*mu;</span>
+<span class="nc" id="L500">        Double d0 = Gumbel.pdf(x, (mu - deltaMu), sigma);</span>
+<span class="nc" id="L501">        Double d1 = Gumbel.pdf(x, mu, sigma);</span>
+<span class="nc" id="L502">        Double d2 = Gumbel.pdf(x, (mu + deltaMu), sigma);</span>
 
-<span class="nc" id="L334">        return estimateDerivUsingDelta(d0, d1, d2, deltaMu);</span>
+<span class="nc" id="L504">        return estimateDerivUsingDelta(d0, d1, d2, deltaMu);</span>
     }
 
     /**
@@ -340,24 +510,26 @@ import java.util.logging.Logger;
      * resuse in other equations, but has to trust that dydsigma was derived with the
      * same mu, sigma, and x.
      * 
-     * @param mu
-     * @param sigma
-     * @param x
-     * @param dydsigma
-     * @return
+     @param yConst
+     @param mu
+     @param sigma
+     @param x
+     @param dydsigma
+     @param factor
+     @return
      */
     public static double estimateDY2DSigmaDSigma(double yConst, double mu, double sigma, double x, double dydsigma, double factor) {
 
         // &amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;sigma&amp;#8706;sigma = estimate as (dyds_2 - dyds)/ds
 
-<span class="nc" id="L353">        double delta = sigma*factor;</span>
+<span class="nc" id="L525">        double delta = sigma*factor;</span>
 
-<span class="nc" id="L355">        Double dyds_0 = DerivGumbel.derivWRTSigma(yConst, mu, (sigma - delta), x);</span>
-<span class="nc" id="L356">        Double dyds_2 = DerivGumbel.derivWRTSigma(yConst, mu, (sigma + delta), x);</span>
+<span class="nc" id="L527">        Double dyds_0 = DerivGumbel.derivWRTSigma(yConst, mu, (sigma - delta), x);</span>
+<span class="nc" id="L528">        Double dyds_2 = DerivGumbel.derivWRTSigma(yConst, mu, (sigma + delta), x);</span>
 
-<span class="nc" id="L358">        Double d = estimateDerivUsingDelta(dyds_0, dydsigma, dyds_2, delta);</span>
+<span class="nc" id="L530">        Double d = estimateDerivUsingDelta(dyds_0, dydsigma, dyds_2, delta);</span>
 
-<span class="nc bnc" id="L360" title="All 2 branches missed.">        return (d != null) ? d.doubleValue() : 0;</span>
+<span class="nc bnc" id="L532" title="All 2 branches missed.">        return (d != null) ? d.doubleValue() : 0;</span>
     }
 
     /**
@@ -365,24 +537,26 @@ import java.util.logging.Logger;
      * the method accepts dydsigma as a given to allow easier
      * reuse in other equations, but has to trust that dydmu was derived with the
      * same k, sigma, mu, and x.
-
-     * @param mu
-     * @param sigma
-     * @param x
-     * @return
+     @param yConst
+     @param mu
+     @param sigma
+     @param x
+     @param dydmu
+     @param factor
+     @return
      */
     public static double estimateDY2DMuDMu(double yConst, double mu, double sigma, double x, double dydmu, double factor) {
 
         // &amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;mu&amp;#8706;mu
 
-<span class="nc" id="L378">        double delta = mu*factor;</span>
+<span class="nc" id="L552">        double delta = mu*factor;</span>
 
-<span class="nc" id="L380">        Double dydm_0 = DerivGumbel.derivWRTMu(yConst, (mu - delta), sigma, x);</span>
-<span class="nc" id="L381">        Double dydm_2 = DerivGumbel.derivWRTMu(yConst, (mu + delta), sigma, x);</span>
+<span class="nc" id="L554">        Double dydm_0 = DerivGumbel.derivWRTMu(yConst, (mu - delta), sigma, x);</span>
+<span class="nc" id="L555">        Double dydm_2 = DerivGumbel.derivWRTMu(yConst, (mu + delta), sigma, x);</span>
 
-<span class="nc" id="L383">        Double d = estimateDerivUsingDelta(dydm_0, dydmu, dydm_2, delta);</span>
+<span class="nc" id="L557">        Double d = estimateDerivUsingDelta(dydm_0, dydmu, dydm_2, delta);</span>
 
-<span class="nc bnc" id="L385" title="All 2 branches missed.">        return (d != null) ? d.doubleValue() : 0;</span>
+<span class="nc bnc" id="L559" title="All 2 branches missed.">        return (d != null) ? d.doubleValue() : 0;</span>
     }
 
     /**
@@ -392,23 +566,26 @@ import java.util.logging.Logger;
      * resuse in other equations, but has to trust that dydmu was derived with the
      * same k, sigma, mu, and x.
      *
-     * @param mu
-     * @param sigma
-     * @param x
-     * @return
+     @param yConst
+     @param mu
+     @param sigma
+     @param x
+     @param dydmu
+     @param factor
+     @return
      */
     public static double estimateDY2DMuDSigma(double yConst, double mu, double sigma, double x, double dydmu, double factor) {
 
         // &amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;mu&amp;#8706;sigma
 
-<span class="nc" id="L404">        double delta = sigma*factor;</span>
+<span class="nc" id="L581">        double delta = sigma*factor;</span>
 
-<span class="nc" id="L406">        Double dydm_0 = DerivGumbel.derivWRTMu(yConst, mu, (sigma - delta), x);</span>
-<span class="nc" id="L407">        Double dydm_2 = DerivGumbel.derivWRTMu(yConst, mu, (sigma + delta), x);</span>
+<span class="nc" id="L583">        Double dydm_0 = DerivGumbel.derivWRTMu(yConst, mu, (sigma - delta), x);</span>
+<span class="nc" id="L584">        Double dydm_2 = DerivGumbel.derivWRTMu(yConst, mu, (sigma + delta), x);</span>
 
-<span class="nc" id="L409">        Double d = estimateDerivUsingDelta(dydm_0, dydmu, dydm_2, delta);</span>
+<span class="nc" id="L586">        Double d = estimateDerivUsingDelta(dydm_0, dydmu, dydm_2, delta);</span>
 
-<span class="nc bnc" id="L411" title="All 2 branches missed.">        return (d != null) ? d.doubleValue() : 0;</span>
+<span class="nc bnc" id="L588" title="All 2 branches missed.">        return (d != null) ? d.doubleValue() : 0;</span>
     }
 
     /**
@@ -419,47 +596,57 @@ import java.util.logging.Logger;
      * same k, sigma, mu, and x.
      * 
      * 
-     * @param mu
-     * @param sigma
-     * @param x
-     * @param dydsigma
-     * @return
+     @param yConst
+     @param mu
+     @param sigma
+     @param x
+     @param dydsigma
+     @param factor
+     @return
      */
     public static double estimateDY2DSigmaDMu(double yConst, double mu, double sigma, double x, double dydsigma, double factor) {
 
         // &amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;sigma&amp;#8706;mu = estimate as (dy2_ds_dk - dyds)/dk
 
-<span class="nc" id="L432">        double delta = (sigma*factor);</span>
+<span class="nc" id="L611">        double delta = (sigma*factor);</span>
 
-<span class="nc" id="L434">        Double dyds_0 = DerivGumbel.derivWRTSigma(yConst, (mu - delta), sigma, x);</span>
-<span class="nc" id="L435">        Double dyds_2 = DerivGumbel.derivWRTSigma(yConst, (mu + delta), sigma, x);</span>
+<span class="nc" id="L613">        Double dyds_0 = DerivGumbel.derivWRTSigma(yConst, (mu - delta), sigma, x);</span>
+<span class="nc" id="L614">        Double dyds_2 = DerivGumbel.derivWRTSigma(yConst, (mu + delta), sigma, x);</span>
 
-<span class="nc" id="L437">        Double d = estimateDerivUsingDelta(dyds_0, dydsigma, dyds_2, delta);</span>
+<span class="nc" id="L616">        Double d = estimateDerivUsingDelta(dyds_0, dydsigma, dyds_2, delta);</span>
 
-<span class="nc bnc" id="L439" title="All 2 branches missed.">        return (d != null) ? d.doubleValue() : 0;</span>
+<span class="nc bnc" id="L618" title="All 2 branches missed.">        return (d != null) ? d.doubleValue() : 0;</span>
     }
 
+    /**
+     *
+     @param mu
+     @param sigma
+     @param x
+     @param normalizedY
+     @return
+     */
     public static Double sumSquaredDifferences(final double mu, final double sigma, final double[] x,
         final double[] normalizedY) {
 
-<span class="nc" id="L445">        int n = x.length;</span>
+<span class="nc" id="L632">        int n = x.length;</span>
 
-<span class="nc bnc" id="L447" title="All 2 branches missed.">        if (normalizedY.length != n) {</span>
-<span class="nc" id="L448">            throw new IllegalArgumentException(&quot;x.length must equal normalizedY.length&quot;);</span>
+<span class="nc bnc" id="L634" title="All 2 branches missed.">        if (normalizedY.length != n) {</span>
+<span class="nc" id="L635">            throw new IllegalArgumentException(&quot;x.length must equal normalizedY.length&quot;);</span>
         }
 
-<span class="nc" id="L451">        double[] yGEV = Gumbel.generateCurve(x, mu, sigma);</span>
+<span class="nc" id="L638">        double[] yGEV = Gumbel.generateCurve(x, mu, sigma);</span>
 
-<span class="nc" id="L453">        double yMax = MiscMath0.findMax(yGEV);</span>
-<span class="nc" id="L454">        MatrixUtil.multiply(yGEV, 1./yMax);</span>
+<span class="nc" id="L640">        double yMax = MiscMath0.findMax(yGEV);</span>
+<span class="nc" id="L641">        MatrixUtil.multiply(yGEV, 1./yMax);</span>
 
-<span class="nc" id="L456">        double sum = 0;</span>
+<span class="nc" id="L643">        double sum = 0;</span>
         double diff;
-<span class="nc bnc" id="L458" title="All 2 branches missed.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="nc" id="L459">            diff = yGEV[i] - normalizedY[i];</span>
-<span class="nc" id="L460">            sum += (diff * diff);</span>
+<span class="nc bnc" id="L645" title="All 2 branches missed.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="nc" id="L646">            diff = yGEV[i] - normalizedY[i];</span>
+<span class="nc" id="L647">            sum += (diff * diff);</span>
         }
-<span class="nc" id="L462">        return sum;</span>
+<span class="nc" id="L649">        return sum;</span>
     }
 
 }

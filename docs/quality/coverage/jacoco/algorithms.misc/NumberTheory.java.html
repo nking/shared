@@ -19,9 +19,9 @@
      *
      * runtime complexity is (?)
      * 
-     * @param a
-     * @param b
-     * @return
+     @param a
+     @param b
+     @return
      */
     public static int euclid(int a, int b) {
         int t;
@@ -38,9 +38,9 @@
      *
      * runtime complexity is (?)
      * 
-     * @param a
-     * @param b
-     * @return
+     @param a
+     @param b
+     @return
      */
     public static long euclid(long a, long b) {
         long swap;
@@ -53,20 +53,20 @@
     }
     
     /**
-     * solves for x in the equation a * x ≡ b (mod n) (which is actually (a*x) mod n = b)
-     * where d is the gcd of number n and d|b (that is, d divides b).
+     * solves for x in the equation a * x ≡ b (mod n) (which is actually (a*x) % n = b)
+     * where d is the gcd of number n and d|b (a.k.a. d divides b).
      * finds the smallest gcd for which a*x + b*y = d.
      * The equation may have zero, one, or more than one such solution.
      * performs O(lg n + gcd(a, n)) arithmetic operations.
      * &lt;pre&gt;
      * Section 31.4, Cormen, Leiserson, Rivest, and Stein Introduction to Computer Algorithms.
      * &lt;/pre&gt;
-     * @param a positive number greater than 0
-     * @param b positive number greater than 0
-     * @param n
-     * @return 
+     @param a positive number greater than 0
+     @param b positive number greater than 0
+     @param n
+     @return 
      */
-    public static long[] gcdModularLinearEqnSolver(long a, long b, long n) {
+    public static long[] gcdModularLinearEqnSolver(final long a, final long b, final long n) {
         
         /*
         https://en.wikipedia.org/wiki/B%C3%A9zout%27s_identity
@@ -107,10 +107,10 @@
      * Chap 31, MODULAR-EXPONENTIATION(a, b, n) from Cormen, Leiserson, Rivest, and Stein Introduction
      * to Algorithms (a.k.a. CLRS).
      * &lt;/pre&gt;
-     * @param a non-negative integer
-     * @param b non-negative integer
-     * @param n positive integer
-     * @return 
+     @param a non-negative integer
+     @param b non-negative integer
+     @param n positive integer
+     @return 
      */
     public static int modularExponentiation(int a, int b, int n) {
         
@@ -142,10 +142,10 @@
      * Chap 31, MODULAR-EXPONENTIATION(a, b, n) from Cormen, Leiserson, Rivest, and Stein Introduction
      * to Algorithms (a.k.a. CLRS).
      * &lt;/pre&gt;
-     * @param a non-negative integer
-     * @param b non-negative integer
-     * @param n positive integer
-     * @return 
+     @param a non-negative integer
+     @param b non-negative integer
+     @param n positive integer
+     @return 
      */
     public static long modularExponentiation(long a, long b, long n) {
         
@@ -184,9 +184,9 @@
      * 
      * if a .gt. b .geq. 0, runtime complexity is O(log_2(b)).
      * 
-     * @param a
-     * @param b
-     * @return returns d, x, and y where
+     @param a
+     @param b
+     @return returns d, x, and y where
      * d = gcd(a, b) = a*x + b*y where x and y may be zero or negative.
      * x and y are useful for forming multiplicative inverses.
      * 
@@ -212,9 +212,9 @@
      * reference:
      * https://en.m.wikipedia.org/wiki/Least_common_multiple
      * &lt;/pre&gt;
-     * @param a
-     * @param b
-     * @return 
+     @param a
+     @param b
+     @return 
      */
     public static long leastCommonMultiple(long a, long b) {
 <span class="pc bpc" id="L220" title="3 of 4 branches missed.">        if (a == 0 &amp;&amp; b == 0) {</span>

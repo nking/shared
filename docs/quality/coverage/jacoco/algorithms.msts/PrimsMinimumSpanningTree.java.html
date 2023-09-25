@@ -21,18 +21,18 @@ import java.util.Arrays;
  * Implemented from pseudo code in Cormen, Leiserson, Rivest, and Stein Introduction to Algorithms and
       from http://en.wikipedia.org/wiki/Prim's_algorithm
      
-      Time complexity for different implementations:
+      Time complexity for implementations using different min heaps:
      
           Minimum edge weight data structure   Time complexity (total)
           ----------------------------------   -----------------------
           adjacency matrix, searching          O(V^2)
           binary heap and adjacency list       O((V + E) lg2 V) = O(E lg2 V)
           Fibonacci heap and adjacency list    O(E + V lg2 V) 
-          YFastTrie and adjacency list         O(E + V)
+          YFastTrie and adjacency list         O((E + V)*c) where c log_2 log_2(max value to store in heap)
      
       Prim's algorithm:
      
-      Grow a Tree in Running time is O((|N| + |E|)log|N|)
+      Grow a Tree Running time is O((|N| + |E|)log|N|)
       -- Start by picking any vertex to be the root of the tree.
       -- While the tree does not contain all vertices in the graph find shortest
          edge leaving the tree and add it to the tree.
@@ -49,13 +49,13 @@ import java.util.Arrays;
  *         crossing the cut.   a tie can mean more than one light edge for a cut.
  *         
  *    
- *     the goal is to visit every node in the input graph in a greedy BFS style (that is
+ *     the goal is to visit every node in the input graph in a greedy BestFirstSearch style (that is
  *     find the next best connected edge and continue from there) adding an edge if
  *     the end points are not already in the tree and if the edge is the minimum of the
  *     u neighbors.
  *     
  *     The input graph and edges are determined by cost, so if the edges are undirected,
- *     be sure to create cost[u][v] = value and cost[v][u] = value.
+ *     be sure to create cost[u][v] = value and cost[v][u] = value for the input.
 
 * 
   Following pseudo-code from Introduction to Algorithms,
@@ -63,21 +63,22 @@ import java.util.Arrays;
 
 * 
  * this implementation uses a YFastTrie min priority queue and adjacency list.
- * 
+ * runtime complexity is O((E + V)*c) where c log_2 log_2(max value in heap)
 * 
  * @author nichole
+ @param &lt;T&gt;
  */
-<span class="nc" id="L70">public class PrimsMinimumSpanningTree&lt;T&gt; {</span>
+<span class="nc" id="L71">public class PrimsMinimumSpanningTree&lt;T&gt; {</span>
     
     /**
      * find a minimum spanning tree using Prim's algorithm.
-     * @param graph an adjacency list for the graph, where the index of the array
+     @param graph an adjacency list for the graph, where the index of the array
      * is the vertex number and the keys within each vertex's list node are the
      * vertex on the other end of an edge.
-     * @param edgeWeights map of edge weights with key being pairs of the
+     @param edgeWeights map of edge weights with key being pairs of the
      * vertex numbers.
-     * @param r root node of final mst
-     * @return a minimum spanning tree of the weighted given graph
+     @param r root node of final mst
+     @return a minimum spanning tree of the weighted given graph
      */
     public static TIntObjectMap&lt;SimpleLinkedListNode&gt; mst(
         SimpleLinkedListNode[] graph, TObjectIntMap&lt;PairInt&gt; edgeWeights,
@@ -99,37 +100,37 @@ import java.util.Arrays;
          */
         
         //max(weights) is needed to estimate maximum number of bits needed by trie
-<span class="fc" id="L102">        int maxValue = findMax(edgeWeights);</span>
-<span class="fc" id="L103">        int sentinel = maxValue;</span>
-<span class="pc bpc" id="L104" title="1 of 2 branches missed.">        if (maxValue &lt; Integer.MAX_VALUE) {</span>
-<span class="fc" id="L105">            sentinel = maxValue + 1;</span>
+<span class="fc" id="L103">        int maxValue = findMax(edgeWeights);</span>
+<span class="fc" id="L104">        int sentinel = maxValue;</span>
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">        if (maxValue &lt; Integer.MAX_VALUE) {</span>
+<span class="fc" id="L106">            sentinel = maxValue + 1;</span>
         }
-<span class="fc" id="L107">        int maxNBits = (int)Math.ceil(Math.log(sentinel/Math.log(2)));</span>
+<span class="fc" id="L108">        int maxNBits = (int)Math.ceil(Math.log(sentinel/Math.log(2)));</span>
          
-<span class="fc" id="L109">        int nE = edgeWeights.size();</span>
-<span class="fc" id="L110">        int nV = graph.length;</span>
+<span class="fc" id="L110">        int nE = edgeWeights.size();</span>
+<span class="fc" id="L111">        int nV = graph.length;</span>
         
-<span class="fc" id="L112">        int[] d = new int[nV];</span>
-<span class="fc" id="L113">        Arrays.fill(d, sentinel);</span>
+<span class="fc" id="L113">        int[] d = new int[nV];</span>
+<span class="fc" id="L114">        Arrays.fill(d, sentinel);</span>
         
-<span class="fc" id="L115">        int[] prev = new int[nV];</span>
-<span class="fc" id="L116">        Arrays.fill(prev, -1);</span>
+<span class="fc" id="L116">        int[] prev = new int[nV];</span>
+<span class="fc" id="L117">        Arrays.fill(prev, -1);</span>
         
-<span class="fc" id="L118">        HeapNode[] nodes = new HeapNode[nV];</span>
+<span class="fc" id="L119">        HeapNode[] nodes = new HeapNode[nV];</span>
         
-<span class="fc" id="L120">        d[r] = 0;</span>
+<span class="fc" id="L121">        d[r] = 0;</span>
         
         HeapNode node;
         PairInt uv;
         
         //O(|V|)
         //int maxValue, int approxN, int maxNumberOfBits
-<span class="fc" id="L127">        MinHeapForRT2012 heap = new MinHeapForRT2012(sentinel, nV, maxNBits);</span>
-<span class="fc bfc" id="L128" title="All 2 branches covered.">        for (int v = 0; v &lt; nV; ++v) {</span>
-<span class="fc" id="L129">            node = new HeapNode(d[v]);</span>
-<span class="fc" id="L130">            node.setData(Integer.valueOf(v));</span>
-<span class="fc" id="L131">            heap.insert(node);</span>
-<span class="fc" id="L132">            nodes[v] = node;</span>
+<span class="fc" id="L128">        MinHeapForRT2012 heap = new MinHeapForRT2012(sentinel, nV, maxNBits);</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">        for (int v = 0; v &lt; nV; ++v) {</span>
+<span class="fc" id="L130">            node = new HeapNode(d[v]);</span>
+<span class="fc" id="L131">            node.setData(Integer.valueOf(v));</span>
+<span class="fc" id="L132">            heap.insert(node);</span>
+<span class="fc" id="L133">            nodes[v] = node;</span>
         }
         
         HeapNode uNode;
@@ -138,89 +139,89 @@ import java.util.Arrays;
         int v;
         int wUV;
         
-        // worse case O((|V| + |E|)*(lg_2 lg_2 (maxNBits)))
-<span class="fc bfc" id="L142" title="All 2 branches covered.">        while (heap.getNumberOfNodes() &gt; 0) {</span>
+        // worst case O((|V| + |E|)*(lg_2 (maxNBits)))
+<span class="fc bfc" id="L143" title="All 2 branches covered.">        while (heap.getNumberOfNodes() &gt; 0) {</span>
             
-            //essentially O(small constant of lg_2 lg_2 (maxNBits))
-<span class="fc" id="L145">            uNode = heap.extractMin();</span>
+            //essentially O(small constant of lg_2 (maxNBits))
+<span class="fc" id="L146">            uNode = heap.extractMin();</span>
             
-<span class="fc" id="L147">            u = (Integer)uNode.getData();</span>
+<span class="fc" id="L148">            u = (Integer)uNode.getData();</span>
             
             // null the entry in nodes so it isn't used in decrease key
-<span class="fc" id="L150">            nodes[u] = null;</span>
+<span class="fc" id="L151">            nodes[u] = null;</span>
             
-<span class="fc" id="L152">            vNode = graph[u];</span>
+<span class="fc" id="L153">            vNode = graph[u];</span>
                         
-<span class="pc bpc" id="L154" title="1 of 4 branches missed.">            while (vNode != null &amp;&amp; vNode.getNumberOfKeys() &gt; 0) {</span>
+<span class="pc bpc" id="L155" title="1 of 4 branches missed.">            while (vNode != null &amp;&amp; vNode.getNumberOfKeys() &gt; 0) {</span>
             
-<span class="fc" id="L156">                v = vNode.getKey();</span>
+<span class="fc" id="L157">                v = vNode.getKey();</span>
                 
-<span class="fc" id="L158">                uv = new PairInt(u, v);</span>
+<span class="fc" id="L159">                uv = new PairInt(u, v);</span>
                 
-<span class="pc bpc" id="L160" title="1 of 2 branches missed.">                if (!edgeWeights.containsKey(uv)) {</span>
-<span class="nc" id="L161">                    throw new IllegalStateException(&quot;no weight found for edge &quot; </span>
+<span class="pc bpc" id="L161" title="1 of 2 branches missed.">                if (!edgeWeights.containsKey(uv)) {</span>
+<span class="nc" id="L162">                    throw new IllegalStateException(&quot;no weight found for edge &quot; </span>
                     + u + &quot; to &quot; + v);
                 }
-<span class="fc bfc" id="L164" title="All 2 branches covered.">                if (nodes[v] == null) {</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">                if (nodes[v] == null) {</span>
                     // v is no longer in the heap
-<span class="fc" id="L166">                    vNode = vNode.getNext();                   </span>
-<span class="fc" id="L167">                    continue;</span>
+<span class="fc" id="L167">                    vNode = vNode.getNext();                   </span>
+<span class="fc" id="L168">                    continue;</span>
                 }
                 
-<span class="fc" id="L170">                wUV = edgeWeights.get(uv);</span>
+<span class="fc" id="L171">                wUV = edgeWeights.get(uv);</span>
                 
                 //compare d[v] to only wUV instead of dijkstra's (d[u] + wUV)             
-<span class="fc bfc" id="L173" title="All 2 branches covered.">                if (wUV &lt; d[v]) {</span>
-<span class="fc" id="L174">                    prev[v] = u;</span>
-<span class="fc" id="L175">                    d[v] = wUV;</span>
-                    //essentially O(small constant of lg_2 lg_2 (maxNBits))
-<span class="fc" id="L177">                    heap.decreaseKey(nodes[v], wUV);</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">                if (wUV &lt; d[v]) {</span>
+<span class="fc" id="L175">                    prev[v] = u;</span>
+<span class="fc" id="L176">                    d[v] = wUV;</span>
+                    //essentially O(small constant of lg_2 (maxNBits))
+<span class="fc" id="L178">                    heap.decreaseKey(nodes[v], wUV);</span>
                 }
                 
-<span class="fc" id="L180">                vNode = vNode.getNext();</span>
+<span class="fc" id="L181">                vNode = vNode.getNext();</span>
             }
         }
         
         // read predecessors to add edges to tree 'a'
         
-<span class="fc" id="L186">        int nMSTEdges = 0;</span>
-<span class="fc" id="L187">        long sum = 0;</span>
-<span class="fc" id="L188">        TIntObjectMap&lt;SimpleLinkedListNode&gt; a = new TIntObjectHashMap&lt;SimpleLinkedListNode&gt;();</span>
-<span class="fc bfc" id="L189" title="All 2 branches covered.">        for (v = 0; v &lt; nV; ++v) {</span>
-<span class="fc bfc" id="L190" title="All 2 branches covered.">            if (prev[v] &gt; -1) {</span>
-<span class="fc bfc" id="L191" title="All 2 branches covered.">                if (a.containsKey(prev[v])) {</span>
-<span class="fc" id="L192">                    a.get(prev[v]).insert(v);</span>
+<span class="fc" id="L187">        int nMSTEdges = 0;</span>
+<span class="fc" id="L188">        long sum = 0;</span>
+<span class="fc" id="L189">        TIntObjectMap&lt;SimpleLinkedListNode&gt; a = new TIntObjectHashMap&lt;SimpleLinkedListNode&gt;();</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">        for (v = 0; v &lt; nV; ++v) {</span>
+<span class="fc bfc" id="L191" title="All 2 branches covered.">            if (prev[v] &gt; -1) {</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">                if (a.containsKey(prev[v])) {</span>
+<span class="fc" id="L193">                    a.get(prev[v]).insert(v);</span>
                 } else {
-<span class="fc" id="L194">                    a.put(prev[v], new SimpleLinkedListNode(v));</span>
+<span class="fc" id="L195">                    a.put(prev[v], new SimpleLinkedListNode(v));</span>
                 }
                 //System.out.printf(&quot;adding %d to %d\n&quot;, pi[v], v);
-<span class="fc" id="L197">                nMSTEdges++;</span>
-<span class="fc" id="L198">                PairInt uv2 = new PairInt(prev[v], v);</span>
-<span class="fc" id="L199">                sum += edgeWeights.get(uv2);</span>
+<span class="fc" id="L198">                nMSTEdges++;</span>
+<span class="fc" id="L199">                PairInt uv2 = new PairInt(prev[v], v);</span>
+<span class="fc" id="L200">                sum += edgeWeights.get(uv2);</span>
             }
         }
         
-<span class="fc" id="L203">        System.out.printf(&quot;%d edges out of %d in minimumspanning tree.  sum=%d\n&quot;,</span>
-<span class="fc" id="L204">            nMSTEdges, nE, sum);</span>
+<span class="fc" id="L204">        System.out.printf(&quot;%d edges out of %d in minimumspanning tree.  sum=%d\n&quot;,</span>
+<span class="fc" id="L205">            nMSTEdges, nE, sum);</span>
         
-<span class="fc" id="L206">        return a;</span>
+<span class="fc" id="L207">        return a;</span>
     }
 
     private static int findMax(TObjectIntMap&lt;PairInt&gt; edgeWeights) {
         
-<span class="fc" id="L211">        int max = Integer.MIN_VALUE;</span>
+<span class="fc" id="L212">        int max = Integer.MIN_VALUE;</span>
         
         int w;
-<span class="fc" id="L214">        TObjectIntIterator&lt;PairInt&gt; iter = edgeWeights.iterator();</span>
-<span class="fc bfc" id="L215" title="All 2 branches covered.">        for (int i = 0; i &lt; edgeWeights.size(); ++i) {</span>
-<span class="fc" id="L216">            iter.advance();</span>
-<span class="fc" id="L217">            w = iter.value();</span>
-<span class="fc bfc" id="L218" title="All 2 branches covered.">            if (w &gt; max) {</span>
-<span class="fc" id="L219">                max = w;</span>
+<span class="fc" id="L215">        TObjectIntIterator&lt;PairInt&gt; iter = edgeWeights.iterator();</span>
+<span class="fc bfc" id="L216" title="All 2 branches covered.">        for (int i = 0; i &lt; edgeWeights.size(); ++i) {</span>
+<span class="fc" id="L217">            iter.advance();</span>
+<span class="fc" id="L218">            w = iter.value();</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">            if (w &gt; max) {</span>
+<span class="fc" id="L220">                max = w;</span>
             }
         }
         
-<span class="fc" id="L223">        return max;</span>
+<span class="fc" id="L224">        return max;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

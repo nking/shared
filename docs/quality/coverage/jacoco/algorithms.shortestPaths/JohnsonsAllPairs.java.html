@@ -32,13 +32,24 @@ import java.util.Arrays;
      * first vertex and the map within having a key being the 2nd vertex of the
      * edge with value being the edge weight.
     */
-<span class="fc" id="L35">    protected TIntIntMap[] w = null;</span>
-    
-<span class="fc" id="L37">    protected int[][] dist = null;</span>
 
-<span class="fc" id="L39">    protected int[][] predecessor = null;   </span>
+    /**
+     *
+     */
+
+<span class="fc" id="L40">    protected TIntIntMap[] w = null;</span>
+    
+    /**
+     *
+     */
+<span class="fc" id="L45">    protected int[][] dist = null;</span>
+
+    /**
+     *
+     */
+<span class="fc" id="L50">    protected int[][] predecessor = null;   </span>
         
-<span class="fc" id="L41">    private int sentinel = Integer.MAX_VALUE;</span>
+<span class="fc" id="L52">    private int sentinel = Integer.MAX_VALUE;</span>
     
     
     /*
@@ -64,99 +75,99 @@ import java.util.Arrays;
     
     /**
      * 
-     * @param graph directed weighted graph where the main index of the object array
+     @param graph directed weighted graph where the main index of the object array
      * is the vertex number, and each vertex has a linked list of outgoing 
      * edges connecting to the vertexes held in each linked list node key.
      * Note that all vertexes, including edge vertexes, must be present as an
      * index of the array graph, i.e. all vertexes must have numerical value 
      * less than dAG.length.
-     * @param weights the edge weights in format of outer array index being the
+     @param weights the edge weights in format of outer array index being the
      * first vertex and the map within having a key being the 2nd vertex of the
      * edge with value being the edge weight.
      * 
      */
-<span class="fc" id="L78">    public JohnsonsAllPairs(SimpleLinkedListNode[] graph, TIntIntMap[] weights) {</span>
+<span class="fc" id="L89">    public JohnsonsAllPairs(SimpleLinkedListNode[] graph, TIntIntMap[] weights) {</span>
             
-<span class="pc bpc" id="L80" title="2 of 4 branches missed.">        if (graph == null || graph.length == 0) {</span>
-<span class="nc" id="L81">            throw new IllegalArgumentException(&quot;graph cannot be null&quot;);</span>
+<span class="pc bpc" id="L91" title="2 of 4 branches missed.">        if (graph == null || graph.length == 0) {</span>
+<span class="nc" id="L92">            throw new IllegalArgumentException(&quot;graph cannot be null&quot;);</span>
         }
         
-<span class="fc" id="L84">        init(graph, weights);        </span>
-<span class="fc" id="L85">    }</span>
+<span class="fc" id="L95">        init(graph, weights);        </span>
+<span class="fc" id="L96">    }</span>
     
     private void init(SimpleLinkedListNode[] graph, TIntIntMap[] weights) {
         
-<span class="fc" id="L89">        g = graph.clone();</span>
-<span class="fc bfc" id="L90" title="All 2 branches covered.">        for (int i = 0; i &lt; g.length; ++i) {</span>
-<span class="pc bpc" id="L91" title="1 of 2 branches missed.">            if (graph[i] != null) {</span>
-<span class="fc" id="L92">                g[i] = new SimpleLinkedListNode(graph[i]);</span>
+<span class="fc" id="L100">        g = graph.clone();</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">        for (int i = 0; i &lt; g.length; ++i) {</span>
+<span class="pc bpc" id="L102" title="1 of 2 branches missed.">            if (graph[i] != null) {</span>
+<span class="fc" id="L103">                g[i] = new SimpleLinkedListNode(graph[i]);</span>
             }
         }
-<span class="fc" id="L95">        w = weights.clone();</span>
-<span class="fc bfc" id="L96" title="All 2 branches covered.">        for (int i = 0; i &lt; weights.length; ++i) {</span>
-<span class="pc bpc" id="L97" title="1 of 2 branches missed.">            if (weights[i] != null) {</span>
-<span class="fc" id="L98">                w[i] = new TIntIntHashMap(weights[i]);</span>
+<span class="fc" id="L106">        w = weights.clone();</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">        for (int i = 0; i &lt; weights.length; ++i) {</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">            if (weights[i] != null) {</span>
+<span class="fc" id="L109">                w[i] = new TIntIntHashMap(weights[i]);</span>
             }
         }
                 
-<span class="fc" id="L102">        dist = new int[g.length][g.length];</span>
-<span class="fc" id="L103">        predecessor = new int[g.length][g.length];</span>
+<span class="fc" id="L113">        dist = new int[g.length][g.length];</span>
+<span class="fc" id="L114">        predecessor = new int[g.length][g.length];</span>
         
-<span class="fc bfc" id="L105" title="All 2 branches covered.">        for (int i = 0; i &lt; g.length; ++i) {</span>
-<span class="fc" id="L106">            dist[i] = new int[g.length];</span>
-<span class="fc" id="L107">            Arrays.fill(dist[i], sentinel);</span>
-<span class="fc" id="L108">            predecessor[i] = new int[g.length];</span>
-<span class="fc" id="L109">            Arrays.fill(predecessor[i], -1);</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">        for (int i = 0; i &lt; g.length; ++i) {</span>
+<span class="fc" id="L117">            dist[i] = new int[g.length];</span>
+<span class="fc" id="L118">            Arrays.fill(dist[i], sentinel);</span>
+<span class="fc" id="L119">            predecessor[i] = new int[g.length];</span>
+<span class="fc" id="L120">            Arrays.fill(predecessor[i], -1);</span>
         }
                 
         //dist[src] = 0;
-<span class="fc" id="L113">    }</span>
+<span class="fc" id="L124">    }</span>
     
     /**
      * find the shortest paths between all pairs of vertices in an edge-weighted, directed graph. 
-     * @return returns false if a negative cycle is present, else returns true 
+     @return returns false if a negative cycle is present, else returns true 
      * and the results are usable.
      */
     public boolean find() {
         
-<span class="fc" id="L122">        G g2 = addZeroWeightNode();</span>
+<span class="fc" id="L133">        G g2 = addZeroWeightNode();</span>
         
-<span class="fc" id="L124">        BellmanFord bf = new BellmanFord(g2.g, g2.w, g2.newNode);</span>
-<span class="fc" id="L125">        boolean noNegativeWgtCycle = bf.find();</span>
-<span class="pc bpc" id="L126" title="1 of 2 branches missed.">        if (!noNegativeWgtCycle) {</span>
-<span class="nc" id="L127">            return noNegativeWgtCycle;</span>
+<span class="fc" id="L135">        BellmanFord bf = new BellmanFord(g2.g, g2.w, g2.newNode);</span>
+<span class="fc" id="L136">        boolean noNegativeWgtCycle = bf.find();</span>
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">        if (!noNegativeWgtCycle) {</span>
+<span class="nc" id="L138">            return noNegativeWgtCycle;</span>
         }
         
         // re-weight the graph:
         
-<span class="fc" id="L132">        int[] hv = Arrays.copyOf(bf.dist, bf.dist.length);</span>
+<span class="fc" id="L143">        int[] hv = Arrays.copyOf(bf.dist, bf.dist.length);</span>
         
-<span class="fc bfc" id="L134" title="All 2 branches covered.">        for (int u = 0; u &lt; g2.g.length; ++u) {</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">        for (int u = 0; u &lt; g2.g.length; ++u) {</span>
             
-<span class="fc" id="L136">            TIntIntMap uWeights = g2.w[u];</span>
+<span class="fc" id="L147">            TIntIntMap uWeights = g2.w[u];</span>
            
-<span class="pc bpc" id="L138" title="1 of 2 branches missed.">            if (uWeights == null) {</span>
-<span class="nc" id="L139">                continue;</span>
+<span class="pc bpc" id="L149" title="1 of 2 branches missed.">            if (uWeights == null) {</span>
+<span class="nc" id="L150">                continue;</span>
             }
             
-<span class="fc" id="L142">            SimpleLinkedListNode vNode = g2.g[u];</span>
+<span class="fc" id="L153">            SimpleLinkedListNode vNode = g2.g[u];</span>
             
-<span class="pc bpc" id="L144" title="1 of 4 branches missed.">            while (vNode != null &amp;&amp; vNode.getNumberOfKeys() &gt; 0) {</span>
+<span class="pc bpc" id="L155" title="1 of 4 branches missed.">            while (vNode != null &amp;&amp; vNode.getNumberOfKeys() &gt; 0) {</span>
             
-<span class="fc" id="L146">                int v = vNode.getKey();</span>
+<span class="fc" id="L157">                int v = vNode.getKey();</span>
                 
-<span class="pc bpc" id="L148" title="1 of 2 branches missed.">                if (!uWeights.containsKey(v)) {</span>
-<span class="nc" id="L149">                    throw new IllegalStateException(&quot;no weight found for edge &quot; </span>
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">                if (!uWeights.containsKey(v)) {</span>
+<span class="nc" id="L160">                    throw new IllegalStateException(&quot;no weight found for edge &quot; </span>
                     + u + &quot; to &quot; + v);
                 }
-<span class="pc bnc" id="L152" title="All 2 branches missed.">                assert(hv[u] &lt; sentinel);</span>
-<span class="pc bnc" id="L153" title="All 2 branches missed.">                assert(hv[v] &lt; sentinel);</span>
-<span class="fc" id="L154">                int wUV = uWeights.get(v) + hv[u] - hv[v];</span>
+<span class="pc bnc" id="L163" title="All 2 branches missed.">                assert(hv[u] &lt; sentinel);</span>
+<span class="pc bnc" id="L164" title="All 2 branches missed.">                assert(hv[v] &lt; sentinel);</span>
+<span class="fc" id="L165">                int wUV = uWeights.get(v) + hv[u] - hv[v];</span>
                 
-<span class="fc" id="L156">                uWeights.put(v, wUV);</span>
+<span class="fc" id="L167">                uWeights.put(v, wUV);</span>
                 
-<span class="fc" id="L158">                vNode = vNode.getNext();</span>
-<span class="fc" id="L159">            }</span>
+<span class="fc" id="L169">                vNode = vNode.getNext();</span>
+<span class="fc" id="L170">            }</span>
         }
         
         /*
@@ -165,139 +176,159 @@ import java.util.Arrays;
            for each vertex v in V[G]
               do d(u,v) = delta_hat(u, v) + h(v) - h(u)
         */
-<span class="fc bfc" id="L168" title="All 2 branches covered.">        for (int u = 0; u &lt; g.length; ++u) {</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">        for (int u = 0; u &lt; g.length; ++u) {</span>
             
-<span class="fc" id="L170">            UniformCostSearch ucs = new UniformCostSearch(g, g2.w, u, -1);</span>
-<span class="fc" id="L171">            ucs.find();</span>
+<span class="fc" id="L181">            UniformCostSearch ucs = new UniformCostSearch(g, g2.w, u, -1);</span>
+<span class="fc" id="L182">            ucs.find();</span>
                             
-<span class="fc" id="L173">            SimpleLinkedListNode v2Node = g[u];</span>
+<span class="fc" id="L184">            SimpleLinkedListNode v2Node = g[u];</span>
 
-<span class="pc bpc" id="L175" title="1 of 4 branches missed.">            while (v2Node != null &amp;&amp; v2Node.getNumberOfKeys() &gt; 0) {</span>
+<span class="pc bpc" id="L186" title="1 of 4 branches missed.">            while (v2Node != null &amp;&amp; v2Node.getNumberOfKeys() &gt; 0) {</span>
 
-<span class="fc" id="L177">                int v2 = v2Node.getKey();</span>
+<span class="fc" id="L188">                int v2 = v2Node.getKey();</span>
 
-<span class="pc bnc" id="L179" title="All 2 branches missed.">                assert(hv[v2] &lt; sentinel);</span>
-<span class="pc bnc" id="L180" title="All 2 branches missed.">                assert(hv[u] &lt; sentinel);</span>
+<span class="pc bnc" id="L190" title="All 2 branches missed.">                assert(hv[v2] &lt; sentinel);</span>
+<span class="pc bnc" id="L191" title="All 2 branches missed.">                assert(hv[u] &lt; sentinel);</span>
                 
                 //do d(u,v) = delta_hat(u, v) + h(v) - h(u)
                 //dist[u][v2] = dijkstras.dist[v2] + hv[v2] - hv[u];
                 //System.arraycopy(dijkstras.predecessor, 0, predecessor[u], 
                 //    0, dijkstras.predecessor.length);
                
-<span class="fc" id="L187">                dist[u][v2] = ucs.dist[v2] + hv[v2] - hv[u];</span>
-<span class="fc" id="L188">                System.arraycopy(ucs.predecessor, 0, predecessor[u], </span>
+<span class="fc" id="L198">                dist[u][v2] = ucs.dist[v2] + hv[v2] - hv[u];</span>
+<span class="fc" id="L199">                System.arraycopy(ucs.predecessor, 0, predecessor[u], </span>
                     0, ucs.predecessor.length);
 
-<span class="fc" id="L191">                v2Node = v2Node.getNext();</span>
-<span class="fc" id="L192">            }</span>
+<span class="fc" id="L202">                v2Node = v2Node.getNext();</span>
+<span class="fc" id="L203">            }</span>
         }
         
-<span class="fc" id="L195">        return true;</span>
+<span class="fc" id="L206">        return true;</span>
     }
     
     private G addZeroWeightNode() {
         
-<span class="fc" id="L200">        int nV = g.length;</span>
+<span class="fc" id="L211">        int nV = g.length;</span>
         
         // add an extra node to the graph and connect it to all vertices with
         //    an outgoing edge of weight 0
        
-<span class="fc" id="L205">        SimpleLinkedListNode[] g2 = new SimpleLinkedListNode[nV + 1];</span>
-<span class="fc bfc" id="L206" title="All 2 branches covered.">        for (int i = 0; i &lt; g.length; ++i) {</span>
-<span class="pc bpc" id="L207" title="1 of 2 branches missed.">            if (g[i] != null) {</span>
-<span class="fc" id="L208">                g2[i] = new SimpleLinkedListNode(g[i]);</span>
+<span class="fc" id="L216">        SimpleLinkedListNode[] g2 = new SimpleLinkedListNode[nV + 1];</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">        for (int i = 0; i &lt; g.length; ++i) {</span>
+<span class="pc bpc" id="L218" title="1 of 2 branches missed.">            if (g[i] != null) {</span>
+<span class="fc" id="L219">                g2[i] = new SimpleLinkedListNode(g[i]);</span>
             }
         }
-<span class="fc" id="L211">        g2[nV] = new SimpleLinkedListNode();</span>
-<span class="fc bfc" id="L212" title="All 2 branches covered.">        for (int i = 0; i &lt; g.length; ++i) {</span>
-<span class="fc" id="L213">            g2[nV].insert(i);</span>
+<span class="fc" id="L222">        g2[nV] = new SimpleLinkedListNode();</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">        for (int i = 0; i &lt; g.length; ++i) {</span>
+<span class="fc" id="L224">            g2[nV].insert(i);</span>
         }
         
-<span class="fc" id="L216">        TIntIntMap[] w2 = new TIntIntMap[nV + 1];</span>
-<span class="fc bfc" id="L217" title="All 2 branches covered.">        for (int i = 0; i &lt; w.length; ++i) {</span>
-<span class="pc bpc" id="L218" title="1 of 2 branches missed.">            if (w[i] != null) {</span>
-<span class="fc" id="L219">                w2[i] = new TIntIntHashMap(w[i]);</span>
+<span class="fc" id="L227">        TIntIntMap[] w2 = new TIntIntMap[nV + 1];</span>
+<span class="fc bfc" id="L228" title="All 2 branches covered.">        for (int i = 0; i &lt; w.length; ++i) {</span>
+<span class="pc bpc" id="L229" title="1 of 2 branches missed.">            if (w[i] != null) {</span>
+<span class="fc" id="L230">                w2[i] = new TIntIntHashMap(w[i]);</span>
             }
         }
-<span class="fc" id="L222">        w2[nV] = new TIntIntHashMap();</span>
-<span class="fc bfc" id="L223" title="All 2 branches covered.">        for (int i = 0; i &lt; w.length; ++i) {</span>
-<span class="fc" id="L224">            w2[nV].put(i, 0);</span>
+<span class="fc" id="L233">        w2[nV] = new TIntIntHashMap();</span>
+<span class="fc bfc" id="L234" title="All 2 branches covered.">        for (int i = 0; i &lt; w.length; ++i) {</span>
+<span class="fc" id="L235">            w2[nV].put(i, 0);</span>
         }
         
-<span class="fc" id="L227">        G gPrime = new G();</span>
-<span class="fc" id="L228">        gPrime.g = g2;</span>
-<span class="fc" id="L229">        gPrime.w = w2;</span>
-<span class="fc" id="L230">        gPrime.newNode = nV;</span>
+<span class="fc" id="L238">        G gPrime = new G();</span>
+<span class="fc" id="L239">        gPrime.g = g2;</span>
+<span class="fc" id="L240">        gPrime.w = w2;</span>
+<span class="fc" id="L241">        gPrime.newNode = nV;</span>
         
-<span class="fc" id="L232">        return gPrime;</span>
+<span class="fc" id="L243">        return gPrime;</span>
     }
     
     /**
      * get shortest path from source to destIndex
-     * @param srcVertex
-     * @param destVertex
-     * @return 
+     @param srcVertex
+     @param destVertex
+     @return 
      */
     public int[] getShortestPathToVertex(int srcVertex, int destVertex) {
-<span class="pc bpc" id="L242" title="2 of 4 branches missed.">        if (destVertex &lt; 0 || destVertex &gt;= g.length) {</span>
-<span class="nc" id="L243">            throw new IllegalArgumentException(&quot;destIndex cannot be null&quot;);</span>
+<span class="pc bpc" id="L253" title="2 of 4 branches missed.">        if (destVertex &lt; 0 || destVertex &gt;= g.length) {</span>
+<span class="nc" id="L254">            throw new IllegalArgumentException(&quot;destIndex cannot be null&quot;);</span>
         }
-<span class="pc bpc" id="L245" title="1 of 2 branches missed.">        if (predecessor == null) {</span>
-<span class="nc" id="L246">            throw new IllegalStateException(&quot;find must be run before this method can be used&quot;);</span>
+<span class="pc bpc" id="L256" title="1 of 2 branches missed.">        if (predecessor == null) {</span>
+<span class="nc" id="L257">            throw new IllegalStateException(&quot;find must be run before this method can be used&quot;);</span>
         }
         
-<span class="fc" id="L249">        int[] p = new int[g.length];</span>
-<span class="fc" id="L250">        p[p.length - 1] = destVertex;</span>
+<span class="fc" id="L260">        int[] p = new int[g.length];</span>
+<span class="fc" id="L261">        p[p.length - 1] = destVertex;</span>
                 
-<span class="fc bfc" id="L252" title="All 2 branches covered.">        for (int i = p.length - 2; i &gt; -1; --i) {</span>
-<span class="fc bfc" id="L253" title="All 2 branches covered.">            if (destVertex == srcVertex) {</span>
-<span class="fc" id="L254">                int len = p.length - 1 - i;</span>
-<span class="fc" id="L255">                int[] t = new int[len];</span>
-<span class="fc" id="L256">                System.arraycopy(p, i + 1, t, 0, len);</span>
-<span class="fc" id="L257">                return t;</span>
-<span class="pc bpc" id="L258" title="1 of 2 branches missed.">            } else if (destVertex == -1) {</span>
-<span class="nc" id="L259">                throw new IllegalStateException(&quot;path did not complete correctly&quot;);</span>
+<span class="fc bfc" id="L263" title="All 2 branches covered.">        for (int i = p.length - 2; i &gt; -1; --i) {</span>
+<span class="fc bfc" id="L264" title="All 2 branches covered.">            if (destVertex == srcVertex) {</span>
+<span class="fc" id="L265">                int len = p.length - 1 - i;</span>
+<span class="fc" id="L266">                int[] t = new int[len];</span>
+<span class="fc" id="L267">                System.arraycopy(p, i + 1, t, 0, len);</span>
+<span class="fc" id="L268">                return t;</span>
+<span class="pc bpc" id="L269" title="1 of 2 branches missed.">            } else if (destVertex == -1) {</span>
+<span class="nc" id="L270">                throw new IllegalStateException(&quot;path did not complete correctly&quot;);</span>
             }
-<span class="fc" id="L261">            p[i] = predecessor[srcVertex][destVertex];</span>
-<span class="fc" id="L262">            destVertex = p[i];</span>
+<span class="fc" id="L272">            p[i] = predecessor[srcVertex][destVertex];</span>
+<span class="fc" id="L273">            destVertex = p[i];</span>
         }
         
-<span class="pc bpc" id="L265" title="1 of 2 branches missed.">        if (p[0] != srcVertex) {</span>
-<span class="nc" id="L266">            throw new IllegalStateException(&quot;path did not complete correctly for &quot;</span>
+<span class="pc bpc" id="L276" title="1 of 2 branches missed.">        if (p[0] != srcVertex) {</span>
+<span class="nc" id="L277">            throw new IllegalStateException(&quot;path did not complete correctly for &quot;</span>
                 + &quot; srcVertex=&quot; + srcVertex + &quot; destIndex=&quot; + destVertex);
         }
         
-<span class="fc" id="L270">        return p;</span>
+<span class="fc" id="L281">        return p;</span>
     }
     
+    /**
+     *
+     @param vertexes
+     @return
+     */
     public int getSumOfPath(int[] vertexes) {
-<span class="pc bpc" id="L274" title="1 of 2 branches missed.">        if (vertexes == null) {</span>
-<span class="nc" id="L275">            throw new IllegalArgumentException(&quot;vertexes cannot be null&quot;);</span>
+<span class="pc bpc" id="L290" title="1 of 2 branches missed.">        if (vertexes == null) {</span>
+<span class="nc" id="L291">            throw new IllegalArgumentException(&quot;vertexes cannot be null&quot;);</span>
         }
-<span class="pc bpc" id="L277" title="1 of 2 branches missed.">        if (dist == null) {</span>
-<span class="nc" id="L278">            throw new IllegalStateException(&quot;find must be run before this method can be used&quot;);</span>
+<span class="pc bpc" id="L293" title="1 of 2 branches missed.">        if (dist == null) {</span>
+<span class="nc" id="L294">            throw new IllegalStateException(&quot;find must be run before this method can be used&quot;);</span>
         }
-<span class="fc" id="L280">        int sum = 0;</span>
+<span class="fc" id="L296">        int sum = 0;</span>
         int u, v;
-<span class="fc bfc" id="L282" title="All 2 branches covered.">        for (int i = 1; i &lt; vertexes.length; ++i) {</span>
-<span class="fc" id="L283">            u = vertexes[i - 1];</span>
-<span class="fc" id="L284">            v = vertexes[i];</span>
+<span class="fc bfc" id="L298" title="All 2 branches covered.">        for (int i = 1; i &lt; vertexes.length; ++i) {</span>
+<span class="fc" id="L299">            u = vertexes[i - 1];</span>
+<span class="fc" id="L300">            v = vertexes[i];</span>
             
-<span class="fc" id="L286">            TIntIntMap uWeights = w[u];</span>
+<span class="fc" id="L302">            TIntIntMap uWeights = w[u];</span>
             
-<span class="pc bpc" id="L288" title="1 of 2 branches missed.">            if (!uWeights.containsKey(v)) {</span>
-<span class="nc" id="L289">                throw new IllegalStateException(&quot;no weight found for edge &quot; </span>
+<span class="pc bpc" id="L304" title="1 of 2 branches missed.">            if (!uWeights.containsKey(v)) {</span>
+<span class="nc" id="L305">                throw new IllegalStateException(&quot;no weight found for edge &quot; </span>
                     + u + &quot; to &quot; + v);
             }
             
-<span class="fc" id="L293">            sum += uWeights.get(v);</span>
+<span class="fc" id="L309">            sum += uWeights.get(v);</span>
         }
-<span class="fc" id="L295">        return sum;</span>
+<span class="fc" id="L311">        return sum;</span>
     }
 
+    /**
+     *
+     */
     public static class G {
+
+        /**
+         *
+         */
         public SimpleLinkedListNode[] g;
+
+        /**
+         *
+         */
         public TIntIntMap[] w;
+
+        /**
+         *
+         */
         public int newNode;
     }
   

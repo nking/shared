@@ -51,90 +51,90 @@ public class Beta {
     /**
      * Beta function, also called the Euler integral of the first kind.
      * The beta function is symmetric, i.e. B(x,y)==B(y,x).
+     @param x
+     @param y
+     @return 
      */
     public static double beta(double x, double y) {
-<span class="fc" id="L56">        return exp(lgamma(x) + lgamma(y) - lgamma(x + y));</span>
+<span class="fc" id="L59">        return exp(lgamma(x) + lgamma(y) - lgamma(x + y));</span>
     }
 
     /**
      * Regularized Incomplete Beta function.
      * Continued Fraction approximation (see Numerical recipies for details)
+     @param alpha
+     @param beta
+     @param x
+     @return 
      */
     public static double regularizedIncompleteBetaFunction(double alpha, double beta, double x) {
         // This function is often used to calculate p-value of model fitting.
         // Due to floating error, the model may provide a x that could be slightly
         // greater than 1 or less than 0. We allow tiny slack here to avoid brute exception.
-<span class="fc" id="L67">        final double EPS = 1E-8;</span>
+<span class="fc" id="L74">        final double EPS = 1E-8;</span>
 
-<span class="pc bpc" id="L69" title="3 of 4 branches missed.">        if (x &lt; 0.0 &amp;&amp; abs(x) &lt; EPS) {</span>
-<span class="nc" id="L70">            return 0.0;</span>
+<span class="pc bpc" id="L76" title="3 of 4 branches missed.">        if (x &lt; 0.0 &amp;&amp; abs(x) &lt; EPS) {</span>
+<span class="nc" id="L77">            return 0.0;</span>
         }
 
-<span class="pc bpc" id="L73" title="3 of 4 branches missed.">        if (x &gt; 1.0 &amp;&amp; abs(x - 1.0) &lt; EPS) {</span>
-<span class="nc" id="L74">            return 1.0;</span>
+<span class="pc bpc" id="L80" title="3 of 4 branches missed.">        if (x &gt; 1.0 &amp;&amp; abs(x - 1.0) &lt; EPS) {</span>
+<span class="nc" id="L81">            return 1.0;</span>
         }
 
-<span class="pc bpc" id="L77" title="2 of 4 branches missed.">        if (x &lt; 0.0 || x &gt; 1.0) {</span>
-<span class="nc" id="L78">            throw new IllegalArgumentException(&quot;Invalid x: &quot; + x);</span>
+<span class="pc bpc" id="L84" title="2 of 4 branches missed.">        if (x &lt; 0.0 || x &gt; 1.0) {</span>
+<span class="nc" id="L85">            throw new IllegalArgumentException(&quot;Invalid x: &quot; + x);</span>
         }
 
-<span class="fc" id="L81">        double ibeta = 0.0;</span>
-<span class="fc bfc" id="L82" title="All 2 branches covered.">        if (x == 0.0) {</span>
-<span class="fc" id="L83">            ibeta = 0.0;</span>
+<span class="fc" id="L88">        double ibeta = 0.0;</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        if (x == 0.0) {</span>
+<span class="fc" id="L90">            ibeta = 0.0;</span>
         } else {
-<span class="pc bpc" id="L85" title="1 of 2 branches missed.">            if (x == 1.0) {</span>
-<span class="nc" id="L86">                ibeta = 1.0;</span>
+<span class="pc bpc" id="L92" title="1 of 2 branches missed.">            if (x == 1.0) {</span>
+<span class="nc" id="L93">                ibeta = 1.0;</span>
             } else {
                 // Term before continued fraction
-<span class="fc" id="L89">                ibeta = exp(lgamma(alpha + beta) - lgamma(alpha) - lgamma(beta) + alpha * log(x) + beta * log(1.0D - x));</span>
+<span class="fc" id="L96">                ibeta = exp(lgamma(alpha + beta) - lgamma(alpha) - lgamma(beta) + alpha * log(x) + beta * log(1.0D - x));</span>
                 // Continued fraction
-<span class="fc bfc" id="L91" title="All 2 branches covered.">                if (x &lt; (alpha + 1.0) / (alpha + beta + 2.0)) {</span>
-<span class="fc" id="L92">                    ibeta = ibeta * incompleteFractionSummation(alpha, beta, x) / alpha;</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">                if (x &lt; (alpha + 1.0) / (alpha + beta + 2.0)) {</span>
+<span class="fc" id="L99">                    ibeta = ibeta * incompleteFractionSummation(alpha, beta, x) / alpha;</span>
                 } else {
                     // Use symmetry relationship
-<span class="fc" id="L95">                    ibeta = 1.0 - ibeta * incompleteFractionSummation(beta, alpha, 1.0 - x) / beta;</span>
+<span class="fc" id="L102">                    ibeta = 1.0 - ibeta * incompleteFractionSummation(beta, alpha, 1.0 - x) / beta;</span>
                 }
             }
         }
-<span class="fc" id="L99">        return ibeta;</span>
+<span class="fc" id="L106">        return ibeta;</span>
     }
 
     /**
      * Incomplete fraction summation used in the method regularizedIncompleteBeta
      * using a modified Lentz's method.
+     @param alpha
+     @param beta
+     @param x
+     @return 
      */
     private static double incompleteFractionSummation(double alpha, double beta, double x) {
-<span class="fc" id="L107">        final int MAXITER = 500;</span>
-<span class="fc" id="L108">        final double EPS = 3.0E-7;</span>
+<span class="fc" id="L118">        final int MAXITER = 500;</span>
+<span class="fc" id="L119">        final double EPS = 3.0E-7;</span>
 
-<span class="fc" id="L110">        double aplusb = alpha + beta;</span>
-<span class="fc" id="L111">        double aplus1 = alpha + 1.0;</span>
-<span class="fc" id="L112">        double aminus1 = alpha - 1.0;</span>
-<span class="fc" id="L113">        double c = 1.0;</span>
-<span class="fc" id="L114">        double d = 1.0 - aplusb * x / aplus1;</span>
-<span class="pc bpc" id="L115" title="1 of 2 branches missed.">        if (abs(d) &lt; FPMIN) {</span>
-<span class="nc" id="L116">            d = FPMIN;</span>
+<span class="fc" id="L121">        double aplusb = alpha + beta;</span>
+<span class="fc" id="L122">        double aplus1 = alpha + 1.0;</span>
+<span class="fc" id="L123">        double aminus1 = alpha - 1.0;</span>
+<span class="fc" id="L124">        double c = 1.0;</span>
+<span class="fc" id="L125">        double d = 1.0 - aplusb * x / aplus1;</span>
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">        if (abs(d) &lt; FPMIN) {</span>
+<span class="nc" id="L127">            d = FPMIN;</span>
         }
-<span class="fc" id="L118">        d = 1.0 / d;</span>
-<span class="fc" id="L119">        double h = d;</span>
-<span class="fc" id="L120">        double aa = 0.0;</span>
-<span class="fc" id="L121">        double del = 0.0;</span>
-<span class="fc" id="L122">        int i = 1, i2 = 0;</span>
-<span class="fc" id="L123">        boolean test = true;</span>
-<span class="fc bfc" id="L124" title="All 2 branches covered.">        while (test) {</span>
-<span class="fc" id="L125">            i2 = 2 * i;</span>
-<span class="fc" id="L126">            aa = i * (beta - i) * x / ((aminus1 + i2) * (alpha + i2));</span>
-<span class="fc" id="L127">            d = 1.0 + aa * d;</span>
-<span class="pc bpc" id="L128" title="1 of 2 branches missed.">            if (abs(d) &lt; FPMIN) {</span>
-<span class="nc" id="L129">                d = FPMIN;</span>
-            }
-<span class="fc" id="L131">            c = 1.0 + aa / c;</span>
-<span class="pc bpc" id="L132" title="1 of 2 branches missed.">            if (abs(c) &lt; FPMIN) {</span>
-<span class="nc" id="L133">                c = FPMIN;</span>
-            }
-<span class="fc" id="L135">            d = 1.0 / d;</span>
-<span class="fc" id="L136">            h *= d * c;</span>
-<span class="fc" id="L137">            aa = -(alpha + i) * (aplusb + i) * x / ((alpha + i2) * (aplus1 + i2));</span>
+<span class="fc" id="L129">        d = 1.0 / d;</span>
+<span class="fc" id="L130">        double h = d;</span>
+<span class="fc" id="L131">        double aa = 0.0;</span>
+<span class="fc" id="L132">        double del = 0.0;</span>
+<span class="fc" id="L133">        int i = 1, i2 = 0;</span>
+<span class="fc" id="L134">        boolean test = true;</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">        while (test) {</span>
+<span class="fc" id="L136">            i2 = 2 * i;</span>
+<span class="fc" id="L137">            aa = i * (beta - i) * x / ((aminus1 + i2) * (alpha + i2));</span>
 <span class="fc" id="L138">            d = 1.0 + aa * d;</span>
 <span class="pc bpc" id="L139" title="1 of 2 branches missed.">            if (abs(d) &lt; FPMIN) {</span>
 <span class="nc" id="L140">                d = FPMIN;</span>
@@ -144,81 +144,96 @@ public class Beta {
 <span class="nc" id="L144">                c = FPMIN;</span>
             }
 <span class="fc" id="L146">            d = 1.0 / d;</span>
-<span class="fc" id="L147">            del = d * c;</span>
-<span class="fc" id="L148">            h *= del;</span>
-<span class="fc" id="L149">            i++;</span>
-<span class="fc bfc" id="L150" title="All 2 branches covered.">            if (abs(del - 1.0) &lt; EPS) {</span>
-<span class="fc" id="L151">                test = false;</span>
+<span class="fc" id="L147">            h *= d * c;</span>
+<span class="fc" id="L148">            aa = -(alpha + i) * (aplusb + i) * x / ((alpha + i2) * (aplus1 + i2));</span>
+<span class="fc" id="L149">            d = 1.0 + aa * d;</span>
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">            if (abs(d) &lt; FPMIN) {</span>
+<span class="nc" id="L151">                d = FPMIN;</span>
             }
-<span class="pc bpc" id="L153" title="1 of 2 branches missed.">            if (i &gt; MAXITER) {</span>
-<span class="nc" id="L154">                test = false;</span>
-<span class="nc" id="L155">                logger.severe(&quot;Beta.incompleteFractionSummation: Maximum number of iterations wes exceeded&quot;);</span>
+<span class="fc" id="L153">            c = 1.0 + aa / c;</span>
+<span class="pc bpc" id="L154" title="1 of 2 branches missed.">            if (abs(c) &lt; FPMIN) {</span>
+<span class="nc" id="L155">                c = FPMIN;</span>
+            }
+<span class="fc" id="L157">            d = 1.0 / d;</span>
+<span class="fc" id="L158">            del = d * c;</span>
+<span class="fc" id="L159">            h *= del;</span>
+<span class="fc" id="L160">            i++;</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">            if (abs(del - 1.0) &lt; EPS) {</span>
+<span class="fc" id="L162">                test = false;</span>
+            }
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">            if (i &gt; MAXITER) {</span>
+<span class="nc" id="L165">                test = false;</span>
+<span class="nc" id="L166">                logger.severe(&quot;Beta.incompleteFractionSummation: Maximum number of iterations wes exceeded&quot;);</span>
             }
         }
-<span class="fc" id="L158">        return h;</span>
+<span class="fc" id="L169">        return h;</span>
     }
 
     /**
      * Inverse of regularized incomplete beta function.
+     @param alpha
+     @param p
+     @param beta
+     @return 
      */
     public static double inverseRegularizedIncompleteBetaFunction(double alpha, double beta, double p) {
-<span class="fc" id="L165">        final double EPS = 1.0E-8;</span>
+<span class="fc" id="L180">        final double EPS = 1.0E-8;</span>
 
         double pp, t, u, err, x, al, h, w, afac;
-<span class="fc" id="L168">        double a1 = alpha - 1.;</span>
-<span class="fc" id="L169">        double b1 = beta - 1.;</span>
+<span class="fc" id="L183">        double a1 = alpha - 1.;</span>
+<span class="fc" id="L184">        double b1 = beta - 1.;</span>
 
-<span class="pc bpc" id="L171" title="1 of 2 branches missed.">        if (p &lt;= 0.0) {</span>
-<span class="nc" id="L172">            return 0.0;</span>
+<span class="pc bpc" id="L186" title="1 of 2 branches missed.">        if (p &lt;= 0.0) {</span>
+<span class="nc" id="L187">            return 0.0;</span>
         }
 
-<span class="pc bpc" id="L175" title="1 of 2 branches missed.">        if (p &gt;= 1.0) {</span>
-<span class="nc" id="L176">            return 1.0;</span>
+<span class="pc bpc" id="L190" title="1 of 2 branches missed.">        if (p &gt;= 1.0) {</span>
+<span class="nc" id="L191">            return 1.0;</span>
         }
 
-<span class="pc bpc" id="L179" title="1 of 4 branches missed.">        if (alpha &gt;= 1. &amp;&amp; beta &gt;= 1.) {</span>
-<span class="pc bpc" id="L180" title="1 of 2 branches missed.">            pp = (p &lt; 0.5) ? p : 1. - p;</span>
-<span class="fc" id="L181">            t = sqrt(-2. * log(pp));</span>
-<span class="fc" id="L182">            x = (2.30753 + t * 0.27061) / (1. + t * (0.99229 + t * 0.04481)) - t;</span>
-<span class="pc bpc" id="L183" title="1 of 2 branches missed.">            if (p &lt; 0.5) {</span>
-<span class="fc" id="L184">                x = -x;</span>
+<span class="pc bpc" id="L194" title="1 of 4 branches missed.">        if (alpha &gt;= 1. &amp;&amp; beta &gt;= 1.) {</span>
+<span class="pc bpc" id="L195" title="1 of 2 branches missed.">            pp = (p &lt; 0.5) ? p : 1. - p;</span>
+<span class="fc" id="L196">            t = sqrt(-2. * log(pp));</span>
+<span class="fc" id="L197">            x = (2.30753 + t * 0.27061) / (1. + t * (0.99229 + t * 0.04481)) - t;</span>
+<span class="pc bpc" id="L198" title="1 of 2 branches missed.">            if (p &lt; 0.5) {</span>
+<span class="fc" id="L199">                x = -x;</span>
             }
-<span class="fc" id="L186">            al = (x * x - 3.) / 6.;</span>
-<span class="fc" id="L187">            h = 2. / (1. / (2. * alpha - 1.) + 1. / (2. * beta - 1.));</span>
-<span class="fc" id="L188">            w = (x * sqrt(al + h) / h) - (1. / (2. * beta - 1) - 1. / (2. * alpha - 1.)) * (al + 5. / 6. - 2. / (3. * h));</span>
-<span class="fc" id="L189">            x = alpha / (alpha + beta * exp(2. * w));</span>
+<span class="fc" id="L201">            al = (x * x - 3.) / 6.;</span>
+<span class="fc" id="L202">            h = 2. / (1. / (2. * alpha - 1.) + 1. / (2. * beta - 1.));</span>
+<span class="fc" id="L203">            w = (x * sqrt(al + h) / h) - (1. / (2. * beta - 1) - 1. / (2. * alpha - 1.)) * (al + 5. / 6. - 2. / (3. * h));</span>
+<span class="fc" id="L204">            x = alpha / (alpha + beta * exp(2. * w));</span>
         } else {
-<span class="fc" id="L191">            double lna = log(alpha / (alpha + beta));</span>
-<span class="fc" id="L192">            double lnb = log(beta / (alpha + beta));</span>
-<span class="fc" id="L193">            t = exp(alpha * lna) / alpha;</span>
-<span class="fc" id="L194">            u = exp(beta * lnb) / beta;</span>
-<span class="fc" id="L195">            w = t + u;</span>
-<span class="pc bpc" id="L196" title="1 of 2 branches missed.">            if (p &lt; t / w) {</span>
-<span class="fc" id="L197">                x = pow(alpha * w * p, 1. / alpha);</span>
+<span class="fc" id="L206">            double lna = log(alpha / (alpha + beta));</span>
+<span class="fc" id="L207">            double lnb = log(beta / (alpha + beta));</span>
+<span class="fc" id="L208">            t = exp(alpha * lna) / alpha;</span>
+<span class="fc" id="L209">            u = exp(beta * lnb) / beta;</span>
+<span class="fc" id="L210">            w = t + u;</span>
+<span class="pc bpc" id="L211" title="1 of 2 branches missed.">            if (p &lt; t / w) {</span>
+<span class="fc" id="L212">                x = pow(alpha * w * p, 1. / alpha);</span>
             } else {
-<span class="nc" id="L199">                x = 1. - pow(beta * w * (1. - p), 1. / beta);</span>
+<span class="nc" id="L214">                x = 1. - pow(beta * w * (1. - p), 1. / beta);</span>
             }
         }
-<span class="fc" id="L202">        afac = -lgamma(alpha) - lgamma(beta) + lgamma(alpha + beta);</span>
-<span class="pc bpc" id="L203" title="1 of 2 branches missed.">        for (int j = 0; j &lt; 10; j++) {</span>
-<span class="pc bpc" id="L204" title="2 of 4 branches missed.">            if (x == 0. || x == 1.) {</span>
-<span class="nc" id="L205">                return x;</span>
+<span class="fc" id="L217">        afac = -lgamma(alpha) - lgamma(beta) + lgamma(alpha + beta);</span>
+<span class="pc bpc" id="L218" title="1 of 2 branches missed.">        for (int j = 0; j &lt; 10; j++) {</span>
+<span class="pc bpc" id="L219" title="2 of 4 branches missed.">            if (x == 0. || x == 1.) {</span>
+<span class="nc" id="L220">                return x;</span>
             }
-<span class="fc" id="L207">            err = regularizedIncompleteBetaFunction(alpha, beta, x) - p;</span>
-<span class="fc" id="L208">            t = exp(a1 * log(x) + b1 * log(1. - x) + afac);</span>
-<span class="fc" id="L209">            u = err / t;</span>
-<span class="fc" id="L210">            x -= (t = u / (1. - 0.5 * min(1., u * (a1 / x - b1 / (1. - x)))));</span>
-<span class="pc bpc" id="L211" title="1 of 2 branches missed.">            if (x &lt;= 0.) {</span>
-<span class="nc" id="L212">                x = 0.5 * (x + t);</span>
+<span class="fc" id="L222">            err = regularizedIncompleteBetaFunction(alpha, beta, x) - p;</span>
+<span class="fc" id="L223">            t = exp(a1 * log(x) + b1 * log(1. - x) + afac);</span>
+<span class="fc" id="L224">            u = err / t;</span>
+<span class="fc" id="L225">            x -= (t = u / (1. - 0.5 * min(1., u * (a1 / x - b1 / (1. - x)))));</span>
+<span class="pc bpc" id="L226" title="1 of 2 branches missed.">            if (x &lt;= 0.) {</span>
+<span class="nc" id="L227">                x = 0.5 * (x + t);</span>
             }
-<span class="pc bpc" id="L214" title="1 of 2 branches missed.">            if (x &gt;= 1.) {</span>
-<span class="nc" id="L215">                x = 0.5 * (x + t + 1.);</span>
+<span class="pc bpc" id="L229" title="1 of 2 branches missed.">            if (x &gt;= 1.) {</span>
+<span class="nc" id="L230">                x = 0.5 * (x + t + 1.);</span>
             }
-<span class="pc bpc" id="L217" title="1 of 4 branches missed.">            if (abs(t) &lt; EPS * x &amp;&amp; j &gt; 0) {</span>
-<span class="fc" id="L218">                break;</span>
+<span class="pc bpc" id="L232" title="1 of 4 branches missed.">            if (abs(t) &lt; EPS * x &amp;&amp; j &gt; 0) {</span>
+<span class="fc" id="L233">                break;</span>
             }
         }
-<span class="fc" id="L221">        return x;</span>
+<span class="fc" id="L236">        return x;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

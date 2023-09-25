@@ -16,66 +16,70 @@ public class NAryTreeNode extends DoublyLinkedNode {
 <span class="fc" id="L16">    private final Set&lt;NAryTreeNode&gt; children = new HashSet&lt;NAryTreeNode&gt;();</span>
     private NAryTreeNode parent;
 
-<span class="fc" id="L19">    public NAryTreeNode(int data) {</span>
-<span class="fc" id="L20">        this.data = data;</span>
-<span class="fc" id="L21">    }</span>
+    /**
+     *
+     @param data
+     */
+<span class="fc" id="L23">    public NAryTreeNode(int data) {</span>
+<span class="fc" id="L24">        this.data = data;</span>
+<span class="fc" id="L25">    }</span>
 
     public String toString() {
-<span class="nc" id="L24">        return Integer.toString(getData());</span>
+<span class="nc" id="L28">        return Integer.toString(getData());</span>
     }
 
     /**
-     * @return the data
+     @return the data
      */
     public int getData() {
-<span class="fc" id="L31">        return data;</span>
+<span class="fc" id="L35">        return data;</span>
     }
 
     /**
-     * @return the left
+     @return the left
      */
     public Set&lt;NAryTreeNode&gt; getChildren() {
-<span class="fc" id="L38">        return children;</span>
+<span class="fc" id="L42">        return children;</span>
     }
 
     /**
-     * @return the parent
+     @return the parent
      */
     public NAryTreeNode getParent() {
-<span class="fc" id="L45">        return parent;</span>
+<span class="fc" id="L49">        return parent;</span>
     }
 
     /**
-     * @param data the data to set
+     @param data the data to set
      */
     public void setData(int data) {
-<span class="nc" id="L52">        this.data = data;</span>
-<span class="nc" id="L53">    }</span>
+<span class="nc" id="L56">        this.data = data;</span>
+<span class="nc" id="L57">    }</span>
 
     /**
      * add a child node to this node.  a side-effect that should be idempotent is
      * that the method also sets the child's parent to this instance.
-     * @param child a child node to set
+     @param child a child node to set
      */
     public void addChild(NAryTreeNode child) {
-<span class="fc" id="L61">        children.add(child);</span>
-<span class="fc" id="L62">        child.setParent(this);</span>
-<span class="fc" id="L63">    }</span>
+<span class="fc" id="L65">        children.add(child);</span>
+<span class="fc" id="L66">        child.setParent(this);</span>
+<span class="fc" id="L67">    }</span>
 
     /**
-     * @param parent the parent to set
+     @param parent the parent to set
      */
     public void setParent(NAryTreeNode parent) {
-<span class="fc" id="L69">        this.parent = parent;</span>
-<span class="fc" id="L70">    }</span>
+<span class="fc" id="L73">        this.parent = parent;</span>
+<span class="fc" id="L74">    }</span>
 
     /**
      * given a root node, copy the tree and return it.  The attributes of 
      * NAryTreeNode copied are data, parent and children.  The next and
      * prev attributes are not copied currently, but could be added upon need.
      * The runtime complexity is O(|V|).
-     * @param root copy the tree from root
-     * @return the copied tree root
+     @param root copy the tree from root
+     @return the copied tree root
      */
     public static NAryTreeNode copyTree(NAryTreeNode root) {
         
@@ -94,32 +98,32 @@ public class NAryTreeNode extends DoublyLinkedNode {
            not copying these properties:
               prev, next
         */        
-<span class="fc" id="L97">        TIntObjectMap&lt;NAryTreeNode&gt; copiedNodesMap = new TIntObjectHashMap&lt;NAryTreeNode&gt;();</span>
+<span class="fc" id="L101">        TIntObjectMap&lt;NAryTreeNode&gt; copiedNodesMap = new TIntObjectHashMap&lt;NAryTreeNode&gt;();</span>
         
-<span class="fc" id="L99">        TreeTraversal tt = new TreeTraversal();</span>
-<span class="fc" id="L100">        DoublyLinkedList&lt;NAryTreeNode&gt; revLevOrder = tt.getReverseLevelOrderIterative2(root);</span>
+<span class="fc" id="L103">        TreeTraversal tt = new TreeTraversal();</span>
+<span class="fc" id="L104">        DoublyLinkedList&lt;NAryTreeNode&gt; revLevOrder = tt.getReverseLevelOrderIterative2(root);</span>
        
-<span class="fc" id="L102">        NAryTreeNode node = revLevOrder.peekFirst();</span>
+<span class="fc" id="L106">        NAryTreeNode node = revLevOrder.peekFirst();</span>
         NAryTreeNode c, cp;
-<span class="fc bfc" id="L104" title="All 2 branches covered.">        while (node != null) {</span>
-<span class="fc" id="L105">            c = copiedNodesMap.get(node.getData());</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">            if (c == null){</span>
-<span class="fc" id="L107">                c = new NAryTreeNode(node.getData());</span>
-<span class="fc" id="L108">                copiedNodesMap.put(c.getData(), c);</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">        while (node != null) {</span>
+<span class="fc" id="L109">            c = copiedNodesMap.get(node.getData());</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">            if (c == null){</span>
+<span class="fc" id="L111">                c = new NAryTreeNode(node.getData());</span>
+<span class="fc" id="L112">                copiedNodesMap.put(c.getData(), c);</span>
             }
-<span class="fc bfc" id="L110" title="All 2 branches covered.">            if (node.getParent() != null) {</span>
-<span class="fc" id="L111">                cp = copiedNodesMap.get(node.getParent().getData());</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">                if (cp == null) {</span>
-<span class="fc" id="L113">                    cp = new NAryTreeNode(node.getParent().getData());</span>
-<span class="fc" id="L114">                    copiedNodesMap.put(cp.getData(), cp);</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">            if (node.getParent() != null) {</span>
+<span class="fc" id="L115">                cp = copiedNodesMap.get(node.getParent().getData());</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">                if (cp == null) {</span>
+<span class="fc" id="L117">                    cp = new NAryTreeNode(node.getParent().getData());</span>
+<span class="fc" id="L118">                    copiedNodesMap.put(cp.getData(), cp);</span>
                 }
-<span class="fc" id="L116">                cp.getChildren().add(c);</span>
-<span class="fc" id="L117">                c.setParent(cp);</span>
+<span class="fc" id="L120">                cp.getChildren().add(c);</span>
+<span class="fc" id="L121">                c.setParent(cp);</span>
             }
             
-<span class="fc" id="L120">            node = (NAryTreeNode) node.next;</span>
+<span class="fc" id="L124">            node = (NAryTreeNode) node.next;</span>
         }
-<span class="fc" id="L122">        return copiedNodesMap.get(root.getData());</span>
+<span class="fc" id="L126">        return copiedNodesMap.get(root.getData());</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

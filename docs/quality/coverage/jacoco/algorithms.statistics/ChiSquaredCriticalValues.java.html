@@ -17,7 +17,13 @@ tables, or approximations are needed.
 
  * @author nichole
  */
-<span class="nc" id="L20">public class ChiSquaredCriticalValues {</span>
+
+/**
+ *
+ * @author nichole
+ */
+
+<span class="nc" id="L26">public class ChiSquaredCriticalValues {</span>
     
     /*
     For a two-sided test:
@@ -40,12 +46,69 @@ tables, or approximations are needed.
         table and reject the null hypothesis if the computed test statistic 
         is less than the tabled value.
     */
+
+    /**
+     *
+     */
+
     
     public static enum PROB_UT {
-        Z_90, Z_95, Z_975, Z_99, Z_999;
+
+        /**
+         *
+         */
+        Z_90,
+
+        /**
+         *
+         */
+        Z_95,
+
+        /**
+         *
+         */
+        Z_975,
+
+        /**
+         *
+         */
+        Z_99,
+
+        /**
+         *
+         */
+        Z_999;
     }
+
+    /**
+     *
+     */
     public static enum PROB_LT {
-        Z_10, Z_05, Z_025, Z_01, Z_001;
+
+        /**
+         *
+         */
+        Z_10,
+
+        /**
+         *
+         */
+        Z_05,
+
+        /**
+         *
+         */
+        Z_025,
+
+        /**
+         *
+         */
+        Z_01,
+
+        /**
+         *
+         */
+        Z_001;
     }
     
     /**
@@ -57,139 +120,139 @@ tables, or approximations are needed.
      * One can reject the null hypothesis if the test statistic is greater 
      * than the tabled value.
      */
-<span class="fc" id="L60">    static double[][] upperTail = new double[100][];</span>
+<span class="fc" id="L123">    static double[][] upperTail = new double[100][];</span>
     static {                      //Z_90, Z_95,  Z_975,  Z_99,  Z_999;
-<span class="fc" id="L62">        upperTail[0] = new double[]{2.706, 3.841, 5.024, 6.635, 10.828};</span>
-<span class="fc" id="L63">        upperTail[1] = new double[]{4.605, 5.991, 7.378, 9.210, 13.816};</span>
-<span class="fc" id="L64">        upperTail[2] = new double[]{6.251, 7.815, 9.348, 11.345, 16.266};</span>
-<span class="fc" id="L65">        upperTail[3] = new double[]{7.779, 9.488, 11.143, 13.277, 18.467};</span>
-<span class="fc" id="L66">        upperTail[4] = new double[]{9.236, 11.070, 12.833, 15.086, 20.515};</span>
-<span class="fc" id="L67">        upperTail[5] = new double[]{10.645, 12.592, 14.449, 16.812, 22.458};</span>
-<span class="fc" id="L68">        upperTail[6] = new double[]{12.017, 14.067, 16.013, 18.475, 24.322};</span>
-<span class="fc" id="L69">        upperTail[7] = new double[]{13.362, 15.507, 17.535, 20.090, 26.125};</span>
-<span class="fc" id="L70">        upperTail[8] = new double[]{14.684, 16.919, 19.023, 21.666, 27.877};</span>
-<span class="fc" id="L71">        upperTail[9] = new double[]{15.987, 18.307, 20.483, 23.209, 29.588};</span>
-<span class="fc" id="L72">        upperTail[10] = new double[]{17.275, 19.675, 21.920, 24.725, 31.264};</span>
-<span class="fc" id="L73">        upperTail[11] = new double[]{18.549, 21.026, 23.337, 26.217, 32.910};</span>
-<span class="fc" id="L74">        upperTail[12] = new double[]{19.812, 22.362, 24.736, 27.688, 34.528};</span>
-<span class="fc" id="L75">        upperTail[13] = new double[]{21.064, 23.685, 26.119, 29.141, 36.123};</span>
-<span class="fc" id="L76">        upperTail[14] = new double[]{22.307, 24.996, 27.488, 30.578, 37.697};</span>
-<span class="fc" id="L77">        upperTail[15] = new double[]{23.542, 26.296, 28.845, 32.000, 39.252};</span>
-<span class="fc" id="L78">        upperTail[16] = new double[]{24.769, 27.587, 30.191, 33.409, 40.790};</span>
-<span class="fc" id="L79">        upperTail[17] = new double[]{25.989, 28.869, 31.526, 34.805, 42.312};</span>
-<span class="fc" id="L80">        upperTail[18] = new double[]{27.204, 30.144, 32.852, 36.191, 43.820};</span>
-<span class="fc" id="L81">        upperTail[19] = new double[]{28.412, 31.410, 34.170, 37.566, 45.315};</span>
-<span class="fc" id="L82">        upperTail[20] = new double[]{29.615, 32.671, 35.479, 38.932, 46.797};</span>
-<span class="fc" id="L83">        upperTail[21] = new double[]{30.813, 33.924, 36.781, 40.289, 48.268};</span>
-<span class="fc" id="L84">        upperTail[22] = new double[]{32.007, 35.172, 38.076, 41.638, 49.728};</span>
-<span class="fc" id="L85">        upperTail[23] = new double[]{33.196, 36.415, 39.364, 42.980, 51.179};</span>
-<span class="fc" id="L86">        upperTail[24] = new double[]{34.382, 37.652, 40.646, 44.314, 52.620};</span>
-<span class="fc" id="L87">        upperTail[25] = new double[]{35.563, 38.885, 41.923, 45.642, 54.052};</span>
-<span class="fc" id="L88">        upperTail[26] = new double[]{36.741, 40.113, 43.195, 46.963, 55.476};</span>
-<span class="fc" id="L89">        upperTail[27] = new double[]{37.916, 41.337, 44.461, 48.278, 56.892};</span>
-<span class="fc" id="L90">        upperTail[28] = new double[]{39.087, 42.557, 45.722, 49.588, 58.301};</span>
-<span class="fc" id="L91">        upperTail[29] = new double[]{40.256, 43.773, 46.979, 50.892, 59.703};</span>
-<span class="fc" id="L92">        upperTail[30] = new double[]{41.422, 44.985, 48.232, 52.191, 61.098};</span>
-<span class="fc" id="L93">        upperTail[31] = new double[]{42.585, 46.194, 49.480, 53.486, 62.487};</span>
-<span class="fc" id="L94">        upperTail[32] = new double[]{43.745, 47.400, 50.725, 54.776, 63.870};</span>
-<span class="fc" id="L95">        upperTail[33] = new double[]{44.903, 48.602, 51.966, 56.061, 65.247};</span>
-<span class="fc" id="L96">        upperTail[34] = new double[]{46.059, 49.802, 53.203, 57.342, 66.619};</span>
-<span class="fc" id="L97">        upperTail[35] = new double[]{47.212, 50.998, 54.437, 58.619, 67.985};</span>
-<span class="fc" id="L98">        upperTail[36] = new double[]{48.363, 52.192, 55.668, 59.893, 69.347};</span>
-<span class="fc" id="L99">        upperTail[37] = new double[]{49.513, 53.384, 56.896, 61.162, 70.703};</span>
-<span class="fc" id="L100">        upperTail[38] = new double[]{50.660, 54.572, 58.120, 62.428, 72.055};</span>
-<span class="fc" id="L101">        upperTail[39] = new double[]{51.805, 55.758, 59.342, 63.691, 73.402};</span>
-<span class="fc" id="L102">        upperTail[40] = new double[]{52.949, 56.942, 60.561, 64.950, 74.745};</span>
-<span class="fc" id="L103">        upperTail[41] = new double[]{54.090, 58.124, 61.777, 66.206, 76.084};</span>
-<span class="fc" id="L104">        upperTail[42] = new double[]{55.230, 59.304, 62.990, 67.459, 77.419};</span>
-<span class="fc" id="L105">        upperTail[43] = new double[]{56.369, 60.481, 64.201, 68.710, 78.750};</span>
-<span class="fc" id="L106">        upperTail[44] = new double[]{57.505, 61.656, 65.410, 69.957, 80.077};</span>
-<span class="fc" id="L107">        upperTail[45] = new double[]{58.641, 62.830, 66.617, 71.201, 81.400};</span>
-<span class="fc" id="L108">        upperTail[46] = new double[]{59.774, 64.001, 67.821, 72.443, 82.720};</span>
-<span class="fc" id="L109">        upperTail[47] = new double[]{60.907, 65.171, 69.023, 73.683, 84.037};</span>
-<span class="fc" id="L110">        upperTail[48] = new double[]{62.038, 66.339, 70.222, 74.919, 85.351};</span>
-<span class="fc" id="L111">        upperTail[49] = new double[]{63.167, 67.505, 71.420, 76.154, 86.661};</span>
-<span class="fc" id="L112">        upperTail[50] = new double[]{64.295, 68.669, 72.616, 77.386, 87.968};</span>
-<span class="fc" id="L113">        upperTail[51] = new double[]{65.422, 69.832, 73.810, 78.616, 89.272};</span>
-<span class="fc" id="L114">        upperTail[52] = new double[]{66.548, 70.993, 75.002, 79.843, 90.573};</span>
-<span class="fc" id="L115">        upperTail[53] = new double[]{67.673, 72.153, 76.192, 81.069, 91.872};</span>
-<span class="fc" id="L116">        upperTail[54] = new double[]{68.796, 73.311, 77.380, 82.292, 93.168};</span>
-<span class="fc" id="L117">        upperTail[55] = new double[]{69.919, 74.468, 78.567, 83.513, 94.461};</span>
-<span class="fc" id="L118">        upperTail[56] = new double[]{71.040, 75.624, 79.752, 84.733, 95.751};</span>
-<span class="fc" id="L119">        upperTail[57] = new double[]{72.160, 76.778, 80.936, 85.950, 97.039};</span>
-<span class="fc" id="L120">        upperTail[58] = new double[]{73.279, 77.931, 82.117, 87.166, 98.324};</span>
-<span class="fc" id="L121">        upperTail[59] = new double[]{74.397, 79.082, 83.298, 88.379, 99.607};</span>
-<span class="fc" id="L122">        upperTail[60] = new double[]{75.514, 80.232, 84.476, 89.591, 100.888};</span>
-<span class="fc" id="L123">        upperTail[61] = new double[]{76.630, 81.381, 85.654, 90.802, 102.166};</span>
-<span class="fc" id="L124">        upperTail[62] = new double[]{77.745, 82.529, 86.830, 92.010, 103.442};</span>
-<span class="fc" id="L125">        upperTail[63] = new double[]{78.860, 83.675, 88.004, 93.217, 104.716};</span>
-<span class="fc" id="L126">        upperTail[64] = new double[]{79.973, 84.821, 89.177, 94.422, 105.988};</span>
-<span class="fc" id="L127">        upperTail[65] = new double[]{81.085, 85.965, 90.349, 95.626, 107.258};</span>
-<span class="fc" id="L128">        upperTail[66] = new double[]{82.197, 87.108, 91.519, 96.828, 108.526};</span>
-<span class="fc" id="L129">        upperTail[67] = new double[]{83.308, 88.250, 92.689, 98.028, 109.791};</span>
-<span class="fc" id="L130">        upperTail[68] = new double[]{84.418, 89.391, 93.856, 99.228, 111.055};</span>
-<span class="fc" id="L131">        upperTail[69] = new double[]{85.527, 90.531, 95.023, 100.425, 112.317};</span>
-<span class="fc" id="L132">        upperTail[70] = new double[]{86.635, 91.670, 96.189, 101.621, 113.577};</span>
-<span class="fc" id="L133">        upperTail[71] = new double[]{87.743, 92.808, 97.353, 102.816, 114.835};</span>
-<span class="fc" id="L134">        upperTail[72] = new double[]{88.850, 93.945, 98.516, 104.010, 116.092};</span>
-<span class="fc" id="L135">        upperTail[73] = new double[]{89.956, 95.081, 99.678, 105.202, 117.346};</span>
-<span class="fc" id="L136">        upperTail[74] = new double[]{91.061, 96.217, 100.839, 106.393, 118.599};</span>
-<span class="fc" id="L137">        upperTail[75] = new double[]{92.166, 97.351, 101.999, 107.583, 119.850};</span>
-<span class="fc" id="L138">        upperTail[76] = new double[]{93.270, 98.484, 103.158, 108.771, 121.100};</span>
-<span class="fc" id="L139">        upperTail[77] = new double[]{94.374, 99.617, 104.316, 109.958, 122.348};</span>
-<span class="fc" id="L140">        upperTail[78] = new double[]{95.476, 100.749, 105.473, 111.144, 123.594};</span>
-<span class="fc" id="L141">        upperTail[79] = new double[]{96.578, 101.879, 106.629, 112.329, 124.839};</span>
-<span class="fc" id="L142">        upperTail[80] = new double[]{97.680, 103.010, 107.783, 113.512, 126.083};</span>
-<span class="fc" id="L143">        upperTail[81] = new double[]{98.780, 104.139, 108.937, 114.695, 127.324};</span>
-<span class="fc" id="L144">        upperTail[82] = new double[]{99.880, 105.267, 110.090, 115.876, 128.565};</span>
-<span class="fc" id="L145">        upperTail[83] = new double[]{100.980, 106.395, 111.242, 117.057, 129.804};</span>
-<span class="fc" id="L146">        upperTail[84] = new double[]{102.079, 107.522, 112.393, 118.236, 131.041};</span>
-<span class="fc" id="L147">        upperTail[85] = new double[]{103.177, 108.648, 113.544, 119.414, 132.277};</span>
-<span class="fc" id="L148">        upperTail[86] = new double[]{104.275, 109.773, 114.693, 120.591, 133.512};</span>
-<span class="fc" id="L149">        upperTail[87] = new double[]{105.372, 110.898, 115.841, 121.767, 134.746};</span>
-<span class="fc" id="L150">        upperTail[88] = new double[]{106.469, 112.022, 116.989, 122.942, 135.978};</span>
-<span class="fc" id="L151">        upperTail[89] = new double[]{107.565, 113.145, 118.136, 124.116, 137.208};</span>
-<span class="fc" id="L152">        upperTail[90] = new double[]{108.661, 114.268, 119.282, 125.289, 138.438};</span>
-<span class="fc" id="L153">        upperTail[91] = new double[]{109.756, 115.390, 120.427, 126.462, 139.666};</span>
-<span class="fc" id="L154">        upperTail[92] = new double[]{110.850, 116.511, 121.571, 127.633, 140.893};</span>
-<span class="fc" id="L155">        upperTail[93] = new double[]{111.944, 117.632, 122.715, 128.803, 142.119};</span>
-<span class="fc" id="L156">        upperTail[94] = new double[]{113.038, 118.752, 123.858, 129.973, 143.344};</span>
-<span class="fc" id="L157">        upperTail[95] = new double[]{114.131, 119.871, 125.000, 131.141, 144.567};</span>
-<span class="fc" id="L158">        upperTail[96] = new double[]{115.223, 120.990, 126.141, 132.309, 145.789};</span>
-<span class="fc" id="L159">        upperTail[97] = new double[]{116.315, 122.108, 127.282, 133.476, 147.010};</span>
-<span class="fc" id="L160">        upperTail[98] = new double[]{117.407, 123.225, 128.422, 134.642, 148.230};</span>
-<span class="fc" id="L161">        upperTail[99] = new double[]{118.498, 124.342, 129.561, 135.807, 149.449};</span>
+<span class="fc" id="L125">        upperTail[0] = new double[]{2.706, 3.841, 5.024, 6.635, 10.828};</span>
+<span class="fc" id="L126">        upperTail[1] = new double[]{4.605, 5.991, 7.378, 9.210, 13.816};</span>
+<span class="fc" id="L127">        upperTail[2] = new double[]{6.251, 7.815, 9.348, 11.345, 16.266};</span>
+<span class="fc" id="L128">        upperTail[3] = new double[]{7.779, 9.488, 11.143, 13.277, 18.467};</span>
+<span class="fc" id="L129">        upperTail[4] = new double[]{9.236, 11.070, 12.833, 15.086, 20.515};</span>
+<span class="fc" id="L130">        upperTail[5] = new double[]{10.645, 12.592, 14.449, 16.812, 22.458};</span>
+<span class="fc" id="L131">        upperTail[6] = new double[]{12.017, 14.067, 16.013, 18.475, 24.322};</span>
+<span class="fc" id="L132">        upperTail[7] = new double[]{13.362, 15.507, 17.535, 20.090, 26.125};</span>
+<span class="fc" id="L133">        upperTail[8] = new double[]{14.684, 16.919, 19.023, 21.666, 27.877};</span>
+<span class="fc" id="L134">        upperTail[9] = new double[]{15.987, 18.307, 20.483, 23.209, 29.588};</span>
+<span class="fc" id="L135">        upperTail[10] = new double[]{17.275, 19.675, 21.920, 24.725, 31.264};</span>
+<span class="fc" id="L136">        upperTail[11] = new double[]{18.549, 21.026, 23.337, 26.217, 32.910};</span>
+<span class="fc" id="L137">        upperTail[12] = new double[]{19.812, 22.362, 24.736, 27.688, 34.528};</span>
+<span class="fc" id="L138">        upperTail[13] = new double[]{21.064, 23.685, 26.119, 29.141, 36.123};</span>
+<span class="fc" id="L139">        upperTail[14] = new double[]{22.307, 24.996, 27.488, 30.578, 37.697};</span>
+<span class="fc" id="L140">        upperTail[15] = new double[]{23.542, 26.296, 28.845, 32.000, 39.252};</span>
+<span class="fc" id="L141">        upperTail[16] = new double[]{24.769, 27.587, 30.191, 33.409, 40.790};</span>
+<span class="fc" id="L142">        upperTail[17] = new double[]{25.989, 28.869, 31.526, 34.805, 42.312};</span>
+<span class="fc" id="L143">        upperTail[18] = new double[]{27.204, 30.144, 32.852, 36.191, 43.820};</span>
+<span class="fc" id="L144">        upperTail[19] = new double[]{28.412, 31.410, 34.170, 37.566, 45.315};</span>
+<span class="fc" id="L145">        upperTail[20] = new double[]{29.615, 32.671, 35.479, 38.932, 46.797};</span>
+<span class="fc" id="L146">        upperTail[21] = new double[]{30.813, 33.924, 36.781, 40.289, 48.268};</span>
+<span class="fc" id="L147">        upperTail[22] = new double[]{32.007, 35.172, 38.076, 41.638, 49.728};</span>
+<span class="fc" id="L148">        upperTail[23] = new double[]{33.196, 36.415, 39.364, 42.980, 51.179};</span>
+<span class="fc" id="L149">        upperTail[24] = new double[]{34.382, 37.652, 40.646, 44.314, 52.620};</span>
+<span class="fc" id="L150">        upperTail[25] = new double[]{35.563, 38.885, 41.923, 45.642, 54.052};</span>
+<span class="fc" id="L151">        upperTail[26] = new double[]{36.741, 40.113, 43.195, 46.963, 55.476};</span>
+<span class="fc" id="L152">        upperTail[27] = new double[]{37.916, 41.337, 44.461, 48.278, 56.892};</span>
+<span class="fc" id="L153">        upperTail[28] = new double[]{39.087, 42.557, 45.722, 49.588, 58.301};</span>
+<span class="fc" id="L154">        upperTail[29] = new double[]{40.256, 43.773, 46.979, 50.892, 59.703};</span>
+<span class="fc" id="L155">        upperTail[30] = new double[]{41.422, 44.985, 48.232, 52.191, 61.098};</span>
+<span class="fc" id="L156">        upperTail[31] = new double[]{42.585, 46.194, 49.480, 53.486, 62.487};</span>
+<span class="fc" id="L157">        upperTail[32] = new double[]{43.745, 47.400, 50.725, 54.776, 63.870};</span>
+<span class="fc" id="L158">        upperTail[33] = new double[]{44.903, 48.602, 51.966, 56.061, 65.247};</span>
+<span class="fc" id="L159">        upperTail[34] = new double[]{46.059, 49.802, 53.203, 57.342, 66.619};</span>
+<span class="fc" id="L160">        upperTail[35] = new double[]{47.212, 50.998, 54.437, 58.619, 67.985};</span>
+<span class="fc" id="L161">        upperTail[36] = new double[]{48.363, 52.192, 55.668, 59.893, 69.347};</span>
+<span class="fc" id="L162">        upperTail[37] = new double[]{49.513, 53.384, 56.896, 61.162, 70.703};</span>
+<span class="fc" id="L163">        upperTail[38] = new double[]{50.660, 54.572, 58.120, 62.428, 72.055};</span>
+<span class="fc" id="L164">        upperTail[39] = new double[]{51.805, 55.758, 59.342, 63.691, 73.402};</span>
+<span class="fc" id="L165">        upperTail[40] = new double[]{52.949, 56.942, 60.561, 64.950, 74.745};</span>
+<span class="fc" id="L166">        upperTail[41] = new double[]{54.090, 58.124, 61.777, 66.206, 76.084};</span>
+<span class="fc" id="L167">        upperTail[42] = new double[]{55.230, 59.304, 62.990, 67.459, 77.419};</span>
+<span class="fc" id="L168">        upperTail[43] = new double[]{56.369, 60.481, 64.201, 68.710, 78.750};</span>
+<span class="fc" id="L169">        upperTail[44] = new double[]{57.505, 61.656, 65.410, 69.957, 80.077};</span>
+<span class="fc" id="L170">        upperTail[45] = new double[]{58.641, 62.830, 66.617, 71.201, 81.400};</span>
+<span class="fc" id="L171">        upperTail[46] = new double[]{59.774, 64.001, 67.821, 72.443, 82.720};</span>
+<span class="fc" id="L172">        upperTail[47] = new double[]{60.907, 65.171, 69.023, 73.683, 84.037};</span>
+<span class="fc" id="L173">        upperTail[48] = new double[]{62.038, 66.339, 70.222, 74.919, 85.351};</span>
+<span class="fc" id="L174">        upperTail[49] = new double[]{63.167, 67.505, 71.420, 76.154, 86.661};</span>
+<span class="fc" id="L175">        upperTail[50] = new double[]{64.295, 68.669, 72.616, 77.386, 87.968};</span>
+<span class="fc" id="L176">        upperTail[51] = new double[]{65.422, 69.832, 73.810, 78.616, 89.272};</span>
+<span class="fc" id="L177">        upperTail[52] = new double[]{66.548, 70.993, 75.002, 79.843, 90.573};</span>
+<span class="fc" id="L178">        upperTail[53] = new double[]{67.673, 72.153, 76.192, 81.069, 91.872};</span>
+<span class="fc" id="L179">        upperTail[54] = new double[]{68.796, 73.311, 77.380, 82.292, 93.168};</span>
+<span class="fc" id="L180">        upperTail[55] = new double[]{69.919, 74.468, 78.567, 83.513, 94.461};</span>
+<span class="fc" id="L181">        upperTail[56] = new double[]{71.040, 75.624, 79.752, 84.733, 95.751};</span>
+<span class="fc" id="L182">        upperTail[57] = new double[]{72.160, 76.778, 80.936, 85.950, 97.039};</span>
+<span class="fc" id="L183">        upperTail[58] = new double[]{73.279, 77.931, 82.117, 87.166, 98.324};</span>
+<span class="fc" id="L184">        upperTail[59] = new double[]{74.397, 79.082, 83.298, 88.379, 99.607};</span>
+<span class="fc" id="L185">        upperTail[60] = new double[]{75.514, 80.232, 84.476, 89.591, 100.888};</span>
+<span class="fc" id="L186">        upperTail[61] = new double[]{76.630, 81.381, 85.654, 90.802, 102.166};</span>
+<span class="fc" id="L187">        upperTail[62] = new double[]{77.745, 82.529, 86.830, 92.010, 103.442};</span>
+<span class="fc" id="L188">        upperTail[63] = new double[]{78.860, 83.675, 88.004, 93.217, 104.716};</span>
+<span class="fc" id="L189">        upperTail[64] = new double[]{79.973, 84.821, 89.177, 94.422, 105.988};</span>
+<span class="fc" id="L190">        upperTail[65] = new double[]{81.085, 85.965, 90.349, 95.626, 107.258};</span>
+<span class="fc" id="L191">        upperTail[66] = new double[]{82.197, 87.108, 91.519, 96.828, 108.526};</span>
+<span class="fc" id="L192">        upperTail[67] = new double[]{83.308, 88.250, 92.689, 98.028, 109.791};</span>
+<span class="fc" id="L193">        upperTail[68] = new double[]{84.418, 89.391, 93.856, 99.228, 111.055};</span>
+<span class="fc" id="L194">        upperTail[69] = new double[]{85.527, 90.531, 95.023, 100.425, 112.317};</span>
+<span class="fc" id="L195">        upperTail[70] = new double[]{86.635, 91.670, 96.189, 101.621, 113.577};</span>
+<span class="fc" id="L196">        upperTail[71] = new double[]{87.743, 92.808, 97.353, 102.816, 114.835};</span>
+<span class="fc" id="L197">        upperTail[72] = new double[]{88.850, 93.945, 98.516, 104.010, 116.092};</span>
+<span class="fc" id="L198">        upperTail[73] = new double[]{89.956, 95.081, 99.678, 105.202, 117.346};</span>
+<span class="fc" id="L199">        upperTail[74] = new double[]{91.061, 96.217, 100.839, 106.393, 118.599};</span>
+<span class="fc" id="L200">        upperTail[75] = new double[]{92.166, 97.351, 101.999, 107.583, 119.850};</span>
+<span class="fc" id="L201">        upperTail[76] = new double[]{93.270, 98.484, 103.158, 108.771, 121.100};</span>
+<span class="fc" id="L202">        upperTail[77] = new double[]{94.374, 99.617, 104.316, 109.958, 122.348};</span>
+<span class="fc" id="L203">        upperTail[78] = new double[]{95.476, 100.749, 105.473, 111.144, 123.594};</span>
+<span class="fc" id="L204">        upperTail[79] = new double[]{96.578, 101.879, 106.629, 112.329, 124.839};</span>
+<span class="fc" id="L205">        upperTail[80] = new double[]{97.680, 103.010, 107.783, 113.512, 126.083};</span>
+<span class="fc" id="L206">        upperTail[81] = new double[]{98.780, 104.139, 108.937, 114.695, 127.324};</span>
+<span class="fc" id="L207">        upperTail[82] = new double[]{99.880, 105.267, 110.090, 115.876, 128.565};</span>
+<span class="fc" id="L208">        upperTail[83] = new double[]{100.980, 106.395, 111.242, 117.057, 129.804};</span>
+<span class="fc" id="L209">        upperTail[84] = new double[]{102.079, 107.522, 112.393, 118.236, 131.041};</span>
+<span class="fc" id="L210">        upperTail[85] = new double[]{103.177, 108.648, 113.544, 119.414, 132.277};</span>
+<span class="fc" id="L211">        upperTail[86] = new double[]{104.275, 109.773, 114.693, 120.591, 133.512};</span>
+<span class="fc" id="L212">        upperTail[87] = new double[]{105.372, 110.898, 115.841, 121.767, 134.746};</span>
+<span class="fc" id="L213">        upperTail[88] = new double[]{106.469, 112.022, 116.989, 122.942, 135.978};</span>
+<span class="fc" id="L214">        upperTail[89] = new double[]{107.565, 113.145, 118.136, 124.116, 137.208};</span>
+<span class="fc" id="L215">        upperTail[90] = new double[]{108.661, 114.268, 119.282, 125.289, 138.438};</span>
+<span class="fc" id="L216">        upperTail[91] = new double[]{109.756, 115.390, 120.427, 126.462, 139.666};</span>
+<span class="fc" id="L217">        upperTail[92] = new double[]{110.850, 116.511, 121.571, 127.633, 140.893};</span>
+<span class="fc" id="L218">        upperTail[93] = new double[]{111.944, 117.632, 122.715, 128.803, 142.119};</span>
+<span class="fc" id="L219">        upperTail[94] = new double[]{113.038, 118.752, 123.858, 129.973, 143.344};</span>
+<span class="fc" id="L220">        upperTail[95] = new double[]{114.131, 119.871, 125.000, 131.141, 144.567};</span>
+<span class="fc" id="L221">        upperTail[96] = new double[]{115.223, 120.990, 126.141, 132.309, 145.789};</span>
+<span class="fc" id="L222">        upperTail[97] = new double[]{116.315, 122.108, 127.282, 133.476, 147.010};</span>
+<span class="fc" id="L223">        upperTail[98] = new double[]{117.407, 123.225, 128.422, 134.642, 148.230};</span>
+<span class="fc" id="L224">        upperTail[99] = new double[]{118.498, 124.342, 129.561, 135.807, 149.449};</span>
     }
     
     /**
      * find the upper-tail critical value to compare to a test statistic.
      * One can reject the null hypothesis if the computed test statistic 
         is greater than the table value.
-     * @param probability the probability to look-up in the table.  
+     @param probability the probability to look-up in the table.  
      * e.g. for a one-sided test, this probability is the same as 1 minus the significance 
      * level alpha.  For a two-sided test, this probability is the same as the significance 
      * level 1 minus alpha/2.
-     * @param degreesOfFreedom
-     * @return 
+     @param degreesOfFreedom
+     @return 
      */
     public static double upperTailStatistic(PROB_UT probability, int degreesOfFreedom) {
-<span class="pc bpc" id="L176" title="2 of 4 branches missed.">        if (degreesOfFreedom &lt; 1 || degreesOfFreedom &gt; 100) {</span>
-<span class="nc" id="L177">            throw new IllegalArgumentException(&quot;degreesOfFreedom must be in range [1,100], inclusive&quot;);</span>
+<span class="pc bpc" id="L239" title="2 of 4 branches missed.">        if (degreesOfFreedom &lt; 1 || degreesOfFreedom &gt; 100) {</span>
+<span class="nc" id="L240">            throw new IllegalArgumentException(&quot;degreesOfFreedom must be in range [1,100], inclusive&quot;);</span>
         }
-<span class="fc" id="L179">        degreesOfFreedom--;</span>
-<span class="pc bpc" id="L180" title="4 of 6 branches missed.">        switch (probability) {</span>
+<span class="fc" id="L242">        degreesOfFreedom--;</span>
+<span class="pc bpc" id="L243" title="4 of 6 branches missed.">        switch (probability) {</span>
             case Z_90:
-<span class="fc" id="L182">                return upperTail[degreesOfFreedom][0];</span>
+<span class="fc" id="L245">                return upperTail[degreesOfFreedom][0];</span>
             case Z_95:
-<span class="fc" id="L184">                return upperTail[degreesOfFreedom][1];</span>
+<span class="fc" id="L247">                return upperTail[degreesOfFreedom][1];</span>
             case Z_975:
-<span class="nc" id="L186">                return upperTail[degreesOfFreedom][2];</span>
+<span class="nc" id="L249">                return upperTail[degreesOfFreedom][2];</span>
             case Z_99:
-<span class="nc" id="L188">                return upperTail[degreesOfFreedom][3];</span>
+<span class="nc" id="L251">                return upperTail[degreesOfFreedom][3];</span>
             case Z_999:
-<span class="nc" id="L190">                return upperTail[degreesOfFreedom][4];</span>
+<span class="nc" id="L253">                return upperTail[degreesOfFreedom][4];</span>
         }
-<span class="nc" id="L192">        return Double.NaN;</span>
+<span class="nc" id="L255">        return Double.NaN;</span>
     }
     
       /**
@@ -201,139 +264,139 @@ tables, or approximations are needed.
      * One can reject the null hypothesis if the computed test statistic 
         is less than the tabled value.
      */
-<span class="fc" id="L204">    static double[][] lowerTail = new double[100][];</span>
+<span class="fc" id="L267">    static double[][] lowerTail = new double[100][];</span>
     static {                      //Z_10, Z_05, Z_025, Z_01, Z_001;
-<span class="fc" id="L206">        lowerTail[0] = new double[]{.016, .004, .001, .000, .000};</span>
-<span class="fc" id="L207">        lowerTail[1] = new double[]{.211, .103, .051, .020, .002};</span>
-<span class="fc" id="L208">        lowerTail[2] = new double[]{.584, .352, .216, .115, .024};</span>
-<span class="fc" id="L209">        lowerTail[3] = new double[]{1.064, .711, .484, .297, .091};</span>
-<span class="fc" id="L210">        lowerTail[4] = new double[]{1.610, 1.145, .831, .554, .210};</span>
-<span class="fc" id="L211">        lowerTail[5] = new double[]{2.204, 1.635, 1.237, .872, .381};</span>
-<span class="fc" id="L212">        lowerTail[6] = new double[]{2.833, 2.167, 1.690, 1.239, .598};</span>
-<span class="fc" id="L213">        lowerTail[7] = new double[]{3.490, 2.733, 2.180, 1.646, .857};</span>
-<span class="fc" id="L214">        lowerTail[8] = new double[]{4.168, 3.325, 2.700, 2.088, 1.152};</span>
-<span class="fc" id="L215">        lowerTail[9] = new double[]{4.865, 3.940, 3.247, 2.558, 1.479};</span>
-<span class="fc" id="L216">        lowerTail[10] = new double[]{5.578, 4.575, 3.816, 3.053, 1.834};</span>
-<span class="fc" id="L217">        lowerTail[11] = new double[]{6.304, 5.226, 4.404, 3.571, 2.214};</span>
-<span class="fc" id="L218">        lowerTail[12] = new double[]{7.042, 5.892, 5.009, 4.107, 2.617};</span>
-<span class="fc" id="L219">        lowerTail[13] = new double[]{7.790, 6.571, 5.629, 4.660, 3.041};</span>
-<span class="fc" id="L220">        lowerTail[14] = new double[]{8.547, 7.261, 6.262, 5.229, 3.483};</span>
-<span class="fc" id="L221">        lowerTail[15] = new double[]{9.312, 7.962, 6.908, 5.812, 3.942};</span>
-<span class="fc" id="L222">        lowerTail[16] = new double[]{10.085, 8.672, 7.564, 6.408, 4.416};</span>
-<span class="fc" id="L223">        lowerTail[17] = new double[]{10.865, 9.390, 8.231, 7.015, 4.905};</span>
-<span class="fc" id="L224">        lowerTail[18] = new double[]{11.651, 10.117, 8.907, 7.633, 5.407};</span>
-<span class="fc" id="L225">        lowerTail[19] = new double[]{12.443, 10.851, 9.591, 8.260, 5.921};</span>
-<span class="fc" id="L226">        lowerTail[20] = new double[]{13.240, 11.591, 10.283, 8.897, 6.447};</span>
-<span class="fc" id="L227">        lowerTail[21] = new double[]{14.041, 12.338, 10.982, 9.542, 6.983};</span>
-<span class="fc" id="L228">        lowerTail[22] = new double[]{14.848, 13.091, 11.689, 10.196, 7.529};</span>
-<span class="fc" id="L229">        lowerTail[23] = new double[]{15.659, 13.848, 12.401, 10.856, 8.085};</span>
-<span class="fc" id="L230">        lowerTail[24] = new double[]{16.473, 14.611, 13.120, 11.524, 8.649};</span>
-<span class="fc" id="L231">        lowerTail[25] = new double[]{17.292, 15.379, 13.844, 12.198, 9.222};</span>
-<span class="fc" id="L232">        lowerTail[26] = new double[]{18.114, 16.151, 14.573, 12.879, 9.803};</span>
-<span class="fc" id="L233">        lowerTail[27] = new double[]{18.939, 16.928, 15.308, 13.565, 10.391};</span>
-<span class="fc" id="L234">        lowerTail[28] = new double[]{19.768, 17.708, 16.047, 14.256, 10.986};</span>
-<span class="fc" id="L235">        lowerTail[29] = new double[]{20.599, 18.493, 16.791, 14.953, 11.588};</span>
-<span class="fc" id="L236">        lowerTail[30] = new double[]{21.434, 19.281, 17.539, 15.655, 12.196};</span>
-<span class="fc" id="L237">        lowerTail[31] = new double[]{22.271, 20.072, 18.291, 16.362, 12.811};</span>
-<span class="fc" id="L238">        lowerTail[32] = new double[]{23.110, 20.867, 19.047, 17.074, 13.431};</span>
-<span class="fc" id="L239">        lowerTail[33] = new double[]{23.952, 21.664, 19.806, 17.789, 14.057};</span>
-<span class="fc" id="L240">        lowerTail[34] = new double[]{24.797, 22.465, 20.569, 18.509, 14.688};</span>
-<span class="fc" id="L241">        lowerTail[35] = new double[]{25.643, 23.269, 21.336, 19.233, 15.324};</span>
-<span class="fc" id="L242">        lowerTail[36] = new double[]{26.492, 24.075, 22.106, 19.960, 15.965};</span>
-<span class="fc" id="L243">        lowerTail[37] = new double[]{27.343, 24.884, 22.878, 20.691, 16.611};</span>
-<span class="fc" id="L244">        lowerTail[38] = new double[]{28.196, 25.695, 23.654, 21.426, 17.262};</span>
-<span class="fc" id="L245">        lowerTail[39] = new double[]{29.051, 26.509, 24.433, 22.164, 17.916};</span>
-<span class="fc" id="L246">        lowerTail[40] = new double[]{29.907, 27.326, 25.215, 22.906, 18.575};</span>
-<span class="fc" id="L247">        lowerTail[41] = new double[]{30.765, 28.144, 25.999, 23.650, 19.239};</span>
-<span class="fc" id="L248">        lowerTail[42] = new double[]{31.625, 28.965, 26.785, 24.398, 19.906};</span>
-<span class="fc" id="L249">        lowerTail[43] = new double[]{32.487, 29.787, 27.575, 25.148, 20.576};</span>
-<span class="fc" id="L250">        lowerTail[44] = new double[]{33.350, 30.612, 28.366, 25.901, 21.251};</span>
-<span class="fc" id="L251">        lowerTail[45] = new double[]{34.215, 31.439, 29.160, 26.657, 21.929};</span>
-<span class="fc" id="L252">        lowerTail[46] = new double[]{35.081, 32.268, 29.956, 27.416, 22.610};</span>
-<span class="fc" id="L253">        lowerTail[47] = new double[]{35.949, 33.098, 30.755, 28.177, 23.295};</span>
-<span class="fc" id="L254">        lowerTail[48] = new double[]{36.818, 33.930, 31.555, 28.941, 23.983};</span>
-<span class="fc" id="L255">        lowerTail[49] = new double[]{37.689, 34.764, 32.357, 29.707, 24.674};</span>
-<span class="fc" id="L256">        lowerTail[50] = new double[]{38.560, 35.600, 33.162, 30.475, 25.368};</span>
-<span class="fc" id="L257">        lowerTail[51] = new double[]{39.433, 36.437, 33.968, 31.246, 26.065};</span>
-<span class="fc" id="L258">        lowerTail[52] = new double[]{40.308, 37.276, 34.776, 32.018, 26.765};</span>
-<span class="fc" id="L259">        lowerTail[53] = new double[]{41.183, 38.116, 35.586, 32.793, 27.468};</span>
-<span class="fc" id="L260">        lowerTail[54] = new double[]{42.060, 38.958, 36.398, 33.570, 28.173};</span>
-<span class="fc" id="L261">        lowerTail[55] = new double[]{42.937, 39.801, 37.212, 34.350, 28.881};</span>
-<span class="fc" id="L262">        lowerTail[56] = new double[]{43.816, 40.646, 38.027, 35.131, 29.592};</span>
-<span class="fc" id="L263">        lowerTail[57] = new double[]{44.696, 41.492, 38.844, 35.913, 30.305};</span>
-<span class="fc" id="L264">        lowerTail[58] = new double[]{45.577, 42.339, 39.662, 36.698, 31.020};</span>
-<span class="fc" id="L265">        lowerTail[59] = new double[]{46.459, 43.188, 40.482, 37.485, 31.738};</span>
-<span class="fc" id="L266">        lowerTail[60] = new double[]{47.342, 44.038, 41.303, 38.273, 32.459};</span>
-<span class="fc" id="L267">        lowerTail[61] = new double[]{48.226, 44.889, 42.126, 39.063, 33.181};</span>
-<span class="fc" id="L268">        lowerTail[62] = new double[]{49.111, 45.741, 42.950, 39.855, 33.906};</span>
-<span class="fc" id="L269">        lowerTail[63] = new double[]{49.996, 46.595, 43.776, 40.649, 34.633};</span>
-<span class="fc" id="L270">        lowerTail[64] = new double[]{50.883, 47.450, 44.603, 41.444, 35.362};</span>
-<span class="fc" id="L271">        lowerTail[65] = new double[]{51.770, 48.305, 45.431, 42.240, 36.093};</span>
-<span class="fc" id="L272">        lowerTail[66] = new double[]{52.659, 49.162, 46.261, 43.038, 36.826};</span>
-<span class="fc" id="L273">        lowerTail[67] = new double[]{53.548, 50.020, 47.092, 43.838, 37.561};</span>
-<span class="fc" id="L274">        lowerTail[68] = new double[]{54.438, 50.879, 47.924, 44.639, 38.298};</span>
-<span class="fc" id="L275">        lowerTail[69] = new double[]{55.329, 51.739, 48.758, 45.442, 39.036};</span>
-<span class="fc" id="L276">        lowerTail[70] = new double[]{56.221, 52.600, 49.592, 46.246, 39.777};</span>
-<span class="fc" id="L277">        lowerTail[71] = new double[]{57.113, 53.462, 50.428, 47.051, 40.519};</span>
-<span class="fc" id="L278">        lowerTail[72] = new double[]{58.006, 54.325, 51.265, 47.858, 41.264};</span>
-<span class="fc" id="L279">        lowerTail[73] = new double[]{58.900, 55.189, 52.103, 48.666, 42.010};</span>
-<span class="fc" id="L280">        lowerTail[74] = new double[]{59.795, 56.054, 52.942, 49.475, 42.757};</span>
-<span class="fc" id="L281">        lowerTail[75] = new double[]{60.690, 56.920, 53.782, 50.286, 43.507};</span>
-<span class="fc" id="L282">        lowerTail[76] = new double[]{61.586, 57.786, 54.623, 51.097, 44.258};</span>
-<span class="fc" id="L283">        lowerTail[77] = new double[]{62.483, 58.654, 55.466, 51.910, 45.010};</span>
-<span class="fc" id="L284">        lowerTail[78] = new double[]{63.380, 59.522, 56.309, 52.725, 45.764};</span>
-<span class="fc" id="L285">        lowerTail[79] = new double[]{64.278, 60.391, 57.153, 53.540, 46.520};</span>
-<span class="fc" id="L286">        lowerTail[80] = new double[]{65.176, 61.261, 57.998, 54.357, 47.277};</span>
-<span class="fc" id="L287">        lowerTail[81] = new double[]{66.076, 62.132, 58.845, 55.174, 48.036};</span>
-<span class="fc" id="L288">        lowerTail[82] = new double[]{66.976, 63.004, 59.692, 55.993, 48.796};</span>
-<span class="fc" id="L289">        lowerTail[83] = new double[]{67.876, 63.876, 60.540, 56.813, 49.557};</span>
-<span class="fc" id="L290">        lowerTail[84] = new double[]{68.777, 64.749, 61.389, 57.634, 50.320};</span>
-<span class="fc" id="L291">        lowerTail[85] = new double[]{69.679, 65.623, 62.239, 58.456, 51.085};</span>
-<span class="fc" id="L292">        lowerTail[86] = new double[]{70.581, 66.498, 63.089, 59.279, 51.850};</span>
-<span class="fc" id="L293">        lowerTail[87] = new double[]{71.484, 67.373, 63.941, 60.103, 52.617};</span>
-<span class="fc" id="L294">        lowerTail[88] = new double[]{72.387, 68.249, 64.793, 60.928, 53.386};</span>
-<span class="fc" id="L295">        lowerTail[89] = new double[]{73.291, 69.126, 65.647, 61.754, 54.155};</span>
-<span class="fc" id="L296">        lowerTail[90] = new double[]{74.196, 70.003, 66.501, 62.581, 54.926};</span>
-<span class="fc" id="L297">        lowerTail[91] = new double[]{75.100, 70.882, 67.356, 63.409, 55.698};</span>
-<span class="fc" id="L298">        lowerTail[92] = new double[]{76.006, 71.760, 68.211, 64.238, 56.472};</span>
-<span class="fc" id="L299">        lowerTail[93] = new double[]{76.912, 72.640, 69.068, 65.068, 57.246};</span>
-<span class="fc" id="L300">        lowerTail[94] = new double[]{77.818, 73.520, 69.925, 65.898, 58.022};</span>
-<span class="fc" id="L301">        lowerTail[95] = new double[]{78.725, 74.401, 70.783, 66.730, 58.799};</span>
-<span class="fc" id="L302">        lowerTail[96] = new double[]{79.633, 75.282, 71.642, 67.562, 59.577};</span>
-<span class="fc" id="L303">        lowerTail[97] = new double[]{80.541, 76.164, 72.501, 68.396, 60.356};</span>
-<span class="fc" id="L304">        lowerTail[98] = new double[]{81.449, 77.046, 73.361, 69.230, 61.137};</span>
-<span class="fc" id="L305">        lowerTail[99] = new double[]{82.358, 77.929, 74.222, 70.065, 61.918};</span>
-<span class="fc" id="L306">    }</span>
+<span class="fc" id="L269">        lowerTail[0] = new double[]{.016, .004, .001, .000, .000};</span>
+<span class="fc" id="L270">        lowerTail[1] = new double[]{.211, .103, .051, .020, .002};</span>
+<span class="fc" id="L271">        lowerTail[2] = new double[]{.584, .352, .216, .115, .024};</span>
+<span class="fc" id="L272">        lowerTail[3] = new double[]{1.064, .711, .484, .297, .091};</span>
+<span class="fc" id="L273">        lowerTail[4] = new double[]{1.610, 1.145, .831, .554, .210};</span>
+<span class="fc" id="L274">        lowerTail[5] = new double[]{2.204, 1.635, 1.237, .872, .381};</span>
+<span class="fc" id="L275">        lowerTail[6] = new double[]{2.833, 2.167, 1.690, 1.239, .598};</span>
+<span class="fc" id="L276">        lowerTail[7] = new double[]{3.490, 2.733, 2.180, 1.646, .857};</span>
+<span class="fc" id="L277">        lowerTail[8] = new double[]{4.168, 3.325, 2.700, 2.088, 1.152};</span>
+<span class="fc" id="L278">        lowerTail[9] = new double[]{4.865, 3.940, 3.247, 2.558, 1.479};</span>
+<span class="fc" id="L279">        lowerTail[10] = new double[]{5.578, 4.575, 3.816, 3.053, 1.834};</span>
+<span class="fc" id="L280">        lowerTail[11] = new double[]{6.304, 5.226, 4.404, 3.571, 2.214};</span>
+<span class="fc" id="L281">        lowerTail[12] = new double[]{7.042, 5.892, 5.009, 4.107, 2.617};</span>
+<span class="fc" id="L282">        lowerTail[13] = new double[]{7.790, 6.571, 5.629, 4.660, 3.041};</span>
+<span class="fc" id="L283">        lowerTail[14] = new double[]{8.547, 7.261, 6.262, 5.229, 3.483};</span>
+<span class="fc" id="L284">        lowerTail[15] = new double[]{9.312, 7.962, 6.908, 5.812, 3.942};</span>
+<span class="fc" id="L285">        lowerTail[16] = new double[]{10.085, 8.672, 7.564, 6.408, 4.416};</span>
+<span class="fc" id="L286">        lowerTail[17] = new double[]{10.865, 9.390, 8.231, 7.015, 4.905};</span>
+<span class="fc" id="L287">        lowerTail[18] = new double[]{11.651, 10.117, 8.907, 7.633, 5.407};</span>
+<span class="fc" id="L288">        lowerTail[19] = new double[]{12.443, 10.851, 9.591, 8.260, 5.921};</span>
+<span class="fc" id="L289">        lowerTail[20] = new double[]{13.240, 11.591, 10.283, 8.897, 6.447};</span>
+<span class="fc" id="L290">        lowerTail[21] = new double[]{14.041, 12.338, 10.982, 9.542, 6.983};</span>
+<span class="fc" id="L291">        lowerTail[22] = new double[]{14.848, 13.091, 11.689, 10.196, 7.529};</span>
+<span class="fc" id="L292">        lowerTail[23] = new double[]{15.659, 13.848, 12.401, 10.856, 8.085};</span>
+<span class="fc" id="L293">        lowerTail[24] = new double[]{16.473, 14.611, 13.120, 11.524, 8.649};</span>
+<span class="fc" id="L294">        lowerTail[25] = new double[]{17.292, 15.379, 13.844, 12.198, 9.222};</span>
+<span class="fc" id="L295">        lowerTail[26] = new double[]{18.114, 16.151, 14.573, 12.879, 9.803};</span>
+<span class="fc" id="L296">        lowerTail[27] = new double[]{18.939, 16.928, 15.308, 13.565, 10.391};</span>
+<span class="fc" id="L297">        lowerTail[28] = new double[]{19.768, 17.708, 16.047, 14.256, 10.986};</span>
+<span class="fc" id="L298">        lowerTail[29] = new double[]{20.599, 18.493, 16.791, 14.953, 11.588};</span>
+<span class="fc" id="L299">        lowerTail[30] = new double[]{21.434, 19.281, 17.539, 15.655, 12.196};</span>
+<span class="fc" id="L300">        lowerTail[31] = new double[]{22.271, 20.072, 18.291, 16.362, 12.811};</span>
+<span class="fc" id="L301">        lowerTail[32] = new double[]{23.110, 20.867, 19.047, 17.074, 13.431};</span>
+<span class="fc" id="L302">        lowerTail[33] = new double[]{23.952, 21.664, 19.806, 17.789, 14.057};</span>
+<span class="fc" id="L303">        lowerTail[34] = new double[]{24.797, 22.465, 20.569, 18.509, 14.688};</span>
+<span class="fc" id="L304">        lowerTail[35] = new double[]{25.643, 23.269, 21.336, 19.233, 15.324};</span>
+<span class="fc" id="L305">        lowerTail[36] = new double[]{26.492, 24.075, 22.106, 19.960, 15.965};</span>
+<span class="fc" id="L306">        lowerTail[37] = new double[]{27.343, 24.884, 22.878, 20.691, 16.611};</span>
+<span class="fc" id="L307">        lowerTail[38] = new double[]{28.196, 25.695, 23.654, 21.426, 17.262};</span>
+<span class="fc" id="L308">        lowerTail[39] = new double[]{29.051, 26.509, 24.433, 22.164, 17.916};</span>
+<span class="fc" id="L309">        lowerTail[40] = new double[]{29.907, 27.326, 25.215, 22.906, 18.575};</span>
+<span class="fc" id="L310">        lowerTail[41] = new double[]{30.765, 28.144, 25.999, 23.650, 19.239};</span>
+<span class="fc" id="L311">        lowerTail[42] = new double[]{31.625, 28.965, 26.785, 24.398, 19.906};</span>
+<span class="fc" id="L312">        lowerTail[43] = new double[]{32.487, 29.787, 27.575, 25.148, 20.576};</span>
+<span class="fc" id="L313">        lowerTail[44] = new double[]{33.350, 30.612, 28.366, 25.901, 21.251};</span>
+<span class="fc" id="L314">        lowerTail[45] = new double[]{34.215, 31.439, 29.160, 26.657, 21.929};</span>
+<span class="fc" id="L315">        lowerTail[46] = new double[]{35.081, 32.268, 29.956, 27.416, 22.610};</span>
+<span class="fc" id="L316">        lowerTail[47] = new double[]{35.949, 33.098, 30.755, 28.177, 23.295};</span>
+<span class="fc" id="L317">        lowerTail[48] = new double[]{36.818, 33.930, 31.555, 28.941, 23.983};</span>
+<span class="fc" id="L318">        lowerTail[49] = new double[]{37.689, 34.764, 32.357, 29.707, 24.674};</span>
+<span class="fc" id="L319">        lowerTail[50] = new double[]{38.560, 35.600, 33.162, 30.475, 25.368};</span>
+<span class="fc" id="L320">        lowerTail[51] = new double[]{39.433, 36.437, 33.968, 31.246, 26.065};</span>
+<span class="fc" id="L321">        lowerTail[52] = new double[]{40.308, 37.276, 34.776, 32.018, 26.765};</span>
+<span class="fc" id="L322">        lowerTail[53] = new double[]{41.183, 38.116, 35.586, 32.793, 27.468};</span>
+<span class="fc" id="L323">        lowerTail[54] = new double[]{42.060, 38.958, 36.398, 33.570, 28.173};</span>
+<span class="fc" id="L324">        lowerTail[55] = new double[]{42.937, 39.801, 37.212, 34.350, 28.881};</span>
+<span class="fc" id="L325">        lowerTail[56] = new double[]{43.816, 40.646, 38.027, 35.131, 29.592};</span>
+<span class="fc" id="L326">        lowerTail[57] = new double[]{44.696, 41.492, 38.844, 35.913, 30.305};</span>
+<span class="fc" id="L327">        lowerTail[58] = new double[]{45.577, 42.339, 39.662, 36.698, 31.020};</span>
+<span class="fc" id="L328">        lowerTail[59] = new double[]{46.459, 43.188, 40.482, 37.485, 31.738};</span>
+<span class="fc" id="L329">        lowerTail[60] = new double[]{47.342, 44.038, 41.303, 38.273, 32.459};</span>
+<span class="fc" id="L330">        lowerTail[61] = new double[]{48.226, 44.889, 42.126, 39.063, 33.181};</span>
+<span class="fc" id="L331">        lowerTail[62] = new double[]{49.111, 45.741, 42.950, 39.855, 33.906};</span>
+<span class="fc" id="L332">        lowerTail[63] = new double[]{49.996, 46.595, 43.776, 40.649, 34.633};</span>
+<span class="fc" id="L333">        lowerTail[64] = new double[]{50.883, 47.450, 44.603, 41.444, 35.362};</span>
+<span class="fc" id="L334">        lowerTail[65] = new double[]{51.770, 48.305, 45.431, 42.240, 36.093};</span>
+<span class="fc" id="L335">        lowerTail[66] = new double[]{52.659, 49.162, 46.261, 43.038, 36.826};</span>
+<span class="fc" id="L336">        lowerTail[67] = new double[]{53.548, 50.020, 47.092, 43.838, 37.561};</span>
+<span class="fc" id="L337">        lowerTail[68] = new double[]{54.438, 50.879, 47.924, 44.639, 38.298};</span>
+<span class="fc" id="L338">        lowerTail[69] = new double[]{55.329, 51.739, 48.758, 45.442, 39.036};</span>
+<span class="fc" id="L339">        lowerTail[70] = new double[]{56.221, 52.600, 49.592, 46.246, 39.777};</span>
+<span class="fc" id="L340">        lowerTail[71] = new double[]{57.113, 53.462, 50.428, 47.051, 40.519};</span>
+<span class="fc" id="L341">        lowerTail[72] = new double[]{58.006, 54.325, 51.265, 47.858, 41.264};</span>
+<span class="fc" id="L342">        lowerTail[73] = new double[]{58.900, 55.189, 52.103, 48.666, 42.010};</span>
+<span class="fc" id="L343">        lowerTail[74] = new double[]{59.795, 56.054, 52.942, 49.475, 42.757};</span>
+<span class="fc" id="L344">        lowerTail[75] = new double[]{60.690, 56.920, 53.782, 50.286, 43.507};</span>
+<span class="fc" id="L345">        lowerTail[76] = new double[]{61.586, 57.786, 54.623, 51.097, 44.258};</span>
+<span class="fc" id="L346">        lowerTail[77] = new double[]{62.483, 58.654, 55.466, 51.910, 45.010};</span>
+<span class="fc" id="L347">        lowerTail[78] = new double[]{63.380, 59.522, 56.309, 52.725, 45.764};</span>
+<span class="fc" id="L348">        lowerTail[79] = new double[]{64.278, 60.391, 57.153, 53.540, 46.520};</span>
+<span class="fc" id="L349">        lowerTail[80] = new double[]{65.176, 61.261, 57.998, 54.357, 47.277};</span>
+<span class="fc" id="L350">        lowerTail[81] = new double[]{66.076, 62.132, 58.845, 55.174, 48.036};</span>
+<span class="fc" id="L351">        lowerTail[82] = new double[]{66.976, 63.004, 59.692, 55.993, 48.796};</span>
+<span class="fc" id="L352">        lowerTail[83] = new double[]{67.876, 63.876, 60.540, 56.813, 49.557};</span>
+<span class="fc" id="L353">        lowerTail[84] = new double[]{68.777, 64.749, 61.389, 57.634, 50.320};</span>
+<span class="fc" id="L354">        lowerTail[85] = new double[]{69.679, 65.623, 62.239, 58.456, 51.085};</span>
+<span class="fc" id="L355">        lowerTail[86] = new double[]{70.581, 66.498, 63.089, 59.279, 51.850};</span>
+<span class="fc" id="L356">        lowerTail[87] = new double[]{71.484, 67.373, 63.941, 60.103, 52.617};</span>
+<span class="fc" id="L357">        lowerTail[88] = new double[]{72.387, 68.249, 64.793, 60.928, 53.386};</span>
+<span class="fc" id="L358">        lowerTail[89] = new double[]{73.291, 69.126, 65.647, 61.754, 54.155};</span>
+<span class="fc" id="L359">        lowerTail[90] = new double[]{74.196, 70.003, 66.501, 62.581, 54.926};</span>
+<span class="fc" id="L360">        lowerTail[91] = new double[]{75.100, 70.882, 67.356, 63.409, 55.698};</span>
+<span class="fc" id="L361">        lowerTail[92] = new double[]{76.006, 71.760, 68.211, 64.238, 56.472};</span>
+<span class="fc" id="L362">        lowerTail[93] = new double[]{76.912, 72.640, 69.068, 65.068, 57.246};</span>
+<span class="fc" id="L363">        lowerTail[94] = new double[]{77.818, 73.520, 69.925, 65.898, 58.022};</span>
+<span class="fc" id="L364">        lowerTail[95] = new double[]{78.725, 74.401, 70.783, 66.730, 58.799};</span>
+<span class="fc" id="L365">        lowerTail[96] = new double[]{79.633, 75.282, 71.642, 67.562, 59.577};</span>
+<span class="fc" id="L366">        lowerTail[97] = new double[]{80.541, 76.164, 72.501, 68.396, 60.356};</span>
+<span class="fc" id="L367">        lowerTail[98] = new double[]{81.449, 77.046, 73.361, 69.230, 61.137};</span>
+<span class="fc" id="L368">        lowerTail[99] = new double[]{82.358, 77.929, 74.222, 70.065, 61.918};</span>
+<span class="fc" id="L369">    }</span>
    
     /**
      * find the lower-tail critical value to compare to a test statistic.
      * One can reject the null hypothesis if the computed test statistic 
         is less than the table value.
-     * @param probability the probability to look-up in the table.  
+     @param probability the probability to look-up in the table.  
      * e.g. for a one-sided test, this probability is the same as the significance 
      * level alpha.  For a two-sided test, this probability is the same as the significance 
      * level alpha/2.
-     * @param degreesOfFreedom
-     * @return 
+     @param degreesOfFreedom
+     @return 
      */
     public static double lowerTailStatistic(PROB_LT probability, int degreesOfFreedom) {
-<span class="nc bnc" id="L320" title="All 4 branches missed.">        if (degreesOfFreedom &lt; 1 || degreesOfFreedom &gt; 100) {</span>
-<span class="nc" id="L321">            throw new IllegalArgumentException(&quot;degreesOfFreedom must be in range [1,100], inclusive&quot;);</span>
+<span class="nc bnc" id="L383" title="All 4 branches missed.">        if (degreesOfFreedom &lt; 1 || degreesOfFreedom &gt; 100) {</span>
+<span class="nc" id="L384">            throw new IllegalArgumentException(&quot;degreesOfFreedom must be in range [1,100], inclusive&quot;);</span>
         }
-<span class="nc" id="L323">        degreesOfFreedom--;</span>
-<span class="nc bnc" id="L324" title="All 6 branches missed.">        switch (probability) {</span>
+<span class="nc" id="L386">        degreesOfFreedom--;</span>
+<span class="nc bnc" id="L387" title="All 6 branches missed.">        switch (probability) {</span>
             case Z_10:
-<span class="nc" id="L326">                return lowerTail[degreesOfFreedom][0];</span>
+<span class="nc" id="L389">                return lowerTail[degreesOfFreedom][0];</span>
             case Z_05:
-<span class="nc" id="L328">                return lowerTail[degreesOfFreedom][1];</span>
+<span class="nc" id="L391">                return lowerTail[degreesOfFreedom][1];</span>
             case Z_025:
-<span class="nc" id="L330">                return lowerTail[degreesOfFreedom][2];</span>
+<span class="nc" id="L393">                return lowerTail[degreesOfFreedom][2];</span>
             case Z_01:
-<span class="nc" id="L332">                return lowerTail[degreesOfFreedom][3];</span>
+<span class="nc" id="L395">                return lowerTail[degreesOfFreedom][3];</span>
             case Z_001:
-<span class="nc" id="L334">                return lowerTail[degreesOfFreedom][4];</span>
+<span class="nc" id="L397">                return lowerTail[degreesOfFreedom][4];</span>
         }
-<span class="nc" id="L336">        return Double.NaN;</span>
+<span class="nc" id="L399">        return Double.NaN;</span>
     }
     
     /**
@@ -343,35 +406,35 @@ tables, or approximations are needed.
         it's inverse&quot;  1988, Lin, J.T., The Statistician 37, 3-5
         https://www.jstor.org/stable/2348373?seq=1#metadata_info_tab_contents
         
-     * @param chisqStat
-     * @param degreesOfFreedom
-     * @return 
+     @param chisqStat
+     @param degreesOfFreedom
+     @return 
      */
     public static double approxPValueLin(double chisqStat, int degreesOfFreedom) {
-<span class="pc bpc" id="L351" title="1 of 2 branches missed.">        if (degreesOfFreedom &lt; 1) {</span>
-<span class="nc" id="L352">            throw new IllegalArgumentException(&quot;degreesOfFreedom must larger than 0&quot;);</span>
+<span class="pc bpc" id="L414" title="1 of 2 branches missed.">        if (degreesOfFreedom &lt; 1) {</span>
+<span class="nc" id="L415">            throw new IllegalArgumentException(&quot;degreesOfFreedom must larger than 0&quot;);</span>
         }
         double p;
-<span class="fc" id="L355">        double a1 = -0.9911;</span>
-<span class="fc" id="L356">        double b1 = 0.8055;</span>
-<span class="fc" id="L357">        double a2 = -0.6763;</span>
-<span class="fc" id="L358">        double b2 = -1.2451;</span>
+<span class="fc" id="L418">        double a1 = -0.9911;</span>
+<span class="fc" id="L419">        double b1 = 0.8055;</span>
+<span class="fc" id="L420">        double a2 = -0.6763;</span>
+<span class="fc" id="L421">        double b2 = -1.2451;</span>
         
         //EQN (1):
 
-<span class="fc" id="L362">        double z = Math.sqrt(chisqStat) - Math.sqrt(degreesOfFreedom);</span>
+<span class="fc" id="L425">        double z = Math.sqrt(chisqStat) - Math.sqrt(degreesOfFreedom);</span>
 
-<span class="fc bfc" id="L364" title="All 2 branches covered.">        if (z &lt;= 0) {</span>
-<span class="fc" id="L365">            p = 1. - 0.5 * Math.exp(b1 * z + a1 * z * z);</span>
+<span class="fc bfc" id="L427" title="All 2 branches covered.">        if (z &lt;= 0) {</span>
+<span class="fc" id="L428">            p = 1. - 0.5 * Math.exp(b1 * z + a1 * z * z);</span>
         } else {
-<span class="fc" id="L367">            p = 0.5 * Math.exp(b2 * z + a2 * z * z);</span>
+<span class="fc" id="L430">            p = 0.5 * Math.exp(b2 * z + a2 * z * z);</span>
         }
         
-<span class="fc" id="L370">        System.out.printf(&quot;Lin: chisq_t==%12.4f, df=%d, =&gt; p=%9.4f, 1-p=%9.4f\n&quot;,</span>
-<span class="fc" id="L371">            chisqStat, degreesOfFreedom, p, (1 - p));</span>
-<span class="fc" id="L372">        System.out.flush();</span>
+<span class="fc" id="L433">        System.out.printf(&quot;Lin: chisq_t==%12.4f, df=%d, =&gt; p=%9.4f, 1-p=%9.4f\n&quot;,</span>
+<span class="fc" id="L434">            chisqStat, degreesOfFreedom, p, (1 - p));</span>
+<span class="fc" id="L435">        System.out.flush();</span>
         
-<span class="fc" id="L374">        return 1. - p;</span>
+<span class="fc" id="L437">        return 1. - p;</span>
     }
     
     /**
@@ -381,37 +444,37 @@ tables, or approximations are needed.
         it's inverse&quot;  1988, Lin, J.T., The Statistician 37, 3-5
         https://www.jstor.org/stable/2348373?seq=1#metadata_info_tab_contents
         
-     * @param p the p-value OR (1-p)
-     * @param degreesOfFreedom
-     * @return 
+     @param p the p-value OR (1-p)
+     @param degreesOfFreedom
+     @return 
      */
     public static double approxChiSqStatLin(double p, int degreesOfFreedom) {
-<span class="pc bpc" id="L389" title="1 of 2 branches missed.">        if (degreesOfFreedom &lt; 1) {</span>
-<span class="nc" id="L390">            throw new IllegalArgumentException(&quot;degreesOfFreedom must larger than 0&quot;);</span>
+<span class="pc bpc" id="L452" title="1 of 2 branches missed.">        if (degreesOfFreedom &lt; 1) {</span>
+<span class="nc" id="L453">            throw new IllegalArgumentException(&quot;degreesOfFreedom must larger than 0&quot;);</span>
         }
         double chisqStat;
-<span class="fc" id="L393">        double a1 = -0.9911;</span>
-<span class="fc" id="L394">        double b1 = 0.8055;</span>
-<span class="fc" id="L395">        double a2 = -0.6763;</span>
-<span class="fc" id="L396">        double b2 = -1.2451;</span>
+<span class="fc" id="L456">        double a1 = -0.9911;</span>
+<span class="fc" id="L457">        double b1 = 0.8055;</span>
+<span class="fc" id="L458">        double a2 = -0.6763;</span>
+<span class="fc" id="L459">        double b2 = -1.2451;</span>
         double c1, c2;
         double z;
 
         //EQN (2):
-<span class="fc bfc" id="L401" title="All 2 branches covered.">        if (p &gt;= 0.5) {</span>
-<span class="fc" id="L402">            c1 = -Math.log(2 * (1. - p));</span>
-<span class="fc" id="L403">            z = (-b1 + Math.sqrt(b1 * b1 - 4 * a1 * c1)) / (2 * a1);</span>
+<span class="fc bfc" id="L464" title="All 2 branches covered.">        if (p &gt;= 0.5) {</span>
+<span class="fc" id="L465">            c1 = -Math.log(2 * (1. - p));</span>
+<span class="fc" id="L466">            z = (-b1 + Math.sqrt(b1 * b1 - 4 * a1 * c1)) / (2 * a1);</span>
         } else {
-<span class="fc" id="L405">            c2 = -Math.log(2 * p);</span>
-<span class="fc" id="L406">            z = (-b2 - Math.sqrt(b2 * b2 - 4 * a2 * c2)) / (2 * a2);</span>
+<span class="fc" id="L468">            c2 = -Math.log(2 * p);</span>
+<span class="fc" id="L469">            z = (-b2 - Math.sqrt(b2 * b2 - 4 * a2 * c2)) / (2 * a2);</span>
         }
-<span class="fc" id="L408">        chisqStat = Math.pow(z + Math.sqrt(degreesOfFreedom), 2.);</span>
+<span class="fc" id="L471">        chisqStat = Math.pow(z + Math.sqrt(degreesOfFreedom), 2.);</span>
 
-<span class="fc" id="L410">        System.out.printf(&quot;Lin: df=%d, p=%9.4f =&gt; chisq=%12.4f\n&quot;,</span>
-<span class="fc" id="L411">            degreesOfFreedom, p, chisqStat);</span>
-<span class="fc" id="L412">        System.out.flush();</span>
+<span class="fc" id="L473">        System.out.printf(&quot;Lin: df=%d, p=%9.4f =&gt; chisq=%12.4f\n&quot;,</span>
+<span class="fc" id="L474">            degreesOfFreedom, p, chisqStat);</span>
+<span class="fc" id="L475">        System.out.flush();</span>
         
-<span class="fc" id="L414">        return chisqStat;</span>
+<span class="fc" id="L477">        return chisqStat;</span>
     }
     
     /*
@@ -419,9 +482,9 @@ tables, or approximations are needed.
      * &quot;Exploring How to Simply Approximate the P-value of a Chi-squared Statistic&quot;
      * 2018, Beh, E., Australian Journal of Statistics, Vol. 47 No. 3
      * https://doi.org/10.17713/ajs.v47i3.757
-     * @param chisqStat
-     * @param degreesOfFreedom
-     * @return 
+     @param chisqStat
+     @param degreesOfFreedom
+     @return 
     public static double approxUpperTailPValueBeh(double chisqStat, int degreesOfFreedom) {
         
         double p;

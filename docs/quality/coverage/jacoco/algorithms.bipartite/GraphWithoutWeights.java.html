@@ -26,57 +26,66 @@ public class GraphWithoutWeights {
 <span class="fc" id="L26">    private TIntObjectMap&lt;TIntSet&gt; adjacencyMap = new</span>
         TIntObjectHashMap&lt;TIntSet&gt;();
 
+    /**
+     *
+     @param nLeftVertices
+     @param nRightVertices
+     */
     public GraphWithoutWeights(int nLeftVertices, 
-<span class="fc" id="L30">        int nRightVertices) {</span>
-<span class="fc" id="L31">        this.nLeft = nLeftVertices;</span>
-<span class="fc" id="L32">        this.nRight = nRightVertices;</span>
-<span class="fc" id="L33">    }</span>
-    
-<span class="fc" id="L35">    public GraphWithoutWeights(Graph g) {</span>
-        
-<span class="fc" id="L37">        this.nLeft = g.getNLeft();</span>
-<span class="fc" id="L38">        this.nRight = g.getNRight();</span>
-                
-<span class="fc" id="L40">        TObjectIntIterator&lt;PairInt&gt; iter = </span>
-<span class="fc" id="L41">            g.getEdgeWeights().iterator();</span>
-
-<span class="fc bfc" id="L43" title="All 2 branches covered.">        for (int i = g.getEdgeWeights().size(); i-- &gt; 0;) {</span>
-
-<span class="fc" id="L45">            iter.advance();</span>
-
-<span class="fc" id="L47">            PairInt p = iter.key();</span>
-
-<span class="fc" id="L49">            int idx1 = p.getX();</span>
-<span class="fc" id="L50">            int idx2 = p.getY();</span>
-
-<span class="fc" id="L52">            TIntSet indexes2 = adjacencyMap.get(idx1);</span>
-<span class="fc bfc" id="L53" title="All 2 branches covered.">            if (indexes2 == null) {</span>
-<span class="fc" id="L54">                indexes2 = new TIntHashSet();</span>
-<span class="fc" id="L55">                adjacencyMap.put(idx1, indexes2);</span>
-            }
-<span class="fc" id="L57">            indexes2.add(idx2);</span>
-<span class="fc" id="L58">        }</span>
-<span class="fc" id="L59">    }</span>
+<span class="fc" id="L35">        int nRightVertices) {</span>
+<span class="fc" id="L36">        this.nLeft = nLeftVertices;</span>
+<span class="fc" id="L37">        this.nRight = nRightVertices;</span>
+<span class="fc" id="L38">    }</span>
     
     /**
-     * @return the number of left vertices
+     *
+     @param g
+     */
+<span class="fc" id="L44">    public GraphWithoutWeights(Graph g) {</span>
+        
+<span class="fc" id="L46">        this.nLeft = g.getNLeft();</span>
+<span class="fc" id="L47">        this.nRight = g.getNRight();</span>
+                
+<span class="fc" id="L49">        TObjectIntIterator&lt;PairInt&gt; iter = </span>
+<span class="fc" id="L50">            g.getEdgeWeights().iterator();</span>
+
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        for (int i = g.getEdgeWeights().size(); i-- &gt; 0;) {</span>
+
+<span class="fc" id="L54">            iter.advance();</span>
+
+<span class="fc" id="L56">            PairInt p = iter.key();</span>
+
+<span class="fc" id="L58">            int idx1 = p.getX();</span>
+<span class="fc" id="L59">            int idx2 = p.getY();</span>
+
+<span class="fc" id="L61">            TIntSet indexes2 = adjacencyMap.get(idx1);</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">            if (indexes2 == null) {</span>
+<span class="fc" id="L63">                indexes2 = new TIntHashSet();</span>
+<span class="fc" id="L64">                adjacencyMap.put(idx1, indexes2);</span>
+            }
+<span class="fc" id="L66">            indexes2.add(idx2);</span>
+<span class="fc" id="L67">        }</span>
+<span class="fc" id="L68">    }</span>
+    
+    /**
+     @return the number of left vertices
      */
     public int getNLeft() {
-<span class="fc" id="L65">        return nLeft;</span>
+<span class="fc" id="L74">        return nLeft;</span>
     }
 
     /**
-     * @return the number of right vertices
+     @return the number of right vertices
      */
     public int getNRight() {
-<span class="fc" id="L72">        return nRight;</span>
+<span class="fc" id="L81">        return nRight;</span>
     }
 
     /**
-     * @return the adjacencyMap
+     @return the adjacencyMap
      */
     public TIntObjectMap&lt;TIntSet&gt; getAdjacencyMap() {
-<span class="fc" id="L79">        return adjacencyMap;</span>
+<span class="fc" id="L88">        return adjacencyMap;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

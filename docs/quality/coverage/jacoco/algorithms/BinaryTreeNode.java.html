@@ -13,68 +13,71 @@ public class BinaryTreeNode extends DoublyLinkedNode {
     private BinaryTreeNode right;
     private BinaryTreeNode parent;
 
-<span class="fc" id="L16">    public BinaryTreeNode(int data) {</span>
-<span class="fc" id="L17">        this.data = data;</span>
-<span class="fc" id="L18">    }</span>
+    /**
+     @param data
+     */
+<span class="fc" id="L19">    public BinaryTreeNode(int data) {</span>
+<span class="fc" id="L20">        this.data = data;</span>
+<span class="fc" id="L21">    }</span>
 
     public String toString() {
-<span class="nc" id="L21">        return Integer.toString(getData());</span>
+<span class="nc" id="L24">        return Integer.toString(getData());</span>
     }
 
     /**
-     * @return the data
+     @return the data
      */
     public int getData() {
-<span class="fc" id="L28">        return data;</span>
+<span class="fc" id="L31">        return data;</span>
     }
 
     /**
-     * @return the left
+     @return the left
      */
     public BinaryTreeNode getLeft() {
-<span class="fc" id="L35">        return left;</span>
+<span class="fc" id="L38">        return left;</span>
     }
 
     /**
-     * @return the right
+     @return the right
      */
     public BinaryTreeNode getRight() {
-<span class="fc" id="L42">        return right;</span>
+<span class="fc" id="L45">        return right;</span>
     }
 
     /**
-     * @return the parent
+     @return the parent
      */
     public BinaryTreeNode getParent() {
-<span class="nc" id="L49">        return parent;</span>
+<span class="nc" id="L52">        return parent;</span>
     }
 
     /**
-     * @param data the data to set
+     @param data the data to set
      */
     public void setData(int data) {
-<span class="nc" id="L56">        this.data = data;</span>
-<span class="nc" id="L57">    }</span>
+<span class="nc" id="L59">        this.data = data;</span>
+<span class="nc" id="L60">    }</span>
 
     /**
-     * @param left the left to set
+     @param left the left to set
      */
     public void setLeft(BinaryTreeNode left) {
-<span class="fc" id="L63">        this.left = left;</span>
-<span class="fc" id="L64">    }</span>
+<span class="fc" id="L66">        this.left = left;</span>
+<span class="fc" id="L67">    }</span>
 
     /**
-     * @param right the right to set
+     @param right the right to set
      */
     public void setRight(BinaryTreeNode right) {
-<span class="fc" id="L70">        this.right = right;</span>
-<span class="fc" id="L71">    }</span>
+<span class="fc" id="L73">        this.right = right;</span>
+<span class="fc" id="L74">    }</span>
 
     /**
-     * @param parent the parent to set
+     @param parent the parent to set
      */
     public void setParent(BinaryTreeNode parent) {
-<span class="fc" id="L77">        this.parent = parent;</span>
-<span class="fc" id="L78">    }</span>
+<span class="fc" id="L80">        this.parent = parent;</span>
+<span class="fc" id="L81">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

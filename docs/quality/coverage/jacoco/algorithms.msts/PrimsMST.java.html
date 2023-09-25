@@ -33,7 +33,7 @@ import java.util.Stack;
  *     adjacency matrix, searching          O(N^2)
  *     binary heap and adjacency list       O((N + E) lg2 N) = O(E lg2 N)
  *     Fibonacci heap and adjacency list	O(E + N lg2 N)
- *     YFastTrie and adjacency list         O(E + V)
+ *     YFastTrie and adjacency list         O((E + V)*c) where c log_2 log_2(max value to store in heap)
  *     
  * this implementation uses a YFastTrie min priority queue and adjacency list.
  * 
@@ -47,12 +47,12 @@ import java.util.Stack;
     
     /**
      * 
-     * @param adjCostMap key=vertex1 index, 
+     @param adjCostMap key=vertex1 index, 
      *   value=map with key = vertex2 index and
      *   value = cost of edge between vertex1 and vertex2.  Note that the 
      *   algorithm assumes the map key values are 0 through the number of vertexes
      *   without gaps.
-     * @param maximumWeightInGraph the maximum value of any weight in the graph.
+     @param maximumWeightInGraph the maximum value of any weight in the graph.
      * This sets the word size of the YFastTrie used as the min priority q which
      * is used by default if the VM has enough memory (a large number of items
      * requires more memory).  If the YFastTrie is expected to consume more 
@@ -154,139 +154,151 @@ import java.util.Stack;
         //System.out.println(Arrays.toString(prev));
 <span class="fc" id="L155">    }</span>
     
+    /**
+     *
+     @return
+     */
     public int[] getPredeccessorArray() {
-<span class="nc bnc" id="L158" title="All 2 branches missed.">        if (prev == null) {</span>
-<span class="nc" id="L159">            return null;</span>
+<span class="nc bnc" id="L162" title="All 2 branches missed.">        if (prev == null) {</span>
+<span class="nc" id="L163">            return null;</span>
         }
-<span class="nc" id="L161">        return Arrays.copyOf(prev, prev.length);</span>
+<span class="nc" id="L165">        return Arrays.copyOf(prev, prev.length);</span>
     }
     
+    /**
+     *
+     @return
+     */
     public int findRoot() {
         // in prev array, since all vertices are connected, all except one
         // should have a predecessor.
-<span class="fc" id="L167">        int root = -1;</span>
-<span class="pc bpc" id="L168" title="1 of 2 branches missed.">        for (int i = 0; i &lt; prev.length; ++i) {</span>
-<span class="pc bpc" id="L169" title="1 of 2 branches missed.">            if (prev[i] == -1) {</span>
-<span class="fc" id="L170">                root = i;</span>
-<span class="fc" id="L171">                break;</span>
+<span class="fc" id="L175">        int root = -1;</span>
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">        for (int i = 0; i &lt; prev.length; ++i) {</span>
+<span class="pc bpc" id="L177" title="1 of 2 branches missed.">            if (prev[i] == -1) {</span>
+<span class="fc" id="L178">                root = i;</span>
+<span class="fc" id="L179">                break;</span>
             }
         }
-<span class="fc" id="L174">        return root;</span>
+<span class="fc" id="L182">        return root;</span>
     }
     
+    /**
+     *
+     @return
+     */
     public Map&lt;Integer, LinkedList&lt;Integer&gt;&gt; makeTreeFromPrev() {
-<span class="fc" id="L178">        Map&lt;Integer, LinkedList&lt;Integer&gt;&gt; tree = new HashMap&lt;Integer, LinkedList&lt;Integer&gt;&gt;();</span>
+<span class="fc" id="L190">        Map&lt;Integer, LinkedList&lt;Integer&gt;&gt; tree = new HashMap&lt;Integer, LinkedList&lt;Integer&gt;&gt;();</span>
         int parent;
         LinkedList&lt;Integer&gt; children;
-<span class="fc bfc" id="L181" title="All 2 branches covered.">        for (int child = 0; child &lt; prev.length; ++child) {</span>
-<span class="fc" id="L182">            parent = prev[child];</span>
-<span class="fc bfc" id="L183" title="All 2 branches covered.">            if (parent == -1) {</span>
-<span class="fc" id="L184">                continue;</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">        for (int child = 0; child &lt; prev.length; ++child) {</span>
+<span class="fc" id="L194">            parent = prev[child];</span>
+<span class="fc bfc" id="L195" title="All 2 branches covered.">            if (parent == -1) {</span>
+<span class="fc" id="L196">                continue;</span>
             }
-<span class="fc" id="L186">            children = tree.get(parent);</span>
-<span class="fc bfc" id="L187" title="All 2 branches covered.">            if (children == null) {</span>
-<span class="fc" id="L188">                children = new LinkedList&lt;Integer&gt;();</span>
-<span class="fc" id="L189">                tree.put(parent, children);</span>
+<span class="fc" id="L198">            children = tree.get(parent);</span>
+<span class="fc bfc" id="L199" title="All 2 branches covered.">            if (children == null) {</span>
+<span class="fc" id="L200">                children = new LinkedList&lt;Integer&gt;();</span>
+<span class="fc" id="L201">                tree.put(parent, children);</span>
             }
-<span class="fc" id="L191">            children.add(child);</span>
+<span class="fc" id="L203">            children.add(child);</span>
         }
-<span class="fc" id="L193">        return tree;</span>
+<span class="fc" id="L205">        return tree;</span>
     }
     
     /**
      * walk the tree in prev as a pre-order traversal and return the indexes
      * of the nodes in that order.
      * The pre-order traversal visits subtrees of root, then left, then right.
-     * @return 
+     @return 
      */
     public TIntList getPreorderIndexes() {
-<span class="pc bpc" id="L203" title="1 of 2 branches missed.">        if (prev == null) {</span>
-<span class="nc" id="L204">            return null;</span>
+<span class="pc bpc" id="L215" title="1 of 2 branches missed.">        if (prev == null) {</span>
+<span class="nc" id="L216">            return null;</span>
         }
-<span class="fc" id="L206">        int root = findRoot();</span>
-<span class="fc" id="L207">        return getPreorderIndexes(root);</span>
+<span class="fc" id="L218">        int root = findRoot();</span>
+<span class="fc" id="L219">        return getPreorderIndexes(root);</span>
     }
     // left subtree, root, right subtree
     private TIntList getPreorderIndexes(int root) {
         
-<span class="fc" id="L212">        TIntList out = new TIntArrayList();</span>
+<span class="fc" id="L224">        TIntList out = new TIntArrayList();</span>
         
-<span class="fc" id="L214">        Map&lt;Integer, LinkedList&lt;Integer&gt;&gt; tree = makeTreeFromPrev();</span>
+<span class="fc" id="L226">        Map&lt;Integer, LinkedList&lt;Integer&gt;&gt; tree = makeTreeFromPrev();</span>
         
-<span class="fc" id="L216">        int node = root;</span>
+<span class="fc" id="L228">        int node = root;</span>
         int pNode;
-<span class="fc" id="L218">        Stack&lt;Integer&gt; stack = new Stack&lt;Integer&gt;();</span>
-<span class="fc" id="L219">        stack.add(node);</span>
+<span class="fc" id="L230">        Stack&lt;Integer&gt; stack = new Stack&lt;Integer&gt;();</span>
+<span class="fc" id="L231">        stack.add(node);</span>
         
         // removing the tree nodes as they are used
         LinkedList&lt;Integer&gt; children;
         
-<span class="fc bfc" id="L224" title="All 4 branches covered.">        while (!stack.isEmpty() || node != -1) {</span>
-<span class="fc bfc" id="L225" title="All 2 branches covered.">            if (node != -1) {</span>
+<span class="fc bfc" id="L236" title="All 4 branches covered.">        while (!stack.isEmpty() || node != -1) {</span>
+<span class="fc bfc" id="L237" title="All 2 branches covered.">            if (node != -1) {</span>
                 
-<span class="fc" id="L227">                out.add(node);</span>
+<span class="fc" id="L239">                out.add(node);</span>
                 
-<span class="fc" id="L229">                stack.push(node);</span>
+<span class="fc" id="L241">                stack.push(node);</span>
                 
-<span class="fc" id="L231">                pNode = node;</span>
+<span class="fc" id="L243">                pNode = node;</span>
                 
-<span class="fc" id="L233">                children = tree.get(pNode);</span>
-<span class="fc bfc" id="L234" title="All 2 branches covered.">                if (children != null) {</span>
-<span class="fc" id="L235">                    node = children.removeFirst();</span>
-<span class="fc bfc" id="L236" title="All 2 branches covered.">                    if (children.isEmpty()) {</span>
-<span class="fc" id="L237">                        tree.remove(pNode);</span>
+<span class="fc" id="L245">                children = tree.get(pNode);</span>
+<span class="fc bfc" id="L246" title="All 2 branches covered.">                if (children != null) {</span>
+<span class="fc" id="L247">                    node = children.removeFirst();</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">                    if (children.isEmpty()) {</span>
+<span class="fc" id="L249">                        tree.remove(pNode);</span>
                     }
                 } else {
-<span class="fc" id="L240">                    node = - 1;</span>
+<span class="fc" id="L252">                    node = - 1;</span>
                 }
             } else {
-<span class="fc" id="L243">                node = stack.pop();// discard as it's already in out</span>
+<span class="fc" id="L255">                node = stack.pop();// discard as it's already in out</span>
                 
                 // get next node from tree.
                 // since it might be n-ary tree, will keep taking from front of list
                 //    though there's no reason to choose first over last
-<span class="fc" id="L248">                pNode = node;</span>
-<span class="fc" id="L249">                children = tree.get(pNode);</span>
-<span class="fc bfc" id="L250" title="All 2 branches covered.">                if (children != null) {</span>
-<span class="fc" id="L251">                    node = children.removeFirst();</span>
-<span class="fc bfc" id="L252" title="All 2 branches covered.">                    if (children.isEmpty()) {</span>
-<span class="fc" id="L253">                        tree.remove(pNode);</span>
+<span class="fc" id="L260">                pNode = node;</span>
+<span class="fc" id="L261">                children = tree.get(pNode);</span>
+<span class="fc bfc" id="L262" title="All 2 branches covered.">                if (children != null) {</span>
+<span class="fc" id="L263">                    node = children.removeFirst();</span>
+<span class="fc bfc" id="L264" title="All 2 branches covered.">                    if (children.isEmpty()) {</span>
+<span class="fc" id="L265">                        tree.remove(pNode);</span>
                     }
                 } else {
-<span class="fc" id="L256">                    node = - 1;</span>
+<span class="fc" id="L268">                    node = - 1;</span>
                 }
             }
         }
-<span class="fc" id="L260">        return out;</span>
+<span class="fc" id="L272">        return out;</span>
     }
     
     /**
      * 
-     * @param adjCostMap adjacency map with cost.  key=index1, value = map
+     @param adjCostMap adjacency map with cost.  key=index1, value = map
      * with key=index2 and value=cost.
-     * @return maximum cost found in adjCostMap
+     @return maximum cost found in adjCostMap
      */
     public static int maxEdgeCost(TIntObjectMap&lt;TIntIntMap&gt; adjCostMap) {
-<span class="fc" id="L270">        int max = Integer.MIN_VALUE;</span>
-<span class="fc" id="L271">        TIntObjectIterator&lt;TIntIntMap&gt; iter = adjCostMap.iterator();</span>
+<span class="fc" id="L282">        int max = Integer.MIN_VALUE;</span>
+<span class="fc" id="L283">        TIntObjectIterator&lt;TIntIntMap&gt; iter = adjCostMap.iterator();</span>
         int i, j, idx1, idx2, c;
         TIntIntIterator iter2;
         TIntIntMap map;
-<span class="fc bfc" id="L275" title="All 2 branches covered.">        for (i = 0; i &lt; adjCostMap.size(); ++i) {</span>
-<span class="fc" id="L276">            iter.advance();</span>
-<span class="fc" id="L277">            idx1 = iter.key();</span>
-<span class="fc" id="L278">            map = iter.value();</span>
-<span class="fc" id="L279">            iter2 = map.iterator();            </span>
-<span class="fc bfc" id="L280" title="All 2 branches covered.">            for (j = 0; j &lt; map.size(); ++j) {</span>
-<span class="fc" id="L281">                iter2.advance();</span>
-<span class="fc" id="L282">                idx2 = iter2.key();</span>
-<span class="fc" id="L283">                c = iter2.value();</span>
-<span class="fc bfc" id="L284" title="All 2 branches covered.">                if (c &gt; max) {</span>
-<span class="fc" id="L285">                    max = c;</span>
+<span class="fc bfc" id="L287" title="All 2 branches covered.">        for (i = 0; i &lt; adjCostMap.size(); ++i) {</span>
+<span class="fc" id="L288">            iter.advance();</span>
+<span class="fc" id="L289">            idx1 = iter.key();</span>
+<span class="fc" id="L290">            map = iter.value();</span>
+<span class="fc" id="L291">            iter2 = map.iterator();            </span>
+<span class="fc bfc" id="L292" title="All 2 branches covered.">            for (j = 0; j &lt; map.size(); ++j) {</span>
+<span class="fc" id="L293">                iter2.advance();</span>
+<span class="fc" id="L294">                idx2 = iter2.key();</span>
+<span class="fc" id="L295">                c = iter2.value();</span>
+<span class="fc bfc" id="L296" title="All 2 branches covered.">                if (c &gt; max) {</span>
+<span class="fc" id="L297">                    max = c;</span>
                 }
             }
         }
-<span class="fc" id="L289">        return max;</span>
+<span class="fc" id="L301">        return max;</span>
     }    
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

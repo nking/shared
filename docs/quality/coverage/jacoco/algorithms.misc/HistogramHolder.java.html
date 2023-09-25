@@ -21,363 +21,422 @@ import java.io.IOException;
  */
 <span class="fc" id="L22">public class HistogramHolder {</span>
 
-<span class="fc" id="L24">    protected float[] xHist = null;</span>
-<span class="fc" id="L25">    protected int[] yHist = null;</span>
-<span class="fc" id="L26">    protected float[] yHistFloat = null;</span>
-<span class="fc" id="L27">    protected float[] yErrors = null;</span>
-<span class="fc" id="L28">    protected float[] xErrors = null;</span>
+    /**
+     *
+     */
+<span class="fc" id="L27">    protected float[] xHist = null;</span>
+
+    /**
+     *
+     */
+<span class="fc" id="L32">    protected int[] yHist = null;</span>
+
+    /**
+     *
+     */
+<span class="fc" id="L37">    protected float[] yHistFloat = null;</span>
+
+    /**
+     *
+     */
+<span class="fc" id="L42">    protected float[] yErrors = null;</span>
+
+    /**
+     *
+     */
+<span class="fc" id="L47">    protected float[] xErrors = null;</span>
     
+    /**
+     *
+     @param maxXToUse
+     @param nPartitions
+     @return
+     */
     public float[] getHistArea(float maxXToUse, int nPartitions) {
         
-<span class="nc bnc" id="L32" title="All 2 branches missed.">        if (yHistFloat == null) {</span>
-<span class="nc" id="L33">            return null;</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">        if (yHistFloat == null) {</span>
+<span class="nc" id="L58">            return null;</span>
         }
         
-<span class="nc" id="L36">        double[] area = new double[nPartitions];</span>
+<span class="nc" id="L61">        double[] area = new double[nPartitions];</span>
         
-<span class="nc" id="L38">        float binSize = maxXToUse/(float)nPartitions;</span>
+<span class="nc" id="L63">        float binSize = maxXToUse/(float)nPartitions;</span>
         
         // trapezoidal rule for area under the curve
         
-<span class="nc bnc" id="L42" title="All 2 branches missed.">        for (int i = 0; i &lt; (xHist.length - 1); ++i) {</span>
+<span class="nc bnc" id="L67" title="All 2 branches missed.">        for (int i = 0; i &lt; (xHist.length - 1); ++i) {</span>
             
-<span class="nc" id="L44">            float yTerm = yHistFloat[i + 1] + yHistFloat[i];</span>
-<span class="nc" id="L45">            float xLen = xHist[i + 1] - xHist[i];</span>
-<span class="nc bnc" id="L46" title="All 2 branches missed.">            if (xLen &lt; 0) {</span>
-<span class="nc" id="L47">                xLen *= -1;</span>
+<span class="nc" id="L69">            float yTerm = yHistFloat[i + 1] + yHistFloat[i];</span>
+<span class="nc" id="L70">            float xLen = xHist[i + 1] - xHist[i];</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">            if (xLen &lt; 0) {</span>
+<span class="nc" id="L72">                xLen *= -1;</span>
             }
             
-<span class="nc" id="L50">            float x = xHist[i];</span>
+<span class="nc" id="L75">            float x = xHist[i];</span>
             
-<span class="nc" id="L52">            int partition = (int)(x/binSize);</span>
+<span class="nc" id="L77">            int partition = (int)(x/binSize);</span>
             
-<span class="nc bnc" id="L54" title="All 2 branches missed.">            if (partition &gt; (nPartitions - 1)) {</span>
-<span class="nc" id="L55">                partition = nPartitions - 1;</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">            if (partition &gt; (nPartitions - 1)) {</span>
+<span class="nc" id="L80">                partition = nPartitions - 1;</span>
             }
             
-<span class="nc" id="L58">            area[partition] += (yTerm * xLen);</span>
+<span class="nc" id="L83">            area[partition] += (yTerm * xLen);</span>
         }
                 
-<span class="nc" id="L61">        double sum = 0;</span>
-<span class="nc bnc" id="L62" title="All 2 branches missed.">        for (int i = 0; i &lt; nPartitions; ++i) {</span>
-<span class="nc" id="L63">            sum += area[i]; // area should be multiplied by 0.5, but that's not needed for normalization</span>
+<span class="nc" id="L86">        double sum = 0;</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        for (int i = 0; i &lt; nPartitions; ++i) {</span>
+<span class="nc" id="L88">            sum += area[i]; // area should be multiplied by 0.5, but that's not needed for normalization</span>
         }
         
-<span class="nc" id="L66">        float[] frac = new float[nPartitions];</span>
-<span class="nc bnc" id="L67" title="All 2 branches missed.">        for (int i = 0; i &lt; nPartitions; ++i) {</span>
-<span class="nc" id="L68">            frac[i] = (float)(area[i]/sum);</span>
+<span class="nc" id="L91">        float[] frac = new float[nPartitions];</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">        for (int i = 0; i &lt; nPartitions; ++i) {</span>
+<span class="nc" id="L93">            frac[i] = (float)(area[i]/sum);</span>
         }
         
-<span class="nc" id="L71">        return frac;</span>
+<span class="nc" id="L96">        return frac;</span>
     }
 
     /**
      * integrate the area of the histogram and the area of the restricted
      * range of the histogram (from x0 to x1, inclusive) and then return
      * the value of the restricted range over the total.
-     * @param x0
-     * @param x1
-     * @return 
+     @param x0
+     @param x1
+     @return 
      */
     public float getHistAreaFractionOfTotal(float x0, float x1) {
         
-<span class="nc bnc" id="L84" title="All 2 branches missed.">        if (yHistFloat == null) {</span>
-<span class="nc" id="L85">            return 0;</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">        if (yHistFloat == null) {</span>
+<span class="nc" id="L110">            return 0;</span>
         }
         
-<span class="nc" id="L88">        float sumTot = 0;</span>
-<span class="nc" id="L89">        float sumR = 0;</span>
+<span class="nc" id="L113">        float sumTot = 0;</span>
+<span class="nc" id="L114">        float sumR = 0;</span>
         
         // trapezoidal rule for area under the curve
         
-<span class="nc bnc" id="L93" title="All 2 branches missed.">        for (int i = 0; i &lt; (xHist.length - 1); ++i) {</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">        for (int i = 0; i &lt; (xHist.length - 1); ++i) {</span>
             
-<span class="nc" id="L95">            float yTerm = yHistFloat[i + 1] + yHistFloat[i];</span>
-<span class="nc" id="L96">            float xLen = xHist[i + 1] - xHist[i];</span>
-<span class="nc bnc" id="L97" title="All 2 branches missed.">            if (xLen &lt; 0) {</span>
-<span class="nc" id="L98">                xLen *= -1;</span>
+<span class="nc" id="L120">            float yTerm = yHistFloat[i + 1] + yHistFloat[i];</span>
+<span class="nc" id="L121">            float xLen = xHist[i + 1] - xHist[i];</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">            if (xLen &lt; 0) {</span>
+<span class="nc" id="L123">                xLen *= -1;</span>
             }
             
-<span class="nc" id="L101">            float v = (yTerm * xLen);</span>
+<span class="nc" id="L126">            float v = (yTerm * xLen);</span>
             
-<span class="nc" id="L103">            float x = xHist[i];</span>
+<span class="nc" id="L128">            float x = xHist[i];</span>
             
-<span class="nc" id="L105">            sumTot += v;</span>
+<span class="nc" id="L130">            sumTot += v;</span>
             
-<span class="nc bnc" id="L107" title="All 4 branches missed.">            if ((x &gt;= x0) &amp;&amp; (x &lt;= x1)) {</span>
-<span class="nc" id="L108">                sumR += v;</span>
+<span class="nc bnc" id="L132" title="All 4 branches missed.">            if ((x &gt;= x0) &amp;&amp; (x &lt;= x1)) {</span>
+<span class="nc" id="L133">                sumR += v;</span>
             }
         }
         
-<span class="nc" id="L112">        float frac = sumR / sumTot;</span>
+<span class="nc" id="L137">        float frac = sumR / sumTot;</span>
         
-<span class="nc" id="L114">        return frac;</span>
+<span class="nc" id="L139">        return frac;</span>
     }
     
     /**
      * integrate the area under the curve of the histogram.
-     * @return 
+     @return 
      */
     public float getHistArea() {
         
-<span class="nc bnc" id="L123" title="All 2 branches missed.">        if (yHistFloat == null) {</span>
-<span class="nc" id="L124">            return 0;</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">        if (yHistFloat == null) {</span>
+<span class="nc" id="L149">            return 0;</span>
         }
         
-<span class="nc" id="L127">        float sumTot = 0;</span>
+<span class="nc" id="L152">        float sumTot = 0;</span>
         
         // trapezoidal rule for area under the curve
         
-<span class="nc bnc" id="L131" title="All 2 branches missed.">        for (int i = 0; i &lt; (xHist.length - 1); ++i) {</span>
+<span class="nc bnc" id="L156" title="All 2 branches missed.">        for (int i = 0; i &lt; (xHist.length - 1); ++i) {</span>
             
-<span class="nc" id="L133">            float yTerm = yHistFloat[i + 1] + yHistFloat[i];</span>
-<span class="nc" id="L134">            float xLen = xHist[i + 1] - xHist[i];</span>
-<span class="nc bnc" id="L135" title="All 2 branches missed.">            if (xLen &lt; 0) {</span>
-<span class="nc" id="L136">                xLen *= -1;</span>
+<span class="nc" id="L158">            float yTerm = yHistFloat[i + 1] + yHistFloat[i];</span>
+<span class="nc" id="L159">            float xLen = xHist[i + 1] - xHist[i];</span>
+<span class="nc bnc" id="L160" title="All 2 branches missed.">            if (xLen &lt; 0) {</span>
+<span class="nc" id="L161">                xLen *= -1;</span>
             }
             
-<span class="nc" id="L139">            float v = (yTerm * xLen);</span>
+<span class="nc" id="L164">            float v = (yTerm * xLen);</span>
                         
-<span class="nc" id="L141">            sumTot += v;</span>
+<span class="nc" id="L166">            sumTot += v;</span>
         }
         
-<span class="nc" id="L144">        sumTot *= 0.5;</span>
+<span class="nc" id="L169">        sumTot *= 0.5;</span>
         
-<span class="nc" id="L146">        return sumTot;</span>
+<span class="nc" id="L171">        return sumTot;</span>
     }
 
+    /**
+     *
+     @return
+     */
     public int calculateHalfYMaxIndexPastYMax() {
 
-<span class="nc bnc" id="L151" title="All 2 branches missed.">        if (yHistFloat == null) {</span>
-<span class="nc" id="L152">            return -1;</span>
+<span class="nc bnc" id="L180" title="All 2 branches missed.">        if (yHistFloat == null) {</span>
+<span class="nc" id="L181">            return -1;</span>
         }
 
-<span class="nc" id="L155">        int yMaxIndex = MiscMath0.findYMaxIndex(yHistFloat);</span>
+<span class="nc" id="L184">        int yMaxIndex = MiscMath0.findYMaxIndex(yHistFloat);</span>
 
-<span class="nc" id="L157">        int halfMaxIndex = -1;</span>
-<span class="nc" id="L158">        float halfMax = yHistFloat[yMaxIndex]/2.0f;</span>
+<span class="nc" id="L186">        int halfMaxIndex = -1;</span>
+<span class="nc" id="L187">        float halfMax = yHistFloat[yMaxIndex]/2.0f;</span>
 
-<span class="nc bnc" id="L160" title="All 2 branches missed.">        for (int i = yMaxIndex; i &lt; yHistFloat.length; i++) {</span>
-<span class="nc bnc" id="L161" title="All 2 branches missed.">            if (halfMax &lt;= yHistFloat[i]) {</span>
-<span class="nc" id="L162">                halfMaxIndex = i;</span>
+<span class="nc bnc" id="L189" title="All 2 branches missed.">        for (int i = yMaxIndex; i &lt; yHistFloat.length; i++) {</span>
+<span class="nc bnc" id="L190" title="All 2 branches missed.">            if (halfMax &lt;= yHistFloat[i]) {</span>
+<span class="nc" id="L191">                halfMaxIndex = i;</span>
             }
         }
-<span class="nc" id="L165">        return halfMaxIndex;</span>
+<span class="nc" id="L194">        return halfMaxIndex;</span>
     }
     
+    /**
+     *
+     @param label
+     @param outputFileNumber
+     @return
+     * @throws IOException
+     */
     public String plotHistogram(String label, 
         long outputFileNumber) throws IOException {
                 
-<span class="nc" id="L171">        float[] xh = xHist;</span>
-<span class="nc" id="L172">        float[] yh = yHistFloat;</span>
+<span class="nc" id="L207">        float[] xh = xHist;</span>
+<span class="nc" id="L208">        float[] yh = yHistFloat;</span>
         
-<span class="nc" id="L174">        float yMin = MiscMath0.findMin(yh);</span>
-<span class="nc" id="L175">        int yMaxIdx = MiscMath0.findYMaxIndex(yh);</span>
-<span class="nc" id="L176">        float yMax = yh[yMaxIdx];</span>
+<span class="nc" id="L210">        float yMin = MiscMath0.findMin(yh);</span>
+<span class="nc" id="L211">        int yMaxIdx = MiscMath0.findYMaxIndex(yh);</span>
+<span class="nc" id="L212">        float yMax = yh[yMaxIdx];</span>
         
-<span class="nc" id="L178">        float xMin = MiscMath0.findMin(xh);</span>
-<span class="nc" id="L179">        float xMax = MiscMath0.findMax(xh);        </span>
+<span class="nc" id="L214">        float xMin = MiscMath0.findMin(xh);</span>
+<span class="nc" id="L215">        float xMax = MiscMath0.findMax(xh);        </span>
                 
-<span class="nc" id="L181">        PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();</span>
+<span class="nc" id="L217">        PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();</span>
 
-<span class="nc" id="L183">        plotter.addPlot(</span>
+<span class="nc" id="L219">        plotter.addPlot(</span>
             xMin, xMax, yMin, 1.1f*yMax,
             xh, yh, xh, yh, label);
 
-<span class="nc" id="L187">        return plotter.writeFile(outputFileNumber);</span>
+<span class="nc" id="L223">        return plotter.writeFile(outputFileNumber);</span>
     }
     
+    /**
+     *
+     @param label
+     @param outputFileSuffix
+     @return
+     * @throws IOException
+     */
     public String plotHistogram(String label, 
         String outputFileSuffix) throws IOException {
                 
-<span class="fc" id="L193">        float[] xh = xHist;</span>
-<span class="fc" id="L194">        float[] yh = yHistFloat;</span>
+<span class="fc" id="L236">        float[] xh = xHist;</span>
+<span class="fc" id="L237">        float[] yh = yHistFloat;</span>
         
-<span class="fc" id="L196">        float yMin = MiscMath0.findMin(yh);</span>
-<span class="fc" id="L197">        int yMaxIdx = MiscMath0.findYMaxIndex(yh);</span>
-<span class="pc bpc" id="L198" title="1 of 2 branches missed.">        if (yMaxIdx == -1) {</span>
-<span class="nc" id="L199">            return null;</span>
+<span class="fc" id="L239">        float yMin = MiscMath0.findMin(yh);</span>
+<span class="fc" id="L240">        int yMaxIdx = MiscMath0.findYMaxIndex(yh);</span>
+<span class="pc bpc" id="L241" title="1 of 2 branches missed.">        if (yMaxIdx == -1) {</span>
+<span class="nc" id="L242">            return null;</span>
         }
-<span class="fc" id="L201">        float yMax = yh[yMaxIdx];</span>
+<span class="fc" id="L244">        float yMax = yh[yMaxIdx];</span>
         
-<span class="fc" id="L203">        float xMin = MiscMath0.findMin(xh);</span>
-<span class="fc" id="L204">        float xMax = MiscMath0.findMax(xh);        </span>
+<span class="fc" id="L246">        float xMin = MiscMath0.findMin(xh);</span>
+<span class="fc" id="L247">        float xMax = MiscMath0.findMax(xh);        </span>
                 
-<span class="fc" id="L206">        PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();</span>
+<span class="fc" id="L249">        PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();</span>
 
-<span class="fc" id="L208">        plotter.addPlot(</span>
+<span class="fc" id="L251">        plotter.addPlot(</span>
             xMin, xMax, yMin, 1.1f*yMax,
             xh, yh, xh, yh, label);
 
-<span class="fc" id="L212">        return plotter.writeFile(outputFileSuffix);</span>
+<span class="fc" id="L255">        return plotter.writeFile(outputFileSuffix);</span>
     }
     
+    /**
+     *
+     @param xMin
+     @param xMax
+     @param label
+     @param outputFileSuffix
+     @return
+     * @throws IOException
+     */
     public String plotHistogram(float xMin, float xMax, String label, 
         String outputFileSuffix) throws IOException {
                 
-<span class="nc" id="L218">        float[] xh = xHist;</span>
-<span class="nc" id="L219">        float[] yh = yHistFloat;</span>
+<span class="nc" id="L270">        float[] xh = xHist;</span>
+<span class="nc" id="L271">        float[] yh = yHistFloat;</span>
         
-<span class="nc" id="L221">        float yMin = MiscMath0.findMin(yh);</span>
-<span class="nc" id="L222">        int yMaxIdx = MiscMath0.findYMaxIndex(yh);</span>
-<span class="nc bnc" id="L223" title="All 2 branches missed.">        if (yMaxIdx == -1) {</span>
-<span class="nc" id="L224">            return null;</span>
+<span class="nc" id="L273">        float yMin = MiscMath0.findMin(yh);</span>
+<span class="nc" id="L274">        int yMaxIdx = MiscMath0.findYMaxIndex(yh);</span>
+<span class="nc bnc" id="L275" title="All 2 branches missed.">        if (yMaxIdx == -1) {</span>
+<span class="nc" id="L276">            return null;</span>
         }
-<span class="nc" id="L226">        float yMax = yh[yMaxIdx];</span>
+<span class="nc" id="L278">        float yMax = yh[yMaxIdx];</span>
         
-<span class="nc" id="L228">        PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();</span>
+<span class="nc" id="L280">        PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();</span>
 
-<span class="nc" id="L230">        plotter.addPlot(</span>
+<span class="nc" id="L282">        plotter.addPlot(</span>
             xMin, xMax, yMin, 1.1f*yMax,
             xh, yh, xh, yh, label);
 
-<span class="nc" id="L234">        return plotter.writeFile(outputFileSuffix);</span>
+<span class="nc" id="L286">        return plotter.writeFile(outputFileSuffix);</span>
     }
     
+    /**
+     *
+     @param label
+     @param outputFileSuffix
+     @return
+     * @throws IOException
+     */
     public String plotLogHistogram(String label, 
         String outputFileSuffix) throws IOException {
                 
-<span class="nc" id="L240">        float[] xh = xHist;</span>
-<span class="nc" id="L241">        float[] yh = yHistFloat;</span>
+<span class="nc" id="L299">        float[] xh = xHist;</span>
+<span class="nc" id="L300">        float[] yh = yHistFloat;</span>
         
-<span class="nc" id="L243">        float[] yLogH = new float[yh.length];</span>
-<span class="nc bnc" id="L244" title="All 2 branches missed.">        for (int i = 0; i &lt; yh.length; ++i) {</span>
-<span class="nc" id="L245">            yLogH[i] = (float)Math.log(yh[i]/Math.log(10));</span>
+<span class="nc" id="L302">        float[] yLogH = new float[yh.length];</span>
+<span class="nc bnc" id="L303" title="All 2 branches missed.">        for (int i = 0; i &lt; yh.length; ++i) {</span>
+<span class="nc" id="L304">            yLogH[i] = (float)Math.log(yh[i]/Math.log(10));</span>
         }
         
-<span class="nc" id="L248">        float yMin = MiscMath0.findMin(yLogH);</span>
-<span class="nc" id="L249">        int yMaxIdx = MiscMath0.findYMaxIndex(yLogH);</span>
-<span class="nc" id="L250">        float yMax = yLogH[yMaxIdx];</span>
+<span class="nc" id="L307">        float yMin = MiscMath0.findMin(yLogH);</span>
+<span class="nc" id="L308">        int yMaxIdx = MiscMath0.findYMaxIndex(yLogH);</span>
+<span class="nc" id="L309">        float yMax = yLogH[yMaxIdx];</span>
         
-<span class="nc" id="L252">        float xMin = MiscMath0.findMin(xh);</span>
-<span class="nc" id="L253">        float xMax = MiscMath0.findMax(xh);</span>
+<span class="nc" id="L311">        float xMin = MiscMath0.findMin(xh);</span>
+<span class="nc" id="L312">        float xMax = MiscMath0.findMax(xh);</span>
                         
-<span class="nc" id="L255">        PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();</span>
+<span class="nc" id="L314">        PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();</span>
 
-<span class="nc" id="L257">        plotter.addPlot(</span>
+<span class="nc" id="L316">        plotter.addPlot(</span>
             xMin, xMax, yMin, 1.1f*yMax,
             xh, yLogH, xh, yLogH, label);
 
-<span class="nc" id="L261">        return plotter.writeFile(outputFileSuffix);</span>
+<span class="nc" id="L320">        return plotter.writeFile(outputFileSuffix);</span>
     }
 
     /**
-     * @return the xHist
+     @return the xHist
      */
     public float[] getXHist() {
-<span class="fc" id="L268">        return xHist;</span>
+<span class="fc" id="L327">        return xHist;</span>
     }
 
     /**
-     * @return the yHist
+     @return the yHist
      */
     public int[] getYHist() {
-<span class="fc" id="L275">        return yHist;</span>
+<span class="fc" id="L334">        return yHist;</span>
     }
 
     /**
-     * @return the yHistFloat
+     @return the yHistFloat
      */
     public float[] getYHistFloat() {
-<span class="fc" id="L282">        return yHistFloat;</span>
+<span class="fc" id="L341">        return yHistFloat;</span>
     }
 
     /**
-     * @return the yErrors
+     @return the yErrors
      */
     public float[] getYErrors() {
-<span class="nc" id="L289">        return yErrors;</span>
+<span class="nc" id="L348">        return yErrors;</span>
     }
 
     /**
-     * @return the xErrors
+     @return the xErrors
      */
     public float[] getXErrors() {
-<span class="nc" id="L296">        return xErrors;</span>
+<span class="nc" id="L355">        return xErrors;</span>
     }
 
     /**
-     * @param xHist the xHist to set
+     @param xHist the xHist to set
      */
     public void setXHist(float[] xHist) {
-<span class="fc" id="L303">        this.xHist = xHist;</span>
-<span class="fc" id="L304">    }</span>
+<span class="fc" id="L362">        this.xHist = xHist;</span>
+<span class="fc" id="L363">    }</span>
 
     /**
-     * @param yHist the yHist to set
+     @param yHist the yHist to set
      */
     public void setYHist(int[] yHist) {
-<span class="fc" id="L310">        this.yHist = yHist;</span>
-<span class="fc" id="L311">    }</span>
+<span class="fc" id="L369">        this.yHist = yHist;</span>
+<span class="fc" id="L370">    }</span>
 
     /**
-     * @param yHistFloat the yHistFloat to set
+     @param yHistFloat the yHistFloat to set
      */
     public void setYHistFloat(float[] yHistFloat) {
-<span class="fc" id="L317">        this.yHistFloat = yHistFloat;</span>
-<span class="fc" id="L318">    }</span>
+<span class="fc" id="L376">        this.yHistFloat = yHistFloat;</span>
+<span class="fc" id="L377">    }</span>
     
     /**
-     * @param yHistInt the yHistFloat to set
+     @param yHistInt the yHistFloat to set
      */
     public void setYHistFloat(int[] yHistInt) {
-<span class="fc" id="L324">        this.yHistFloat = new float[yHistInt.length];</span>
-<span class="fc bfc" id="L325" title="All 2 branches covered.">        for (int i = 0; i &lt; yHistInt.length; ++i) {</span>
-<span class="fc" id="L326">            yHistFloat[i] = yHistInt[i];</span>
+<span class="fc" id="L383">        this.yHistFloat = new float[yHistInt.length];</span>
+<span class="fc bfc" id="L384" title="All 2 branches covered.">        for (int i = 0; i &lt; yHistInt.length; ++i) {</span>
+<span class="fc" id="L385">            yHistFloat[i] = yHistInt[i];</span>
         }
-<span class="fc" id="L328">    }</span>
+<span class="fc" id="L387">    }</span>
 
     /**
-     * @param yErrors the yErrors to set
+     @param yErrors the yErrors to set
      */
     public void setYErrors(float[] yErrors) {
-<span class="fc" id="L334">        this.yErrors = yErrors;</span>
-<span class="fc" id="L335">    }</span>
+<span class="fc" id="L393">        this.yErrors = yErrors;</span>
+<span class="fc" id="L394">    }</span>
 
     /**
-     * @param xErrors the xErrors to set
+     @param xErrors the xErrors to set
      */
     public void setXErrors(float[] xErrors) {
-<span class="fc" id="L341">        this.xErrors = xErrors;</span>
-<span class="fc" id="L342">    }</span>
+<span class="fc" id="L400">        this.xErrors = xErrors;</span>
+<span class="fc" id="L401">    }</span>
 
     @Override
     public String toString() {
         
-<span class="nc" id="L347">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L406">        StringBuilder sb = new StringBuilder();</span>
         
-<span class="nc" id="L349">        sb.append(&quot;histogram=[&quot;);</span>
+<span class="nc" id="L408">        sb.append(&quot;histogram=[&quot;);</span>
         
-<span class="nc bnc" id="L351" title="All 2 branches missed.">        for (int i = 0; i &lt; xHist.length; i++) {</span>
+<span class="nc bnc" id="L410" title="All 2 branches missed.">        for (int i = 0; i &lt; xHist.length; i++) {</span>
             
-<span class="nc" id="L353">            sb.append(&quot;(&quot;).append(xHist[i]).append(&quot;, &quot;);</span>
+<span class="nc" id="L412">            sb.append(&quot;(&quot;).append(xHist[i]).append(&quot;, &quot;);</span>
             
-<span class="nc bnc" id="L355" title="All 2 branches missed.">            if (yHist != null) {</span>
-<span class="nc" id="L356">                sb.append(yHist[i]);</span>
+<span class="nc bnc" id="L414" title="All 2 branches missed.">            if (yHist != null) {</span>
+<span class="nc" id="L415">                sb.append(yHist[i]);</span>
             } else {
-<span class="nc" id="L358">                sb.append(yHistFloat[i]);</span>
+<span class="nc" id="L417">                sb.append(yHistFloat[i]);</span>
             }
-<span class="nc" id="L360">            sb.append(&quot;) &quot;);</span>
+<span class="nc" id="L419">            sb.append(&quot;) &quot;);</span>
             
         }
         
-<span class="nc" id="L364">        sb.append(&quot;]\n&quot;);</span>
+<span class="nc" id="L423">        sb.append(&quot;]\n&quot;);</span>
         
-<span class="nc bnc" id="L366" title="All 2 branches missed.">        if (xErrors != null) {</span>
+<span class="nc bnc" id="L425" title="All 2 branches missed.">        if (xErrors != null) {</span>
             
-<span class="nc" id="L368">            sb.append(&quot;histogram errors=[&quot;);</span>
+<span class="nc" id="L427">            sb.append(&quot;histogram errors=[&quot;);</span>
             
-<span class="nc bnc" id="L370" title="All 2 branches missed.">            for (int i = 0; i &lt; xErrors.length; i++) {</span>
+<span class="nc bnc" id="L429" title="All 2 branches missed.">            for (int i = 0; i &lt; xErrors.length; i++) {</span>
 
-<span class="nc" id="L372">                sb.append(&quot;(&quot;).append(xErrors[i]).append(&quot;, &quot;);</span>
+<span class="nc" id="L431">                sb.append(&quot;(&quot;).append(xErrors[i]).append(&quot;, &quot;);</span>
 
-<span class="nc" id="L374">                sb.append(yErrors[i]).append(&quot;) &quot;);</span>
+<span class="nc" id="L433">                sb.append(yErrors[i]).append(&quot;) &quot;);</span>
             }
             
-<span class="nc" id="L377">            sb.append(&quot;]\n&quot;);</span>
+<span class="nc" id="L436">            sb.append(&quot;]\n&quot;);</span>
         }      
         
-<span class="nc" id="L380">        return sb.toString();</span>
+<span class="nc" id="L439">        return sb.toString();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

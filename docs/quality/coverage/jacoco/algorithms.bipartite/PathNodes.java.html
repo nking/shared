@@ -21,84 +21,93 @@ public class PathNodes {
         
     private final SinkNode sinkNode;
     
-<span class="fc" id="L24">    public PathNodes(int nLeft, int nRight) {</span>
+    /**
+     *
+     @param nLeft
+     @param nRight
+     */
+<span class="fc" id="L29">    public PathNodes(int nLeft, int nRight) {</span>
         
-<span class="fc" id="L26">        rightNodes = new TIntObjectHashMap&lt;RightNode&gt;();</span>
-<span class="fc" id="L27">        leftNodes = new TIntObjectHashMap&lt;LeftNode&gt;();</span>
-<span class="fc" id="L28">        sourceNode = new SourceNode();</span>
-<span class="fc" id="L29">        sinkNode = new SinkNode();</span>
+<span class="fc" id="L31">        rightNodes = new TIntObjectHashMap&lt;RightNode&gt;();</span>
+<span class="fc" id="L32">        leftNodes = new TIntObjectHashMap&lt;LeftNode&gt;();</span>
+<span class="fc" id="L33">        sourceNode = new SourceNode();</span>
+<span class="fc" id="L34">        sinkNode = new SinkNode();</span>
         
-<span class="fc" id="L31">        init(nLeft, nRight);</span>
-<span class="fc" id="L32">    }</span>
+<span class="fc" id="L36">        init(nLeft, nRight);</span>
+<span class="fc" id="L37">    }</span>
     
     private void init(int nLeft, int nRight) {
      
-<span class="fc bfc" id="L36" title="All 2 branches covered.">        for (int i = 0; i &lt; nLeft; ++i) {</span>
-<span class="fc" id="L37">            LeftNode node = new LeftNode();</span>
-<span class="fc" id="L38">            node.setKey(Long.MAX_VALUE);</span>
-<span class="fc" id="L39">            node.index = i;</span>
-<span class="fc" id="L40">            leftNodes.put(i, node);</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        for (int i = 0; i &lt; nLeft; ++i) {</span>
+<span class="fc" id="L42">            LeftNode node = new LeftNode();</span>
+<span class="fc" id="L43">            node.setKey(Long.MAX_VALUE);</span>
+<span class="fc" id="L44">            node.index = i;</span>
+<span class="fc" id="L45">            leftNodes.put(i, node);</span>
         }
-<span class="fc bfc" id="L42" title="All 2 branches covered.">        for (int i = 0; i &lt; nRight; ++i) {</span>
-<span class="fc" id="L43">            RightNode node = new RightNode();</span>
-<span class="fc" id="L44">            node.setKey(Long.MAX_VALUE);</span>
-<span class="fc" id="L45">            node.index = i;</span>
-<span class="fc" id="L46">            rightNodes.put(i, node);</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        for (int i = 0; i &lt; nRight; ++i) {</span>
+<span class="fc" id="L48">            RightNode node = new RightNode();</span>
+<span class="fc" id="L49">            node.setKey(Long.MAX_VALUE);</span>
+<span class="fc" id="L50">            node.index = i;</span>
+<span class="fc" id="L51">            rightNodes.put(i, node);</span>
         }
         
-<span class="fc" id="L49">        sourceNode.setKey(Long.MAX_VALUE);</span>
-<span class="fc" id="L50">        sourceNode.index = nLeft;</span>
+<span class="fc" id="L54">        sourceNode.setKey(Long.MAX_VALUE);</span>
+<span class="fc" id="L55">        sourceNode.index = nLeft;</span>
         
-<span class="fc" id="L52">        sinkNode.setKey(Long.MAX_VALUE);</span>
-<span class="fc" id="L53">        sinkNode.index = nRight;       </span>
-<span class="fc" id="L54">    }</span>
+<span class="fc" id="L57">        sinkNode.setKey(Long.MAX_VALUE);</span>
+<span class="fc" id="L58">        sinkNode.index = nRight;       </span>
+<span class="fc" id="L59">    }</span>
     
+    /**
+     *
+     @param key
+     */
     public void resetNodeExceptData(long key) {
      
-<span class="fc bfc" id="L58" title="All 2 branches covered.">        for (int i = 0; i &lt; leftNodes.size(); ++i) {</span>
-<span class="fc" id="L59">            LeftNode node = leftNodes.get(i);</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">        for (int i = 0; i &lt; leftNodes.size(); ++i) {</span>
+<span class="fc" id="L68">            LeftNode node = leftNodes.get(i);</span>
             
-<span class="fc" id="L61">            node.resetExceptData();</span>
+<span class="fc" id="L70">            node.resetExceptData();</span>
             
-<span class="fc" id="L63">            node.setKey(key);</span>
+<span class="fc" id="L72">            node.setKey(key);</span>
         }
-<span class="fc bfc" id="L65" title="All 2 branches covered.">        for (int i = 0; i &lt; rightNodes.size(); ++i) {</span>
-<span class="fc" id="L66">            RightNode node = rightNodes.get(i);</span>
-<span class="fc" id="L67">            node.resetExceptData();</span>
-<span class="fc" id="L68">            node.setKey(key);</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">        for (int i = 0; i &lt; rightNodes.size(); ++i) {</span>
+<span class="fc" id="L75">            RightNode node = rightNodes.get(i);</span>
+<span class="fc" id="L76">            node.resetExceptData();</span>
+<span class="fc" id="L77">            node.setKey(key);</span>
         }
         
-<span class="fc" id="L71">        sourceNode.setKey(key);</span>
+<span class="fc" id="L80">        sourceNode.setKey(key);</span>
         
-<span class="fc" id="L73">        sinkNode.setKey(key);</span>
-<span class="fc" id="L74">    }</span>
+<span class="fc" id="L82">        sinkNode.setKey(key);</span>
+<span class="fc" id="L83">    }</span>
 
     /**
-     * @return the rightNodes
+     @return the rightNodes
      */
     public TIntObjectMap&lt;RightNode&gt; getRightNodes() {
-<span class="fc" id="L80">        return rightNodes;</span>
+<span class="fc" id="L89">        return rightNodes;</span>
     }
 
     /**
-     * @return the leftNodes
+     @return the leftNodes
      */
     public TIntObjectMap&lt;LeftNode&gt; getLeftNodes() {
-<span class="fc" id="L87">        return leftNodes;</span>
+<span class="fc" id="L96">        return leftNodes;</span>
     }
 
     /**
-     * @return the sourceNode
+     @return the sourceNode
      */
     public SourceNode getSourceNode() {
-<span class="fc" id="L94">        return sourceNode;</span>
+<span class="fc" id="L103">        return sourceNode;</span>
     }
 
     /**
-     * @return the sinkNode
+     @return the sinkNode
      */
     public SinkNode getSinkNode() {
-<span class="fc" id="L101">        return sinkNode;</span>
+<span class="fc" id="L110">        return sinkNode;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

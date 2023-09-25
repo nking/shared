@@ -13,14 +13,14 @@ import algorithms.matrix.MatrixUtil;
     
     /**
      * calculate the correlation matrix for a using a brute force method
-     * @param a an mxn matrix of data with the dimensions being columns
+     @param a an mxn matrix of data with the dimensions being columns
      * and the datum number being rows.
      * runtime complexity is O(m^2 * n + n^2)
      * &lt;pre&gt;
      * e.g.  a[0] = new double[]{10, 100, 1000}
      *       a[1] = new double[]{ 9, 110, 900}
      * &lt;/pre&gt;
-     * @return the correlation matrix as a double array of size [a[0].length][a[0].length]
+     @return the correlation matrix as a double array of size [a[0].length][a[0].length]
      */
     public static double[][] correlation(double[][] a) {
         
@@ -60,7 +60,7 @@ import algorithms.matrix.MatrixUtil;
      * The covariance matrix is also known as auto-covariance matrix, 
      * dispersion matrix, variance matrix, and the variance–covariance matrix.
      * The runtime complexity is O(m^2 * n) where m = a.length and n = a[0].length.
-     * @param a an mxn matrix of data with the dimensions being columns
+     @param a an mxn matrix of data with the dimensions being columns
      * and the datum number being rows.
      * &lt;pre&gt;
      * e.g.  a[0] = new double[]{10, 100, 1000}
@@ -68,7 +68,7 @@ import algorithms.matrix.MatrixUtil;
      * &lt;/pre&gt;
      *          Note, aside from unit tests, a quick comparison with python numpy cov function produces same result.
      *
-     * @return the covariance matrix as a double array of size [a[0].length][a[0].length]
+     @return the covariance matrix as a double array of size [a[0].length][a[0].length]
      */
     public static double[][] covariance(double[][] a) {
         
@@ -142,14 +142,14 @@ import algorithms.matrix.MatrixUtil;
      * each type from the measurement of same type.
      * The covariance matrix is also known as auto-covariance matrix, 
      * dispersion matrix, variance matrix, and the variance–covariance matrix.
-     * @param a an mxn matrix of data with the dimensions being rows
+     @param a an mxn matrix of data with the dimensions being rows
      * and the datum number being columns.  NOTE that a must be &quot;zero mean&quot; centered.
      * &lt;pre&gt;
      * e.g.  a[0] = new double[]{10,  9}
      *       a[1] = new double[]{99,  100}
      *       a[2] = new double[]{1000, 900}
      * &lt;/pre&gt;
-     * @return the covariance matrix as a double array of size [a[0].length][a[0].length]
+     @return the covariance matrix as a double array of size [a[0].length][a[0].length]
      */
     public static double[][] covariance2(double[][] a) {
         

@@ -12,20 +12,35 @@ adapted from http://algs4.cs.princeton.edu/92search/
  
  
  *
- 
+ @param &lt;Key&gt;
+ @param &lt;Value&gt; 
  ******************************************************************************/
 
-<span class="fc" id="L18">public class RangeSearch&lt;Key extends Comparable&lt;Key&gt;, Value&gt;  {</span>
+<span class="fc" id="L19">public class RangeSearch&lt;Key extends Comparable&lt;Key&gt;, Value&gt;  {</span>
 
+    /**
+     *
+     */
     protected RangeSearchNode&lt;Key, Value&gt; root;   // root of the BST
     
     //BST helper node data type
+
+    /**
+     *
+     @param &lt;T&gt;
+     @param &lt;S&gt;
+     */
     protected class RangeSearchNode&lt;T, S&gt; {
         T key;              // key
         S val;              // associated data
         RangeSearchNode&lt;T, S&gt; left, right;   // left and right subtrees
         int N;              // node count of descendents
 
+        /**
+         *
+         @param key
+         @param val
+         */
         public RangeSearchNode(T key, S val) {
             this.key = key;
             this.val = val;
@@ -45,36 +60,38 @@ adapted from http://algs4.cs.princeton.edu/92search/
     
    /***************************************************************************
     *  BST search
+     @param key
+     @return 
     ***************************************************************************/
 
     public boolean contains(Key key) {
-<span class="nc bnc" id="L51" title="All 2 branches missed.">        return (get(key) != null);</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">        return (get(key) != null);</span>
     }
     
     /**
      * runtime complexity at worst is O(lg2(N)).
      * 
-     * @param key
-     * @return value associated with the given key
+     @param key
+     @return value associated with the given key
                if no such value, return null
     */
     public Value get(Key key) {
-<span class="nc" id="L62">        return get(root, key);</span>
+<span class="nc" id="L79">        return get(root, key);</span>
     }
 
     /**
      * runtime complexity at worst is O(lg2(N)).
      * 
-     * @param x
-     * @param key
-     * @return 
+     @param x
+     @param key
+     @return 
      */
     private Value get(RangeSearchNode&lt;Key, Value&gt; x, Key key) {
-<span class="nc bnc" id="L73" title="All 2 branches missed.">        if (x == null) return null;</span>
-<span class="nc" id="L74">        int cmp = key.compareTo(x.key);</span>
-<span class="nc bnc" id="L75" title="All 2 branches missed.">        if      (cmp == 0) return x.val;</span>
-<span class="nc bnc" id="L76" title="All 2 branches missed.">        else if (cmp  &lt; 0) return get(x.left,  key);</span>
-<span class="nc" id="L77">        else               return get(x.right, key);</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">        if (x == null) return null;</span>
+<span class="nc" id="L91">        int cmp = key.compareTo(x.key);</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">        if      (cmp == 0) return x.val;</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">        else if (cmp  &lt; 0) return get(x.left,  key);</span>
+<span class="nc" id="L94">        else               return get(x.right, key);</span>
     }
 
    /***************************************************************************
@@ -90,9 +107,9 @@ adapted from http://algs4.cs.princeton.edu/92search/
      * 
      * runtime complexity at worst is O(lg2(N)).
      * 
-     * @param key
-     * @param val
-     * @return the value that was replaced with given val
+     @param key
+     @param val
+     @return the value that was replaced with given val
      * if the Key intersected with another, preventing 
      * an insert of Key, but updating existing with val.
      * Note that the return is null when the insert
@@ -102,11 +119,11 @@ adapted from http://algs4.cs.princeton.edu/92search/
     public Value put(Key key, Value val) {
         
         //to return whether insert was successful
-<span class="fc" id="L105">        Object[] replaced = new Object[1];</span>
+<span class="fc" id="L122">        Object[] replaced = new Object[1];</span>
         
-<span class="fc" id="L107">        root = put(root, key, val, replaced);</span>
+<span class="fc" id="L124">        root = put(root, key, val, replaced);</span>
         
-<span class="pc bpc" id="L109" title="1 of 2 branches missed.">        return (replaced[0] == null) ? null : (Value)replaced[0];</span>
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">        return (replaced[0] == null) ? null : (Value)replaced[0];</span>
         
         //System.out.println(&quot;&lt;==root=&quot; + root);
     }
@@ -118,21 +135,22 @@ adapted from http://algs4.cs.princeton.edu/92search/
      * 
      * runtime complexity at worst is O(lg2(N)).
      * 
-     * @param &lt;Value2&gt;
-     * @param key
-     * @param val
-     * @return 
+     @param &lt;Value2&gt;
+     @param key
+     @param val
+     @param compareVal
+     @return 
      */
     public &lt;Value2 extends Comparable&lt;Value&gt;&gt; boolean 
         putIfLessThan(Key key, Value val, Value2 compareVal) {
           
         //if the insert replaced an object, this holds the value, then key
-<span class="fc" id="L130">        Object[] replaced = new Object[1];</span>
-<span class="fc" id="L131">        boolean[] inserted = new boolean[1];</span>
+<span class="fc" id="L148">        Object[] replaced = new Object[1];</span>
+<span class="fc" id="L149">        boolean[] inserted = new boolean[1];</span>
         
-<span class="fc" id="L133">        root = putIfLessThan(root, key, val, compareVal, replaced, inserted);</span>
+<span class="fc" id="L151">        root = putIfLessThan(root, key, val, compareVal, replaced, inserted);</span>
         
-<span class="fc" id="L135">        return inserted[0];</span>
+<span class="fc" id="L153">        return inserted[0];</span>
         
         //System.out.println(&quot;&lt;==root=&quot; + root);
     }
@@ -142,14 +160,14 @@ adapted from http://algs4.cs.princeton.edu/92search/
      * 
      * runtime complexity at worst is O(lg2(N)).
      *
-     * @param &lt;Value2&gt;
-     * @param x
-     * @param key
-     * @param val
-     * @param compareVal
-     * @param replaced
-     * @param inserted
-     * @return 
+     @param &lt;Value2&gt;
+     @param x
+     @param key
+     @param val
+     @param compareVal
+     @param replaced
+     @param inserted
+     @return 
      */
     @SuppressWarnings({&quot;unchecked&quot;})
     private &lt;Value2 extends Comparable&lt;Value&gt;&gt; 
@@ -158,37 +176,37 @@ adapted from http://algs4.cs.princeton.edu/92search/
         Key key, Value val, Value2 compareVal, Object[] replaced,
         boolean[] inserted) {
                     
-<span class="fc bfc" id="L161" title="All 2 branches covered.">        if (x == null) {</span>
-<span class="fc" id="L162">            inserted[0] = true;</span>
-<span class="fc" id="L163">            return new RangeSearchNode&lt;Key, Value&gt;(key, val);</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">        if (x == null) {</span>
+<span class="fc" id="L180">            inserted[0] = true;</span>
+<span class="fc" id="L181">            return new RangeSearchNode&lt;Key, Value&gt;(key, val);</span>
         }
         
-<span class="fc" id="L166">        int cmp = key.compareTo(x.key);</span>
-<span class="fc bfc" id="L167" title="All 2 branches covered.">        if (cmp == 0) {</span>
-<span class="fc" id="L168">            int cmpV = compareVal.compareTo(val);</span>
-<span class="pc bpc" id="L169" title="1 of 2 branches missed.">            if (cmpV &lt; 0) {</span>
+<span class="fc" id="L184">        int cmp = key.compareTo(x.key);</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">        if (cmp == 0) {</span>
+<span class="fc" id="L186">            int cmpV = compareVal.compareTo(val);</span>
+<span class="pc bpc" id="L187" title="1 of 2 branches missed.">            if (cmpV &lt; 0) {</span>
                 // continue w/ insert
-<span class="nc" id="L171">                replaced[0] = x.val;</span>
-<span class="nc" id="L172">                x.val = val;</span>
-<span class="nc" id="L173">                inserted[0] = true;</span>
+<span class="nc" id="L189">                replaced[0] = x.val;</span>
+<span class="nc" id="L190">                x.val = val;</span>
+<span class="nc" id="L191">                inserted[0] = true;</span>
             } else {
-<span class="fc" id="L175">                inserted[0] = false;</span>
+<span class="fc" id="L193">                inserted[0] = false;</span>
             }
-<span class="fc" id="L177">            return x;</span>
+<span class="fc" id="L195">            return x;</span>
         }
-<span class="pc bpc" id="L179" title="1 of 2 branches missed.">        if (StdRandom.bernoulli(1.0 / (size(x) + 1.0))) {</span>
-<span class="fc" id="L180">            return putRootIfLessThan(x, key, val, compareVal, replaced, inserted);</span>
+<span class="pc bpc" id="L197" title="1 of 2 branches missed.">        if (StdRandom.bernoulli(1.0 / (size(x) + 1.0))) {</span>
+<span class="nc" id="L198">            return putRootIfLessThan(x, key, val, compareVal, replaced, inserted);</span>
         }
-<span class="nc bnc" id="L182" title="All 2 branches missed.">        if (cmp &lt; 0) {</span>
-<span class="nc" id="L183">            x.left  = putIfLessThan(x.left,  key, val, compareVal, replaced,</span>
+<span class="pc bpc" id="L200" title="1 of 2 branches missed.">        if (cmp &lt; 0) {</span>
+<span class="fc" id="L201">            x.left  = putIfLessThan(x.left,  key, val, compareVal, replaced,</span>
                 inserted);
         } else {
-<span class="nc" id="L186">            x.right = putIfLessThan(x.right, key, val, compareVal, replaced,</span>
+<span class="nc" id="L204">            x.right = putIfLessThan(x.right, key, val, compareVal, replaced,</span>
                 inserted);
         }
         // (x.N)++;
-<span class="nc" id="L190">        fix(x);</span>
-<span class="nc" id="L191">        return x;</span>
+<span class="fc" id="L208">        fix(x);</span>
+<span class="fc" id="L209">        return x;</span>
     }
     
     /**
@@ -196,34 +214,34 @@ adapted from http://algs4.cs.princeton.edu/92search/
      * 
      * runtime complexity at worst is O(lg2(N)).
      * 
-     * @param x
-     * @param key
-     * @param val
-     * @param replaced
-     * @return 
+     @param x
+     @param key
+     @param val
+     @param replaced
+     @return 
      */
     private RangeSearchNode&lt;Key, Value&gt; put(RangeSearchNode&lt;Key, Value&gt; x, 
         Key key, Value val, Object[] replaced) {
     
-<span class="fc bfc" id="L208" title="All 2 branches covered.">        if (x == null) return new RangeSearchNode&lt;Key, Value&gt;(key, val);</span>
+<span class="fc bfc" id="L226" title="All 2 branches covered.">        if (x == null) return new RangeSearchNode&lt;Key, Value&gt;(key, val);</span>
         
-<span class="fc" id="L210">        int cmp = key.compareTo(x.key);</span>
-<span class="pc bpc" id="L211" title="1 of 2 branches missed.">        if (cmp == 0) {</span>
-<span class="nc" id="L212">            replaced[0] = x.val;</span>
-<span class="nc" id="L213">            x.val = val;</span>
-<span class="nc" id="L214">            return x;</span>
+<span class="fc" id="L228">        int cmp = key.compareTo(x.key);</span>
+<span class="pc bpc" id="L229" title="1 of 2 branches missed.">        if (cmp == 0) {</span>
+<span class="nc" id="L230">            replaced[0] = x.val;</span>
+<span class="nc" id="L231">            x.val = val;</span>
+<span class="nc" id="L232">            return x;</span>
         }
-<span class="fc bfc" id="L216" title="All 2 branches covered.">        if (StdRandom.bernoulli(1.0 / (size(x) + 1.0))) {</span>
-<span class="fc" id="L217">            return putRoot(x, key, val, replaced);</span>
+<span class="fc bfc" id="L234" title="All 2 branches covered.">        if (StdRandom.bernoulli(1.0 / (size(x) + 1.0))) {</span>
+<span class="fc" id="L235">            return putRoot(x, key, val, replaced);</span>
         }
-<span class="pc bpc" id="L219" title="1 of 2 branches missed.">        if (cmp &lt; 0) {</span>
-<span class="fc" id="L220">            x.left  = put(x.left,  key, val, replaced);</span>
+<span class="pc bpc" id="L237" title="1 of 2 branches missed.">        if (cmp &lt; 0) {</span>
+<span class="fc" id="L238">            x.left  = put(x.left,  key, val, replaced);</span>
         } else {
-<span class="nc" id="L222">            x.right = put(x.right, key, val, replaced);</span>
+<span class="nc" id="L240">            x.right = put(x.right, key, val, replaced);</span>
         } 
         // (x.N)++;
-<span class="fc" id="L225">        fix(x);</span>
-<span class="fc" id="L226">        return x;</span>
+<span class="fc" id="L243">        fix(x);</span>
+<span class="fc" id="L244">        return x;</span>
     }
 
     private &lt;Value2 extends Comparable&lt;Value&gt;&gt; 
@@ -231,101 +249,104 @@ adapted from http://algs4.cs.princeton.edu/92search/
         RangeSearchNode&lt;Key, Value&gt; x, Key key, Value val, Value2 compareVal,
         Object[] replaced, boolean[] inserted) {
         
-<span class="fc bfc" id="L234" title="All 2 branches covered.">        if (x == null) {</span>
-<span class="fc" id="L235">            inserted[0] = true;</span>
-<span class="fc" id="L236">            return new RangeSearchNode&lt;Key, Value&gt;(key, val);</span>
+<span class="nc bnc" id="L252" title="All 2 branches missed.">        if (x == null) {</span>
+<span class="nc" id="L253">            inserted[0] = true;</span>
+<span class="nc" id="L254">            return new RangeSearchNode&lt;Key, Value&gt;(key, val);</span>
         }
         
-<span class="fc" id="L239">        int cmp = key.compareTo(x.key);</span>
-<span class="pc bpc" id="L240" title="1 of 2 branches missed.">        if (cmp == 0) {</span>
-<span class="nc" id="L241">            int cmpV = compareVal.compareTo(val);</span>
-<span class="nc bnc" id="L242" title="All 2 branches missed.">            if (cmpV &lt; 0) {</span>
-<span class="nc" id="L243">                replaced[0] = x.val;</span>
-<span class="nc" id="L244">                x.val = val;</span>
-<span class="nc" id="L245">                inserted[0] = true;</span>
+<span class="nc" id="L257">        int cmp = key.compareTo(x.key);</span>
+<span class="nc bnc" id="L258" title="All 2 branches missed.">        if (cmp == 0) {</span>
+<span class="nc" id="L259">            int cmpV = compareVal.compareTo(val);</span>
+<span class="nc bnc" id="L260" title="All 2 branches missed.">            if (cmpV &lt; 0) {</span>
+<span class="nc" id="L261">                replaced[0] = x.val;</span>
+<span class="nc" id="L262">                x.val = val;</span>
+<span class="nc" id="L263">                inserted[0] = true;</span>
             } else {
-<span class="nc" id="L247">                inserted[0] = false;</span>
+<span class="nc" id="L265">                inserted[0] = false;</span>
             }
-<span class="nc" id="L249">            return x; </span>
-<span class="pc bpc" id="L250" title="1 of 2 branches missed.">        } else if (cmp  &lt; 0) { </span>
-<span class="fc" id="L251">            x.left  = putRootIfLessThan(x.left,  key, val, compareVal, replaced,</span>
+<span class="nc" id="L267">            return x; </span>
+<span class="nc bnc" id="L268" title="All 2 branches missed.">        } else if (cmp  &lt; 0) { </span>
+<span class="nc" id="L269">            x.left  = putRootIfLessThan(x.left,  key, val, compareVal, replaced,</span>
                 inserted); 
-<span class="fc" id="L253">            x = rotR(x); </span>
+<span class="nc" id="L271">            x = rotR(x); </span>
         } else { 
-<span class="nc" id="L255">            x.right = putRootIfLessThan(x.right, key, val, compareVal, replaced,</span>
+<span class="nc" id="L273">            x.right = putRootIfLessThan(x.right, key, val, compareVal, replaced,</span>
                 inserted); 
-<span class="nc" id="L257">            x = rotL(x); </span>
+<span class="nc" id="L275">            x = rotL(x); </span>
         }
-<span class="fc" id="L259">        return x;</span>
+<span class="nc" id="L277">        return x;</span>
     }
     
     /**
      * runtime complexity at most is O(lg2(N)).
      * 
-     * @param x
-     * @param key
-     * @param val
-     * @param replaced
-     * @return 
+     @param x
+     @param key
+     @param val
+     @param replaced
+     @return 
      */
     private RangeSearchNode&lt;Key, Value&gt; putRoot(
         RangeSearchNode&lt;Key, Value&gt; x, Key key, Value val,
         Object[] replaced) {
         
-<span class="fc bfc" id="L275" title="All 2 branches covered.">        if (x == null) return new RangeSearchNode&lt;Key, Value&gt;(key, val);</span>
-<span class="fc" id="L276">        int cmp = key.compareTo(x.key);</span>
-<span class="pc bpc" id="L277" title="1 of 2 branches missed.">        if (cmp == 0) {</span>
-<span class="nc" id="L278">            replaced[0] = x.val;</span>
-<span class="nc" id="L279">            x.val = val;</span>
-<span class="nc" id="L280">            return x; </span>
-<span class="pc bpc" id="L281" title="1 of 2 branches missed.">        } else if (cmp  &lt; 0) { </span>
-<span class="fc" id="L282">            x.left  = putRoot(x.left,  key, val, replaced); </span>
-<span class="fc" id="L283">            x = rotR(x); </span>
+<span class="fc bfc" id="L293" title="All 2 branches covered.">        if (x == null) return new RangeSearchNode&lt;Key, Value&gt;(key, val);</span>
+<span class="fc" id="L294">        int cmp = key.compareTo(x.key);</span>
+<span class="pc bpc" id="L295" title="1 of 2 branches missed.">        if (cmp == 0) {</span>
+<span class="nc" id="L296">            replaced[0] = x.val;</span>
+<span class="nc" id="L297">            x.val = val;</span>
+<span class="nc" id="L298">            return x; </span>
+<span class="pc bpc" id="L299" title="1 of 2 branches missed.">        } else if (cmp  &lt; 0) { </span>
+<span class="fc" id="L300">            x.left  = putRoot(x.left,  key, val, replaced); </span>
+<span class="fc" id="L301">            x = rotR(x); </span>
         } else { 
-<span class="nc" id="L285">            x.right = putRoot(x.right, key, val, replaced); </span>
-<span class="nc" id="L286">            x = rotL(x); </span>
+<span class="nc" id="L303">            x.right = putRoot(x.right, key, val, replaced); </span>
+<span class="nc" id="L304">            x = rotL(x); </span>
         }
-<span class="fc" id="L288">        return x;</span>
+<span class="fc" id="L306">        return x;</span>
     }
 
    /***************************************************************************
     *  deletion
     
     * runtime complexity worse case is O(lg2(N)).
+     @param a
+     @param b
+     @return 
     ***************************************************************************/
     private RangeSearchNode&lt;Key, Value&gt; joinLR(RangeSearchNode&lt;Key, Value&gt; a, 
         RangeSearchNode&lt;Key, Value&gt; b) { 
    
-<span class="nc bnc" id="L299" title="All 2 branches missed.">        if (a == null) return b;</span>
-<span class="nc bnc" id="L300" title="All 2 branches missed.">        if (b == null) return a;</span>
+<span class="nc bnc" id="L320" title="All 2 branches missed.">        if (a == null) return b;</span>
+<span class="nc bnc" id="L321" title="All 2 branches missed.">        if (b == null) return a;</span>
 
         // O(1), but statement requires use of random algorithm.
-<span class="nc bnc" id="L303" title="All 2 branches missed.">        if (StdRandom.bernoulli((double) size(a) / (size(a) + size(b))))  {</span>
-<span class="nc" id="L304">            a.right = joinLR(a.right, b);</span>
-<span class="nc" id="L305">            fix(a);</span>
-<span class="nc" id="L306">            return a;</span>
+<span class="nc bnc" id="L324" title="All 2 branches missed.">        if (StdRandom.bernoulli((double) size(a) / (size(a) + size(b))))  {</span>
+<span class="nc" id="L325">            a.right = joinLR(a.right, b);</span>
+<span class="nc" id="L326">            fix(a);</span>
+<span class="nc" id="L327">            return a;</span>
         } else {
-<span class="nc" id="L308">            b.left = joinLR(a, b.left);</span>
-<span class="nc" id="L309">            fix(b);</span>
-<span class="nc" id="L310">            return b;</span>
+<span class="nc" id="L329">            b.left = joinLR(a, b.left);</span>
+<span class="nc" id="L330">            fix(b);</span>
+<span class="nc" id="L331">            return b;</span>
         }
     }
 
     /**
      * runtime complexity at worst is O(lg2(N)).
      * 
-     * @param x
-     * @param key
-     * @return 
+     @param x
+     @param key
+     @return 
      */
     private RangeSearchNode&lt;Key, Value&gt; remove(RangeSearchNode&lt;Key, Value&gt; x, Key key) {
-<span class="nc bnc" id="L322" title="All 2 branches missed.">        if (x == null) return null; </span>
-<span class="nc" id="L323">        int cmp = key.compareTo(x.key);</span>
-<span class="nc bnc" id="L324" title="All 2 branches missed.">        if      (cmp == 0) x = joinLR(x.left, x.right);</span>
-<span class="nc bnc" id="L325" title="All 2 branches missed.">        else if (cmp  &lt; 0) x.left  = remove(x.left,  key);</span>
-<span class="nc" id="L326">        else               x.right = remove(x.right, key);</span>
-<span class="nc" id="L327">        fix(x);</span>
-<span class="nc" id="L328">        return x;</span>
+<span class="nc bnc" id="L343" title="All 2 branches missed.">        if (x == null) return null; </span>
+<span class="nc" id="L344">        int cmp = key.compareTo(x.key);</span>
+<span class="nc bnc" id="L345" title="All 2 branches missed.">        if      (cmp == 0) x = joinLR(x.left, x.right);</span>
+<span class="nc bnc" id="L346" title="All 2 branches missed.">        else if (cmp  &lt; 0) x.left  = remove(x.left,  key);</span>
+<span class="nc" id="L347">        else               x.right = remove(x.right, key);</span>
+<span class="nc" id="L348">        fix(x);</span>
+<span class="nc" id="L349">        return x;</span>
     }
 
     /**
@@ -334,13 +355,13 @@ adapted from http://algs4.cs.princeton.edu/92search/
      * remove and return value associated with given key; if no such key, 
      * return null
      * 
-     * @param key
-     * @return 
+     @param key
+     @return 
      */
     public Value remove(Key key) {
-<span class="nc" id="L341">        Value val = get(key);</span>
-<span class="nc" id="L342">        root = remove(root, key);</span>
-<span class="nc" id="L343">        return val;</span>
+<span class="nc" id="L362">        Value val = get(key);</span>
+<span class="nc" id="L363">        root = remove(root, key);</span>
+<span class="nc" id="L364">        return val;</span>
     }
 
    /***************************************************************************
@@ -352,42 +373,42 @@ adapted from http://algs4.cs.princeton.edu/92search/
      * 
      * runtime complexity is O(1) to O(lg2(N)).
      *
-     * @param min
-     * @param max
-     * @return 
+     @param min
+     @param max
+     @return 
      */
     public Iterable&lt;Key&gt; range(Key min, Key max) {
-<span class="nc" id="L360">        return range(new Interval&lt;Key&gt;(min, max));</span>
+<span class="nc" id="L381">        return range(new Interval&lt;Key&gt;(min, max));</span>
     }
     /**
      * return all keys in given interval
      * 
      * runtime complexity is O(1) to O(lg2(N)).
      * 
-     * @param interval
-     * @return 
+     @param interval
+     @return 
      */
     public Iterable&lt;Key&gt; range(Interval&lt;Key&gt; interval) { 
-<span class="nc" id="L371">        Queue&lt;Key&gt; list = new Queue&lt;Key&gt;();</span>
-<span class="nc" id="L372">        range(root, interval, list);</span>
-<span class="nc" id="L373">        return list;</span>
+<span class="nc" id="L392">        Queue&lt;Key&gt; list = new Queue&lt;Key&gt;();</span>
+<span class="nc" id="L393">        range(root, interval, list);</span>
+<span class="nc" id="L394">        return list;</span>
     }
 
     /**
      * 
      * runtime complexity is O(1) to O(lg2(N)).
      * 
-     * @param x
-     * @param interval
-     * @param list 
+     @param x
+     @param interval
+     @param list 
      */
     private void range(RangeSearchNode&lt;Key, Value&gt; x, Interval&lt;Key&gt; interval, 
         Queue&lt;Key&gt; list) {
-<span class="nc bnc" id="L386" title="All 2 branches missed.">        if (x == null) return;</span>
-<span class="nc bnc" id="L387" title="All 2 branches missed.">        if (!less(x.key, interval.min()))  range(x.left, interval, list);</span>
-<span class="nc bnc" id="L388" title="All 2 branches missed.">        if (interval.contains(x.key))      list.enqueue(x.key);</span>
-<span class="nc bnc" id="L389" title="All 2 branches missed.">        if (!less(interval.max(), x.key))  range(x.right, interval, list);</span>
-<span class="nc" id="L390">    }</span>
+<span class="nc bnc" id="L407" title="All 2 branches missed.">        if (x == null) return;</span>
+<span class="nc bnc" id="L408" title="All 2 branches missed.">        if (!less(x.key, interval.min()))  range(x.left, interval, list);</span>
+<span class="nc bnc" id="L409" title="All 2 branches missed.">        if (interval.contains(x.key))      list.enqueue(x.key);</span>
+<span class="nc bnc" id="L410" title="All 2 branches missed.">        if (!less(interval.max(), x.key))  range(x.right, interval, list);</span>
+<span class="nc" id="L411">    }</span>
 
     /***************************************************************************
     *  Utility functions
@@ -396,26 +417,26 @@ adapted from http://algs4.cs.princeton.edu/92search/
      *
      * runtime complexity is O(1)
      * 
-     * @return the smallest key
+     @return the smallest key
      */
     public Key min() {
-<span class="nc" id="L402">        Key key = null;</span>
-<span class="nc bnc" id="L403" title="All 2 branches missed.">        for (RangeSearchNode&lt;Key, Value&gt; x = root; x != null; x = x.left)</span>
-<span class="nc" id="L404">            key = x.key;</span>
-<span class="nc" id="L405">        return key;</span>
+<span class="nc" id="L423">        Key key = null;</span>
+<span class="nc bnc" id="L424" title="All 2 branches missed.">        for (RangeSearchNode&lt;Key, Value&gt; x = root; x != null; x = x.left)</span>
+<span class="nc" id="L425">            key = x.key;</span>
+<span class="nc" id="L426">        return key;</span>
     }
     
     /**
      *
      * runtime complexity is O(1)
      * 
-     * @return the largest key
+     @return the largest key
      */
     public Key max() {
-<span class="nc" id="L415">        Key key = null;</span>
-<span class="nc bnc" id="L416" title="All 2 branches missed.">        for (RangeSearchNode&lt;Key, Value&gt; x = root; x != null; x = x.right)</span>
-<span class="nc" id="L417">            key = x.key;</span>
-<span class="nc" id="L418">        return key;</span>
+<span class="nc" id="L436">        Key key = null;</span>
+<span class="nc bnc" id="L437" title="All 2 branches missed.">        for (RangeSearchNode&lt;Key, Value&gt; x = root; x != null; x = x.right)</span>
+<span class="nc" id="L438">            key = x.key;</span>
+<span class="nc" id="L439">        return key;</span>
     }
 
    /***************************************************************************
@@ -424,24 +445,24 @@ adapted from http://algs4.cs.princeton.edu/92search/
     /**
      * runtime complexity is O(1)
      * 
-     * @return number of nodes in subtree rooted at x
+     @return number of nodes in subtree rooted at x
      */
-<span class="nc" id="L429">    public int size() { return size(root); }</span>
+<span class="nc" id="L450">    public int size() { return size(root); }</span>
     private int size(RangeSearchNode&lt;Key, Value&gt; x) { 
-<span class="fc bfc" id="L431" title="All 2 branches covered.">        if (x == null) return 0;</span>
-<span class="fc" id="L432">        else           return x.N;</span>
+<span class="fc bfc" id="L452" title="All 2 branches covered.">        if (x == null) return 0;</span>
+<span class="fc" id="L453">        else           return x.N;</span>
     }
 
     /**
      * height of tree (empty tree height = 0)
      * 
      * runtime complexity is O(lg_2(N))
-     * @return 
+     @return 
      */
-<span class="nc" id="L441">    public int height() { return height(root); }</span>
+<span class="nc" id="L462">    public int height() { return height(root); }</span>
     private int height(RangeSearchNode&lt;Key, Value&gt; x) {
-<span class="nc bnc" id="L443" title="All 2 branches missed.">        if (x == null) return 0;</span>
-<span class="nc" id="L444">        return 1 + Math.max(height(x.left), height(x.right));</span>
+<span class="nc bnc" id="L464" title="All 2 branches missed.">        if (x == null) return 0;</span>
+<span class="nc" id="L465">        return 1 + Math.max(height(x.left), height(x.right));</span>
     }
 
 
@@ -453,27 +474,27 @@ adapted from http://algs4.cs.princeton.edu/92search/
      * fix subtree count field.
      * 
      * runtime complexity O(1)
-     * @param x 
+     @param x 
      */
     private void fix(RangeSearchNode&lt;Key, Value&gt; x) {
-<span class="pc bpc" id="L459" title="1 of 2 branches missed.">        if (x == null) return;                 // check needed for remove</span>
-<span class="fc" id="L460">        x.N = 1 + size(x.left) + size(x.right);</span>
-<span class="fc" id="L461">    }</span>
+<span class="pc bpc" id="L480" title="1 of 2 branches missed.">        if (x == null) return;                 // check needed for remove</span>
+<span class="fc" id="L481">        x.N = 1 + size(x.left) + size(x.right);</span>
+<span class="fc" id="L482">    }</span>
 
     /**
      * right rotate
      * 
      * runtime complexity O(1)
-     * @param h
-     * @return 
+     @param h
+     @return 
      */
     private RangeSearchNode&lt;Key, Value&gt; rotR(RangeSearchNode&lt;Key, Value&gt; h) {
-<span class="fc" id="L471">        RangeSearchNode&lt;Key, Value&gt; x = h.left;</span>
-<span class="fc" id="L472">        h.left = x.right;</span>
-<span class="fc" id="L473">        x.right = h;</span>
-<span class="fc" id="L474">        fix(h);</span>
-<span class="fc" id="L475">        fix(x);</span>
-<span class="fc" id="L476">        return x;</span>
+<span class="fc" id="L492">        RangeSearchNode&lt;Key, Value&gt; x = h.left;</span>
+<span class="fc" id="L493">        h.left = x.right;</span>
+<span class="fc" id="L494">        x.right = h;</span>
+<span class="fc" id="L495">        fix(h);</span>
+<span class="fc" id="L496">        fix(x);</span>
+<span class="fc" id="L497">        return x;</span>
         /*      X                       H
                 0                      10
              1     2               11     12
@@ -490,61 +511,66 @@ adapted from http://algs4.cs.princeton.edu/92search/
      * 
      * runtime complexity is O(1).
      * 
-     * @param h
-     * @return 
+     @param h
+     @return 
      */
     private RangeSearchNode&lt;Key, Value&gt; rotL(RangeSearchNode&lt;Key, Value&gt; h) {
         
-<span class="nc" id="L498">        RangeSearchNode&lt;Key, Value&gt; x = h.right;</span>
-<span class="nc" id="L499">        h.right = x.left;</span>
-<span class="nc" id="L500">        x.left = h;</span>
+<span class="nc" id="L519">        RangeSearchNode&lt;Key, Value&gt; x = h.right;</span>
+<span class="nc" id="L520">        h.right = x.left;</span>
+<span class="nc" id="L521">        x.left = h;</span>
         
-<span class="nc" id="L502">        fix(h);</span>
-<span class="nc" id="L503">        fix(x);</span>
+<span class="nc" id="L523">        fix(h);</span>
+<span class="nc" id="L524">        fix(x);</span>
         
-<span class="nc" id="L505">        return x;</span>
+<span class="nc" id="L526">        return x;</span>
     }
 
 
    /***************************************************************************
     *  Debugging functions that test the integrity of the tree
+     @return 
     ***************************************************************************/
 
     // check integrity of subtree count fields
-<span class="nc bnc" id="L514" title="All 4 branches missed.">    public boolean check() { return checkCount() &amp;&amp; isBST(); }</span>
+<span class="nc bnc" id="L536" title="All 4 branches missed.">    public boolean check() { return checkCount() &amp;&amp; isBST(); }</span>
 
     // check integrity of count fields
-<span class="nc" id="L517">    private boolean checkCount() { return checkCount(root); }</span>
+<span class="nc" id="L539">    private boolean checkCount() { return checkCount(root); }</span>
     private boolean checkCount(RangeSearchNode&lt;Key, Value&gt; x) {
-<span class="nc bnc" id="L519" title="All 2 branches missed.">        if (x == null) return true;</span>
-<span class="nc bnc" id="L520" title="All 6 branches missed.">        return checkCount(x.left) &amp;&amp; checkCount(x.right) &amp;&amp; (x.N == 1 + size(x.left) + size(x.right));</span>
+<span class="nc bnc" id="L541" title="All 2 branches missed.">        if (x == null) return true;</span>
+<span class="nc bnc" id="L542" title="All 6 branches missed.">        return checkCount(x.left) &amp;&amp; checkCount(x.right) &amp;&amp; (x.N == 1 + size(x.left) + size(x.right));</span>
     }
 
 
     // does this tree satisfy the BST property?
-<span class="nc" id="L525">    private boolean isBST() { return isBST(root, min(), max()); }</span>
+<span class="nc" id="L547">    private boolean isBST() { return isBST(root, min(), max()); }</span>
 
     // are all the values in the BST rooted at x between min and max, and recursively?
     //  runtime complexity worse case is O(lg_2(N))
     private boolean isBST(RangeSearchNode&lt;Key, Value&gt; x, Key min, Key max) {
-<span class="nc bnc" id="L530" title="All 2 branches missed.">        if (x == null) return true;</span>
-<span class="nc bnc" id="L531" title="All 4 branches missed.">        if (less(x.key, min) || less(max, x.key)) return false;</span>
-<span class="nc bnc" id="L532" title="All 4 branches missed.">        return isBST(x.left, min, x.key) &amp;&amp; isBST(x.right, x.key, max);</span>
+<span class="nc bnc" id="L552" title="All 2 branches missed.">        if (x == null) return true;</span>
+<span class="nc bnc" id="L553" title="All 4 branches missed.">        if (less(x.key, min) || less(max, x.key)) return false;</span>
+<span class="nc bnc" id="L554" title="All 4 branches missed.">        return isBST(x.left, min, x.key) &amp;&amp; isBST(x.right, x.key, max);</span>
     } 
 
 
 
    /***************************************************************************
     *  helper comparison functions
+     @param k1
+     @param k2
+     @return 
     ***************************************************************************/
 
     private boolean less(Key k1, Key k2) {
-<span class="nc bnc" id="L542" title="All 2 branches missed.">        return k1.compareTo(k2) &lt; 0;</span>
+<span class="nc bnc" id="L567" title="All 2 branches missed.">        return k1.compareTo(k2) &lt; 0;</span>
     }
 
 
    /***************************************************************************
     *  test client
+     @param args
     ***************************************************************************/
     public static void main(String[] args) {
         /*
@@ -574,7 +600,7 @@ adapted from http://algs4.cs.princeton.edu/92search/
             StdOut.println(s);
         StdOut.println();
         */
-<span class="nc" id="L577">    }</span>
+<span class="nc" id="L603">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

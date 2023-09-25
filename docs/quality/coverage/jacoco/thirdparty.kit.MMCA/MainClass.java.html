@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MainClass.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">thirdparty.kit.MMCA</a> &gt; <span class="el_source">MainClass.java</span></div><h1>MainClass.java</h1><pre class="source lang-java linenums">package thirdparty.kit.MMCA;
+
+import java.util.*;
+import java.io.*;
+
+/**
+Java source code (April 2014) by Hoang-Vu Nguyen
+downloaded from https://eda.mmci.uni-saarland.de/prj/mac/mac.zip
+
+Nguyen, H-V, Müller, E, Vreeken, J &amp; Böhm, K 
+Multivariate Maximal Correlation Analysis. 
+In: Proceedings of the International Conference on Machine Learning (ICML), 
+pp 775-783, JMLR: W&amp;CP vol.32, 2014. 
+
+@author Hoang-Vu Nguyen
+*/
+<span class="nc" id="L17">public class MainClass </span>
+{
+	@SuppressWarnings(&quot;unchecked&quot;)
+	/**
+	 * main method when using the mac classes as a standalone api.
+	 * runtime complexity is of MAC is O(d^2 * N^(1.5))
+	 * when the default ε of 0.5 is used.
+	 d-dimensional data set D with real-valued dimensions {X_i}_i=[1.d] and N data points
+	 * @param args
+	 &lt;pre&gt;
+	Required:
+		 -FILE_INPUT full_path
+		 -FILE_CP_OUTPUT full_path
+		 -FILE_RUNTIME_OUTPUT full_path
+		 -FILE_DATA_OUTPUT full_path
+		 -NUM_ROWS integer
+		 -NUM_MEASURE_COLS integer
+	 Optional:
+		 -FIELD_DELIMITER character (default is ;)
+		 -ALPHA floating-point (default is 0.5)
+		 -CLUMPS integer (default is Integer.MAX_VALUE)
+	 &lt;/pre&gt;
+	 */
+	public static void main(String[] args)
+	{
+		try
+		{
+			//Get the jvm heap size.
+<span class="nc" id="L45">	        long heapSize = Runtime.getRuntime().totalMemory();</span>
+<span class="nc" id="L46">	        System.out.println(&quot;Heap Size = &quot; + heapSize);</span>
+	        
+<span class="nc" id="L48">	        readInputString(args);</span>
+<span class="nc" id="L49">			DataMatrix dataMatrix = new DataMatrix(Constants.NUM_ROWS, Constants.NUM_MEASURE_COLS);</span>
+			
+<span class="nc" id="L51">			System.out.println(&quot;start reading input data...&quot;);</span>
+<span class="nc" id="L52">			DataReader.readData(Constants.FILE_INPUT, dataMatrix);</span>
+<span class="nc" id="L53">			System.out.println(&quot;end reading input data...&quot;);</span>
+			
+<span class="nc" id="L55">			System.out.println(&quot;start discretization...&quot;);</span>
+<span class="nc" id="L56">			BufferedWriter writerCP = new BufferedWriter(new FileWriter(new File(Constants.FILE_CP_OUTPUT)));</span>
+<span class="nc" id="L57">			BufferedWriter writerRuntime = new BufferedWriter(new FileWriter(new File(Constants.FILE_RUNTIME_OUTPUT)));</span>
+			
+<span class="nc" id="L59">			long start = System.currentTimeMillis();</span>
+<span class="nc" id="L60">			ArrayList&lt;MacroBin&gt;[] finalBins = null;</span>
+<span class="nc" id="L61">			finalBins = MMIC.discretizeData(dataMatrix, Constants.CRES);</span>
+<span class="nc" id="L62">			long end = System.currentTimeMillis();</span>
+<span class="nc" id="L63">			writerRuntime.write(&quot;MTC = &quot; + Double.toString(Constants.MTC));</span>
+<span class="nc" id="L64">			writerRuntime.newLine();</span>
+<span class="nc" id="L65">			writerRuntime.write(Long.toString(end - start));</span>
+<span class="nc" id="L66">			writerRuntime.flush();</span>
+<span class="nc" id="L67">			writerRuntime.close();</span>
+			
+<span class="nc" id="L69">			int numCols = Constants.NUM_MEASURE_COLS;</span>
+			int tmpNumMacroBins;
+<span class="nc" id="L71">			MacroBin tmpMacroBin = null;</span>
+<span class="nc" id="L72">			MacroBin tmpPrevMacroBin = null;</span>
+<span class="nc" id="L73">			ArrayList&lt;MacroBin&gt;[] outputBins = new ArrayList[numCols];</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">			for (int dim = 0; dim &lt; numCols; dim++)</span>
+			{
+<span class="nc" id="L76">				outputBins[dim] = new ArrayList&lt;MacroBin&gt;();</span>
+<span class="nc" id="L77">				tmpNumMacroBins = finalBins[dim].size();</span>
+<span class="nc" id="L78">				tmpPrevMacroBin = finalBins[dim].get(0);</span>
+<span class="nc" id="L79">				outputBins[dim].add(tmpPrevMacroBin);</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">				for (int binIndex = 1; binIndex &lt; tmpNumMacroBins; binIndex++)</span>
+				{
+<span class="nc" id="L82">					tmpMacroBin = finalBins[dim].get(binIndex);</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">					if (tmpMacroBin.upperBound &gt; tmpPrevMacroBin.upperBound)</span>
+<span class="nc" id="L84">						outputBins[dim].add(tmpMacroBin);</span>
+<span class="nc" id="L85">					tmpPrevMacroBin = tmpMacroBin;</span>
+				}
+<span class="nc" id="L87">				tmpNumMacroBins = outputBins[dim].size();</span>
+				
+<span class="nc" id="L89">				writerCP.write(&quot;dimension &quot; + Integer.toString(dim) + &quot; (&quot; + tmpNumMacroBins + &quot; bins)&quot;);</span>
+<span class="nc" id="L90">				writerCP.newLine();</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">				for (int binIndex = 0; binIndex &lt; tmpNumMacroBins; binIndex++)</span>
+				{
+<span class="nc" id="L93">					tmpMacroBin = outputBins[dim].get(binIndex);</span>
+<span class="nc" id="L94">					writerCP.write(Double.toString(tmpMacroBin.upperBound));</span>
+<span class="nc" id="L95">					writerCP.newLine();</span>
+				}
+<span class="nc" id="L97">				writerCP.write(&quot;-------------------------------------&quot;);</span>
+<span class="nc" id="L98">				writerCP.newLine();</span>
+			}
+<span class="nc" id="L100">			System.out.println(&quot;end discretization...&quot;);</span>
+			
+<span class="nc" id="L102">			writerCP.flush();</span>
+<span class="nc" id="L103">			writerCP.close();</span>
+			
+			// write discretized data
+<span class="nc" id="L106">			BufferedWriter writerData = new BufferedWriter(new FileWriter(new File(Constants.FILE_DATA_OUTPUT)));</span>
+<span class="nc" id="L107">			writerData.write(&quot;@relation DB&quot;);</span>
+<span class="nc" id="L108">			writerData.newLine();</span>
+<span class="nc" id="L109">			writerData.newLine();</span>
+			
+			// write discretized continuous data
+<span class="nc" id="L112">			int numRows = Constants.NUM_ROWS;</span>
+			double tmpLowerBound;
+			double tmpUpperBound;
+<span class="nc" id="L115">			String[][] outputData = new String[numRows][numCols];</span>
+<span class="nc" id="L116">			String[] pointLabels = new String[numRows];</span>
+<span class="nc" id="L117">			DataPoint tmpPoint = null;</span>
+<span class="nc" id="L118">			String prefix = null;</span>
+<span class="nc" id="L119">			String attName = null;</span>
+<span class="nc" id="L120">			int nominalIndex = 1;</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">			for (int dim = 0; dim &lt; numCols; dim++)</span>
+			{
+<span class="nc" id="L123">				prefix = Integer.toString(dim);</span>
+<span class="nc" id="L124">				writerData.write(&quot;@attribute dim&quot; + prefix + &quot; {&quot;);</span>
+<span class="nc" id="L125">				tmpNumMacroBins = outputBins[dim].size();</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">				for (int binIndex = 0; binIndex &lt; tmpNumMacroBins; binIndex++)</span>
+				{
+<span class="nc" id="L128">					tmpMacroBin = outputBins[dim].get(binIndex);</span>
+<span class="nc" id="L129">					attName = Integer.toString(nominalIndex);</span>
+<span class="nc" id="L130">					tmpMacroBin.name = attName;</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">					if (binIndex == 0)</span>
+<span class="nc" id="L132">						writerData.write(attName);</span>
+					else
+<span class="nc" id="L134">						writerData.write(&quot;,&quot; + attName);</span>
+<span class="nc" id="L135">					nominalIndex++;</span>
+				} // end for
+				
+<span class="nc" id="L138">				writerData.write(&quot;}&quot;);</span>
+<span class="nc" id="L139">				writerData.newLine();</span>
+			} // end for
+			
+			// discretize data
+			boolean attNameExists;
+<span class="nc bnc" id="L144" title="All 2 branches missed.">			for (int i = 0; i &lt; numRows; i++)</span>
+			{
+<span class="nc" id="L146">				tmpPoint = dataMatrix.data.get(i);</span>
+<span class="nc" id="L147">				pointLabels[i] = new String(tmpPoint.classID);</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">				for (int dim = 0; dim &lt; numCols; dim++)</span>
+				{
+<span class="nc" id="L150">					attNameExists = false;</span>
+<span class="nc" id="L151">					tmpNumMacroBins = outputBins[dim].size();</span>
+<span class="nc bnc" id="L152" title="All 2 branches missed.">					for (int binIndex = 0; binIndex &lt; tmpNumMacroBins; binIndex++)</span>
+					{
+<span class="nc" id="L154">						tmpMacroBin = outputBins[dim].get(binIndex);</span>
+<span class="nc" id="L155">						tmpLowerBound = tmpMacroBin.lowerBound;</span>
+<span class="nc" id="L156">						tmpUpperBound = tmpMacroBin.upperBound;</span>
+<span class="nc bnc" id="L157" title="All 4 branches missed.">						if (tmpPoint.measures[dim] &lt;= tmpUpperBound &amp;&amp; tmpPoint.measures[dim] &gt;= tmpLowerBound)</span>
+						{
+<span class="nc" id="L159">							outputData[i][dim] = tmpMacroBin.name;</span>
+<span class="nc" id="L160">							attNameExists = true;</span>
+<span class="nc" id="L161">							break;</span>
+						}
+					} // end for
+					
+<span class="nc bnc" id="L165" title="All 2 branches missed.">					if (attNameExists == false)</span>
+					{
+<span class="nc" id="L167">						System.out.println(i + &quot; --- &quot; + dim + &quot; --- &quot; + tmpPoint.measures[dim]);</span>
+<span class="nc" id="L168">						throw new Exception(&quot;Attribute nominal value not found&quot;);</span>
+					}
+				} // end for
+			} // end for
+			
+			// write class labels
+<span class="nc" id="L174">			writerData.write(&quot;@attribute class {&quot;);</span>
+<span class="nc" id="L175">			int numLabels = Constants.CLASS_LABELS.size();</span>
+<span class="nc bnc" id="L176" title="All 2 branches missed.">			for (int i = 0; i &lt; numLabels; i++)</span>
+			{
+<span class="nc bnc" id="L178" title="All 2 branches missed.">				if (i == 0)</span>
+<span class="nc" id="L179">					writerData.write(&quot;\&quot;&quot; + Constants.CLASS_LABELS.get(i) + &quot;\&quot;&quot;);</span>
+				else
+<span class="nc" id="L181">					writerData.write(&quot;,&quot; + &quot;\&quot;&quot; +  Constants.CLASS_LABELS.get(i) + &quot;\&quot;&quot;);</span>
+			}
+<span class="nc" id="L183">			writerData.write(&quot;}&quot;);</span>
+<span class="nc" id="L184">			writerData.newLine();</span>
+<span class="nc" id="L185">			writerData.newLine();</span>
+			
+			// write the actual data
+<span class="nc" id="L188">			writerData.write(&quot;@data&quot;);</span>
+<span class="nc" id="L189">			writerData.newLine();</span>
+<span class="nc bnc" id="L190" title="All 2 branches missed.">			for (int i = 0; i &lt; numRows; i++)</span>
+			{
+<span class="nc" id="L192">				tmpPoint = dataMatrix.data.get(i);</span>
+<span class="nc bnc" id="L193" title="All 2 branches missed.">				for (int j = 0; j &lt; numCols; j++)</span>
+				{
+<span class="nc bnc" id="L195" title="All 2 branches missed.">					if (outputData[i][j] == null)</span>
+<span class="nc" id="L196">						throw new Exception(&quot;Null value&quot;);</span>
+						
+<span class="nc" id="L198">					writerData.write(outputData[i][j] + &quot;,&quot;);</span>
+				}
+<span class="nc" id="L200">				writerData.write(&quot;\&quot;&quot; + pointLabels[i] + &quot;\&quot;&quot;);</span>
+				
+<span class="nc bnc" id="L202" title="All 2 branches missed.">				if (i != numRows - 1)</span>
+<span class="nc" id="L203">					writerData.newLine();</span>
+			}
+			
+<span class="nc" id="L206">			writerData.flush();</span>
+<span class="nc" id="L207">			writerData.close();</span>
+		}
+<span class="nc" id="L209">		catch (Exception ex)</span>
+		{
+<span class="nc" id="L211">			ex.printStackTrace();</span>
+<span class="nc" id="L212">		}</span>
+<span class="nc" id="L213">	}</span>
+
+	public static void readInputString(String[] args) throws Exception
+	{	
+		int i;
+<span class="nc" id="L218">		int total = args.length - 1;</span>
+		
+		// take FILE_INPUT
+<span class="nc" id="L221">		boolean found = false;</span>
+<span class="nc bnc" id="L222" title="All 2 branches missed.">		for (i = 0; i &lt; total; i++)</span>
+<span class="nc bnc" id="L223" title="All 2 branches missed.">			if (args[i].equals(&quot;-FILE_INPUT&quot;))</span>
+			{
+<span class="nc" id="L225">				Constants.FILE_INPUT = args[i + 1];</span>
+<span class="nc" id="L226">				found = true;</span>
+<span class="nc" id="L227">				break;</span>
+			}
+<span class="nc bnc" id="L229" title="All 2 branches missed.">		if (found == false)</span>
+<span class="nc" id="L230">			throw new Exception(&quot;Missing -FILE_INPUT&quot;);</span>
+		
+		// take FILE_CP_OUTPUT
+<span class="nc" id="L233">		found = false;</span>
+<span class="nc bnc" id="L234" title="All 2 branches missed.">		for (i = 0; i &lt; total; i++)</span>
+<span class="nc bnc" id="L235" title="All 2 branches missed.">			if (args[i].equals(&quot;-FILE_CP_OUTPUT&quot;))</span>
+			{
+<span class="nc" id="L237">				Constants.FILE_CP_OUTPUT = args[i + 1];</span>
+<span class="nc" id="L238">				File f = new File(Constants.FILE_CP_OUTPUT);</span>
+<span class="nc bnc" id="L239" title="All 2 branches missed.">				if (f.exists())</span>
+<span class="nc" id="L240">					f.delete();</span>
+<span class="nc" id="L241">				f.createNewFile();</span>
+<span class="nc" id="L242">				found = true;</span>
+<span class="nc" id="L243">				break;</span>
+			}
+<span class="nc bnc" id="L245" title="All 2 branches missed.">		if (found == false)</span>
+<span class="nc" id="L246">			throw new Exception(&quot;Missing -FILE_CP_OUTPUT&quot;);</span>
+
+		// take FILE_RUNTIME_OUTPUT
+<span class="nc" id="L249">		found = false;</span>
+<span class="nc bnc" id="L250" title="All 2 branches missed.">		for (i = 0; i &lt; total; i++)</span>
+<span class="nc bnc" id="L251" title="All 2 branches missed.">			if (args[i].equals(&quot;-FILE_RUNTIME_OUTPUT&quot;))</span>
+			{
+<span class="nc" id="L253">				Constants.FILE_RUNTIME_OUTPUT = args[i + 1];</span>
+<span class="nc" id="L254">				File f = new File(Constants.FILE_RUNTIME_OUTPUT);</span>
+<span class="nc bnc" id="L255" title="All 2 branches missed.">				if (f.exists())</span>
+<span class="nc" id="L256">					f.delete();</span>
+<span class="nc" id="L257">				f.createNewFile();</span>
+<span class="nc" id="L258">				found = true;</span>
+<span class="nc" id="L259">				break;</span>
+			}
+<span class="nc bnc" id="L261" title="All 2 branches missed.">		if (found == false)</span>
+<span class="nc" id="L262">			throw new Exception(&quot;Missing -FILE_RUNTIME_OUTPUT&quot;);</span>
+
+		// take FILE_DATA_OUTPUT
+<span class="nc" id="L265">		found = false;</span>
+<span class="nc bnc" id="L266" title="All 2 branches missed.">		for (i = 0; i &lt; total; i++)</span>
+<span class="nc bnc" id="L267" title="All 2 branches missed.">			if (args[i].equals(&quot;-FILE_DATA_OUTPUT&quot;))</span>
+			{
+<span class="nc" id="L269">				Constants.FILE_DATA_OUTPUT = args[i + 1];</span>
+<span class="nc" id="L270">				File f = new File(Constants.FILE_DATA_OUTPUT);</span>
+<span class="nc bnc" id="L271" title="All 2 branches missed.">				if (f.exists())</span>
+<span class="nc" id="L272">					f.delete();</span>
+<span class="nc" id="L273">				f.createNewFile();</span>
+<span class="nc" id="L274">				found = true;</span>
+<span class="nc" id="L275">				break;</span>
+			}
+<span class="nc bnc" id="L277" title="All 2 branches missed.">		if (found == false)</span>
+<span class="nc" id="L278">			throw new Exception(&quot;Missing -FILE_DATA_OUTPUT&quot;);</span>
+
+		// take NUM_ROWS
+<span class="nc" id="L281">		found = false;</span>
+<span class="nc bnc" id="L282" title="All 2 branches missed.">		for (i = 0; i &lt; total; i++)</span>
+<span class="nc bnc" id="L283" title="All 2 branches missed.">			if (args[i].equals(&quot;-NUM_ROWS&quot;))</span>
+			{
+<span class="nc" id="L285">				Constants.NUM_ROWS = Integer.parseInt(args[i + 1]);</span>
+<span class="nc" id="L286">				found = true;</span>
+<span class="nc" id="L287">				break;</span>
+			}
+<span class="nc bnc" id="L289" title="All 2 branches missed.">		if (found == false)</span>
+<span class="nc" id="L290">			throw new Exception(&quot;Missing -NUM_ROWS&quot;);</span>
+		
+		// take NUM_MEASURE_COLS
+<span class="nc" id="L293">		found = false;</span>
+<span class="nc bnc" id="L294" title="All 2 branches missed.">		for (i = 0; i &lt; total; i++)</span>
+<span class="nc bnc" id="L295" title="All 2 branches missed.">			if (args[i].equals(&quot;-NUM_MEASURE_COLS&quot;))</span>
+			{
+<span class="nc" id="L297">				Constants.NUM_MEASURE_COLS = Integer.parseInt(args[i + 1]);</span>
+<span class="nc" id="L298">				found = true;</span>
+<span class="nc" id="L299">				break;</span>
+			}
+<span class="nc bnc" id="L301" title="All 2 branches missed.">		if (found == false)</span>
+<span class="nc" id="L302">			throw new Exception(&quot;Missing -NUM_MEASURE_COLS&quot;);</span>
+
+		// take FIELD_DELIMITER
+<span class="nc" id="L305">		found = false;</span>
+<span class="nc bnc" id="L306" title="All 2 branches missed.">		for (i = 0; i &lt; total; i++)</span>
+<span class="nc bnc" id="L307" title="All 2 branches missed.">			if (args[i].equals(&quot;-FIELD_DELIMITER&quot;))</span>
+			{
+<span class="nc" id="L309">				Constants.FIELD_DELIMITER = args[i + 1];</span>
+<span class="nc" id="L310">				found = true;</span>
+<span class="nc" id="L311">				break;</span>
+			}
+
+		// take ALPHA
+<span class="nc" id="L315">		found = false;</span>
+<span class="nc bnc" id="L316" title="All 2 branches missed.">		for (i = 0; i &lt; total; i++)</span>
+<span class="nc bnc" id="L317" title="All 2 branches missed.">			if (args[i].equals(&quot;-ALPHA&quot;))</span>
+			{
+<span class="nc" id="L319">				Constants.ALPHA = Double.parseDouble(args[i + 1]);</span>
+<span class="nc" id="L320">				found = true;</span>
+<span class="nc" id="L321">				break;</span>
+			}
+
+		// take CLUMPS
+<span class="nc" id="L325">		found = false;</span>
+<span class="nc bnc" id="L326" title="All 2 branches missed.">		for (i = 0; i &lt; total; i++)</span>
+<span class="nc bnc" id="L327" title="All 2 branches missed.">			if (args[i].equals(&quot;-CLUMPS&quot;))</span>
+			{
+<span class="nc" id="L329">				Constants.CLUMPS = Integer.parseInt(args[i + 1]);</span>
+<span class="nc" id="L330">				found = true;</span>
+<span class="nc" id="L331">				break;</span>
+			}
+<span class="nc" id="L333">	} // end method</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

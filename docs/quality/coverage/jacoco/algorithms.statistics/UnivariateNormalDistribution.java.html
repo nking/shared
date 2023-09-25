@@ -21,15 +21,17 @@ import java.util.Random;
              f = ------------------ * exp( ------ )
                      1 * sqrt(2*pi)      (   2    )
          using the inverse CDF of the standard normal.
-     * @return 
+     @param n
+     @return 
+     * @throws java.security.NoSuchAlgorithmException 
      */
     public static double[] randomSampleOfUnitStandard(int n) throws NoSuchAlgorithmException {
-<span class="nc" id="L27">        SecureRandom rand = SecureRandom.getInstanceStrong();</span>
-<span class="nc" id="L28">        long seed = System.nanoTime();</span>
+<span class="nc" id="L29">        SecureRandom rand = SecureRandom.getInstanceStrong();</span>
+<span class="nc" id="L30">        long seed = System.nanoTime();</span>
         //System.out.println(&quot;SEED=&quot; + seed);
-<span class="nc" id="L30">        rand.setSeed(seed);</span>
+<span class="nc" id="L32">        rand.setSeed(seed);</span>
         
-<span class="nc" id="L32">        return randomSampleOfUnitStandard(rand, n);</span>
+<span class="nc" id="L34">        return randomSampleOfUnitStandard(rand, n);</span>
     }
     
     /**
@@ -43,46 +45,46 @@ import java.util.Random;
              f = ------------------ * exp( ------ )
                      1 * sqrt(2*pi)      (   2    )
           using the inverse CDF of the standard normal.
-     * @param rand
-     * @param n
-     * @return n randomly sampled x's
+     @param rand
+     @param n
+     @return n randomly sampled x's
      */
     public static double[] randomSampleOfUnitStandard(Random rand, int n) {
         double t;
         
-<span class="fc" id="L53">        double[] u = new double[n];</span>
+<span class="fc" id="L55">        double[] u = new double[n];</span>
         
         int i;
         // u range is approximately -3.1 to +3.1
-<span class="fc bfc" id="L57" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L58">            t = rand.nextDouble();</span>
-<span class="fc" id="L59">            u[i] = CDFStandardNormal.approxInverseShort(t);</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L60">            t = rand.nextDouble();</span>
+<span class="fc" id="L61">            u[i] = CDFStandardNormal.approxInverseShort(t);</span>
         }
         
-<span class="fc" id="L62">        return u;</span>
+<span class="fc" id="L64">        return u;</span>
     }
     
     /**
      * return a random sample of size n of a gaussian distribution that has 
      * the given mean and sigma.
-     * @param mean the location parameter of the gaussian.  it's the mean.
-     * @param sigma the shape parameter of the gaussian.  it's the standard deviation.
-     * @param rand
-     * @param n
-     * @return 
+     @param mean the location parameter of the gaussian.  it's the mean.
+     @param sigma the shape parameter of the gaussian.  it's the standard deviation.
+     @param rand
+     @param n
+     @return 
      */
     public static double[] randomSampleOf(double mean, double sigma,
                                           Random rand, int n) {
                 
-<span class="fc" id="L77">        double[] u = randomSampleOfUnitStandard(rand, n);</span>
+<span class="fc" id="L79">        double[] u = randomSampleOfUnitStandard(rand, n);</span>
                
         int i;
-<span class="fc bfc" id="L80" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L81">            u[i] *= sigma;</span>
-<span class="fc" id="L82">            u[i] += mean;</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L83">            u[i] *= sigma;</span>
+<span class="fc" id="L84">            u[i] += mean;</span>
         }
         
-<span class="fc" id="L85">        return u;</span>
+<span class="fc" id="L87">        return u;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

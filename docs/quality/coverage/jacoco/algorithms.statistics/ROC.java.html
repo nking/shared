@@ -21,9 +21,9 @@ import java.util.Arrays;
 
        Runtime is O(n*log_2(n)).
        
-     * @param fScores
-     * @param labels
-     * @return 
+     @param fScores
+     @param labels
+     @return 
      */
     public static ROCResults calcAUCAndPoints(double[] fScores, boolean[] labels) {
         
@@ -93,6 +93,11 @@ import java.util.Arrays;
         “An introduction to ROC analysis” by Fawcett, 2006, 
      Pattern Recognition Letters 27, 61–874
        https://www.math.ucdavis.edu/~saito/data/roc/fawcett-roc.pdf
+     @param x1
+     @param x2
+     @param y1
+     @param y2
+     @return 
     */
     //public static double multiClassAUCHandTill2001() {
         /*
@@ -121,24 +126,27 @@ import java.util.Arrays;
     private static double trapezoidalArea(double x1, double x2, double y1, 
         double y2) {
         
-<span class="fc" id="L124">        double base = Math.abs(x1 - x2);</span>
-<span class="fc" id="L125">        double height = (y1 + y2) / 2.;</span>
+<span class="fc" id="L129">        double base = Math.abs(x1 - x2);</span>
+<span class="fc" id="L130">        double height = (y1 + y2) / 2.;</span>
         
-<span class="fc" id="L127">        return base * height;</span>
+<span class="fc" id="L132">        return base * height;</span>
     }
 
     private static int[] countLabels(boolean[] labels) {
-<span class="fc" id="L131">        int[] npc = new int[2];</span>
-<span class="fc bfc" id="L132" title="All 2 branches covered.">        for (int i = 0; i &lt; labels.length; ++i) {</span>
-<span class="fc bfc" id="L133" title="All 2 branches covered.">            if (labels[i]) {</span>
-<span class="fc" id="L134">                npc[1]++;</span>
+<span class="fc" id="L136">        int[] npc = new int[2];</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">        for (int i = 0; i &lt; labels.length; ++i) {</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">            if (labels[i]) {</span>
+<span class="fc" id="L139">                npc[1]++;</span>
             } else {
-<span class="fc" id="L136">                npc[0]++;</span>
+<span class="fc" id="L141">                npc[0]++;</span>
             }
         }
-<span class="fc" id="L139">        return npc;</span>
+<span class="fc" id="L144">        return npc;</span>
     }
     
+    /**
+     *
+     */
     public static class ROCResults {
         double[] sortedFScores;
         int[] indexes;

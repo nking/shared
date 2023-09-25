@@ -32,12 +32,22 @@ import java.util.logging.Logger;
 
 <span class="fc" id="L33">    private static Logger log = Logger.getLogger(&quot;NewmanGMLParser&quot;);</span>
 
+    /**
+     *
+     */
     public static class GMLGraph {
         String graphType;
         Map&lt;PairInt, TFloatList&gt; edgeWeightMap;
         TIntObjectMap&lt;String&gt; nodeIdLabelMap;
     }
         
+    /**
+     *
+     @param filePath
+     @return
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
     public static GMLGraph readGraph(String filePath) 
         throws FileNotFoundException, IOException {
         
@@ -45,129 +55,129 @@ import java.util.logging.Logger;
         //http://graphics.stanford.edu/courses/cs368-00-spring/TA/manuals/LEDA/gml_graph.html#29665
                 
         // node map with key = id, value = label.
-<span class="fc" id="L48">        TIntObjectMap&lt;String&gt; nodeIdLabelMap = new TIntObjectHashMap&lt;String&gt;();</span>
+<span class="fc" id="L58">        TIntObjectMap&lt;String&gt; nodeIdLabelMap = new TIntObjectHashMap&lt;String&gt;();</span>
         
         // edge map, key = (source, target), value = weights;  source and target are edge node ids.
-<span class="fc" id="L51">        Map&lt;PairInt, TFloatList&gt; edgeMap = new HashMap&lt;PairInt, TFloatList&gt;();</span>
+<span class="fc" id="L61">        Map&lt;PairInt, TFloatList&gt; edgeMap = new HashMap&lt;PairInt, TFloatList&gt;();</span>
         
-<span class="fc" id="L53">        String graphType = null;</span>
+<span class="fc" id="L63">        String graphType = null;</span>
         
-<span class="fc" id="L55">        FileReader reader = null;</span>
-<span class="fc" id="L56">        BufferedReader in = null;</span>
+<span class="fc" id="L65">        FileReader reader = null;</span>
+<span class="fc" id="L66">        BufferedReader in = null;</span>
         
         // successfully read from stream
-<span class="fc" id="L59">        boolean r = true;</span>
+<span class="fc" id="L69">        boolean r = true;</span>
         
-<span class="fc" id="L61">        StringBuilder type = new StringBuilder();</span>
-<span class="fc" id="L62">        StringBuilder content = new StringBuilder();</span>
-<span class="fc" id="L63">        String parse = null;</span>
+<span class="fc" id="L71">        StringBuilder type = new StringBuilder();</span>
+<span class="fc" id="L72">        StringBuilder content = new StringBuilder();</span>
+<span class="fc" id="L73">        String parse = null;</span>
         int eIdx, nIdx;
         
         try {
-<span class="fc" id="L67">            reader = new FileReader(new File(filePath));</span>
-<span class="fc" id="L68">            in = new BufferedReader(reader);</span>
+<span class="fc" id="L77">            reader = new FileReader(new File(filePath));</span>
+<span class="fc" id="L78">            in = new BufferedReader(reader);</span>
 
             // find graph [ which may have an end of line marker and spaces in between
-<span class="fc" id="L71">            r = readToEndOf(in, &quot;graph&quot;);</span>
-<span class="fc" id="L72">            r = readToEndOf(in, &quot;[&quot;);</span>
+<span class="fc" id="L81">            r = readToEndOf(in, &quot;graph&quot;);</span>
+<span class="fc" id="L82">            r = readToEndOf(in, &quot;[&quot;);</span>
             
             // for first object read only , parse type for a graph type
-<span class="fc" id="L75">            r = readTypeAndContent(in, type, content);</span>
-<span class="fc" id="L76">            parse = type.toString().trim();</span>
-<span class="fc" id="L77">            nIdx = parse.indexOf(&quot;node&quot;);</span>
-<span class="fc" id="L78">            eIdx = parse.indexOf(&quot;edge&quot;);</span>
-<span class="pc bpc" id="L79" title="1 of 2 branches missed.">            if (eIdx != -1) {</span>
-<span class="nc" id="L80">                graphType = parse.substring(0, eIdx).trim();</span>
-<span class="nc" id="L81">                parseAndStoreEdge(content.toString(), edgeMap);</span>
-<span class="pc bpc" id="L82" title="1 of 2 branches missed.">            } else if (nIdx != -1) {</span>
-<span class="fc" id="L83">                graphType = parse.substring(0, nIdx).trim();</span>
-<span class="fc" id="L84">                parseAndStoreNode(content.toString(), nodeIdLabelMap);</span>
+<span class="fc" id="L85">            r = readTypeAndContent(in, type, content);</span>
+<span class="fc" id="L86">            parse = type.toString().trim();</span>
+<span class="fc" id="L87">            nIdx = parse.indexOf(&quot;node&quot;);</span>
+<span class="fc" id="L88">            eIdx = parse.indexOf(&quot;edge&quot;);</span>
+<span class="pc bpc" id="L89" title="1 of 2 branches missed.">            if (eIdx != -1) {</span>
+<span class="nc" id="L90">                graphType = parse.substring(0, eIdx).trim();</span>
+<span class="nc" id="L91">                parseAndStoreEdge(content.toString(), edgeMap);</span>
+<span class="pc bpc" id="L92" title="1 of 2 branches missed.">            } else if (nIdx != -1) {</span>
+<span class="fc" id="L93">                graphType = parse.substring(0, nIdx).trim();</span>
+<span class="fc" id="L94">                parseAndStoreNode(content.toString(), nodeIdLabelMap);</span>
             } else {
                 //empty graph
-<span class="nc" id="L87">                return new GMLGraph();</span>
+<span class="nc" id="L97">                return new GMLGraph();</span>
             }
             
-<span class="pc bpc" id="L90" title="1 of 2 branches missed.">            while (r) {</span>
-<span class="fc" id="L91">                content = content.delete(0, content.length());</span>
-<span class="fc" id="L92">                type = type.delete(0, type.length());</span>
+<span class="pc bpc" id="L100" title="1 of 2 branches missed.">            while (r) {</span>
+<span class="fc" id="L101">                content = content.delete(0, content.length());</span>
+<span class="fc" id="L102">                type = type.delete(0, type.length());</span>
                 
-<span class="fc" id="L94">                r = readTypeAndContent(in, type, content);</span>
-<span class="fc" id="L95">                parse = type.toString().trim();</span>
+<span class="fc" id="L104">                r = readTypeAndContent(in, type, content);</span>
+<span class="fc" id="L105">                parse = type.toString().trim();</span>
                 //System.out.printf(&quot; %s&quot;, parse);   
                 
-<span class="fc bfc" id="L98" title="All 2 branches covered.">                if (parse.equals(&quot;node&quot;)){</span>
-<span class="fc" id="L99">                    parseAndStoreNode(content.toString(), nodeIdLabelMap);</span>
-<span class="fc bfc" id="L100" title="All 2 branches covered.">                } else if (parse.equals(&quot;edge&quot;)) {</span>
-<span class="fc" id="L101">                    parseAndStoreEdge(content.toString(), edgeMap);</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">                if (parse.equals(&quot;node&quot;)){</span>
+<span class="fc" id="L109">                    parseAndStoreNode(content.toString(), nodeIdLabelMap);</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">                } else if (parse.equals(&quot;edge&quot;)) {</span>
+<span class="fc" id="L111">                    parseAndStoreEdge(content.toString(), edgeMap);</span>
                 } else {
                     break;
                 }
             }
             
         } finally {
-<span class="pc bpc" id="L108" title="1 of 2 branches missed.">            if (reader != null) {</span>
-<span class="fc" id="L109">                reader.close();</span>
+<span class="pc bpc" id="L118" title="1 of 2 branches missed.">            if (reader != null) {</span>
+<span class="fc" id="L119">                reader.close();</span>
             }
-<span class="pc bpc" id="L111" title="1 of 2 branches missed.">            if (in != null) {</span>
-<span class="fc" id="L112">                in.close();</span>
+<span class="pc bpc" id="L121" title="1 of 2 branches missed.">            if (in != null) {</span>
+<span class="fc" id="L122">                in.close();</span>
             }
         }
 
-<span class="fc" id="L116">        GMLGraph g = new GMLGraph();</span>
-<span class="fc" id="L117">        g.edgeWeightMap = edgeMap;</span>
-<span class="fc" id="L118">        g.nodeIdLabelMap = nodeIdLabelMap;</span>
-<span class="fc" id="L119">        g.graphType = graphType;</span>
-<span class="fc" id="L120">        return g;</span>
+<span class="fc" id="L126">        GMLGraph g = new GMLGraph();</span>
+<span class="fc" id="L127">        g.edgeWeightMap = edgeMap;</span>
+<span class="fc" id="L128">        g.nodeIdLabelMap = nodeIdLabelMap;</span>
+<span class="fc" id="L129">        g.graphType = graphType;</span>
+<span class="fc" id="L130">        return g;</span>
     }
     
     /**
      * note: assumes srch characters each fit into 1 code point.
-     * @param in
-     * @param srch
-     * @return
+     @param in
+     @param srch
+     @return
      * @throws IOException 
      */
     static boolean readToEndOf(BufferedReader in, String srch) throws IOException {
         int ch;
-<span class="pc bpc" id="L132" title="1 of 2 branches missed.">        while ((ch = in.read()) &gt; -1) {</span>
+<span class="pc bpc" id="L142" title="1 of 2 branches missed.">        while ((ch = in.read()) &gt; -1) {</span>
             srchloop :
-<span class="fc bfc" id="L134" title="All 2 branches covered.">            if ((char)ch == srch.charAt(0)) {</span>
-<span class="fc bfc" id="L135" title="All 2 branches covered.">                for (int i = 1; i &lt; srch.length(); ++i) {</span>
-<span class="fc" id="L136">                    ch = in.read();</span>
-<span class="fc bfc" id="L137" title="All 2 branches covered.">                    if ((char)ch != srch.charAt(i)) {</span>
-<span class="fc" id="L138">                        break srchloop;</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">            if ((char)ch == srch.charAt(0)) {</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">                for (int i = 1; i &lt; srch.length(); ++i) {</span>
+<span class="fc" id="L146">                    ch = in.read();</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">                    if ((char)ch != srch.charAt(i)) {</span>
+<span class="fc" id="L148">                        break srchloop;</span>
                     }
                 }
-<span class="fc" id="L141">                return true;</span>
+<span class="fc" id="L151">                return true;</span>
             }
         }
-<span class="nc" id="L144">        return false;</span>
+<span class="nc" id="L154">        return false;</span>
     }
     
     /**
      * read everything up to first [ as type, then everything up until last ] as content
-     * @param in
-     * @param type
-     * @param content
-     * @return
+     @param in
+     @param type
+     @param content
+     @return
      * @throws IOException 
      */
     static boolean readTypeAndContent(BufferedReader in, StringBuilder type, 
         StringBuilder content) throws IOException {
         int ch;
-<span class="fc bfc" id="L158" title="All 2 branches covered.">        while ((ch = in.read()) &gt; -1) {</span>
-<span class="fc bfc" id="L159" title="All 2 branches covered.">            if ((char)ch == '[') {</span>
-<span class="fc" id="L160">                break;</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">        while ((ch = in.read()) &gt; -1) {</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">            if ((char)ch == '[') {</span>
+<span class="fc" id="L170">                break;</span>
             }
-<span class="fc" id="L162">            type.appendCodePoint(ch);</span>
+<span class="fc" id="L172">            type.appendCodePoint(ch);</span>
         }
-<span class="fc bfc" id="L164" title="All 2 branches covered.">        while ((ch = in.read()) &gt; -1) {</span>
-<span class="fc bfc" id="L165" title="All 2 branches covered.">            if ((char)ch == ']') {</span>
-<span class="fc" id="L166">                return true;</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">        while ((ch = in.read()) &gt; -1) {</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">            if ((char)ch == ']') {</span>
+<span class="fc" id="L176">                return true;</span>
             }
-<span class="fc" id="L168">            content.appendCodePoint(ch);</span>
+<span class="fc" id="L178">            content.appendCodePoint(ch);</span>
         }
-<span class="fc" id="L170">        return false;</span>
+<span class="fc" id="L180">        return false;</span>
     }
     
     /**
@@ -176,94 +186,94 @@ import java.util.logging.Logger;
      * the value by default is &quot;1&quot; if not present.
      * NOTE: the other attributes such as label are not currently stored.
      * 
-     * @param content
-     * @param edgeMap 
+     @param content
+     @param edgeMap 
      */
     private static void parseAndStoreEdge(String content, Map&lt;PairInt, TFloatList&gt; edgeMap) {
         
-<span class="fc" id="L184">        content = content.trim();</span>
+<span class="fc" id="L194">        content = content.trim();</span>
         
-<span class="fc" id="L186">        String[] p = content.split(&quot;\\s+&quot;);</span>
+<span class="fc" id="L196">        String[] p = content.split(&quot;\\s+&quot;);</span>
         //System.out.println(Arrays.toString(p));
         
         //source, target, and value
-<span class="fc" id="L190">        String source = null;</span>
-<span class="fc" id="L191">        String target = null;</span>
-<span class="fc" id="L192">        String value = null;</span>
+<span class="fc" id="L200">        String source = null;</span>
+<span class="fc" id="L201">        String target = null;</span>
+<span class="fc" id="L202">        String value = null;</span>
         
-<span class="fc bfc" id="L194" title="All 2 branches covered.">        for (int i = 0; i &lt; p.length; i+=2) {</span>
-<span class="fc bfc" id="L195" title="All 2 branches covered.">            if (p[i].equalsIgnoreCase(&quot;source&quot;)) {</span>
-<span class="fc" id="L196">                source = p[i+1];</span>
-<span class="fc bfc" id="L197" title="All 2 branches covered.">            } else if (p[i].equalsIgnoreCase(&quot;target&quot;)) {</span>
-<span class="fc" id="L198">                target = p[i+1];</span>
-<span class="pc bpc" id="L199" title="1 of 2 branches missed.">            } else if (p[i].equalsIgnoreCase(&quot;value&quot;)) {</span>
-<span class="fc" id="L200">                value = p[i+1];</span>
+<span class="fc bfc" id="L204" title="All 2 branches covered.">        for (int i = 0; i &lt; p.length; i+=2) {</span>
+<span class="fc bfc" id="L205" title="All 2 branches covered.">            if (p[i].equalsIgnoreCase(&quot;source&quot;)) {</span>
+<span class="fc" id="L206">                source = p[i+1];</span>
+<span class="fc bfc" id="L207" title="All 2 branches covered.">            } else if (p[i].equalsIgnoreCase(&quot;target&quot;)) {</span>
+<span class="fc" id="L208">                target = p[i+1];</span>
+<span class="pc bpc" id="L209" title="1 of 2 branches missed.">            } else if (p[i].equalsIgnoreCase(&quot;value&quot;)) {</span>
+<span class="fc" id="L210">                value = p[i+1];</span>
             }
         }
         
-<span class="pc bpc" id="L204" title="2 of 4 branches missed.">        if (source == null || target == null) {</span>
-<span class="nc" id="L205">            throw new IllegalArgumentException(&quot;edge is missing source and/or target: &quot; + content);</span>
+<span class="pc bpc" id="L214" title="2 of 4 branches missed.">        if (source == null || target == null) {</span>
+<span class="nc" id="L215">            throw new IllegalArgumentException(&quot;edge is missing source and/or target: &quot; + content);</span>
         }
 
-<span class="fc" id="L208">        PairInt e = new PairInt(Integer.parseInt(source), Integer.parseInt(target));</span>
+<span class="fc" id="L218">        PairInt e = new PairInt(Integer.parseInt(source), Integer.parseInt(target));</span>
         
-<span class="fc bfc" id="L210" title="All 2 branches covered.">        if (!edgeMap.containsKey(e)) {</span>
-<span class="fc" id="L211">            edgeMap.put(e, new TFloatArrayList());</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">        if (!edgeMap.containsKey(e)) {</span>
+<span class="fc" id="L221">            edgeMap.put(e, new TFloatArrayList());</span>
         } else {
-<span class="fc" id="L213">            log.warning(&quot;edge &quot; + e.toString() + &quot; is in file more than once. &quot;);</span>
+<span class="fc" id="L223">            log.warning(&quot;edge &quot; + e.toString() + &quot; is in file more than once. &quot;);</span>
         }
         
-<span class="fc bfc" id="L216" title="All 2 branches covered.">        if (value == null) {</span>
-<span class="fc" id="L217">            edgeMap.get(e).add(1);</span>
+<span class="fc bfc" id="L226" title="All 2 branches covered.">        if (value == null) {</span>
+<span class="fc" id="L227">            edgeMap.get(e).add(1);</span>
         } else {
-<span class="fc" id="L219">            edgeMap.get(e).add(Float.parseFloat(value));</span>
+<span class="fc" id="L229">            edgeMap.get(e).add(Float.parseFloat(value));</span>
         }
-<span class="fc" id="L221">    }</span>
+<span class="fc" id="L231">    }</span>
     
     /**
      * parses the key-value pairs from the node content and stores the
      * attributes id and label.  if label is not present, a string
      * representation of id's value is stored for it.
      * 
-     * @param content
-     * @param nodeIdLabelMap 
+     @param content
+     @param nodeIdLabelMap 
      */
     private static void parseAndStoreNode(String content, 
         TIntObjectMap&lt;String&gt; nodeIdLabelMap) {
         
-<span class="fc" id="L234">        content = content.trim();</span>
+<span class="fc" id="L244">        content = content.trim();</span>
         
-<span class="fc" id="L236">        String[] p = content.split(&quot;\\s+&quot;);</span>
+<span class="fc" id="L246">        String[] p = content.split(&quot;\\s+&quot;);</span>
         
-<span class="fc" id="L238">        String id = null;</span>
-<span class="fc" id="L239">        String label = null;</span>
+<span class="fc" id="L248">        String id = null;</span>
+<span class="fc" id="L249">        String label = null;</span>
         
-<span class="fc bfc" id="L241" title="All 2 branches covered.">        for (int i = 0; i &lt; p.length; i+=2) {</span>
-<span class="fc bfc" id="L242" title="All 2 branches covered.">            if (p[i].equalsIgnoreCase(&quot;id&quot;)) {</span>
-<span class="fc" id="L243">                id = p[i+1];</span>
-<span class="pc bpc" id="L244" title="1 of 2 branches missed.">            } else if (p[i].equalsIgnoreCase(&quot;label&quot;)) {</span>
-<span class="fc" id="L245">                label = p[i+1];</span>
-<span class="fc" id="L246">                label = label.replaceAll(&quot;^\&quot;&quot;, &quot;&quot;);</span>
-<span class="fc" id="L247">                label = label.replaceAll(&quot;\&quot;$&quot;, &quot;&quot;);</span>
+<span class="fc bfc" id="L251" title="All 2 branches covered.">        for (int i = 0; i &lt; p.length; i+=2) {</span>
+<span class="fc bfc" id="L252" title="All 2 branches covered.">            if (p[i].equalsIgnoreCase(&quot;id&quot;)) {</span>
+<span class="fc" id="L253">                id = p[i+1];</span>
+<span class="pc bpc" id="L254" title="1 of 2 branches missed.">            } else if (p[i].equalsIgnoreCase(&quot;label&quot;)) {</span>
+<span class="fc" id="L255">                label = p[i+1];</span>
+<span class="fc" id="L256">                label = label.replaceAll(&quot;^\&quot;&quot;, &quot;&quot;);</span>
+<span class="fc" id="L257">                label = label.replaceAll(&quot;\&quot;$&quot;, &quot;&quot;);</span>
             }
         } 
         
-<span class="pc bpc" id="L251" title="1 of 4 branches missed.">        if (label == null &amp;&amp; id != null) {</span>
-<span class="fc" id="L252">            label = id;</span>
+<span class="pc bpc" id="L261" title="1 of 4 branches missed.">        if (label == null &amp;&amp; id != null) {</span>
+<span class="fc" id="L262">            label = id;</span>
         }
         
-<span class="pc bpc" id="L255" title="1 of 2 branches missed.">        if (id == null) {</span>
-<span class="nc" id="L256">            throw new IllegalArgumentException(&quot;node is missing id: &quot; + content);</span>
+<span class="pc bpc" id="L265" title="1 of 2 branches missed.">        if (id == null) {</span>
+<span class="nc" id="L266">            throw new IllegalArgumentException(&quot;node is missing id: &quot; + content);</span>
         }
         
-<span class="fc" id="L259">        int idI = Integer.parseInt(id);</span>
+<span class="fc" id="L269">        int idI = Integer.parseInt(id);</span>
         
-<span class="pc bpc" id="L261" title="1 of 2 branches missed.">        if (nodeIdLabelMap.containsKey(idI)) {</span>
-<span class="nc" id="L262">            log.warning(&quot;node id=&quot; + id + &quot; is in file more than once&quot;);</span>
+<span class="pc bpc" id="L271" title="1 of 2 branches missed.">        if (nodeIdLabelMap.containsKey(idI)) {</span>
+<span class="nc" id="L272">            log.warning(&quot;node id=&quot; + id + &quot; is in file more than once&quot;);</span>
         }
         
-<span class="fc" id="L265">        nodeIdLabelMap.put(idI, label);</span>
-<span class="fc" id="L266">    }</span>
+<span class="fc" id="L275">        nodeIdLabelMap.put(idI, label);</span>
+<span class="fc" id="L276">    }</span>
 
     /*
     from: &quot;GML: A portable Graph File Format&quot; by Michael Himsolt

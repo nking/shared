@@ -1,0 +1,551 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PolarAngleQuickSort.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.sort</a> &gt; <span class="el_source">PolarAngleQuickSort.java</span></div><h1>PolarAngleQuickSort.java</h1><pre class="source lang-java linenums">package algorithms.sort;
+
+import algorithms.util.AngleUtil;
+import algorithms.sort.CountingSort;
+import algorithms.util.FormatArray;
+import algorithms.util.PairInt;
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * adapted from 
+ * https://code.google.com/p/two-point-correlation/source/browse/src/test/java/algorithms/compGeometry/convexHull/
+ * under MIT License (MIT), Nichole King 2013
+
+then moved to:
+     https://github.com/nking/curvature-scale-space-corners-and-transformations
+     w/ Copyright (c) 2014 Climb With Your Feet
+     and using The MIT License (MIT)
+
+   then moved to this shared library project which has the same copyright
+   and license.
+
+ * 
+ * The algorithm uses a merge sort which has a worse case runtime is O(N * log_2(N)),
+ * but also includes an additional set of operations to remove inner points with the
+ * same polar angle from P0.
+ *
+ */
+<span class="nc" id="L29">public class PolarAngleQuickSort {</span>
+
+    public static &lt;T extends PairInt&gt; int sort(T p0, T[] points) {
+
+<span class="pc bpc" id="L33" title="1 of 2 branches missed.">        if (p0 == null) {</span>
+<span class="nc" id="L34">        	throw new IllegalArgumentException(&quot;p0 cannot be null&quot;);</span>
+        }
+<span class="fc bfc" id="L36" title="All 2 branches covered.">        if (points == null) {</span>
+<span class="fc" id="L37">        	throw new IllegalArgumentException(&quot;points cannot be null&quot;);</span>
+        }
+        
+<span class="fc bfc" id="L40" title="All 2 branches covered.">        if (points.length == 1) {</span>
+<span class="fc" id="L41">            return 1;</span>
+        }
+
+        // for angles which are same, a delete operation is needed after all processing
+        //    and ability to ignore the point to be deleted.
+<span class="fc" id="L46">        double[] polarAngle = new double[points.length];</span>
+        
+<span class="fc bfc" id="L48" title="All 2 branches covered.">        for (int i = 1; i &lt; points.length; i++) {</span>
+            
+<span class="fc" id="L50">            polarAngle[i] = AngleUtil.polarAngleCCW(</span>
+<span class="fc" id="L51">                (double)(points[i].getX() - p0.getX()), </span>
+<span class="fc" id="L52">                (double)(points[i].getY() - p0.getY()));</span>
+        }
+        
+<span class="fc" id="L55">        sortByPolarAngle(points, 1, points.length - 1, polarAngle);</span>
+        
+<span class="fc" id="L57">        int nUsable = reduceToUniquePolarAngles(p0, points, polarAngle);</span>
+        
+<span class="fc" id="L59">        return nUsable;</span>
+    }
+   
+    /**
+     * sort list points by polar angle w.r.t. point p0.
+     * Note that this sort does not remove any points
+     * for having same angle.
+     * @param &lt;T&gt;
+     * @param p0
+     * @param points
+     * @return 
+     */
+    public static &lt;T extends PairInt&gt; int sort2(T p0, List&lt;T&gt; points) {
+
+<span class="nc bnc" id="L73" title="All 2 branches missed.">        if (p0 == null) {</span>
+<span class="nc" id="L74">        	throw new IllegalArgumentException(&quot;p0 cannot be null&quot;);</span>
+        }
+<span class="nc bnc" id="L76" title="All 2 branches missed.">        if (points == null) {</span>
+<span class="nc" id="L77">        	throw new IllegalArgumentException(&quot;points cannot be null&quot;);</span>
+        }
+        
+<span class="nc bnc" id="L80" title="All 2 branches missed.">        if (points.size() == 1) {</span>
+<span class="nc" id="L81">            return 1;</span>
+        }
+
+        // for angles which are same, a delete operation is needed after all processing
+        //    and ability to ignore the point to be deleted.
+<span class="nc" id="L86">        double[] polarAngle = new double[points.size()];</span>
+        
+<span class="nc bnc" id="L88" title="All 2 branches missed.">        for (int i = 1; i &lt; points.size(); i++) {</span>
+            
+<span class="nc" id="L90">            polarAngle[i] = AngleUtil.polarAngleCCW(</span>
+<span class="nc" id="L91">                (double)(points.get(i).getX() - p0.getX()), </span>
+<span class="nc" id="L92">                (double)(points.get(i).getY() - p0.getY()));</span>
+        }
+        
+<span class="nc" id="L95">        sortByPolarAngle(points, 1, points.size() - 1, polarAngle);</span>
+                
+<span class="nc" id="L97">        return points.size();</span>
+    }
+    
+    static int reduceToUniquePolarAngles(float xP0, float yP0, float[] x, 
+        float[] y, double[] polarAngle) {
+
+<span class="fc" id="L103">        double maxDist = Double.NEGATIVE_INFINITY;</span>
+        int iMaxDist;
+        double dist;
+        int nextI;
+<span class="fc" id="L107">        int i2 = 1;</span>
+        
+<span class="fc" id="L109">        double eps = 0;</span>
+
+<span class="fc bfc" id="L111" title="All 2 branches covered.">        for (int i = 1; i &lt; x.length; i++) {</span>
+
+            // look ahead
+<span class="fc" id="L114">            nextI = i + 1;</span>
+<span class="fc" id="L115">            iMaxDist = i;</span>
+            
+<span class="fc bfc" id="L117" title="All 4 branches covered.">            if ( (nextI &lt; x.length)   &amp;&amp; (Math.abs( polarAngle[i] - polarAngle[nextI] ) &lt;= eps) ) {</span>
+<span class="fc" id="L118">                maxDist = relativeLengthOfLine(xP0, yP0, x[i], y[i]);</span>
+            }
+
+<span class="fc bfc" id="L121" title="All 4 branches covered.">            while ( (nextI &lt; x.length)  &amp;&amp; (Math.abs( polarAngle[i] - polarAngle[nextI] ) &lt;= eps) ) {</span>
+<span class="fc" id="L122">                dist = relativeLengthOfLine(xP0, yP0, x[nextI], y[nextI]);</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">                if (maxDist &lt; dist) {</span>
+<span class="fc" id="L124">                    maxDist = dist;</span>
+<span class="fc" id="L125">                    iMaxDist = nextI;</span>
+                }
+<span class="fc" id="L127">                nextI++;</span>
+            }
+            
+<span class="fc" id="L130">            x[i2] = x[iMaxDist];</span>
+<span class="fc" id="L131">            y[i2] = y[iMaxDist];</span>
+<span class="fc" id="L132">            i = nextI - 1;</span>
+<span class="fc" id="L133">            ++i2;</span>
+        }
+        
+<span class="fc" id="L136">        return i2;</span>
+    }
+
+    static &lt;T extends PairInt&gt; int reduceToUniquePolarAngles(T p0, T[] points, 
+        double[] polarAngle) {
+
+<span class="fc" id="L142">        double maxDist = Double.NEGATIVE_INFINITY;</span>
+        int iMaxDist;
+        double dist;
+        int nextI;
+<span class="fc" id="L146">        int i2 = 1;</span>
+        
+<span class="fc" id="L148">        double eps = 0;</span>
+
+<span class="fc bfc" id="L150" title="All 2 branches covered.">        for (int i = 1; i &lt; points.length; i++) {</span>
+
+            // look ahead
+<span class="fc" id="L153">            nextI = i + 1;</span>
+<span class="fc" id="L154">            iMaxDist = i;</span>
+            
+<span class="fc bfc" id="L156" title="All 2 branches covered.">            if ( (nextI &lt; points.length)  </span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">                &amp;&amp; (Math.abs( polarAngle[i] - polarAngle[nextI] ) &lt;= eps) ) {</span>
+<span class="fc" id="L158">                maxDist = relativeLengthOfLine(p0, points[i]);</span>
+            }
+
+<span class="fc bfc" id="L161" title="All 2 branches covered.">            while ( (nextI &lt; points.length) </span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">                &amp;&amp; (Math.abs( polarAngle[i] - polarAngle[nextI] ) &lt;= eps) ) {</span>
+<span class="fc" id="L163">                dist = relativeLengthOfLine(p0, points[nextI]);</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">                if (maxDist &lt; dist) {</span>
+<span class="fc" id="L165">                    maxDist = dist;</span>
+<span class="fc" id="L166">                    iMaxDist = nextI;</span>
+                }
+<span class="fc" id="L168">                nextI++;</span>
+            }
+            
+<span class="fc" id="L171">            points[i2] = points[iMaxDist];</span>
+<span class="fc" id="L172">            i = nextI - 1;</span>
+<span class="fc" id="L173">            ++i2;</span>
+        }
+        
+<span class="fc" id="L176">        return i2;</span>
+    }
+
+    static &lt;T extends PairInt&gt; int reduceToUniquePolarAngles(
+        T p0, List&lt;T&gt; points, double[] polarAngle) {
+         
+<span class="nc" id="L182">        double maxDist = Double.NEGATIVE_INFINITY;</span>
+        int iMaxDist;
+        double dist;
+        int nextI;
+<span class="nc" id="L186">        int i2 = 1;</span>
+        
+<span class="nc" id="L188">        double eps = 0;</span>
+
+<span class="nc bnc" id="L190" title="All 2 branches missed.">        for (int i = 1; i &lt; points.size(); i++) {</span>
+
+            // look ahead
+<span class="nc" id="L193">            nextI = i + 1;</span>
+<span class="nc" id="L194">            iMaxDist = i;</span>
+            
+<span class="nc bnc" id="L196" title="All 2 branches missed.">            if ( (nextI &lt; points.size()) </span>
+<span class="nc bnc" id="L197" title="All 2 branches missed.">                &amp;&amp; (Math.abs( polarAngle[i] - polarAngle[nextI] ) &lt;= eps) ) {</span>
+<span class="nc" id="L198">                maxDist = relativeLengthOfLine(p0, points.get(i));</span>
+            }
+
+<span class="nc bnc" id="L201" title="All 2 branches missed.">            while ( (nextI &lt; points.size()) </span>
+<span class="nc bnc" id="L202" title="All 2 branches missed.">                &amp;&amp; (Math.abs( polarAngle[i] - polarAngle[nextI] ) &lt;= eps) ) {</span>
+<span class="nc" id="L203">                dist = relativeLengthOfLine(p0, points.get(nextI));</span>
+<span class="nc bnc" id="L204" title="All 2 branches missed.">                if (maxDist &lt; dist) {</span>
+<span class="nc" id="L205">                    maxDist = dist;</span>
+<span class="nc" id="L206">                    iMaxDist = nextI;</span>
+                }
+<span class="nc" id="L208">                nextI++;</span>
+            }
+            
+<span class="nc" id="L211">            points.set(i2, points.get(iMaxDist));</span>
+<span class="nc" id="L212">            i = nextI - 1;</span>
+<span class="nc" id="L213">            ++i2;</span>
+        }
+        
+<span class="nc" id="L216">        return i2;</span>
+    }
+
+    static &lt;T extends PairInt&gt; void sortByPolarAngle(T[] a, int idxLo, 
+        int idxHi, double[] polarAngle) {
+        
+<span class="pc bpc" id="L222" title="1 of 2 branches missed.">        if (a == null) {</span>
+<span class="nc" id="L223">            throw new IllegalArgumentException(&quot;a cannot be null&quot;);</span>
+        }
+<span class="pc bpc" id="L225" title="1 of 2 branches missed.">        if (a.length &lt; 2) {</span>
+<span class="nc" id="L226">            return;</span>
+        }
+        
+<span class="fc bfc" id="L229" title="All 2 branches covered.">        if (idxLo &lt; idxHi) {</span>
+<span class="fc" id="L230">            int idxMid = partitionByPolarAngle(a, idxLo, idxHi, polarAngle);</span>
+<span class="fc" id="L231">            sortByPolarAngle(a, idxLo, idxMid - 1, polarAngle);</span>
+<span class="fc" id="L232">            sortByPolarAngle(a, idxMid + 1, idxHi, polarAngle);</span>
+        }
+<span class="fc" id="L234">    }</span>
+    
+    static &lt;T extends PairInt&gt; void sortByPolarAngle(List&lt;T&gt; a, int idxLo, 
+        int idxHi, double[] polarAngle) {
+        
+<span class="pc bpc" id="L239" title="1 of 2 branches missed.">        if (a == null) {</span>
+<span class="nc" id="L240">            throw new IllegalArgumentException(&quot;a cannot be null&quot;);</span>
+        }
+<span class="pc bpc" id="L242" title="1 of 2 branches missed.">        if (a.size() &lt; 2) {</span>
+<span class="nc" id="L243">            return;</span>
+        }
+        
+<span class="fc bfc" id="L246" title="All 2 branches covered.">        if (idxLo &lt; idxHi) {</span>
+<span class="fc" id="L247">            int idxMid = partitionByPolarAngle(a, idxLo, idxHi, polarAngle);</span>
+<span class="fc" id="L248">            sortByPolarAngle(a, idxLo, idxMid - 1, polarAngle);</span>
+<span class="fc" id="L249">            sortByPolarAngle(a, idxMid + 1, idxHi, polarAngle);</span>
+        }
+<span class="fc" id="L251">    }</span>
+    
+    private static &lt;T extends PairInt&gt; int partitionByPolarAngle(T[] a, int idxLo, 
+        int idxHi, double[] polarAngle) {
+     
+<span class="fc" id="L256">        double x = polarAngle[idxHi];</span>
+<span class="fc" id="L257">        int store = idxLo - 1;</span>
+        
+<span class="fc bfc" id="L259" title="All 2 branches covered.">        for (int i = idxLo; i &lt; idxHi; i++) {</span>
+<span class="fc" id="L260">            boolean doSwap = false;</span>
+<span class="fc bfc" id="L261" title="All 2 branches covered.">            if (polarAngle[i] &lt; x) {</span>
+<span class="fc" id="L262">                doSwap = true;</span>
+            }
+<span class="fc bfc" id="L264" title="All 2 branches covered.">            if (doSwap) {</span>
+<span class="fc" id="L265">                store++;</span>
+<span class="fc" id="L266">                T swap = a[store];</span>
+<span class="fc" id="L267">                a[store] = a[i];</span>
+<span class="fc" id="L268">                a[i] = swap;</span>
+<span class="fc" id="L269">                double swap2 = polarAngle[store];</span>
+<span class="fc" id="L270">                polarAngle[store] = polarAngle[i];</span>
+<span class="fc" id="L271">                polarAngle[i] = swap2;</span>
+            }
+        }
+<span class="fc" id="L274">        store++;</span>
+<span class="fc" id="L275">        T swap = a[store];</span>
+<span class="fc" id="L276">        a[store] = a[idxHi];</span>
+<span class="fc" id="L277">        a[idxHi] = swap;</span>
+<span class="fc" id="L278">        double swap2 = polarAngle[store];</span>
+<span class="fc" id="L279">        polarAngle[store] = polarAngle[idxHi];</span>
+<span class="fc" id="L280">        polarAngle[idxHi] = swap2;</span>
+        
+<span class="fc" id="L282">        return store;</span>
+    }
+    
+    private static &lt;T extends PairInt&gt; int partitionByPolarAngle(List&lt;T&gt; a, int idxLo, 
+        int idxHi, double[] polarAngle) {
+     
+<span class="fc" id="L288">        double x = polarAngle[idxHi];</span>
+<span class="fc" id="L289">        int store = idxLo - 1;</span>
+        
+<span class="fc bfc" id="L291" title="All 2 branches covered.">        for (int i = idxLo; i &lt; idxHi; i++) {</span>
+<span class="fc" id="L292">            boolean doSwap = false;</span>
+<span class="fc bfc" id="L293" title="All 2 branches covered.">            if (polarAngle[i] &lt; x) {</span>
+<span class="fc" id="L294">                doSwap = true;</span>
+            }
+<span class="fc bfc" id="L296" title="All 2 branches covered.">            if (doSwap) {</span>
+<span class="fc" id="L297">                store++;</span>
+<span class="fc" id="L298">                T swap = a.get(store);</span>
+<span class="fc" id="L299">                a.set(store, a.get(i));</span>
+<span class="fc" id="L300">                a.set(i, swap);</span>
+<span class="fc" id="L301">                double swap2 = polarAngle[store];</span>
+<span class="fc" id="L302">                polarAngle[store] = polarAngle[i];</span>
+<span class="fc" id="L303">                polarAngle[i] = swap2;</span>
+            }
+        }
+<span class="fc" id="L306">        store++;</span>
+<span class="fc" id="L307">        T swap = a.get(store);</span>
+<span class="fc" id="L308">        a.set(store, a.get(idxHi));</span>
+<span class="fc" id="L309">        a.set(idxHi, swap);</span>
+<span class="fc" id="L310">        double swap2 = polarAngle[store];</span>
+<span class="fc" id="L311">        polarAngle[store] = polarAngle[idxHi];</span>
+<span class="fc" id="L312">        polarAngle[idxHi] = swap2;</span>
+        
+<span class="fc" id="L314">        return store;</span>
+    }
+    
+    protected static void sort(float[] x, float[] y, 
+        int indexLo, int indexHi, double[] polarAngle) {
+        
+<span class="nc bnc" id="L320" title="All 2 branches missed.">        if (indexLo &lt; indexHi) {</span>
+
+<span class="nc" id="L322">            int indexMid = (indexLo + indexHi) &gt;&gt; 1;</span>
+
+<span class="nc" id="L324">            sort(x, y, indexLo, indexMid, polarAngle);</span>
+<span class="nc" id="L325">            sort(x, y, indexMid + 1, indexHi, polarAngle);</span>
+<span class="nc" id="L326">            merge(x, y, indexLo, indexMid, indexHi, polarAngle);</span>
+        }
+<span class="nc" id="L328">    }</span>
+    
+    private static void merge(float[] x, float[] y, 
+        int indexLo, int indexMid, int indexHi, final double[] polarAngle) {
+
+<span class="nc" id="L333">        int nLeft = indexMid - indexLo + 1;</span>
+<span class="nc" id="L334">        int nRight = indexHi - indexMid;</span>
+
+<span class="nc" id="L336">        float[] xLeft = Arrays.copyOfRange(x, indexLo, indexMid + 2);       // add 1 for sentinel</span>
+<span class="nc" id="L337">        float[] yLeft = Arrays.copyOfRange(y, indexLo, indexMid + 2);</span>
+<span class="nc" id="L338">        double[] angleLeft = Arrays.copyOfRange(polarAngle, indexLo, indexMid + 2);</span>
+
+<span class="nc" id="L340">        float[] xRight = Arrays.copyOfRange(x, indexMid + 1, indexHi + 2);  // add 1 for sentinel</span>
+<span class="nc" id="L341">        float[] yRight = Arrays.copyOfRange(y, indexMid + 1, indexHi + 2);</span>
+<span class="nc" id="L342">        double[] angleRight = Arrays.copyOfRange(polarAngle, indexMid + 1, indexHi + 2);</span>
+
+<span class="nc" id="L344">        xLeft[nLeft] = Float.MAX_VALUE;</span>
+<span class="nc" id="L345">        yLeft[nLeft] = Float.MAX_VALUE;</span>
+<span class="nc" id="L346">        angleLeft[nLeft] = Double.MAX_VALUE;</span>
+<span class="nc" id="L347">        xRight[nRight] = Float.MAX_VALUE;</span>
+<span class="nc" id="L348">        yRight[nRight] = Float.MAX_VALUE;</span>
+<span class="nc" id="L349">        angleRight[nRight] = Double.MAX_VALUE;</span>
+
+<span class="nc" id="L351">        int i = 0;</span>
+<span class="nc" id="L352">        int j = 0;</span>
+
+<span class="nc bnc" id="L354" title="All 2 branches missed.">        for (int k = indexLo; k &lt;= indexHi; k++) {</span>
+
+<span class="nc bnc" id="L356" title="All 2 branches missed.">            if (angleLeft[i] &lt;= angleRight[j]) {</span>
+
+<span class="nc" id="L358">                y[k] = yLeft[i];</span>
+<span class="nc" id="L359">                x[k] = xLeft[i];</span>
+<span class="nc" id="L360">                polarAngle[k] = angleLeft[i];</span>
+<span class="nc" id="L361">                i++;</span>
+            } else {
+
+<span class="nc" id="L364">                y[k] = yRight[j];</span>
+<span class="nc" id="L365">                x[k] = xRight[j];</span>
+<span class="nc" id="L366">                polarAngle[k] = angleRight[j];</span>
+<span class="nc" id="L367">                j++;</span>
+            }
+        }
+<span class="nc" id="L370">    }</span>
+
+    static double relativeLengthOfLine(double x1, double y1, double x2, double y2) {
+<span class="fc" id="L373">        double dx2 = (x2 - x1);</span>
+<span class="fc" id="L374">        dx2 *= dx2;</span>
+<span class="fc" id="L375">        double dy2 = (y2 - y1);</span>
+<span class="fc" id="L376">        dy2 *= dy2;</span>
+        //double d = Math.sqrt(dx2 + dy2);
+<span class="fc" id="L378">        return dx2 + dy2;</span>
+    }
+
+    static &lt;T extends PairInt&gt; double relativeLengthOfLine(T p1, T p2) {
+<span class="fc" id="L382">        double dx2 = (p2.getX() - p1.getX());</span>
+<span class="fc" id="L383">        dx2 *= dx2;</span>
+<span class="fc" id="L384">        double dy2 = (p2.getY() - p1.getY());</span>
+<span class="fc" id="L385">        dy2 *= dy2;</span>
+        //double d = Math.sqrt(dx2 + dy2);
+<span class="fc" id="L387">        return dx2 + dy2;</span>
+    }
+
+    /**
+     * sort the points in counter-clockwise order using quick sort.  runtime complexity is O(n*log_2(n)).
+     * @param x0
+     * @param y0
+     * @param x
+     * @param y
+     * @param outPolarAngle
+     */
+    public static void sortCCWBy1stPoint(long x0, long y0, long[] x, long[] y,
+                                                double[] outPolarAngle) {
+        
+<span class="nc bnc" id="L401" title="All 4 branches missed.">        if (x.length != outPolarAngle.length || x.length != y.length) {</span>
+<span class="nc" id="L402">            throw new IllegalArgumentException(&quot;x, y, and outPolarAngle must be same lengths&quot;);</span>
+        }
+        
+<span class="nc bnc" id="L405" title="All 2 branches missed.">        for (int i = 0; i &lt; outPolarAngle.length; i++) {</span>
+<span class="nc" id="L406">            outPolarAngle[i] = AngleUtil.polarAngleCCW((double)(x[i] - x0), (double)(y[i] - y0));</span>
+        }
+        
+        // sort x, y by outPolarAngle
+<span class="nc" id="L410">        sortCCW(x, y, outPolarAngle, 0, x.length - 1);</span>
+<span class="nc" id="L411">    }</span>
+
+    private static void sortCCW(long[] x, long[] y, double[] pA, int iLo, int iHi) {
+<span class="nc bnc" id="L414" title="All 2 branches missed.">        if (iLo &lt; iHi) {</span>
+<span class="nc" id="L415">            int iMid = partitionCCW(x, y, pA, iLo, iHi);</span>
+<span class="nc" id="L416">            sortCCW(x, y, pA, iLo, iMid-1);</span>
+<span class="nc" id="L417">            sortCCW(x, y, pA, iMid+1, iHi);</span>
+        }
+<span class="nc" id="L419">    }</span>
+
+    private static int partitionCCW(long[] x, long[] y, double[] pA, int iLo, int iHi) {
+<span class="nc" id="L422">        double pAR = pA[iHi];</span>
+<span class="nc" id="L423">        int i = iLo - 1;</span>
+        long swap;
+        double swap2;
+        
+<span class="nc bnc" id="L427" title="All 2 branches missed.">        for (int k = iLo; k &lt; iHi; ++k) {</span>
+<span class="nc bnc" id="L428" title="All 2 branches missed.">            if (pA[k] &lt;= pAR) {</span>
+<span class="nc" id="L429">                ++i;</span>
+                
+<span class="nc" id="L431">                swap2 = pA[k];</span>
+<span class="nc" id="L432">                pA[k] = pA[i];</span>
+<span class="nc" id="L433">                pA[i] = swap2;</span>
+                
+<span class="nc" id="L435">                swap = x[k];</span>
+<span class="nc" id="L436">                x[k] = x[i];</span>
+<span class="nc" id="L437">                x[i] = swap;</span>
+                
+<span class="nc" id="L439">                swap = y[k];</span>
+<span class="nc" id="L440">                y[k] = y[i];</span>
+<span class="nc" id="L441">                y[i] = swap;</span>
+            }
+        }
+<span class="nc" id="L444">        ++i;</span>
+<span class="nc" id="L445">        swap2 = pA[iHi];</span>
+<span class="nc" id="L446">        pA[iHi] = pA[i];</span>
+<span class="nc" id="L447">        pA[i] = swap2;</span>
+        
+<span class="nc" id="L449">        swap = x[iHi];</span>
+<span class="nc" id="L450">        x[iHi] = x[i];</span>
+<span class="nc" id="L451">        x[i] = swap;</span>
+        
+<span class="nc" id="L453">        swap = y[iHi];</span>
+<span class="nc" id="L454">        y[iHi] = y[i];</span>
+<span class="nc" id="L455">        y[i] = swap;</span>
+        
+<span class="nc" id="L457">        return i;</span>
+    }
+
+    /**
+     * traverse the polar angles in pA, convert the angles to rounded integer degrees, and if
+     * points have the same polar angles only keep the one furthest from (x0, y0).
+     * note that all points (x, y) have been sorted by increasing angle in
+     * pA inCCW order.
+     * the arrays x, y, and pA are compacted so that the usable values are at the
+     * top r indexes where r is returned by this method
+     * @param x0
+     * @param y0
+     * @param x
+     * @param y
+     * @param pA 
+     * @return returns the number of indexes usable in each of x, y, and pA
+     * after compacting the arrays to remove redundant polar angle degrees.
+     */
+    private static int reduceToUniquePolarAngles(long x0, long y0, long[] x, 
+        long[] y, double[] pA) {
+        
+<span class="nc bnc" id="L478" title="All 4 branches missed.">        if (x.length != pA.length || x.length != y.length) {</span>
+<span class="nc" id="L479">            throw new IllegalArgumentException(&quot;x, y, and pA must be same lengths&quot;);</span>
+        }
+        
+        // traverse the list of pA, converting to rounded degrees, and store each
+        // pA in a list by index
+        
+        // then traverse the degree list and if there is only one point with
+        //   that angle, store it in (x2,y2,pa2) else compare the distances form (x0,y0) among
+        //   those with the same angle and keep the largest distance.
+        
+        int i;
+<span class="nc" id="L490">        int[] deg = new int[pA.length];</span>
+<span class="nc bnc" id="L491" title="All 2 branches missed.">        for (i = 0; i &lt; pA.length; ++i) {</span>
+<span class="nc" id="L492">            deg[i] = (int)Math.round(pA[i]*(180./Math.PI));</span>
+        }
+        
+<span class="nc" id="L495">        long maxDist = Long.MIN_VALUE;</span>
+        int iMaxDist;
+        long dist;
+        int nextI;
+<span class="nc" id="L499">        int i2 = 0;</span>
+        
+        long xd;
+        long yd;
+        
+<span class="nc bnc" id="L504" title="All 2 branches missed.">        for (i = 0; i &lt; pA.length; ++i) {</span>
+
+            // look ahead
+<span class="nc" id="L507">            nextI = i + 1;</span>
+<span class="nc" id="L508">            iMaxDist = i;</span>
+            
+<span class="nc bnc" id="L510" title="All 4 branches missed.">            if ( (nextI &lt; pA.length) &amp;&amp; (deg[i] == deg[nextI]) ) {</span>
+<span class="nc" id="L511">                xd = x0 - x[i];</span>
+<span class="nc" id="L512">                yd = y0 - y[i];</span>
+<span class="nc" id="L513">                maxDist = (xd * xd + yd * yd);</span>
+            }
+            
+<span class="nc bnc" id="L516" title="All 4 branches missed.">            while ( (nextI &lt; pA.length) &amp;&amp; (deg[i] == deg[nextI]) ) {</span>
+<span class="nc" id="L517">                xd = x0 - x[nextI];</span>
+<span class="nc" id="L518">                yd = y0 - y[nextI];</span>
+<span class="nc" id="L519">                dist = (xd * xd + yd * yd);</span>
+<span class="nc bnc" id="L520" title="All 2 branches missed.">                if (maxDist &lt; dist) {</span>
+<span class="nc" id="L521">                    maxDist = dist;</span>
+<span class="nc" id="L522">                    iMaxDist = nextI;</span>
+                }
+<span class="nc" id="L524">                nextI++;</span>
+            }
+            
+<span class="nc" id="L527">            x[i2] = x[iMaxDist];</span>
+<span class="nc" id="L528">            y[i2] = y[iMaxDist];</span>
+<span class="nc" id="L529">            pA[i2] = pA[iMaxDist];</span>
+<span class="nc" id="L530">            i = nextI - 1;</span>
+<span class="nc" id="L531">            ++i2;            </span>
+        }
+        
+<span class="nc" id="L534">        return i2;</span>
+    }
+
+    private static void rewriteBySortedIndexes(int[] sortedIndexes1, 
+        int[] x) {
+        
+<span class="nc" id="L540">        int n = x.length;</span>
+        
+<span class="nc" id="L542">        int[] x2 = new int[n];</span>
+<span class="nc bnc" id="L543" title="All 2 branches missed.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="nc" id="L544">            x2[i] = x[sortedIndexes1[i]];</span>
+        }
+        
+<span class="nc" id="L547">        System.arraycopy(x2, 0, x, 0, n);</span>
+<span class="nc" id="L548">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

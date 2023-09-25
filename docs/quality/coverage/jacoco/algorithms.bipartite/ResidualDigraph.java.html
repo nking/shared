@@ -43,120 +43,137 @@ public class ResidualDigraph {
      */
 <span class="pc" id="L44">    private TIntIntMap backwardLinksRM = new TIntIntHashMap();</span>
 
-<span class="fc" id="L46">    public ResidualDigraph(Graph g, TIntIntMap m) {                </span>
+    /**
+     *
+     @param g
+     @param m
+     */
+<span class="fc" id="L51">    public ResidualDigraph(Graph g, TIntIntMap m) {                </span>
         
-<span class="fc" id="L48">        this.nLeft = g.getNLeft();</span>
-<span class="fc" id="L49">        this.nRight = g.getNRight();</span>
+<span class="fc" id="L53">        this.nLeft = g.getNLeft();</span>
+<span class="fc" id="L54">        this.nRight = g.getNRight();</span>
         
-<span class="fc" id="L51">        TObjectIntIterator&lt;PairInt&gt; iter = </span>
-<span class="fc" id="L52">            g.getEdgeWeights().iterator();</span>
-<span class="fc bfc" id="L53" title="All 2 branches covered.">        for (int i = g.getEdgeWeights().size(); i-- &gt; 0;) {</span>
+<span class="fc" id="L56">        TObjectIntIterator&lt;PairInt&gt; iter = </span>
+<span class="fc" id="L57">            g.getEdgeWeights().iterator();</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">        for (int i = g.getEdgeWeights().size(); i-- &gt; 0;) {</span>
 
-<span class="fc" id="L55">            iter.advance();</span>
+<span class="fc" id="L60">            iter.advance();</span>
 
-<span class="fc" id="L57">            PairInt p = iter.key();</span>
-<span class="fc" id="L58">            int x = p.getX();</span>
-<span class="fc" id="L59">            int y = p.getY();</span>
+<span class="fc" id="L62">            PairInt p = iter.key();</span>
+<span class="fc" id="L63">            int x = p.getX();</span>
+<span class="fc" id="L64">            int y = p.getY();</span>
             
-<span class="fc" id="L61">            TIntSet ys = forwardLinksRM.get(x);</span>
-<span class="fc bfc" id="L62" title="All 2 branches covered.">            if (ys == null) {</span>
-<span class="fc" id="L63">                ys = new TIntHashSet();</span>
-<span class="fc" id="L64">                forwardLinksRM.put(x, ys);</span>
+<span class="fc" id="L66">            TIntSet ys = forwardLinksRM.get(x);</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">            if (ys == null) {</span>
+<span class="fc" id="L68">                ys = new TIntHashSet();</span>
+<span class="fc" id="L69">                forwardLinksRM.put(x, ys);</span>
             }
-<span class="fc" id="L66">            ys.add(y);</span>
-<span class="fc" id="L67">        }</span>
+<span class="fc" id="L71">            ys.add(y);</span>
+<span class="fc" id="L72">        }</span>
         
-<span class="fc" id="L69">        TIntIntIterator iter2 = m.iterator();</span>
-<span class="fc bfc" id="L70" title="All 2 branches covered.">        for (int i = m.size(); i-- &gt; 0;) {</span>
-<span class="fc" id="L71">            iter2.advance();</span>
-<span class="fc" id="L72">            int x = iter2.key();</span>
-<span class="fc" id="L73">            int y = iter2.value();</span>
+<span class="fc" id="L74">        TIntIntIterator iter2 = m.iterator();</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">        for (int i = m.size(); i-- &gt; 0;) {</span>
+<span class="fc" id="L76">            iter2.advance();</span>
+<span class="fc" id="L77">            int x = iter2.key();</span>
+<span class="fc" id="L78">            int y = iter2.value();</span>
                         
-<span class="fc" id="L75">            backwardLinksRM.put(y, x);</span>
+<span class="fc" id="L80">            backwardLinksRM.put(y, x);</span>
             
-<span class="fc" id="L77">            forwardLinksRM.get(x).remove(y);</span>
-<span class="fc" id="L78">        }</span>
-<span class="fc" id="L79">    }</span>
+<span class="fc" id="L82">            forwardLinksRM.get(x).remove(y);</span>
+<span class="fc" id="L83">        }</span>
+<span class="fc" id="L84">    }</span>
             
-<span class="nc" id="L81">    public ResidualDigraph(GraphWithoutWeights g) {                </span>
+    /**
+     *
+     @param g
+     */
+<span class="nc" id="L90">    public ResidualDigraph(GraphWithoutWeights g) {                </span>
     
-<span class="nc" id="L83">        this.nLeft = g.getNLeft();</span>
-<span class="nc" id="L84">        this.nRight = g.getNRight();</span>
+<span class="nc" id="L92">        this.nLeft = g.getNLeft();</span>
+<span class="nc" id="L93">        this.nRight = g.getNRight();</span>
         
-<span class="nc" id="L86">        TIntObjectIterator&lt;TIntSet&gt; iter </span>
-<span class="nc" id="L87">            = g.getAdjacencyMap().iterator();</span>
+<span class="nc" id="L95">        TIntObjectIterator&lt;TIntSet&gt; iter </span>
+<span class="nc" id="L96">            = g.getAdjacencyMap().iterator();</span>
         
-<span class="nc bnc" id="L89" title="All 2 branches missed.">        for (int i = g.getAdjacencyMap().size(); i-- &gt; 0;) {</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">        for (int i = g.getAdjacencyMap().size(); i-- &gt; 0;) {</span>
 
-<span class="nc" id="L91">            iter.advance();</span>
+<span class="nc" id="L100">            iter.advance();</span>
             
-<span class="nc" id="L93">            int uIndex = iter.key();</span>
-<span class="nc" id="L94">            TIntSet vIndexes = iter.value();</span>
-<span class="nc" id="L95">            TIntIterator iter2 = vIndexes.iterator();</span>
-<span class="nc bnc" id="L96" title="All 2 branches missed.">            while (iter2.hasNext()) {</span>
-<span class="nc" id="L97">                int v = iter2.next();</span>
-<span class="nc" id="L98">                TIntSet ys = forwardLinksRM.get(uIndex);</span>
-<span class="nc bnc" id="L99" title="All 2 branches missed.">                if (ys == null) {</span>
-<span class="nc" id="L100">                    ys = new TIntHashSet();</span>
-<span class="nc" id="L101">                    forwardLinksRM.put(uIndex, ys);</span>
+<span class="nc" id="L102">            int uIndex = iter.key();</span>
+<span class="nc" id="L103">            TIntSet vIndexes = iter.value();</span>
+<span class="nc" id="L104">            TIntIterator iter2 = vIndexes.iterator();</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">            while (iter2.hasNext()) {</span>
+<span class="nc" id="L106">                int v = iter2.next();</span>
+<span class="nc" id="L107">                TIntSet ys = forwardLinksRM.get(uIndex);</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">                if (ys == null) {</span>
+<span class="nc" id="L109">                    ys = new TIntHashSet();</span>
+<span class="nc" id="L110">                    forwardLinksRM.put(uIndex, ys);</span>
                 }
-<span class="nc" id="L103">                ys.add(v);</span>
-<span class="nc" id="L104">            }</span>
-<span class="nc" id="L105">        }</span>
-<span class="nc" id="L106">    }</span>
+<span class="nc" id="L112">                ys.add(v);</span>
+<span class="nc" id="L113">            }</span>
+<span class="nc" id="L114">        }</span>
+<span class="nc" id="L115">    }</span>
  
+    /**
+     *
+     @return
+     */
     public int countOfForwardBipartiteLinks() {
-<span class="nc" id="L109">        int n = 0;</span>
+<span class="nc" id="L122">        int n = 0;</span>
         
-<span class="nc" id="L111">        TIntObjectIterator&lt;TIntSet&gt; iter = forwardLinksRM.iterator();</span>
-<span class="nc bnc" id="L112" title="All 2 branches missed.">        for (int i = forwardLinksRM.size(); i-- &gt; 0;) {</span>
-<span class="nc" id="L113">            iter.advance();            </span>
-<span class="nc" id="L114">            n += iter.value().size();</span>
+<span class="nc" id="L124">        TIntObjectIterator&lt;TIntSet&gt; iter = forwardLinksRM.iterator();</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">        for (int i = forwardLinksRM.size(); i-- &gt; 0;) {</span>
+<span class="nc" id="L126">            iter.advance();            </span>
+<span class="nc" id="L127">            n += iter.value().size();</span>
         }
-<span class="nc" id="L116">        return n;</span>
+<span class="nc" id="L129">        return n;</span>
     }
     
     /**
-     * @return nLeft number of left nodes
+     @return nLeft number of left nodes
      */
     public int getNLeft() {
-<span class="nc" id="L123">        return nLeft;</span>
+<span class="nc" id="L136">        return nLeft;</span>
     }
 
    /**
-     * @return number of right nodes
+     @return number of right nodes
      */
     public int getNRight() {
-<span class="nc" id="L130">        return nRight;</span>
+<span class="nc" id="L143">        return nRight;</span>
     }
     
     /**
-     * @return the forwardLinksRM
+     @return the forwardLinksRM
      */
     public TIntObjectMap&lt;TIntSet&gt; getForwardLinksRM() {
-<span class="fc" id="L137">        return forwardLinksRM;</span>
+<span class="fc" id="L150">        return forwardLinksRM;</span>
     }
 
     /**
-     * @return the backwardLinksRM
+     @return the backwardLinksRM
      */
     public TIntIntMap getBackwardLinksRM() {
-<span class="fc" id="L144">        return backwardLinksRM;</span>
+<span class="fc" id="L157">        return backwardLinksRM;</span>
     }
 
+    /**
+     *
+     @return
+     */
     public TIntIntMap extractMatchings() {
 
-<span class="nc" id="L149">        TIntIntMap m = new TIntIntHashMap();</span>
+<span class="nc" id="L166">        TIntIntMap m = new TIntIntHashMap();</span>
         
-<span class="nc" id="L151">        TIntIntIterator iter = backwardLinksRM.iterator();</span>
-<span class="nc bnc" id="L152" title="All 2 branches missed.">        for (int i = backwardLinksRM.size(); i-- &gt; 0;) {</span>
-<span class="nc" id="L153">            iter.advance();            </span>
-<span class="nc" id="L154">            int rightIdx = iter.key();</span>
-<span class="nc" id="L155">            int leftIdx = iter.value();</span>
-<span class="nc" id="L156">            m.put(leftIdx, rightIdx);</span>
-<span class="nc" id="L157">        }</span>
+<span class="nc" id="L168">        TIntIntIterator iter = backwardLinksRM.iterator();</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">        for (int i = backwardLinksRM.size(); i-- &gt; 0;) {</span>
+<span class="nc" id="L170">            iter.advance();            </span>
+<span class="nc" id="L171">            int rightIdx = iter.key();</span>
+<span class="nc" id="L172">            int leftIdx = iter.value();</span>
+<span class="nc" id="L173">            m.put(leftIdx, rightIdx);</span>
+<span class="nc" id="L174">        }</span>
         
-<span class="nc" id="L159">        return m;</span>
+<span class="nc" id="L176">        return m;</span>
     }
 
 }

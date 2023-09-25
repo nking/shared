@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DataReader.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">thirdparty.kit.MMCA</a> &gt; <span class="el_source">DataReader.java</span></div><h1>DataReader.java</h1><pre class="source lang-java linenums">package thirdparty.kit.MMCA;
+
+import java.io.*;
+import java.util.*;
+
+/**
+Java source code (April 2014) by Hoang-Vu Nguyen
+downloaded from https://eda.mmci.uni-saarland.de/prj/mac/mac.zip
+
+Nguyen, H-V, Müller, E, Vreeken, J &amp; Böhm, K 
+Multivariate Maximal Correlation Analysis. 
+In: Proceedings of the International Conference on Machine Learning (ICML), 
+pp 775-783, JMLR: W&amp;CP vol.32, 2014. 
+
+@author Hoang-Vu Nguyen
+*/
+<span class="nc" id="L17">public class DataReader </span>
+{
+	public static void readData(String fileName, DataMatrix dataMatrix) throws Exception
+	{
+		try
+		{
+<span class="nc" id="L23">			Scanner scanner = new Scanner(new FileInputStream(fileName));</span>
+			
+<span class="nc" id="L25">			String s = null;</span>
+<span class="nc" id="L26">			int rows = dataMatrix.rows;</span>
+<span class="nc" id="L27">			int cols = dataMatrix.cols;</span>
+<span class="nc" id="L28">			String[] vals = new String[cols + 1];</span>
+<span class="nc" id="L29">			DataPoint newPoint = null;</span>
+<span class="nc" id="L30">			int count = 0;</span>
+			
+<span class="nc" id="L32">			Constants.CRES  = new double[cols];</span>
+<span class="nc" id="L33">			Constants.CLASS_LABELS = new ArrayList&lt;String&gt;();</span>
+			int numClasses;
+			boolean labelExists;
+<span class="nc" id="L36">			String tmpLabel = null;</span>
+			
+<span class="nc bnc" id="L38" title="All 2 branches missed.">			for (int r = 0; r &lt; rows; r++)</span>
+			{
+<span class="nc" id="L40">				s = scanner.nextLine();</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">				if (s.contains(&quot;?&quot;))</span>
+<span class="nc" id="L42">					continue;</span>
+				
+<span class="nc" id="L44">				vals = s.split(Constants.FIELD_DELIMITER);</span>
+<span class="nc bnc" id="L45" title="All 2 branches missed.">	        	if (vals.length != cols + 1)</span>
+	        	{
+<span class="nc" id="L47">	        		System.out.println(s);</span>
+<span class="nc" id="L48">	        		throw new Exception(&quot;Invalid input!&quot;);</span>
+	        	}
+<span class="nc" id="L50">	        	s = null;</span>
+	        	
+<span class="nc" id="L52">		        newPoint = new DataPoint(cols);</span>
+<span class="nc" id="L53">		        newPoint.universalID = count;</span>
+		        
+		        // update the list of class labels
+<span class="nc" id="L56">		        newPoint.classID = new String(vals[cols]);</span>
+<span class="nc" id="L57">		        numClasses = Constants.CLASS_LABELS.size();</span>
+<span class="nc" id="L58">		        labelExists = false;</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">		        for (int j = 0; j &lt; numClasses; j++)</span>
+		        {
+<span class="nc" id="L61">		        	tmpLabel = Constants.CLASS_LABELS.get(j);</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">		        	if (tmpLabel.equals(newPoint.classID))</span>
+		        	{
+<span class="nc" id="L64">		        		labelExists = true;</span>
+<span class="nc" id="L65">		        		break;</span>
+		        	}
+		        }
+<span class="nc bnc" id="L68" title="All 2 branches missed.">		        if (!labelExists)</span>
+<span class="nc" id="L69">		        	Constants.CLASS_LABELS.add(new String(newPoint.classID));</span>
+		        
+<span class="nc bnc" id="L71" title="All 2 branches missed.">		        for (int i = 0; i &lt; cols; i++)</span>
+<span class="nc" id="L72">		        	newPoint.measures[i] = Double.parseDouble(vals[i]);</span>
+		        
+<span class="nc" id="L74">		        dataMatrix.data.add(newPoint);</span>
+<span class="nc" id="L75">		        vals = null;</span>
+		        
+<span class="nc" id="L77">		        count++;</span>
+		    } // end while
+<span class="nc" id="L79">			rows = count;</span>
+<span class="nc" id="L80">			Constants.NUM_ROWS = count;</span>
+			
+<span class="nc" id="L82">			double[] dimData = new double[rows];</span>
+<span class="nc" id="L83">			SortedObject[] so = new SortedObject[cols];</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">			for (int i = 0; i &lt; cols; i++)</span>
+			{
+<span class="nc bnc" id="L86" title="All 2 branches missed.">				for (int j = 0; j &lt; rows; j++)</span>
+				{
+<span class="nc" id="L88">					dimData[j] = dataMatrix.data.get(j).measures[i];</span>
+				}
+<span class="nc" id="L90">				Constants.CRES[i] = computeCRE(dimData, false);</span>
+<span class="nc" id="L91">				so[i] = new SortedObject(i, Constants.CRES[i]);</span>
+			}
+			
+<span class="nc" id="L94">			scanner.close();</span>
+		}
+<span class="nc" id="L96">		catch (Exception ex)</span>
+		{
+<span class="nc" id="L98">			throw ex;</span>
+<span class="nc" id="L99">		}</span>
+<span class="nc" id="L100">	}</span>
+	
+	public static double computeCRE(double[] vals, boolean hasSorted)
+	{
+<span class="nc bnc" id="L104" title="All 2 branches missed.">		if (vals.length &lt;= 1)</span>
+<span class="nc" id="L105">			return 0;</span>
+			
+<span class="nc" id="L107">		int num_items = vals.length;</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">		if (hasSorted == false)</span>
+<span class="nc" id="L109">			Arrays.sort(vals);</span>
+		
+<span class="nc" id="L111">		double cre = 0;</span>
+<span class="nc" id="L112">		double logBase = Math.log(Constants.LOG_BASE);</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">		for (int i = 0; i &lt; num_items - 1; i++)</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">			if (vals[i + 1] != vals[i])</span>
+<span class="nc" id="L115">				cre += (vals[i + 1] - vals[i]) * ((i + 1) / (1.0 * num_items)) * Math.log((i + 1) / (1.0 * num_items)) / logBase;</span>
+		
+<span class="nc" id="L117">		return -cre;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -24,9 +24,9 @@ public class BlockMatrixIsometric {
     /**
      * constructor.  The matrix a is not copied in.   This is a 
      * pass-by-reference constructor.
-     * @param a
-     * @param bSize0 block size along the first dimension (rows)
-     * @param bSize1 block size along the second dimension (columns)
+     @param a
+     @param bSize0 block size along the first dimension (rows)
+     @param bSize1 block size along the second dimension (columns)
      */
 <span class="fc" id="L31">    public BlockMatrixIsometric(double[][] a, int bSize0, int bSize1) {</span>
 <span class="fc" id="L32">        int n = a.length;</span>
@@ -62,10 +62,10 @@ public class BlockMatrixIsometric {
      * set values in internal matrix a for block number (blockNumber0, blockNumber1) 
      * to the given block b.  b must be the same size as the block size
      * of this instance.
-     * @param b a given block of values to replace a block of this instance with.
-     * @param blockNumber0 the number of the block along the first dimension,
+     @param b a given block of values to replace a block of this instance with.
+     @param blockNumber0 the number of the block along the first dimension,
      * that is, rows.
-     * @param blockNumber1 the number of the block along the second dimension,
+     @param blockNumber1 the number of the block along the second dimension,
      * that is, columns.
      */
     public void setBlock(double[][] b, int blockNumber0, int blockNumber1) {
@@ -90,11 +90,11 @@ public class BlockMatrixIsometric {
      * set values in internal matrix a for block number (blockNumber0, blockNumber1) 
      * to the given row block b which is a single dimension array.  
      * b.length must equal this.bSize1, and this.bSize0 must equal 1.
-     * @param b a given block of values in a single dimension array to replace a 
+     @param b a given block of values in a single dimension array to replace a 
      * block of this instance with.
-     * @param blockNumber0 the number of the block along the first dimension,
+     @param blockNumber0 the number of the block along the first dimension,
      * that is, rows.
-     * @param blockNumber1 the number of the block along the second dimension,
+     @param blockNumber1 the number of the block along the second dimension,
      * that is, columns.
      */
     public void setRowBlock(double[] b, int blockNumber0, int blockNumber1) {
@@ -123,11 +123,11 @@ public class BlockMatrixIsometric {
      * set values in internal matrix a for block number (blockNumber0, blockNumber1) 
      * to the given column block b which is a single dimension array.  
      * b.length must equal this.bSize0, and this.bSize1 must equal 1.
-     * @param b a given block of values in a single dimension array to replace a 
+     @param b a given block of values in a single dimension array to replace a 
      * block of this instance with.
-     * @param blockNumber0 the number of the block along the first dimension,
+     @param blockNumber0 the number of the block along the first dimension,
      * that is, rows.
-     * @param blockNumber1 the number of the block along the second dimension,
+     @param blockNumber1 the number of the block along the second dimension,
      * that is, columns.
      */
     public void setColumnBlock(double[] b, int blockNumber0, int blockNumber1) {
@@ -155,11 +155,11 @@ public class BlockMatrixIsometric {
     
     /**
      * get values in internal matrix a for block number (blockNumber0, blockNumber1) 
-     * @param blockNumber0 the number of the block along the first dimension,
+     @param blockNumber0 the number of the block along the first dimension,
      * that is, rows.
-     * @param blockNumber1 the number of the block along the second dimension,
+     @param blockNumber1 the number of the block along the second dimension,
      * that is, columns.
-     * @return contents of (blockNumber0, blockNumber1) of matrix a in this instance.
+     @return contents of (blockNumber0, blockNumber1) of matrix a in this instance.
      */
     public double[][] getBlock(int blockNumber0, int blockNumber1) {
 <span class="fc" id="L165">        double[][] b = MatrixUtil.zeros(bSize0, bSize1);</span>
@@ -170,11 +170,11 @@ public class BlockMatrixIsometric {
     /**
      * get values in internal matrix a for block number (blockNumber0, blockNumber1) 
      * and set them into the given block b.
-     * @param b the output block for the contents of (blockNumber0, blockNumber1) 
+     @param b the output block for the contents of (blockNumber0, blockNumber1) 
      * of matrix a in this instance.
-     * @param blockNumber0 the number of the block along the first dimension,
+     @param blockNumber0 the number of the block along the first dimension,
      * that is, rows.
-     * @param blockNumber1 the number of the block along the second dimension,
+     @param blockNumber1 the number of the block along the second dimension,
      * that is, columns.
      */
     public void getBlock(double[][] b, int blockNumber0, int blockNumber1) {
@@ -198,11 +198,11 @@ public class BlockMatrixIsometric {
     /**
      * get values in internal matrix a for block number (blockNumber0, blockNumber1) 
      * and set them into the given row block b.
-     * @param b the output row block for the contents of (blockNumber0, blockNumber1) 
+     @param b the output row block for the contents of (blockNumber0, blockNumber1) 
      * of matrix a in this instance.
-     * @param blockNumber0 the number of the block along the first dimension,
+     @param blockNumber0 the number of the block along the first dimension,
      * that is, rows.
-     * @param blockNumber1 the number of the block along the second dimension,
+     @param blockNumber1 the number of the block along the second dimension,
      * that is, columns.
      */
     public void getRowBlock(double[] b, int blockNumber0, int blockNumber1) {
@@ -228,11 +228,11 @@ public class BlockMatrixIsometric {
     /**
      * get values in internal matrix a for block number (blockNumber0, blockNumber1) 
      * and set them into the given column block b.
-     * @param b the output column block for the contents of (blockNumber0, blockNumber1) 
+     @param b the output column block for the contents of (blockNumber0, blockNumber1) 
      * of matrix a in this instance.
-     * @param blockNumber0 the number of the block along the first dimension,
+     @param blockNumber0 the number of the block along the first dimension,
      * that is, rows.
-     * @param blockNumber1 the number of the block along the second dimension,
+     @param blockNumber1 the number of the block along the second dimension,
      * that is, columns.
      */
     public void getColumnBlock(double[] b, int blockNumber0, int blockNumber1) {
@@ -260,10 +260,10 @@ public class BlockMatrixIsometric {
     /**
      * add block b to internal matrix, pointwise, for (blockNumber0, blockNumber1).
      * b must be the same size as the block size of this instance.
-     * @param b a given block of values to add to a block of this instance.
-     * @param blockNumber0 the number of the block along the first dimension,
+     @param b a given block of values to add to a block of this instance.
+     @param blockNumber0 the number of the block along the first dimension,
      * that is, rows.
-     * @param blockNumber1 the number of the block along the second dimension,
+     @param blockNumber1 the number of the block along the second dimension,
      * that is, columns.
      */
     public void addToBlock(double[][] b, int blockNumber0, int blockNumber1) {
@@ -292,10 +292,10 @@ public class BlockMatrixIsometric {
      * add column block b to internal matrix, pointwise, for (blockNumber0, blockNumber1).
      * b must be the same size as the block size of this instance, including
      * this.bSize1 must equal 1 at construction.
-     * @param b a given column block of values to add to a block of this instance.
-     * @param blockNumber0 the number of the block along the first dimension,
+     @param b a given column block of values to add to a block of this instance.
+     @param blockNumber0 the number of the block along the first dimension,
      * that is, rows.
-     * @param blockNumber1 the number of the block along the second dimension,
+     @param blockNumber1 the number of the block along the second dimension,
      * that is, columns.
      */
     public void addToColumnBlock(double[] b, int blockNumber0, int blockNumber1) {
@@ -324,10 +324,10 @@ public class BlockMatrixIsometric {
      * add row block b to internal matrix, pointwise, for (blockNumber0, blockNumber1).
      * b must be the same size as the block size of this instance, including
      * this.bSize0 must equal 1 at construction.
-     * @param b a given row block of values to add to a block of this instance.
-     * @param blockNumber0 the number of the block along the first dimension,
+     @param b a given row block of values to add to a block of this instance.
+     @param blockNumber0 the number of the block along the first dimension,
      * that is, rows.
-     * @param blockNumber1 the number of the block along the second dimension,
+     @param blockNumber1 the number of the block along the second dimension,
      * that is, columns.
      */
     public void addToRowBlock(double[] b, int blockNumber0, int blockNumber1) {
@@ -355,10 +355,10 @@ public class BlockMatrixIsometric {
     /**
      * subtract block b from internal matrix, pointwise, for (blockNumber0, blockNumber1).
      * b must be the same size as the block size of this instance.
-     * @param b a given block of values to replace a block of this instance with.
-     * @param blockNumber0 the number of the block along the first dimension,
+     @param b a given block of values to replace a block of this instance with.
+     @param blockNumber0 the number of the block along the first dimension,
      * that is, rows.
-     * @param blockNumber1 the number of the block along the second dimension,
+     @param blockNumber1 the number of the block along the second dimension,
      * that is, columns.
      */
     public void subtractFromBlock(double[][] b, int blockNumber0, int blockNumber1) {
@@ -387,10 +387,10 @@ public class BlockMatrixIsometric {
      * subtract column block b from internal matrix, pointwise, for (blockNumber0, blockNumber1).
      * b must be the same size as the block size of this instance, including
      * this.bSize1 must equal 1 at construction.
-     * @param b a given column block of values to subtract from a block of this instance.
-     * @param blockNumber0 the number of the block along the first dimension,
+     @param b a given column block of values to subtract from a block of this instance.
+     @param blockNumber0 the number of the block along the first dimension,
      * that is, rows.
-     * @param blockNumber1 the number of the block along the second dimension,
+     @param blockNumber1 the number of the block along the second dimension,
      * that is, columns.
      */
     public void subtractFromColumnBlock(double[] b, int blockNumber0, int blockNumber1) {
@@ -419,10 +419,10 @@ public class BlockMatrixIsometric {
      * subtract row block b from internal matrix, pointwise, for (blockNumber0, blockNumber1).
      * b must be the same size as the block size of this instance, including
      * this.bSize0 must equal 1 at construction.
-     * @param b a given row block of values to subtract from a block of this instance.
-     * @param blockNumber0 the number of the block along the first dimension,
+     @param b a given row block of values to subtract from a block of this instance.
+     @param blockNumber0 the number of the block along the first dimension,
      * that is, rows.
-     * @param blockNumber1 the number of the block along the second dimension,
+     @param blockNumber1 the number of the block along the second dimension,
      * that is, columns.
      */
     public void subtractFromRowBlock(double[] b, int blockNumber0, int blockNumber1) {
@@ -447,60 +447,64 @@ public class BlockMatrixIsometric {
         }
 <span class="fc" id="L448">    }</span>
     
+    /**
+     *
+     @return
+     */
     public BlockMatrixIsometric copy() {
-<span class="fc" id="L451">        BlockMatrixIsometric c = new BlockMatrixIsometric(a, bSize0, bSize1);</span>
-<span class="fc" id="L452">        c.set(this);</span>
-<span class="fc" id="L453">        return c;</span>
+<span class="fc" id="L455">        BlockMatrixIsometric c = new BlockMatrixIsometric(a, bSize0, bSize1);</span>
+<span class="fc" id="L456">        c.set(this);</span>
+<span class="fc" id="L457">        return c;</span>
     }
     
     /**
      * set internal contents to equal those of the given b where b has the
      * same dimensions and block size.
-     * @param b 
+     @param b 
      */
     public void set(BlockMatrixIsometric b) {
-<span class="pc bpc" id="L462" title="1 of 2 branches missed.">        if (b.a.length != a.length) {</span>
-<span class="nc" id="L463">            throw new IllegalArgumentException(&quot;&quot;);</span>
+<span class="pc bpc" id="L466" title="1 of 2 branches missed.">        if (b.a.length != a.length) {</span>
+<span class="nc" id="L467">            throw new IllegalArgumentException(&quot;&quot;);</span>
         }
-<span class="pc bpc" id="L465" title="1 of 2 branches missed.">        if (b.a[0].length != a[0].length) {</span>
-<span class="nc" id="L466">            throw new IllegalArgumentException(&quot;&quot;);</span>
+<span class="pc bpc" id="L469" title="1 of 2 branches missed.">        if (b.a[0].length != a[0].length) {</span>
+<span class="nc" id="L470">            throw new IllegalArgumentException(&quot;&quot;);</span>
         }
-<span class="pc bpc" id="L468" title="1 of 2 branches missed.">        if (b.bSize0 != bSize0) {</span>
-<span class="nc" id="L469">            throw new IllegalArgumentException(&quot;&quot;);</span>
+<span class="pc bpc" id="L472" title="1 of 2 branches missed.">        if (b.bSize0 != bSize0) {</span>
+<span class="nc" id="L473">            throw new IllegalArgumentException(&quot;&quot;);</span>
         }
-<span class="pc bpc" id="L471" title="1 of 2 branches missed.">        if (b.bSize1 != bSize1) {</span>
-<span class="nc" id="L472">            throw new IllegalArgumentException(&quot;&quot;);</span>
+<span class="pc bpc" id="L475" title="1 of 2 branches missed.">        if (b.bSize1 != bSize1) {</span>
+<span class="nc" id="L476">            throw new IllegalArgumentException(&quot;&quot;);</span>
         }
         int i;
-<span class="fc bfc" id="L475" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L476">            System.arraycopy(b.a[i], 0, a[i], 0, a[i].length);</span>
+<span class="fc bfc" id="L479" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L480">            System.arraycopy(b.a[i], 0, a[i], 0, a[i].length);</span>
         }
-<span class="fc" id="L478">    }</span>
+<span class="fc" id="L482">    }</span>
     
     /**
      * get the entire matrix of this instance.  Note that this is a reference
      * to the instance and is not a copy of it, so modifications of the
      * returned matrix affect this instance too.
-     * @return the a
+     @return the a
      */
     public double[][] getA() {
-<span class="fc" id="L487">        return a;</span>
+<span class="fc" id="L491">        return a;</span>
     }
 
     /**
      * get the size of dimension 0 of the blocks in this instance
-     * @return the bSize0
+     @return the bSize0
      */
     public int getBlockSize0() {
-<span class="fc" id="L495">        return bSize0;</span>
+<span class="fc" id="L499">        return bSize0;</span>
     }
 
     /**
      * get the size of dimension 1 of the blocks in this instance
-     * @return the bSize1
+     @return the bSize1
      */
     public int getBlockSize1() {
-<span class="fc" id="L503">        return bSize1;</span>
+<span class="fc" id="L507">        return bSize1;</span>
     }
     
 }

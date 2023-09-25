@@ -8,15 +8,27 @@
 <span class="nc" id="L8">public abstract class AbstractObjectiveFunction implements </span>
 IObjectiveFunction,
 IObjectiveFunctionParallel  { 
+
+    /**
+     *
+     @param x
+     @return
+     */
     abstract public double valueOf(double[] x);
     public double [] valuesOf(double[][] pop) {
-<span class="nc" id="L13">        double [] res = new double[pop.length];</span>
-<span class="nc bnc" id="L14" title="All 2 branches missed.">        for (int i = 0; i &lt; pop.length; ++i)</span>
-<span class="nc" id="L15">            res[i] = valueOf(pop[i]);</span>
-<span class="nc" id="L16">        return res;</span>
+<span class="nc" id="L19">        double [] res = new double[pop.length];</span>
+<span class="nc bnc" id="L20" title="All 2 branches missed.">        for (int i = 0; i &lt; pop.length; ++i)</span>
+<span class="nc" id="L21">            res[i] = valueOf(pop[i]);</span>
+<span class="nc" id="L22">        return res;</span>
     }
+
+    /**
+     *
+     @param x
+     @return
+     */
     public boolean isFeasible(double[] x) {
-<span class="nc" id="L19">    	return true;</span>
+<span class="nc" id="L31">    	return true;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

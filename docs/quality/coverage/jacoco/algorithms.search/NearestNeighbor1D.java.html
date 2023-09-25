@@ -34,7 +34,7 @@ public class NearestNeighbor1D {
     
     /**
      * 
-     * @param maxX maximum x value of any data point including
+     @param maxX maximum x value of any data point including
      *    those to be queries
      */
 <span class="fc" id="L40">    public NearestNeighbor1D(int maxX) {</span>
@@ -53,9 +53,13 @@ public class NearestNeighbor1D {
             new XFastTrieNode&lt;Integer&gt;(), it, maxW);
 <span class="fc" id="L54">    }</span>
     
+    /**
+     *
+     @param index
+     */
     public void insert(int index) {
-<span class="fc" id="L57">        xbt.add(Integer.valueOf(index));</span>
-<span class="fc" id="L58">    }</span>
+<span class="fc" id="L61">        xbt.add(Integer.valueOf(index));</span>
+<span class="fc" id="L62">    }</span>
     
     /**
     &lt;pre&gt;
@@ -65,10 +69,11 @@ public class NearestNeighbor1D {
      Note: maxW = 1 + Math.ceil(Math.log(maxX)/Math.log(2));            
      &lt;/pre&gt;
     
-     * @param x
+     @param x
+     @return 
      */
     public TIntSet findClosest(final int x) {        
-<span class="fc" id="L71">        return findClosest(x, Integer.MAX_VALUE);</span>
+<span class="fc" id="L76">        return findClosest(x, Integer.MAX_VALUE);</span>
     }
     
     /**
@@ -78,66 +83,66 @@ public class NearestNeighbor1D {
          the trie, else 2 * O(log_2(maxW)).
                      
       Note: maxW = 1 + Math.ceil(Math.log(maxX * maxY)/Math.log(2));
-     &lt;/ore&gt;
+     &lt;/pre&gt;
     
-     * @param x
-     * @param dMax
-     * @return a set of values within dMax that are the 
+     @param x
+     @param dMax
+     @return a set of values within dMax that are the 
      * closest points, else returns an empty set
      */
     public TIntSet findClosest(int x, int dMax) {
         
-<span class="pc bpc" id="L90" title="1 of 2 branches missed.">        if (x &gt;= maxIndex) {</span>
-<span class="nc" id="L91">            throw new IllegalArgumentException(&quot;x cannot be larger than &quot;</span>
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">        if (x &gt;= maxIndex) {</span>
+<span class="nc" id="L96">            throw new IllegalArgumentException(&quot;x cannot be larger than &quot;</span>
                 + &quot; maxX given in constructor, &quot; + (maxIndex-1));
         }
          
-<span class="fc" id="L95">        TIntSet closestIndexes = new TIntHashSet();</span>
+<span class="fc" id="L100">        TIntSet closestIndexes = new TIntHashSet();</span>
         
-<span class="fc" id="L97">        Integer srch = Integer.valueOf(x);</span>
+<span class="fc" id="L102">        Integer srch = Integer.valueOf(x);</span>
         
         //O(1)
-<span class="fc" id="L100">        Integer q = xbt.find(srch);</span>
-<span class="pc bpc" id="L101" title="1 of 2 branches missed.">        if (q != null) {</span>
-<span class="nc" id="L102">            closestIndexes.add(srch.intValue());</span>
-<span class="nc" id="L103">            return closestIndexes;</span>
+<span class="fc" id="L105">        Integer q = xbt.find(srch);</span>
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">        if (q != null) {</span>
+<span class="nc" id="L107">            closestIndexes.add(srch.intValue());</span>
+<span class="nc" id="L108">            return closestIndexes;</span>
         }
         
-<span class="pc bpc" id="L106" title="1 of 2 branches missed.">        if (dMax == 0) {</span>
-<span class="nc" id="L107">            return closestIndexes;</span>
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">        if (dMax == 0) {</span>
+<span class="nc" id="L112">            return closestIndexes;</span>
         }
                         
         //O(log_2(maxW))
-<span class="fc" id="L111">        Integer predecessor = xbt.predecessor(srch);</span>
-<span class="fc" id="L112">        Integer successor = xbt.successor(srch);</span>
+<span class="fc" id="L116">        Integer predecessor = xbt.predecessor(srch);</span>
+<span class="fc" id="L117">        Integer successor = xbt.successor(srch);</span>
         
-<span class="fc" id="L114">        double dp2 = dist(x, predecessor);</span>
-<span class="fc" id="L115">        double ds2 = dist(x, successor);</span>
+<span class="fc" id="L119">        double dp2 = dist(x, predecessor);</span>
+<span class="fc" id="L120">        double ds2 = dist(x, successor);</span>
     
-<span class="pc bpc" id="L117" title="1 of 4 branches missed.">        if (dp2 == ds2 &amp;&amp; (ds2 &lt;= dMax)) {</span>
-<span class="fc" id="L118">            closestIndexes.add(predecessor.intValue());</span>
-<span class="fc" id="L119">            closestIndexes.add(successor.intValue());</span>
-<span class="pc bpc" id="L120" title="2 of 4 branches missed.">        } else if ((dp2 &lt; ds2) &amp;&amp; (dp2 &lt;= dMax)) {</span>
-<span class="fc" id="L121">            closestIndexes.add(predecessor.intValue());</span>
-<span class="nc bnc" id="L122" title="All 4 branches missed.">        } else if ((ds2 &lt; dp2) &amp;&amp; (ds2 &lt;= dMax)) {</span>
-<span class="nc" id="L123">            closestIndexes.add(successor.intValue());</span>
+<span class="pc bpc" id="L122" title="1 of 4 branches missed.">        if (dp2 == ds2 &amp;&amp; (ds2 &lt;= dMax)) {</span>
+<span class="fc" id="L123">            closestIndexes.add(predecessor.intValue());</span>
+<span class="fc" id="L124">            closestIndexes.add(successor.intValue());</span>
+<span class="pc bpc" id="L125" title="2 of 4 branches missed.">        } else if ((dp2 &lt; ds2) &amp;&amp; (dp2 &lt;= dMax)) {</span>
+<span class="fc" id="L126">            closestIndexes.add(predecessor.intValue());</span>
+<span class="nc bnc" id="L127" title="All 4 branches missed.">        } else if ((ds2 &lt; dp2) &amp;&amp; (ds2 &lt;= dMax)) {</span>
+<span class="nc" id="L128">            closestIndexes.add(successor.intValue());</span>
         }
         
-<span class="fc" id="L126">        return closestIndexes;</span>
+<span class="fc" id="L131">        return closestIndexes;</span>
     }
 
     private double dist(int x, Integer p2) {
         
-<span class="pc bpc" id="L131" title="1 of 2 branches missed.">        if (p2 == null) {</span>
-<span class="nc" id="L132">            return Double.MAX_VALUE;</span>
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">        if (p2 == null) {</span>
+<span class="nc" id="L137">            return Double.MAX_VALUE;</span>
         }
         
-<span class="fc" id="L135">        int diff = p2.intValue() - x;</span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">        if (diff &lt; 0) {</span>
-<span class="fc" id="L137">            diff *= -1;</span>
+<span class="fc" id="L140">        int diff = p2.intValue() - x;</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">        if (diff &lt; 0) {</span>
+<span class="fc" id="L142">            diff *= -1;</span>
         }
         
-<span class="fc" id="L140">        return diff;</span>
+<span class="fc" id="L145">        return diff;</span>
     }
 
 }

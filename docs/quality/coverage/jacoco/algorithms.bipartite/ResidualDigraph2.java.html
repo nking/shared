@@ -88,145 +88,153 @@ public class ResidualDigraph2 {
 <span class="fc" id="L88">    private TIntSet backwardLinksSinkRM =</span>
         new TIntHashSet();
     
-<span class="fc" id="L91">    public ResidualDigraph2(FlowNetwork gFlow) {</span>
+    /**
+     *
+     @param gFlow
+     */
+<span class="fc" id="L95">    public ResidualDigraph2(FlowNetwork gFlow) {</span>
     
-<span class="fc" id="L93">        this.nLeft = gFlow.getNLeft();</span>
-<span class="fc" id="L94">        this.nRight = gFlow.getNRight();</span>
-<span class="fc" id="L95">        this.sourceNode = gFlow.getSourceNode();</span>
-<span class="fc" id="L96">        this.sinkNode = gFlow.getSinkNode();</span>
+<span class="fc" id="L97">        this.nLeft = gFlow.getNLeft();</span>
+<span class="fc" id="L98">        this.nRight = gFlow.getNRight();</span>
+<span class="fc" id="L99">        this.sourceNode = gFlow.getSourceNode();</span>
+<span class="fc" id="L100">        this.sinkNode = gFlow.getSinkNode();</span>
        
-<span class="fc" id="L98">        TIntObjectIterator&lt;TIntSet&gt; iter = gFlow.getForwardArcs()</span>
-<span class="fc" id="L99">            .iterator();</span>
+<span class="fc" id="L102">        TIntObjectIterator&lt;TIntSet&gt; iter = gFlow.getForwardArcs()</span>
+<span class="fc" id="L103">            .iterator();</span>
         
-<span class="fc bfc" id="L101" title="All 2 branches covered.">        for (int i = gFlow.getForwardArcs().size(); i-- &gt; 0;) {</span>
-<span class="fc" id="L102">            iter.advance();</span>
-<span class="fc" id="L103">            int idx1 = iter.key();</span>
-<span class="fc" id="L104">            TIntIterator iter2 = iter.value().iterator();</span>
-<span class="fc bfc" id="L105" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
-<span class="fc" id="L106">                int idx2 = iter2.next();</span>
-<span class="fc" id="L107">                PairInt p = new PairInt(idx1, idx2);</span>
-<span class="fc" id="L108">                float unitFlow = gFlow.getFlow().get(p);</span>
-<span class="fc bfc" id="L109" title="All 2 branches covered.">                if (unitFlow == 0) {</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">        for (int i = gFlow.getForwardArcs().size(); i-- &gt; 0;) {</span>
+<span class="fc" id="L106">            iter.advance();</span>
+<span class="fc" id="L107">            int idx1 = iter.key();</span>
+<span class="fc" id="L108">            TIntIterator iter2 = iter.value().iterator();</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
+<span class="fc" id="L110">                int idx2 = iter2.next();</span>
+<span class="fc" id="L111">                PairInt p = new PairInt(idx1, idx2);</span>
+<span class="fc" id="L112">                float unitFlow = gFlow.getFlow().get(p);</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">                if (unitFlow == 0) {</span>
                     // idle
-<span class="fc" id="L111">                    TIntSet indexes2 = forwardLinksRM.get(idx1);</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">                    if (indexes2 == null) {</span>
-<span class="fc" id="L113">                        indexes2 = new TIntHashSet();</span>
-<span class="fc" id="L114">                        forwardLinksRM.put(idx1, indexes2);</span>
+<span class="fc" id="L115">                    TIntSet indexes2 = forwardLinksRM.get(idx1);</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">                    if (indexes2 == null) {</span>
+<span class="fc" id="L117">                        indexes2 = new TIntHashSet();</span>
+<span class="fc" id="L118">                        forwardLinksRM.put(idx1, indexes2);</span>
                     }
-<span class="fc" id="L116">                    indexes2.add(idx2);</span>
-<span class="pc bpc" id="L117" title="1 of 2 branches missed.">                } else if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
+<span class="fc" id="L120">                    indexes2.add(idx2);</span>
+<span class="pc bpc" id="L121" title="1 of 2 branches missed.">                } else if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
                     // saturated
-<span class="fc" id="L119">                    backwardLinksRM.put(idx2, idx1);</span>
+<span class="fc" id="L123">                    backwardLinksRM.put(idx2, idx1);</span>
                 }
-<span class="fc" id="L121">            }</span>
-<span class="fc" id="L122">        }</span>
+<span class="fc" id="L125">            }</span>
+<span class="fc" id="L126">        }</span>
         
         // see Figure 7.2 pg 49
         
-<span class="fc" id="L126">        TIntIterator iter2 = gFlow.getSourceForwardArcs().iterator();</span>
-<span class="fc bfc" id="L127" title="All 2 branches covered.">        while (iter2.hasNext()) {</span>
-<span class="fc" id="L128">            int xNode = iter2.next();</span>
+<span class="fc" id="L130">        TIntIterator iter2 = gFlow.getSourceForwardArcs().iterator();</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">        while (iter2.hasNext()) {</span>
+<span class="fc" id="L132">            int xNode = iter2.next();</span>
                     
-<span class="fc" id="L130">            float unitFlow = gFlow.getFlow(sourceNode, xNode);                </span>
-<span class="fc bfc" id="L131" title="All 2 branches covered.">            if (unitFlow == 0) {</span>
+<span class="fc" id="L134">            float unitFlow = gFlow.getFlow(sourceNode, xNode);                </span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">            if (unitFlow == 0) {</span>
                 // idle
-<span class="fc" id="L133">                backwardLinksSourceRM.add(xNode);</span>
-<span class="pc bpc" id="L134" title="1 of 2 branches missed.">            } else if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
+<span class="fc" id="L137">                backwardLinksSourceRM.add(xNode);</span>
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">            } else if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
                 // saturated
-<span class="fc" id="L136">                forwardLinksSourceRM.add(xNode);</span>
+<span class="fc" id="L140">                forwardLinksSourceRM.add(xNode);</span>
             }
-<span class="fc" id="L138">        }</span>
+<span class="fc" id="L142">        }</span>
 
-<span class="fc" id="L140">        iter2 = gFlow.getSinkForwardArcs().iterator();</span>
-<span class="fc bfc" id="L141" title="All 2 branches covered.">        while (iter2.hasNext()) {</span>
-<span class="fc" id="L142">            int yNode = iter2.next();</span>
-<span class="fc" id="L143">            float unitFlow = gFlow.getFlow(yNode, sinkNode);                </span>
-<span class="pc bpc" id="L144" title="1 of 2 branches missed.">            if (unitFlow == 0) {</span>
+<span class="fc" id="L144">        iter2 = gFlow.getSinkForwardArcs().iterator();</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">        while (iter2.hasNext()) {</span>
+<span class="fc" id="L146">            int yNode = iter2.next();</span>
+<span class="fc" id="L147">            float unitFlow = gFlow.getFlow(yNode, sinkNode);                </span>
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">            if (unitFlow == 0) {</span>
                 // idle
-<span class="nc" id="L146">                backwardLinksSinkRM.add(yNode);</span>
-<span class="pc bpc" id="L147" title="1 of 2 branches missed.">            } else if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
+<span class="nc" id="L150">                backwardLinksSinkRM.add(yNode);</span>
+<span class="pc bpc" id="L151" title="1 of 2 branches missed.">            } else if (Math.abs(unitFlow - 1) &lt; 0.01f) {</span>
                 // saturated
-<span class="fc" id="L149">                forwardLinksSinkRM.add(yNode);</span>
+<span class="fc" id="L153">                forwardLinksSinkRM.add(yNode);</span>
             }
-<span class="fc" id="L151">        }</span>
-<span class="fc" id="L152">    }</span>
+<span class="fc" id="L155">        }</span>
+<span class="fc" id="L156">    }</span>
     
+    /**
+     *
+     @return
+     */
     public int countOfForwardBipartiteLinks() {
-<span class="fc" id="L155">        int n = 0;</span>
+<span class="fc" id="L163">        int n = 0;</span>
         
-<span class="fc" id="L157">        TIntObjectIterator&lt;TIntSet&gt; iter = forwardLinksRM</span>
-<span class="fc" id="L158">            .iterator();</span>
+<span class="fc" id="L165">        TIntObjectIterator&lt;TIntSet&gt; iter = forwardLinksRM</span>
+<span class="fc" id="L166">            .iterator();</span>
         
-<span class="fc bfc" id="L160" title="All 2 branches covered.">        for (int i = forwardLinksRM.size(); i-- &gt; 0;) {</span>
-<span class="fc" id="L161">            iter.advance();</span>
-<span class="fc" id="L162">            TIntSet set = iter.value();</span>
-<span class="fc" id="L163">            n += set.size();</span>
-<span class="fc" id="L164">        }</span>
-<span class="fc" id="L165">        return n;</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">        for (int i = forwardLinksRM.size(); i-- &gt; 0;) {</span>
+<span class="fc" id="L169">            iter.advance();</span>
+<span class="fc" id="L170">            TIntSet set = iter.value();</span>
+<span class="fc" id="L171">            n += set.size();</span>
+<span class="fc" id="L172">        }</span>
+<span class="fc" id="L173">        return n;</span>
     }
   
     /**
-     * @return the forwardLinksRM
+     @return the forwardLinksRM
      */
     public TIntObjectMap&lt;TIntSet&gt; getForwardLinksRM() {
-<span class="fc" id="L172">        return forwardLinksRM;</span>
+<span class="fc" id="L180">        return forwardLinksRM;</span>
     }
 
     /**
      * key is Right (==Y) index node, and value is
      * Left (==X) index node.
-     * @return the backwardLinksRM
+     @return the backwardLinksRM
      */
     public TIntIntMap getBackwardLinksRM() {
-<span class="fc" id="L181">        return backwardLinksRM;</span>
+<span class="fc" id="L189">        return backwardLinksRM;</span>
     }
 
     /**
-     * @return the sourceNode
+     @return the sourceNode
      */
     public int getSourceNode() {
-<span class="nc" id="L188">        return sourceNode;</span>
+<span class="nc" id="L196">        return sourceNode;</span>
     }
 
     /**
-     * @return the sinkNode
+     @return the sinkNode
      */
     public int getSinkNode() {
-<span class="nc" id="L195">        return sinkNode;</span>
+<span class="nc" id="L203">        return sinkNode;</span>
     }
     
     /**
      * the arcs that are initialized from being connected
      * to matched nodes, that is Left nodes that
      * are in &quot;saturated&quot; arcs.
-     * @return the forwardLinksSourceRM
+     @return the forwardLinksSourceRM
      */
     public TIntSet getForwardLinksSourceRM() {
-<span class="nc" id="L205">        return forwardLinksSourceRM;</span>
+<span class="nc" id="L213">        return forwardLinksSourceRM;</span>
     }
 
     /**
-     * @return the backwardLinksSourceRM
+     @return the backwardLinksSourceRM
      */
     public TIntSet getBackwardLinksSourceRM() {
-<span class="fc" id="L212">        return backwardLinksSourceRM;</span>
+<span class="fc" id="L220">        return backwardLinksSourceRM;</span>
     }
 
     /**
      * the arcs that are initialized from being connected
      * to matched nodes, that is Right nodes that
      * are in &quot;saturated&quot; arcs.
-     * @return the forwardLinksSinkRM
+     @return the forwardLinksSinkRM
      */
     public TIntSet getForwardLinksSinkRM() {
-<span class="fc" id="L222">        return forwardLinksSinkRM;</span>
+<span class="fc" id="L230">        return forwardLinksSinkRM;</span>
     }
 
     /**
-     * @return the backwardLinksSinkRM
+     @return the backwardLinksSinkRM
      */
     public TIntSet getBackwardLinksSinkRM() {
-<span class="nc" id="L229">        return backwardLinksSinkRM;</span>
+<span class="nc" id="L237">        return backwardLinksSinkRM;</span>
     }
 
 }

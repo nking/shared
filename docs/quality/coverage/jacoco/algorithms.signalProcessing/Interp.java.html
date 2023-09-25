@@ -6,115 +6,135 @@
  */
 <span class="fc" id="L7">public class Interp {</span>
     
+    /**
+     *
+     @param input
+     @param binFactor
+     @return
+     */
     public float[] bin(float[] input, int binFactor) {
         
-<span class="pc bpc" id="L11" title="1 of 2 branches missed.">        if (input == null) {</span>
-<span class="nc" id="L12">            throw new IllegalArgumentException(&quot;input cannot be null&quot;);</span>
+<span class="pc bpc" id="L17" title="1 of 2 branches missed.">        if (input == null) {</span>
+<span class="nc" id="L18">            throw new IllegalArgumentException(&quot;input cannot be null&quot;);</span>
         }
 
-<span class="fc" id="L15">        int w0 = input.length;</span>
+<span class="fc" id="L21">        int w0 = input.length;</span>
 
-<span class="fc" id="L17">        int w1 = w0/binFactor;</span>
+<span class="fc" id="L23">        int w1 = w0/binFactor;</span>
 
-<span class="fc" id="L19">        float[] out = new float[w1];</span>
+<span class="fc" id="L25">        float[] out = new float[w1];</span>
 
-<span class="fc bfc" id="L21" title="All 2 branches covered.">        for (int j = 0; j &lt; w1; j++) {</span>
+<span class="fc bfc" id="L27" title="All 2 branches covered.">        for (int j = 0; j &lt; w1; j++) {</span>
 
-<span class="fc" id="L23">            float vSum = 0;</span>
-<span class="fc" id="L24">            int count = 0;</span>
+<span class="fc" id="L29">            float vSum = 0;</span>
+<span class="fc" id="L30">            int count = 0;</span>
 
-<span class="fc bfc" id="L26" title="All 2 branches covered.">            for (int jj = (j*binFactor); jj &lt; ((j + 1)*binFactor); jj++) {</span>
+<span class="fc bfc" id="L32" title="All 2 branches covered.">            for (int jj = (j*binFactor); jj &lt; ((j + 1)*binFactor); jj++) {</span>
 
-<span class="pc bpc" id="L28" title="2 of 4 branches missed.">                if ((jj &lt; 0) || (jj &gt; (w0 - 1))) {</span>
-<span class="nc" id="L29">                    continue;</span>
+<span class="pc bpc" id="L34" title="2 of 4 branches missed.">                if ((jj &lt; 0) || (jj &gt; (w0 - 1))) {</span>
+<span class="nc" id="L35">                    continue;</span>
                 }
 
-<span class="fc" id="L32">                vSum += input[jj];</span>
+<span class="fc" id="L38">                vSum += input[jj];</span>
 
-<span class="fc" id="L34">                count++;</span>
+<span class="fc" id="L40">                count++;</span>
             }
 
-<span class="pc bpc" id="L37" title="1 of 2 branches missed.">            if (count &gt; 0) {</span>
-<span class="fc" id="L38">                vSum /= (float)count;</span>
+<span class="pc bpc" id="L43" title="1 of 2 branches missed.">            if (count &gt; 0) {</span>
+<span class="fc" id="L44">                vSum /= (float)count;</span>
             }
 
-<span class="fc" id="L41">            out[j] = vSum;</span>
+<span class="fc" id="L47">            out[j] = vSum;</span>
         }
 
-<span class="fc" id="L44">        return out;</span>
+<span class="fc" id="L50">        return out;</span>
     }
 
+    /**
+     *
+     @param input
+     @param binFactor
+     @return
+     */
     public float[] unbin(float[] input, int binFactor) {
 
-<span class="pc bpc" id="L49" title="1 of 2 branches missed.">        if (input == null) {</span>
-<span class="nc" id="L50">            throw new IllegalArgumentException(&quot;input cannot be null&quot;);</span>
+<span class="pc bpc" id="L61" title="1 of 2 branches missed.">        if (input == null) {</span>
+<span class="nc" id="L62">            throw new IllegalArgumentException(&quot;input cannot be null&quot;);</span>
         }
 
-<span class="fc" id="L53">        int w0 = input.length;</span>
+<span class="fc" id="L65">        int w0 = input.length;</span>
 
-<span class="fc" id="L55">        float[] out = new float[binFactor* w0];</span>
+<span class="fc" id="L67">        float[] out = new float[binFactor* w0];</span>
 
-<span class="fc" id="L57">        int w1 = out.length;</span>
+<span class="fc" id="L69">        int w1 = out.length;</span>
 
-<span class="fc bfc" id="L59" title="All 2 branches covered.">        for (int j = 0; j &lt; w0; j++) {</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">        for (int j = 0; j &lt; w0; j++) {</span>
 
-<span class="fc" id="L61">            float v = input[j];</span>
+<span class="fc" id="L73">            float v = input[j];</span>
 
-<span class="fc bfc" id="L63" title="All 2 branches covered.">            for (int jj = (j*binFactor); jj &lt; ((j + 1)*binFactor); jj++) {</span>
-<span class="fc" id="L64">                out[jj] = v;</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">            for (int jj = (j*binFactor); jj &lt; ((j + 1)*binFactor); jj++) {</span>
+<span class="fc" id="L76">                out[jj] = v;</span>
             }
-<span class="fc bfc" id="L66" title="All 2 branches covered.">            for (int jj = ((j + 1)*binFactor); jj &lt; w1; jj++) {</span>
-<span class="fc" id="L67">                out[jj] = v;</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">            for (int jj = ((j + 1)*binFactor); jj &lt; w1; jj++) {</span>
+<span class="fc" id="L79">                out[jj] = v;</span>
             }
         }
 
-<span class="fc" id="L71">        return out;</span>
+<span class="fc" id="L83">        return out;</span>
     }
   
+    /**
+     *
+     @param input
+     @param outLength
+     @param minValue
+     @param maxValue
+     @return
+     */
     public float[] linearInterp(float[] input,
         int outLength, float minValue, float maxValue) {
 
-<span class="pc bpc" id="L77" title="1 of 2 branches missed.">        if (input == null) {</span>
-<span class="nc" id="L78">            throw new IllegalArgumentException(&quot;input cannot be null&quot;);</span>
+<span class="pc bpc" id="L97" title="1 of 2 branches missed.">        if (input == null) {</span>
+<span class="nc" id="L98">            throw new IllegalArgumentException(&quot;input cannot be null&quot;);</span>
         }
 
-<span class="fc" id="L81">        final int w0 = input.length;</span>
-<span class="fc" id="L82">        final int w2 = outLength;</span>
+<span class="fc" id="L101">        final int w0 = input.length;</span>
+<span class="fc" id="L102">        final int w2 = outLength;</span>
 
-<span class="fc" id="L84">        float[] output = new float[w2];</span>
+<span class="fc" id="L104">        float[] output = new float[w2];</span>
 
-<span class="fc" id="L86">        final float yFactor = (float)(w0 - 1)/(float)(w2 - 1);</span>
+<span class="fc" id="L106">        final float yFactor = (float)(w0 - 1)/(float)(w2 - 1);</span>
 
         //System.out.println(&quot;w0=&quot; + w0 + &quot; w1=&quot; + w2 + &quot; f=&quot; + yFactor);
         
-<span class="fc bfc" id="L90" title="All 2 branches covered.">        for (int i = 0; i &lt; w2; ++i) {</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">        for (int i = 0; i &lt; w2; ++i) {</span>
 
-<span class="fc" id="L92">            float i0 = (float)i * yFactor;</span>
-<span class="fc" id="L93">            int i0_0 = (int)i0;</span>
-<span class="fc" id="L94">            int i0_1 = (int)Math.ceil(i0);</span>
+<span class="fc" id="L112">            float i0 = (float)i * yFactor;</span>
+<span class="fc" id="L113">            int i0_0 = (int)i0;</span>
+<span class="fc" id="L114">            int i0_1 = (int)Math.ceil(i0);</span>
             
-<span class="pc bpc" id="L96" title="1 of 2 branches missed.">            if (i0_1 &gt;= input.length) {</span>
-<span class="nc" id="L97">                i0_1 = input.length - 1;</span>
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">            if (i0_1 &gt;= input.length) {</span>
+<span class="nc" id="L117">                i0_1 = input.length - 1;</span>
             }
              
-<span class="fc bfc" id="L100" title="All 2 branches covered.">            if (i0_1 == i0_0) {</span>
-<span class="fc" id="L101">                output[i] = input[i0_0];</span>
-<span class="fc" id="L102">                continue;</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">            if (i0_1 == i0_0) {</span>
+<span class="fc" id="L121">                output[i] = input[i0_0];</span>
+<span class="fc" id="L122">                continue;</span>
             }
                        
-<span class="fc" id="L105">            float va = input[i0_0];</span>
-<span class="fc" id="L106">            float vb = input[i0_1];</span>
+<span class="fc" id="L125">            float va = input[i0_0];</span>
+<span class="fc" id="L126">            float vb = input[i0_1];</span>
             
-<span class="fc" id="L108">            float d = (float)(i0_1 - i0_0);</span>
-<span class="fc" id="L109">            float fa = ((float)i0_1 - i0)/d;</span>
-<span class="fc" id="L110">            float fb = (i0 - (float)i0_0)/d;</span>
+<span class="fc" id="L128">            float d = (float)(i0_1 - i0_0);</span>
+<span class="fc" id="L129">            float fa = ((float)i0_1 - i0)/d;</span>
+<span class="fc" id="L130">            float fb = (i0 - (float)i0_0)/d;</span>
                         
-<span class="fc" id="L112">            float v = va * fa + vb * fb;</span>
+<span class="fc" id="L132">            float v = va * fa + vb * fb;</span>
             
-<span class="fc" id="L114">            output[i] = v;</span>
+<span class="fc" id="L134">            output[i] = v;</span>
         }
 
-<span class="fc" id="L117">        return output;</span>
+<span class="fc" id="L137">        return output;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

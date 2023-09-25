@@ -37,9 +37,9 @@ import java.util.Arrays;
      * &lt;pre&gt;
      *     Silverman 1981, &quot;Kernel Density Estimation Using theFast Fourier Transform&quot;
      * &lt;/pre&gt;
-     * @param standardDeviation
-     * @param nSample
-     * @return
+     @param standardDeviation
+     @param nSample
+     @return
      */
     public static double optimalBandwidthGaussianKernel(double standardDeviation, int nSample) {
 <span class="fc" id="L45">        return 1.06 * standardDeviation * Math.pow(nSample, -1./5);</span>
@@ -53,17 +53,20 @@ import java.util.Arrays;
      *     and
      *     https://rdrr.io/r/stats/bandwidth.html
      &lt;/pre&gt;
-     * @param standardDeviation
-     * @param nSample
-     * @param IQR the interquartile range which is the ordered statistic divided into 4 equal parts, each summed,
+     @param standardDeviation
+     @param nSample
+     @param IQR the interquartile range which is the ordered statistic divided into 4 equal parts, each summed,
      *            then iqr = the 3rd quartile minus the first quartile = sum[3] - sum[0].
      *            see MiscMath0.calcMedianAndIQR()
-     * @return
+     @return
      */
     public static double ruleOfThumbBandwidthGaussianKernel(double standardDeviation, double IQR, int nSample) {
 <span class="fc" id="L64">        return 0.9 * Math.min(standardDeviation, IQR/1.34) * Math.pow(nSample, -1./5);</span>
     }
 
+    /**
+     *
+     */
     public static class KDE {
 
         /**
@@ -121,28 +124,32 @@ import java.util.Arrays;
      and in the kernel, to avoid interpolation.  the multiplication is pointwise.
      then inverse FFT of FFT(kde) = kde.
      the runtime complexity is then O(n_s*log(n_s))
-     * @param x observed data
-     * @param h bandwidth
-     * @return
+     @param x observed data
+     @param h bandwidth
+     @param histNBins
+     @param histMaxBin
+     @param histMinBin
+     @param histBinWidth
+     @return
      */
     public static KDE viaFFTGaussKernel(double[] x, double h, int histNBins, double histBinWidth, double histMinBin,
                                         double histMaxBin) {
 
         // the histogram length (hist[1].length) is a power of 2 and the range is enlarged by at least 2*3*h
-<span class="nc" id="L132">        double[][] hist = createFineHistogram(x, h, histNBins, histBinWidth, histMinBin, histMaxBin);</span>
+<span class="nc" id="L139">        double[][] hist = createFineHistogram(x, h, histNBins, histBinWidth, histMinBin, histMaxBin);</span>
 
         //assert(assertHistRange(hist[0], MiscMath0.getMinMax(x), h) == true);
 
         // normalization is performed by default:
-<span class="nc" id="L137">        FFTUtil fft = new FFTUtil();</span>
+<span class="nc" id="L144">        FFTUtil fft = new FFTUtil();</span>
 
         // u is the portion that can be re-used on subsequent iterations.  e.g. when iterating
         //   to find minimum bandwidth h.
-<span class="nc" id="L141">        Complex[] u = fft.create1DFFTNormalized(hist[1], true);</span>
+<span class="nc" id="L148">        Complex[] u = fft.create1DFFTNormalized(hist[1], true);</span>
 
-<span class="nc bnc" id="L143" title="All 2 branches missed.">        assert(u.length == hist[0].length);</span>
+<span class="nc bnc" id="L150" title="All 2 branches missed.">        assert(u.length == hist[0].length);</span>
 
-<span class="nc" id="L145">        return viaFFTGaussKernel(u, hist[0], h);</span>
+<span class="nc" id="L152">        return viaFFTGaussKernel(u, hist[0], h);</span>
     }
 
     /**
@@ -169,9 +176,9 @@ import java.util.Arrays;
      and in the kernel, to avoid interpolation.  the multiplication is pointwise.
      then inverse FFT of FFT(kde) = kde.
      the runtime complexity is then O(n_s*log(n_s))
-     * @param x data observed
-     * @param h bandwidth
-     * @return
+     @param x data observed
+     @param h bandwidth
+     @return
      */
     public static KDE viaFFTGaussKernel(double[] x, double h) {
 
@@ -179,20 +186,20 @@ import java.util.Arrays;
         //     to avoid edge effects.
 
         // the histogram length (hist[1].length) is a power of 2 and the range is enlarged by at least 2*3*h
-<span class="fc" id="L182">        double[][] hist = createFineHistogram(x, h);</span>
+<span class="fc" id="L189">        double[][] hist = createFineHistogram(x, h);</span>
 
         //assert(assertHistRange(hist[0], MiscMath0.getMinMax(x), h) == true);
 
         // normalization is performed by default:
-<span class="fc" id="L187">        FFTUtil fft = new FFTUtil();</span>
+<span class="fc" id="L194">        FFTUtil fft = new FFTUtil();</span>
 
         // u is the portion that can be re-used on subsequent iterations.  e.g. when iterating
         //   to find minimum bandwidth h.
-<span class="fc" id="L191">        Complex[] u = fft.create1DFFTNormalized(hist[1], true);</span>
+<span class="fc" id="L198">        Complex[] u = fft.create1DFFTNormalized(hist[1], true);</span>
 
-<span class="pc bnc" id="L193" title="All 2 branches missed.">        assert(u.length == hist[0].length);</span>
+<span class="pc bnc" id="L200" title="All 2 branches missed.">        assert(u.length == hist[0].length);</span>
 
-<span class="fc" id="L195">        return viaFFTGaussKernel(u, hist[0], h);</span>
+<span class="fc" id="L202">        return viaFFTGaussKernel(u, hist[0], h);</span>
 
         /*
         summary of the paper:
@@ -234,26 +241,26 @@ import java.util.Arrays;
      reference: Wasserman's &quot;All of Statistics&quot;, eqn (20.21)
      &lt;/pre&gt;
      runtime complexity is O(n^2) where n = x.length.
-     * @param x data observed
-     * @param h bandwidth
-     * @return
+     @param x data observed
+     @param h bandwidth
+     @return
      */
     public static KDE viaGaussKernel(double[] x, double h) {
-<span class="fc" id="L242">        int n = x.length;</span>
+<span class="fc" id="L249">        int n = x.length;</span>
         int i;
-<span class="fc" id="L244">        KDE kde = new KDE();</span>
-<span class="fc" id="L245">        kde.kde = new double[n];</span>
-<span class="fc" id="L246">        GaussianKernel kernel = new GaussianKernel();</span>
-<span class="fc" id="L247">        double sum = 0;</span>
-<span class="fc bfc" id="L248" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L249">            kde.kde[i] = kernel.kernel(x[i], x, h);</span>
-<span class="fc" id="L250">            sum += kde.kde[i];</span>
+<span class="fc" id="L251">        KDE kde = new KDE();</span>
+<span class="fc" id="L252">        kde.kde = new double[n];</span>
+<span class="fc" id="L253">        GaussianKernel kernel = new GaussianKernel();</span>
+<span class="fc" id="L254">        double sum = 0;</span>
+<span class="fc bfc" id="L255" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L256">            kde.kde[i] = kernel.kernel(x[i], x, h);</span>
+<span class="fc" id="L257">            sum += kde.kde[i];</span>
         }
-<span class="fc" id="L252">        System.out.printf(&quot;SUM KDE=%.4e\n&quot;, sum);</span>
-<span class="fc" id="L253">        kde.hx = Arrays.copyOf(x, x.length);</span>
-<span class="fc" id="L254">        kde.h = h;</span>
-<span class="fc" id="L255">        kde.u = null;</span>
-<span class="fc" id="L256">        return kde;</span>
+<span class="fc" id="L259">        System.out.printf(&quot;SUM KDE=%.4e\n&quot;, sum);</span>
+<span class="fc" id="L260">        kde.hx = Arrays.copyOf(x, x.length);</span>
+<span class="fc" id="L261">        kde.h = h;</span>
+<span class="fc" id="L262">        kde.u = null;</span>
+<span class="fc" id="L263">        return kde;</span>
     }
 
     /**
@@ -265,44 +272,50 @@ import java.util.Arrays;
      reference: Wasserman's &quot;All of Statistics&quot;, eqn (20.21)
      &lt;/pre&gt;
      runtime complexity is O(n*m) where n = x.length and m=xGrid.length
-     * @param x data observed
-     * @param xGrid the grid of data at which to apply the kernel.
-     * @param h bandwidth
-     * @return
+     @param x data observed
+     @param xGrid the grid of data at which to apply the kernel.
+     @param h bandwidth
+     @return
      */
     public static KDE viaGaussKernel(double[] x, double[] xGrid, double h) {
-<span class="fc" id="L274">        int n = xGrid.length;</span>
+<span class="fc" id="L281">        int n = xGrid.length;</span>
         int i;
-<span class="fc" id="L276">        KDE kde = new KDE();</span>
-<span class="fc" id="L277">        kde.kde = new double[n];</span>
-<span class="fc" id="L278">        GaussianKernel kernel = new GaussianKernel();</span>
-<span class="fc" id="L279">        double sum = 0;</span>
-<span class="fc bfc" id="L280" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L281">            kde.kde[i] = kernel.kernel(xGrid[i], x, h);</span>
-<span class="fc" id="L282">            sum += kde.kde[i];</span>
+<span class="fc" id="L283">        KDE kde = new KDE();</span>
+<span class="fc" id="L284">        kde.kde = new double[n];</span>
+<span class="fc" id="L285">        GaussianKernel kernel = new GaussianKernel();</span>
+<span class="fc" id="L286">        double sum = 0;</span>
+<span class="fc bfc" id="L287" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L288">            kde.kde[i] = kernel.kernel(xGrid[i], x, h);</span>
+<span class="fc" id="L289">            sum += kde.kde[i];</span>
         }
-<span class="fc" id="L284">        System.out.printf(&quot;SUM KDE=%.4e\n&quot;, sum);</span>
-<span class="fc" id="L285">        kde.hx = Arrays.copyOf(xGrid, xGrid.length);</span>
-<span class="fc" id="L286">        kde.h = h;</span>
-<span class="fc" id="L287">        kde.u = null;</span>
+<span class="fc" id="L291">        System.out.printf(&quot;SUM KDE=%.4e\n&quot;, sum);</span>
+<span class="fc" id="L292">        kde.hx = Arrays.copyOf(xGrid, xGrid.length);</span>
+<span class="fc" id="L293">        kde.h = h;</span>
+<span class="fc" id="L294">        kde.u = null;</span>
 
-<span class="fc" id="L289">        return kde;</span>
+<span class="fc" id="L296">        return kde;</span>
     }
 
+    /**
+     *
+     @param a
+     @return
+     */
     protected static Complex[] convertToComplex(double[] a) {
-<span class="nc" id="L293">        Complex[] c = new Complex[a.length];</span>
-<span class="nc bnc" id="L294" title="All 2 branches missed.">        for (int i = 0; i &lt; a.length; ++i) {</span>
-<span class="nc" id="L295">            c[i] = new Complex(a[i], 0);</span>
+<span class="nc" id="L305">        Complex[] c = new Complex[a.length];</span>
+<span class="nc bnc" id="L306" title="All 2 branches missed.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="nc" id="L307">            c[i] = new Complex(a[i], 0);</span>
         }
-<span class="nc" id="L297">        return c;</span>
+<span class="nc" id="L309">        return c;</span>
     }
 
     /**
      * calculate a fine resolution histogram for x, for a larger data range than x's.
      * (NOTE that if the data are circular, a method can be created to calculate the histogram
      * using the same data range as x, not larger)
-     * @param x
-     * @return a 2-dimensional array of the histogram where hist[0] holds the centers of the histogram bins,
+     @param x
+     @param h
+     @return a 2-dimensional array of the histogram where hist[0] holds the centers of the histogram bins,
      * and hist[1] holds the counts within the bins.
      */
     public static double[][] createFineHistogram(double[] x, double h) {
@@ -311,90 +324,95 @@ import java.util.Arrays;
         //if (x.length &lt; 50) {
         //    nBins = x.length;
         //} else {
-<span class="fc" id="L314">            nBins = (int) Math.pow(2, Math.ceil(Math.log(x.length * 3) / Math.log(2)));</span>
+<span class="fc" id="L327">            nBins = (int) Math.pow(2, Math.ceil(Math.log(x.length * 3) / Math.log(2)));</span>
         //}
 
         // the power of 10 was inspired by method vbwkde, variable n_dct from documentation:
         //https://user-web.icecube.wisc.edu/~peller/pisa_docs/_modules/pisa/utils/vbwkde.html
 
         //TODO: improve this with an estimate for available memory of machine
-<span class="pc bpc" id="L321" title="1 of 2 branches missed.">        if (nBins &gt; 16384) {</span>
-<span class="nc" id="L322">            nBins = 16384;</span>
+<span class="pc bpc" id="L334" title="1 of 2 branches missed.">        if (nBins &gt; 16384) {</span>
+<span class="nc" id="L335">            nBins = 16384;</span>
         }
 
         // unless the data are circular, the range has to be larger than the range of x in order to
         // avoid wrap around edge conditions
-<span class="fc" id="L327">        double[] minMaxX = MiscMath0.getMinMax(x);</span>
-<span class="fc" id="L328">        double range = minMaxX[1] - minMaxX[0];</span>
+<span class="fc" id="L340">        double[] minMaxX = MiscMath0.getMinMax(x);</span>
+<span class="fc" id="L341">        double range = minMaxX[1] - minMaxX[0];</span>
         double dr;
-<span class="fc" id="L330">        double he = 3.*h;</span>
-<span class="fc bfc" id="L331" title="All 2 branches covered.">        if (0.5 * range &gt; he) {</span>
-<span class="fc" id="L332">            dr = 0.5 * range;</span>
+<span class="fc" id="L343">        double he = 3.*h;</span>
+<span class="fc bfc" id="L344" title="All 2 branches covered.">        if (0.5 * range &gt; he) {</span>
+<span class="fc" id="L345">            dr = 0.5 * range;</span>
         } else {
-<span class="fc" id="L334">            dr = he;</span>
+<span class="fc" id="L347">            dr = he;</span>
         }
 
-<span class="fc" id="L337">        double min = minMaxX[0] - dr;</span>
-<span class="fc" id="L338">        double max = minMaxX[1] + dr;</span>
+<span class="fc" id="L350">        double min = minMaxX[0] - dr;</span>
+<span class="fc" id="L351">        double max = minMaxX[1] + dr;</span>
 
         // nBins = (maxX - minX)/binWidth
-<span class="fc" id="L341">        double binWidth = (max - min)/nBins;</span>
+<span class="fc" id="L354">        double binWidth = (max - min)/nBins;</span>
 
-<span class="fc" id="L343">        return createFineHistogram(x, h, nBins, binWidth, min, max);</span>
+<span class="fc" id="L356">        return createFineHistogram(x, h, nBins, binWidth, min, max);</span>
     }
 
     /**
      * calculate a fine resolution histogram for x, for a larger data range than x's.
      * (NOTE that if the data are circular, a method can be created to calculate the histogram
      * using the same data range as x, not larger)
-     * @param x
-     * @return a 2-dimensional array of the histogram where hist[0] holds the centers of the histogram bins,
+     @param x
+     @param h
+     @param nBins
+     @param minBin
+     @param binWidth
+     @param maxBin
+     @return a 2-dimensional array of the histogram where hist[0] holds the centers of the histogram bins,
      * and hist[1] holds the counts within the bins.
      */
     protected static double[][] createFineHistogram(double[] x, double h, int nBins, double binWidth,
                                                     double minBin, double maxBin) {
 
-<span class="fc" id="L357">        System.out.printf(&quot;nBins=%d, binWidth=%.4e min=%.4e, max=%.4e\n&quot;, nBins, binWidth, minBin, maxBin);</span>
-<span class="fc" id="L358">        System.out.flush();</span>
+<span class="fc" id="L375">        System.out.printf(&quot;nBins=%d, binWidth=%.4e min=%.4e, max=%.4e\n&quot;, nBins, binWidth, minBin, maxBin);</span>
+<span class="fc" id="L376">        System.out.flush();</span>
 
-<span class="fc" id="L360">        double[][] hist = new double[2][];</span>
-<span class="fc" id="L361">        hist[0] = new double[nBins];</span>
-<span class="fc" id="L362">        hist[1] = new double[nBins];</span>
+<span class="fc" id="L378">        double[][] hist = new double[2][];</span>
+<span class="fc" id="L379">        hist[0] = new double[nBins];</span>
+<span class="fc" id="L380">        hist[1] = new double[nBins];</span>
 
-<span class="fc bfc" id="L364" title="All 2 branches covered.">        for (int i = 0; i &lt; nBins; i++) {</span>
-<span class="fc" id="L365">            hist[0][i] = minBin + i*binWidth + (binWidth/2.);</span>
+<span class="fc bfc" id="L382" title="All 2 branches covered.">        for (int i = 0; i &lt; nBins; i++) {</span>
+<span class="fc" id="L383">            hist[0][i] = minBin + i*binWidth + (binWidth/2.);</span>
         }
 
         int bin;
-<span class="fc bfc" id="L369" title="All 2 branches covered.">        for (int i = 0; i &lt; x.length; i++) {</span>
-<span class="fc" id="L370">            bin = (int) ((x[i] - minBin)/binWidth);</span>
-<span class="pc bpc" id="L371" title="2 of 4 branches missed.">            if ((bin &gt; -1) &amp;&amp; (bin &lt; nBins)) {</span>
-<span class="fc" id="L372">                hist[1][bin]++;</span>
+<span class="fc bfc" id="L387" title="All 2 branches covered.">        for (int i = 0; i &lt; x.length; i++) {</span>
+<span class="fc" id="L388">            bin = (int) ((x[i] - minBin)/binWidth);</span>
+<span class="pc bpc" id="L389" title="2 of 4 branches missed.">            if ((bin &gt; -1) &amp;&amp; (bin &lt; nBins)) {</span>
+<span class="fc" id="L390">                hist[1][bin]++;</span>
             }
         }
 
         // divide by x.length
-<span class="fc bfc" id="L377" title="All 2 branches covered.">        for (int i = 0; i &lt; hist[1].length; ++i) {</span>
-<span class="fc" id="L378">            hist[1][i] /= ((double)x.length);</span>
+<span class="fc bfc" id="L395" title="All 2 branches covered.">        for (int i = 0; i &lt; hist[1].length; ++i) {</span>
+<span class="fc" id="L396">            hist[1][i] /= ((double)x.length);</span>
         }
-<span class="fc" id="L380">        return hist;</span>
+<span class="fc" id="L398">        return hist;</span>
     }
 
     /**
      * calculate a substitute for the fine resolution histogram for x for use in the
      * risk estimator that uses cross-validation.
-     * @param x
-     * @return a 2-dimensional array of the histogram where hist[0] holds the centers of the histogram bins,
+     @param x
+     @return a 2-dimensional array of the histogram where hist[0] holds the centers of the histogram bins,
      * and hist[1] holds the counts within the bins.
      */
     protected static double[] createFineHistogramSubstitute(double[] x) {
-<span class="nc" id="L391">        double[] yHist = new double[x.length];</span>
-<span class="nc" id="L392">        Arrays.fill(yHist, 1.);</span>
+<span class="nc" id="L409">        double[] yHist = new double[x.length];</span>
+<span class="nc" id="L410">        Arrays.fill(yHist, 1.);</span>
         // divide by x.length
-<span class="nc bnc" id="L394" title="All 2 branches missed.">        for (int i = 0; i &lt; yHist.length; ++i) {</span>
-<span class="nc" id="L395">            yHist[i] /= x.length;</span>
+<span class="nc bnc" id="L412" title="All 2 branches missed.">        for (int i = 0; i &lt; yHist.length; ++i) {</span>
+<span class="nc" id="L413">            yHist[i] /= x.length;</span>
         }
-<span class="nc" id="L397">        return yHist;</span>
+<span class="nc" id="L415">        return yHist;</span>
     }
 
     /**
@@ -421,9 +439,10 @@ import java.util.Arrays;
      then inverse FFT of FFT(kde) = kde.
      the runtime complexity is then O(n_s*log(n_s))
      * The Gaussian Kernel with discrete fast fourier transforms is O(s*log(s)).
-     * @param u the FFT of the histogram of the data.
-     * @param histBins the x bins of the histogram of the data that were used to create u
-     * @return kernel density estimate
+     @param u the FFT of the histogram of the data.
+     @param histBins the x bins of the histogram of the data that were used to create u
+     @param h
+     @return kernel density estimate
      */
     public static KDE viaFFTGaussKernel(Complex[] u, double[] histBins, double h) {
 
@@ -442,56 +461,63 @@ import java.util.Arrays;
         // FFT(f_n(s)) equal to 0 if 0.5*h*h*s*s is &gt; BIG which is large for the machine.
         int i;
         double zh;
-<span class="fc" id="L445">        double c = 1./Math.sqrt(2.*Math.PI);</span>
+<span class="fc" id="L464">        double c = 1./Math.sqrt(2.*Math.PI);</span>
         // pointwise multiplication
-<span class="fc" id="L447">        Complex[] eqn3 = new Complex[histBins.length];</span>
-<span class="fc bfc" id="L448" title="All 2 branches covered.">        for (i = 0; i &lt; histBins.length; ++i) {</span>
-<span class="fc" id="L449">            zh = histBins[i] * h;</span>
-<span class="pc bpc" id="L450" title="1 of 2 branches missed.">            if (zh &lt; BIG) {</span>
-<span class="fc" id="L451">                eqn3[i] = u[i].times(c * Math.exp(-0.5 * zh * zh));</span>
+<span class="fc" id="L466">        Complex[] eqn3 = new Complex[histBins.length];</span>
+<span class="fc bfc" id="L467" title="All 2 branches covered.">        for (i = 0; i &lt; histBins.length; ++i) {</span>
+<span class="fc" id="L468">            zh = histBins[i] * h;</span>
+<span class="pc bpc" id="L469" title="1 of 2 branches missed.">            if (zh &lt; BIG) {</span>
+<span class="fc" id="L470">                eqn3[i] = u[i].times(c * Math.exp(-0.5 * zh * zh));</span>
             }
         }
 
-<span class="fc" id="L455">        FFTUtil fft = new FFTUtil();</span>
+<span class="fc" id="L474">        FFTUtil fft = new FFTUtil();</span>
 
-<span class="fc" id="L457">        Complex[] kdeC = fft.create1DFFTNormalized(eqn3, false);</span>
-<span class="fc" id="L458">        double[] kd = new double[kdeC.length];</span>
+<span class="fc" id="L476">        Complex[] kdeC = fft.create1DFFTNormalized(eqn3, false);</span>
+<span class="fc" id="L477">        double[] kd = new double[kdeC.length];</span>
         //double d = 1./(kd.length - 1.);
-<span class="fc bfc" id="L460" title="All 2 branches covered.">        for (i = 0; i &lt; kdeC.length; ++i) {</span>
-<span class="fc" id="L461">            kd[i] = kdeC[i].abs();</span>
+<span class="fc bfc" id="L479" title="All 2 branches covered.">        for (i = 0; i &lt; kdeC.length; ++i) {</span>
+<span class="fc" id="L480">            kd[i] = kdeC[i].abs();</span>
         }
 
         //
-<span class="fc" id="L465">        double sum = sumKDE(kd, histBins[1] - histBins[0]);</span>
-<span class="fc" id="L466">        System.out.printf(&quot;h=%.4e sumKDE=%.4e\n&quot;, h,  sum);</span>
+<span class="fc" id="L484">        double sum = sumKDE(kd, histBins[1] - histBins[0]);</span>
+<span class="fc" id="L485">        System.out.printf(&quot;h=%.4e sumKDE=%.4e\n&quot;, h,  sum);</span>
 
-<span class="fc" id="L468">        KDE kde = new KDE();</span>
-<span class="fc" id="L469">        kde.u = Arrays.copyOf(u, u.length);</span>
-<span class="fc" id="L470">        kde.h = h;</span>
-<span class="fc" id="L471">        kde.hx = Arrays.copyOf(histBins, histBins.length);</span>
-<span class="fc" id="L472">        kde.kde = Arrays.copyOf(kd, kd.length);</span>
+<span class="fc" id="L487">        KDE kde = new KDE();</span>
+<span class="fc" id="L488">        kde.u = Arrays.copyOf(u, u.length);</span>
+<span class="fc" id="L489">        kde.h = h;</span>
+<span class="fc" id="L490">        kde.hx = Arrays.copyOf(histBins, histBins.length);</span>
+<span class="fc" id="L491">        kde.kde = Arrays.copyOf(kd, kd.length);</span>
 
-<span class="fc" id="L474">        return kde;</span>
+<span class="fc" id="L493">        return kde;</span>
     }
 
     static double sumKDE(double[] kde, double dk) {
-<span class="fc" id="L478">        double sum = 0;</span>
-<span class="fc bfc" id="L479" title="All 2 branches covered.">        for (int i = 0; i &lt; kde.length; ++i) {</span>
-<span class="fc" id="L480">            sum += kde[i];</span>
+<span class="fc" id="L497">        double sum = 0;</span>
+<span class="fc bfc" id="L498" title="All 2 branches covered.">        for (int i = 0; i &lt; kde.length; ++i) {</span>
+<span class="fc" id="L499">            sum += kde[i];</span>
         }
-<span class="fc" id="L482">        return sum;</span>
+<span class="fc" id="L501">        return sum;</span>
     }
 
+    /**
+     *
+     @param histBins
+     @param dataMinMax
+     @param h
+     @return
+     */
     protected static boolean assertHistRange(double[] histBins, double[] dataMinMax, double h) {
-<span class="nc bnc" id="L486" title="All 2 branches missed.">        if (histBins.length &lt; 3) {</span>
-<span class="nc" id="L487">            throw new IllegalArgumentException(&quot;histBins.length must be &gt;= 3&quot;);</span>
+<span class="nc bnc" id="L512" title="All 2 branches missed.">        if (histBins.length &lt; 3) {</span>
+<span class="nc" id="L513">            throw new IllegalArgumentException(&quot;histBins.length must be &gt;= 3&quot;);</span>
         }
-<span class="nc" id="L489">        double dataRange = dataMinMax[1] - dataMinMax[0];</span>
-<span class="nc" id="L490">        double histBinSize = histBins[1] - histBins[0];</span>
-<span class="nc" id="L491">        double histRange = histBins[histBins.length - 1] - histBins[0] + histBinSize;</span>
+<span class="nc" id="L515">        double dataRange = dataMinMax[1] - dataMinMax[0];</span>
+<span class="nc" id="L516">        double histBinSize = histBins[1] - histBins[0];</span>
+<span class="nc" id="L517">        double histRange = histBins[histBins.length - 1] - histBins[0] + histBinSize;</span>
 
         // assert histRange + 6h &gt;= dataRange
-<span class="nc bnc" id="L494" title="All 2 branches missed.">        return (histRange + 6.*h) &gt;= dataRange;</span>
+<span class="nc bnc" id="L520" title="All 2 branches missed.">        return (histRange + 6.*h) &gt;= dataRange;</span>
     }
 
     /**
@@ -518,14 +544,14 @@ import java.util.Arrays;
      the1-Dimensional  KDE estimator f_hat(x) = (1/n) * sum_i=0_to_{N-1} ( (1/h) * K((x - X_i)/h).
      runtime complexity is O(xTilde.length).
      &lt;/pre&gt;
-     * @param kernel
-     * @param x
-     * @param xTilde the observed data
-     * @param h the kernel bandwidth
-     * @return the kde at x
+     @param kernel
+     @param x
+     @param xTilde the observed data
+     @param h the kernel bandwidth
+     @return the kde at x
      */
     public static double univariateKernelDensityEstimate(IKernel kernel, double x, double[] xTilde, double h) {
-<span class="nc" id="L528">        return kernel.kernel(x, xTilde, h);</span>
+<span class="nc" id="L554">        return kernel.kernel(x, xTilde, h);</span>
     }
 
     /**
@@ -536,7 +562,9 @@ import java.util.Arrays;
      * This method is implemented for 1-D only, but the references (eqn 27) provide a formula for multiple dimensions.
      *
      * NOTE: this method is not ready for use.  I altered the normalization of one of the terms,
-     * but the change is a fudge.  This comment will be removed when corrected.
+     * but the change is a fudge.
+     * The test results using the &quot;fudge&quot; look good.
+     * This comment will be removed when corrected.
      &lt;pre&gt;
      References:
      Wasserman, &quot;All of Statistics&quot;, eqn (20.25)
@@ -551,10 +579,10 @@ import java.util.Arrays;
      https://arxiv.org/abs/0812.0051,
      eqn (2).
      &lt;/pre&gt;
-     * @param u fft of the histogram of the data.
-     * @param histBins the x axis of the histogram of the data.
-     * @param h the bandwidth to use
-     * @return the cross validation score
+     @param u fft of the histogram of the data.
+     @param histBins the x axis of the histogram of the data.
+     @param h the bandwidth to use
+     @return the cross validation score
      */
     public static double crossValidationScore(Complex[] u, double[] histBins, double h) {
 
@@ -569,60 +597,60 @@ import java.util.Arrays;
         similar to the way the kernel density is estimated using FFTs.
         */
 
-<span class="fc" id="L572">        int n = histBins.length;</span>
+<span class="fc" id="L600">        int n = histBins.length;</span>
 
         // perform the fourier transform of the Gaussian Kernel K(h*s)
         //    FFT( K(h*s) ) = exp(-(0.5) * h^2 * s^2)
         // s = (x - xTilde[i])/h;  K(s*h)  &lt;== multiply h differently for term1, term2, term3
-<span class="fc" id="L577">        double sh = Math.sqrt(2) * h;</span>
-<span class="fc" id="L578">        double term1 = 0;</span>
+<span class="fc" id="L605">        double sh = Math.sqrt(2) * h;</span>
+<span class="fc" id="L606">        double term1 = 0;</span>
 
         int i;
         double zh;
         double m;
         // term2: ((n-2)/(n*((n-1)^2))) * summation over i where i!=j of (K(Xi-Xj, sqrt(2)*h))
         //term3: (2/(n*(n-1))) * summation over i where i!=j of (K(Xi-Xj, h))
-<span class="fc" id="L585">        double[] f2 = new double[n];</span>
-<span class="fc" id="L586">        double[] f3 = new double[n];</span>
-<span class="fc bfc" id="L587" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L588">            zh = histBins[i] * sh;</span>
-<span class="pc bpc" id="L589" title="1 of 2 branches missed.">            if (zh &lt; BIG) {</span>
-<span class="fc" id="L590">                m = -0.5 * zh * zh;</span>
-<span class="fc" id="L591">                term1 += Math.exp(m);</span>
-<span class="fc" id="L592">                f2[i] = u[i].times(Math.exp(m) ).abs();</span>
+<span class="fc" id="L613">        double[] f2 = new double[n];</span>
+<span class="fc" id="L614">        double[] f3 = new double[n];</span>
+<span class="fc bfc" id="L615" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L616">            zh = histBins[i] * sh;</span>
+<span class="pc bpc" id="L617" title="1 of 2 branches missed.">            if (zh &lt; BIG) {</span>
+<span class="fc" id="L618">                m = -0.5 * zh * zh;</span>
+<span class="fc" id="L619">                term1 += Math.exp(m);</span>
+<span class="fc" id="L620">                f2[i] = u[i].times(Math.exp(m) ).abs();</span>
                 // if (m &gt;= 0) {
             }
-<span class="fc" id="L595">            zh = histBins[i] * h;</span>
-<span class="pc bpc" id="L596" title="1 of 2 branches missed.">            if (zh &lt; BIG) {</span>
-<span class="fc" id="L597">                f3[i] = u[i].times(Math.exp(-0.5 * zh * zh)).abs();</span>
+<span class="fc" id="L623">            zh = histBins[i] * h;</span>
+<span class="pc bpc" id="L624" title="1 of 2 branches missed.">            if (zh &lt; BIG) {</span>
+<span class="fc" id="L625">                f3[i] = u[i].times(Math.exp(-0.5 * zh * zh)).abs();</span>
                 // if (m &gt;= 0) {
             }
         }
-<span class="fc" id="L601">        term1 /= (n - 1.);</span>
+<span class="fc" id="L629">        term1 /= (n - 1.);</span>
 
-<span class="fc" id="L603">        FFTUtil fft = new FFTUtil();</span>
-<span class="fc" id="L604">        Complex[] t2 = fft.create1DFFTNormalized(f2, false);</span>
-<span class="fc" id="L605">        Complex[] t3 = fft.create1DFFTNormalized(f3, false);</span>
+<span class="fc" id="L631">        FFTUtil fft = new FFTUtil();</span>
+<span class="fc" id="L632">        Complex[] t2 = fft.create1DFFTNormalized(f2, false);</span>
+<span class="fc" id="L633">        Complex[] t3 = fft.create1DFFTNormalized(f3, false);</span>
 
-<span class="fc" id="L607">        double term2 = 0;</span>
-<span class="fc" id="L608">        double term3 = 0.;</span>
-<span class="fc bfc" id="L609" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L610">            term2 += t2[i].abs();</span>
-<span class="fc" id="L611">            term3 += t3[i].abs();</span>
+<span class="fc" id="L635">        double term2 = 0;</span>
+<span class="fc" id="L636">        double term3 = 0.;</span>
+<span class="fc bfc" id="L637" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L638">            term2 += t2[i].abs();</span>
+<span class="fc" id="L639">            term3 += t3[i].abs();</span>
         }
 
-<span class="fc" id="L614">        term2 *= ((n-2.)/(n*(n-1.)*(n-1.)));</span>
-<span class="fc" id="L615">        term3 *= (2./(n*(n-1.)));</span>
+<span class="fc" id="L642">        term2 *= ((n-2.)/(n*(n-1.)*(n-1.)));</span>
+<span class="fc" id="L643">        term3 *= (2./(n*(n-1.)));</span>
 
         // there is an error in my implementation
-<span class="fc" id="L618">        double r = term1 + term2 - term3;</span>
+<span class="fc" id="L646">        double r = term1 + term2 - term3;</span>
 
         // fudge, to be removed when the bug is found
-<span class="fc" id="L621">        r = term1/(n*n) + term2 - term3;</span>
+<span class="fc" id="L649">        r = term1/(n*n) + term2 - term3;</span>
 
-<span class="fc" id="L623">        System.out.printf(&quot;h=%.4e terms=%.4e %.4e %.4e  r=%.4e\n&quot;, h, term1, term2, term3, r);</span>
+<span class="fc" id="L651">        System.out.printf(&quot;h=%.4e terms=%.4e %.4e %.4e  r=%.4e\n&quot;, h, term1, term2, term3, r);</span>
 
-<span class="fc" id="L625">        return r;</span>
+<span class="fc" id="L653">        return r;</span>
 
         /*
         try again, but with the Wasserman eqn (20.25)
@@ -656,37 +684,9 @@ import java.util.Arrays;
      https://www.stat.cmu.edu/~larry/=sml/densityestimation.pdf
      36-708 Statistical Methods for Machine Learning by Larry Wasserman, CMU
      &lt;/pre&gt;
-     * @return
+     @return
      */
     static double riskEstimatorLeaveOneOut() {
-
-        // r_hat(h) = integral( (p_hat(x))^2*dx - (2/n) * summation_i=1_to_n( p_hat(X_i) )
-        //    the 3rd compoonent on the right hand side is dropped as it's a constant (and so cancels out in comparisons
-        //    for bandwidth selection) and it is nearly negligible as n increases.
-        //
-        //     for the &quot;leave-one-out&quot; algorithm, p_hat is the density estimator after removing
-        //        the &quot;i-th&quot; observation.
-        //     for the &quot;data-splitting&quot; algorithm,
-        //        X_i is split into half randomly, and that instead of the entire X_i is used
-        //        in the summation above.
-        //        Note that splitting in half is V-fold or k-fold of 2, but a larger number can be used instead.
-
-<span class="nc" id="L674">        throw new UnsupportedOperationException(&quot;not yet implemented&quot;);</span>
-    }
-
-    /**
-     * calculate the risk estimator for the &quot;data-splitting&quot; V-fold or k-fold method of cross validation.
-     * This method can be used to select a kde bandwidth by minimizing the risk estimator for a range
-     * of bandwidths.  It is a data based method as the true probability distribution is unknown.
-     &lt;pre&gt;
-     see eqn (20.24) of Wasserman's &quot;All of Statistics&quot;.
-     see eqn (26) of
-     https://www.stat.cmu.edu/~larry/=sml/densityestimation.pdf
-     36-708 Statistical Methods for Machine Learning by Larry Wasserman, CMU
-     &lt;/pre&gt;
-     * @return
-     */
-    static double riskEstimatorDataSplitting() {
 
         // r_hat(h) = integral( (p_hat(x))^2*dx - (2/n) * summation_i=1_to_n( p_hat(X_i) )
         //    the 3rd compoonent on the right hand side is dropped as it's a constant (and so cancels out in comparisons
@@ -703,18 +703,18 @@ import java.util.Arrays;
     }
 
     /**
-     * calculate the risk estimator for the &quot;leave-one-out&quot; method of cross validation.
+     * calculate the risk estimator for the &quot;data-splitting&quot; V-fold or k-fold method of cross validation.
      * This method can be used to select a kde bandwidth by minimizing the risk estimator for a range
      * of bandwidths.  It is a data based method as the true probability distribution is unknown.
      &lt;pre&gt;
-     see eqn (27), (28) of
+     see eqn (20.24) of Wasserman's &quot;All of Statistics&quot;.
+     see eqn (26) of
      https://www.stat.cmu.edu/~larry/=sml/densityestimation.pdf
-     36-708 Statistical Methods for Machine Learning by Larry Wasserman, CMU.
-     see eqn (20.24) of Wasserman's &quot;All of Statistics&quot;
+     36-708 Statistical Methods for Machine Learning by Larry Wasserman, CMU
      &lt;/pre&gt;
-     * @return
+     @return
      */
-    static double riskEstimatorGaussianKernel() {
+    static double riskEstimatorDataSplitting() {
 
         // r_hat(h) = integral( (p_hat(x))^2*dx - (2/n) * summation_i=1_to_n( p_hat(X_i) )
         //    the 3rd compoonent on the right hand side is dropped as it's a constant (and so cancels out in comparisons
@@ -730,13 +730,41 @@ import java.util.Arrays;
 <span class="nc" id="L730">        throw new UnsupportedOperationException(&quot;not yet implemented&quot;);</span>
     }
 
+    /**
+     * calculate the risk estimator for the &quot;leave-one-out&quot; method of cross validation.
+     * This method can be used to select a kde bandwidth by minimizing the risk estimator for a range
+     * of bandwidths.  It is a data based method as the true probability distribution is unknown.
+     &lt;pre&gt;
+     see eqn (27), (28) of
+     https://www.stat.cmu.edu/~larry/=sml/densityestimation.pdf
+     36-708 Statistical Methods for Machine Learning by Larry Wasserman, CMU.
+     see eqn (20.24) of Wasserman's &quot;All of Statistics&quot;
+     &lt;/pre&gt;
+     @return
+     */
+    static double riskEstimatorGaussianKernel() {
+
+        // r_hat(h) = integral( (p_hat(x))^2*dx - (2/n) * summation_i=1_to_n( p_hat(X_i) )
+        //    the 3rd compoonent on the right hand side is dropped as it's a constant (and so cancels out in comparisons
+        //    for bandwidth selection) and it is nearly negligible as n increases.
+        //
+        //     for the &quot;leave-one-out&quot; algorithm, p_hat is the density estimator after removing
+        //        the &quot;i-th&quot; observation.
+        //     for the &quot;data-splitting&quot; algorithm,
+        //        X_i is split into half randomly, and that instead of the entire X_i is used
+        //        in the summation above.
+        //        Note that splitting in half is V-fold or k-fold of 2, but a larger number can be used instead.
+
+<span class="nc" id="L758">        throw new UnsupportedOperationException(&quot;not yet implemented&quot;);</span>
+    }
+
     static double sumHistogram(double[][] hist) {
-<span class="fc" id="L734">        double sum = 0;</span>
-<span class="fc" id="L735">        double dh = hist[0][1] - hist[0][0];</span>
-<span class="fc bfc" id="L736" title="All 2 branches covered.">        for (int i = 0; i &lt; hist[0].length; ++i) {</span>
-<span class="fc" id="L737">            sum += (hist[1][i]);</span>
+<span class="fc" id="L762">        double sum = 0;</span>
+<span class="fc" id="L763">        double dh = hist[0][1] - hist[0][0];</span>
+<span class="fc bfc" id="L764" title="All 2 branches covered.">        for (int i = 0; i &lt; hist[0].length; ++i) {</span>
+<span class="fc" id="L765">            sum += (hist[1][i]);</span>
         }
-<span class="fc" id="L739">        return sum;</span>
+<span class="fc" id="L767">        return sum;</span>
     }
 
 }

@@ -87,10 +87,10 @@ import thirdparty.dlib.optimization.GeometricMedianWeightedFunction;
      * One should use instead, the method newtonsThenVardiZhang which checks for 
      * that and updates the solution if needed.
      * 
-     * @param function
+     @param function
      *  @param init input output variable holding the estimates for the
      * geometric median in all dimensions.
-     * @return the minimum of the sum of the squared sum of thedifferences of
+     @return the minimum of the sum of the squared sum of thedifferences of
      * the observed points from the geometric median.
      */
     public double newtonsMethod2(AbstractGeometricMedianFunction function,
@@ -284,28 +284,29 @@ import thirdparty.dlib.optimization.GeometricMedianWeightedFunction;
      * if init is a root of the function, and error is errorTolerance or smaller,
        then the function derivative evaluated at the root plus and at the root minus
        the error will have opposing signs.
-     * @param function
-     * @param init
-     * @return 
+     @param function
+     @param init
+     @param errorTolerance
+     @return 
      */
     public boolean verify(AbstractGeometricMedianFunction function,
         double[] init, double errorTolerance) {
         
-<span class="fc" id="L294">        double d = errorTolerance;</span>
-<span class="fc" id="L295">        double[] minus = Arrays.copyOf(init, init.length);</span>
-<span class="fc" id="L296">        double[] plus = Arrays.copyOf(init, init.length);</span>
-<span class="fc bfc" id="L297" title="All 2 branches covered.">        for (int i = 0; i &lt; minus.length; ++i) {</span>
-<span class="fc" id="L298">            minus[i] -= d;</span>
-<span class="fc" id="L299">            plus[i] += d;</span>
+<span class="fc" id="L295">        double d = errorTolerance;</span>
+<span class="fc" id="L296">        double[] minus = Arrays.copyOf(init, init.length);</span>
+<span class="fc" id="L297">        double[] plus = Arrays.copyOf(init, init.length);</span>
+<span class="fc bfc" id="L298" title="All 2 branches covered.">        for (int i = 0; i &lt; minus.length; ++i) {</span>
+<span class="fc" id="L299">            minus[i] -= d;</span>
+<span class="fc" id="L300">            plus[i] += d;</span>
         }
-<span class="fc" id="L301">        double[] fMinus = function.der(minus);</span>
-<span class="fc" id="L302">        double[] fPlus = function.der(plus);</span>
-<span class="pc bpc" id="L303" title="1 of 2 branches missed.">        for (int i = 0; i &lt; minus.length; ++i) {</span>
-<span class="pc bpc" id="L304" title="3 of 8 branches missed.">            if ((fMinus[i] &lt; 0 &amp;&amp; fPlus[i] &gt; 0) || (fMinus[i] &gt; 0 &amp;&amp; fPlus[i] &lt; 0)) {</span>
-<span class="fc" id="L305">                return true;</span>
+<span class="fc" id="L302">        double[] fMinus = function.der(minus);</span>
+<span class="fc" id="L303">        double[] fPlus = function.der(plus);</span>
+<span class="pc bpc" id="L304" title="1 of 2 branches missed.">        for (int i = 0; i &lt; minus.length; ++i) {</span>
+<span class="pc bpc" id="L305" title="3 of 8 branches missed.">            if ((fMinus[i] &lt; 0 &amp;&amp; fPlus[i] &gt; 0) || (fMinus[i] &gt; 0 &amp;&amp; fPlus[i] &lt; 0)) {</span>
+<span class="fc" id="L306">                return true;</span>
             }
         }
-<span class="nc" id="L308">        return false;</span>
+<span class="nc" id="L309">        return false;</span>
     }
     
     /**
@@ -317,84 +318,84 @@ import thirdparty.dlib.optimization.GeometricMedianWeightedFunction;
        Yehuda Vardi and Cun-Hui Zhang
      *     https://www.pnas.org/content/pnas/97/4/1423.full.pdf
      * 
-     * @param function
-     * @param geoMedian input output variable holding the estimates for the
+     @param function
+     @param geoMedian input output variable holding the estimates for the
      * geometric median in all dimensions.
-     * @return the minimum of the sum of the squared sum of the differences of
+     @return the minimum of the sum of the squared sum of the differences of
      * the observed points from the geometric median.
      */
     public double newtonsThenVardiZhang(GeometricMedianWeightedFunction function,
         double[] geoMedian) {
         
         // scale these by the data weights?
-<span class="fc" id="L330">        double fds0 = 1.e-4;</span>
-<span class="fc" id="L331">        double fds = 1.e-3;</span>
+<span class="fc" id="L331">        double fds0 = 1.e-4;</span>
+<span class="fc" id="L332">        double fds = 1.e-3;</span>
         
-<span class="fc" id="L333">        boolean[] checks = new boolean[2];</span>
-<span class="fc" id="L334">        int checkTol = 0;</span>
+<span class="fc" id="L334">        boolean[] checks = new boolean[2];</span>
+<span class="fc" id="L335">        int checkTol = 0;</span>
         double f0, diffF;
-<span class="fc" id="L336">        double f1 = Double.MAX_VALUE;</span>
-<span class="fc" id="L337">        int[] isMedian = new int[function.getNData()];</span>
-<span class="fc" id="L338">        double[] prevGeoMedian = new double[geoMedian.length];</span>
-<span class="fc" id="L339">        int nIter = 0;</span>
-<span class="fc" id="L340">        int nIterMax = 100;</span>
-<span class="pc bpc" id="L341" title="1 of 2 branches missed.">        while (nIter &lt; nIterMax) {</span>
+<span class="fc" id="L337">        double f1 = Double.MAX_VALUE;</span>
+<span class="fc" id="L338">        int[] isMedian = new int[function.getNData()];</span>
+<span class="fc" id="L339">        double[] prevGeoMedian = new double[geoMedian.length];</span>
+<span class="fc" id="L340">        int nIter = 0;</span>
+<span class="fc" id="L341">        int nIterMax = 100;</span>
+<span class="pc bpc" id="L342" title="1 of 2 branches missed.">        while (nIter &lt; nIterMax) {</span>
             
-<span class="fc" id="L343">            f0 = newtonsMethod2(function, geoMedian);</span>
+<span class="fc" id="L344">            f0 = newtonsMethod2(function, geoMedian);</span>
 
-<span class="fc" id="L345">            System.out.printf(&quot;%d) newton's f=%.7e gm=%s\n&quot;, nIter, f0,</span>
-<span class="fc" id="L346">                AbstractGeometricMedianFunction.toString(geoMedian));</span>
+<span class="fc" id="L346">            System.out.printf(&quot;%d) newton's f=%.7e gm=%s\n&quot;, nIter, f0,</span>
+<span class="fc" id="L347">                AbstractGeometricMedianFunction.toString(geoMedian));</span>
             
-<span class="fc" id="L348">            function.isMedian(geoMedian, isMedian);</span>
+<span class="fc" id="L349">            function.isMedian(geoMedian, isMedian);</span>
 
-<span class="fc" id="L350">            System.arraycopy(geoMedian, 0, prevGeoMedian, 0, geoMedian.length);</span>
+<span class="fc" id="L351">            System.arraycopy(geoMedian, 0, prevGeoMedian, 0, geoMedian.length);</span>
             
-<span class="fc" id="L352">            f1 = function.vardiZhang(isMedian, geoMedian, checks);</span>
+<span class="fc" id="L353">            f1 = function.vardiZhang(isMedian, geoMedian, checks);</span>
         
             // this is negative while minimizing
-<span class="fc" id="L355">            diffF = f1 - f0;</span>
-<span class="fc bfc" id="L356" title="All 2 branches covered.">            if (!(diffF &lt;= 0.) ) {</span>
+<span class="fc" id="L356">            diffF = f1 - f0;</span>
+<span class="fc bfc" id="L357" title="All 2 branches covered.">            if (!(diffF &lt;= 0.) ) {</span>
                 // NOTE: if this happens, I may have a bug in vardiZhang
-<span class="fc" id="L358">                System.err.println(&quot;check for an error in impl of method &quot; +</span>
-<span class="fc" id="L359">                    function.getClass().getSimpleName() + &quot;.vardiZhang&quot;);</span>
-<span class="fc" id="L360">                f1 = f0;</span>
-<span class="fc" id="L361">                System.arraycopy(prevGeoMedian, 0, geoMedian, 0, geoMedian.length);</span>
-<span class="fc" id="L362">                break;</span>
+<span class="fc" id="L359">                System.err.println(&quot;check for an error in impl of method &quot; +</span>
+<span class="fc" id="L360">                    function.getClass().getSimpleName() + &quot;.vardiZhang&quot;);</span>
+<span class="fc" id="L361">                f1 = f0;</span>
+<span class="fc" id="L362">                System.arraycopy(prevGeoMedian, 0, geoMedian, 0, geoMedian.length);</span>
+<span class="fc" id="L363">                break;</span>
             }
             
-<span class="fc" id="L365">            System.out.printf(&quot;  vz f=%.7e gm=%s checks=%s\n&quot;, f1,</span>
-<span class="fc" id="L366">                AbstractGeometricMedianFunction.toString(geoMedian),</span>
-<span class="fc" id="L367">                Arrays.toString(checks));</span>
-<span class="fc" id="L368">            System.out.flush();</span>
+<span class="fc" id="L366">            System.out.printf(&quot;  vz f=%.7e gm=%s checks=%s\n&quot;, f1,</span>
+<span class="fc" id="L367">                AbstractGeometricMedianFunction.toString(geoMedian),</span>
+<span class="fc" id="L368">                Arrays.toString(checks));</span>
+<span class="fc" id="L369">            System.out.flush();</span>
             
             // stopping criteria:
-<span class="pc bpc" id="L371" title="3 of 4 branches missed.">            if (checks[0] &amp;&amp; checks[1]) {</span>
-<span class="nc" id="L372">                break;</span>
+<span class="pc bpc" id="L372" title="3 of 4 branches missed.">            if (checks[0] &amp;&amp; checks[1]) {</span>
+<span class="nc" id="L373">                break;</span>
             }
             
             // stopping criteria:
-<span class="fc bfc" id="L376" title="All 2 branches covered.">            if (Math.abs(diffF) &lt; fds0) {</span>
-<span class="fc bfc" id="L377" title="All 2 branches covered.">                for (checkTol = 0; checkTol &lt; geoMedian.length; ++checkTol) {</span>
-<span class="fc bfc" id="L378" title="All 2 branches covered.">                    if (Math.abs(prevGeoMedian[checkTol] - geoMedian[checkTol])</span>
+<span class="fc bfc" id="L377" title="All 2 branches covered.">            if (Math.abs(diffF) &lt; fds0) {</span>
+<span class="fc bfc" id="L378" title="All 2 branches covered.">                for (checkTol = 0; checkTol &lt; geoMedian.length; ++checkTol) {</span>
+<span class="fc bfc" id="L379" title="All 2 branches covered.">                    if (Math.abs(prevGeoMedian[checkTol] - geoMedian[checkTol])</span>
                         &gt; fds) {
-<span class="fc" id="L380">                        break;</span>
+<span class="fc" id="L381">                        break;</span>
                     }
                 }
-<span class="fc bfc" id="L383" title="All 2 branches covered.">                if (checkTol == geoMedian.length) {</span>
-<span class="fc" id="L384">                    break;</span>
+<span class="fc bfc" id="L384" title="All 2 branches covered.">                if (checkTol == geoMedian.length) {</span>
+<span class="fc" id="L385">                    break;</span>
                 }
             }
             
-<span class="fc" id="L388">            nIter++;</span>
+<span class="fc" id="L389">            nIter++;</span>
         }
 
-<span class="fc" id="L391">        return f1;</span>
+<span class="fc" id="L392">        return f1;</span>
     }
 
     private double[] occursAsMoreThanHalf(AbstractGeometricMedianFunction function) {
-<span class="nc" id="L395">        double[] obs = function.getObs();</span>
-<span class="nc" id="L396">        int nDimensions = function.getNDimensions();</span>
-<span class="nc" id="L397">        int nData = function.getNData();</span>
+<span class="nc" id="L396">        double[] obs = function.getObs();</span>
+<span class="nc" id="L397">        int nDimensions = function.getNDimensions();</span>
+<span class="nc" id="L398">        int nData = function.getNData();</span>
         
         // store points and frequency
         // TODO: create a data structure like PaiInt to hold a double array
@@ -403,13 +404,13 @@ import thirdparty.dlib.optimization.GeometricMedianWeightedFunction;
         //   similar entries truncated to tolerance.
         int i, j, d;
         double a, b;
-<span class="nc bnc" id="L406" title="All 2 branches missed.">        for (i = 0; i &lt; nData; ++i) {</span>
-<span class="nc bnc" id="L407" title="All 2 branches missed.">            for (d = 0; d &lt; nDimensions; ++d) {</span>
-<span class="nc" id="L408">                j = i * nDimensions + d;</span>
+<span class="nc bnc" id="L407" title="All 2 branches missed.">        for (i = 0; i &lt; nData; ++i) {</span>
+<span class="nc bnc" id="L408" title="All 2 branches missed.">            for (d = 0; d &lt; nDimensions; ++d) {</span>
+<span class="nc" id="L409">                j = i * nDimensions + d;</span>
                 
             }
         }
-<span class="nc" id="L412">        throw new UnsupportedOperationException(&quot;not currently implemented&quot;);</span>
+<span class="nc" id="L413">        throw new UnsupportedOperationException(&quot;not currently implemented&quot;);</span>
     }
     
     /**
@@ -468,9 +469,9 @@ import thirdparty.dlib.optimization.GeometricMedianWeightedFunction;
         by Pengcheng Jia
         https://surface.syr.edu/cgi/viewcontent.cgi?article=1673&amp;context=etd
         
-     * @param function
-     * @param init
-     * @return 
+     @param function
+     @param init
+     @return 
      */
     /*public double levenbergMarquardt(AbstractGeometricMedianFunction function,
         double[] init) {

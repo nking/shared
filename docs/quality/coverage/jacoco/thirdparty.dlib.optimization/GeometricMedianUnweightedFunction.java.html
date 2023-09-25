@@ -76,11 +76,11 @@ import java.util.Arrays;
      * class holding the objective and derivative of the geometric-median for use
      * with search algorithms such as the LBFGs.
      * 
-     * @param observations the observations from all dimensions in format of
+     @param observations the observations from all dimensions in format of
      * point_0 in all dimensions, followed by point_1 in all dimensions, etc.
      * e.g. for numberOfDimensions=3, observations={x0, y0, z0, x1, y1, z1, ...
      *     x_(nPoints-1), y_(nPoints-1), z_(nPoints-1)}.
-     * @param numberOfDimensions the number of data dimensions present in
+     @param numberOfDimensions the number of data dimensions present in
      * observations array.
      */
 <span class="fc" id="L86">    public GeometricMedianUnweightedFunction(double[] observations, int numberOfDimensions) {</span>
@@ -116,9 +116,9 @@ import java.util.Arrays;
           where || X - obs_i ||_2 is ( (X_0-obs_i_0)^2 + (X_1-obs_i_1)^2 ...)^(1/2)  
       &lt;/pre&gt;
      *
-     * @param geoMedian input variable holding coordinates of current
+     @param geoMedian input variable holding coordinates of current
      * estimate of geometric median.
-     * @return evaluation of the objective, summation_i=1_n(|| geoMedian - obs_i
+     @return evaluation of the objective, summation_i=1_n(|| geoMedian - obs_i
      * ||^2)/n
      */
     @Override
@@ -200,16 +200,28 @@ import java.util.Arrays;
 <span class="fc" id="L200">        return dfDX;</span>
     }
     
+    /**
+     *
+     @return
+     */
     public int getNDimensions() {
-<span class="fc" id="L204">        return nDimensions;</span>
+<span class="fc" id="L208">        return nDimensions;</span>
     }
     
+    /**
+     *
+     @return
+     */
     public double[] getObs() {
-<span class="fc" id="L208">        return obs;</span>
+<span class="fc" id="L216">        return obs;</span>
     }
     
+    /**
+     *
+     @return
+     */
     public double getFDEps() {
-<span class="nc" id="L212">        return fDEps;</span>
+<span class="nc" id="L224">        return fDEps;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

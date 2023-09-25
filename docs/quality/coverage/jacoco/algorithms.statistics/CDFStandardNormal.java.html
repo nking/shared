@@ -14,9 +14,9 @@
      * 2009, Bowling, Khasawneh, Kaewkuekool, and Cho,
      * JIEM, 2009 – 2(1): 114-127
      * https://www.jiem.org/index.php/jiem/article/viewFile/60/27/
-     * &lt;pre&gt;
-     * @param p can be .gte. -4.5 and .lte. 4.5
-     * @return 
+     * &lt;/pre&gt;
+     @param p can be .gte. -4.5 and .lte. 4.5
+     @return 
      */
     static double _approxBowling(double p) {
         // eqn 10:
@@ -50,16 +50,16 @@
      
     The Shore algorithm in this method produces this for the same example:
     &lt;pre&gt;
-    &gt;&gt;&gt; p=0.75
-    &gt;&gt;&gt; x1=-5.531*( math.pow((1.-p)/p, 0.1193) - 1.); x1
+    p=0.75
+    x1=-5.531*( math.pow((1.-p)/p, 0.1193) - 1.); x1
     0.679421164952841
     
     To see that the results produce a mean of 0 and standard deviation of 1,
     see CDFStandardNormalTest.testApproxShore().
-    *&lt;/pre&gt;
-     * @param p probability
-     * @return percentage point x from eqn (3) which is
-     * the variate, quantile, x.  the range is roughly -3 to +3.
+    &lt;/pre&gt;
+     @param p probability
+     @return percentage point x from eqn (3) which is
+    the variate, quantile, x.  the range is roughly -3 to +3.
     */
     public static double approxInverseShort(double p) {
         
@@ -82,8 +82,8 @@
     1982, Shore, Appl Statis, 31, No 2, 108-114
     * Stable URL: http://www.jstor.org/stable/2347972 
     
-     * @param x the variate, quantile x
-     * @return 
+     @param x the variate, quantile x
+     @return 
     
     public static double approxDensityFunction(double p) {
         

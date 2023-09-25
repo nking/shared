@@ -29,8 +29,7 @@ import thirdparty.HungarianAlgorithm;
     /**
      * Find a maximal independent set in graph G defined by the given adjacency map
      * using 
-     * 
-     * 
+     *
      * In graph theory, a maximal independent set (MIS) or maximal stable set is 
      * an independent set that is not a subset of any other independent set. 
      * In other words, there is no vertex outside the independent set that may 
@@ -50,9 +49,9 @@ import thirdparty.HungarianAlgorithm;
         
       https://en.wikipedia.org/wiki/Maximal_independent_set#Listing_all_maximal_independent_sets
       &lt;/pre&gt;
-     * @param adjMap  adjacency map of undirected graph G with key = vertex u and value = set of
+     @param adjMap  adjacency map of undirected graph G with key = vertex u and value = set of
      * neighbors connected to u. 
-     * @return returns a maximal independent set of undirected graph G defined by adjMap
+     @return returns a maximal independent set of undirected graph G defined by adjMap
      */
     public static TIntSet findOneProbabilistic(TIntObjectMap&lt;TIntSet&gt; adjMap){
         
@@ -94,18 +93,18 @@ import thirdparty.HungarianAlgorithm;
         we remove a constant fraction of the edges
         */
         
-<span class="fc" id="L97">        Random rand = Misc0.getSecureRandom();</span>
-<span class="fc" id="L98">        long seed = System.nanoTime();</span>
-<span class="fc" id="L99">        System.out.println(&quot;seed=&quot; + seed);</span>
-<span class="fc" id="L100">        System.out.flush();</span>
-<span class="fc" id="L101">        rand.setSeed(seed);</span>
+<span class="fc" id="L96">        Random rand = Misc0.getSecureRandom();</span>
+<span class="fc" id="L97">        long seed = System.nanoTime();</span>
+<span class="fc" id="L98">        System.out.println(&quot;seed=&quot; + seed);</span>
+<span class="fc" id="L99">        System.out.flush();</span>
+<span class="fc" id="L100">        rand.setSeed(seed);</span>
         
-<span class="fc" id="L103">        TIntSet indep = new TIntHashSet();</span>
+<span class="fc" id="L102">        TIntSet indep = new TIntHashSet();</span>
         
-<span class="fc" id="L105">        TIntObjectMap&lt;TIntSet&gt; toFromAdjMap = extractInOut(adjMap);</span>
+<span class="fc" id="L104">        TIntObjectMap&lt;TIntSet&gt; toFromAdjMap = extractInOut(adjMap);</span>
         
-<span class="fc" id="L107">        TIntSet vP = extractAllVertices(adjMap);</span>
-<span class="fc" id="L108">        int nV = vP.size();</span>
+<span class="fc" id="L106">        TIntSet vP = extractAllVertices(adjMap);</span>
+<span class="fc" id="L107">        int nV = vP.size();</span>
         TIntObjectMap&lt;TIntSet&gt; gP;
         double[] cdf;
         double[] pmf;
@@ -114,7 +113,7 @@ import thirdparty.HungarianAlgorithm;
         int u;
         int v;
         int k;
-<span class="fc" id="L117">        TIntSet s = new TIntHashSet();</span>
+<span class="fc" id="L116">        TIntSet s = new TIntHashSet();</span>
         
         TIntIterator iterV;
                
@@ -180,13 +179,13 @@ import thirdparty.HungarianAlgorithm;
         // The later method (2) appears to be what would result in removing
         // &quot;a constant fraction of the edges&quot;
         
-<span class="fc" id="L183">        int nIter = 0;</span>
-<span class="fc bfc" id="L184" title="All 2 branches covered.">        while (!vP.isEmpty()) {</span>
+<span class="fc" id="L182">        int nIter = 0;</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">        while (!vP.isEmpty()) {</span>
             
             // creates subgraph of adjMap out of vertexes vP.  note that
             //   it also creates edges uv and vu as G is undirected, and
             //   in order to make the degree counting easier below.
-<span class="fc" id="L189">            gP = subgraph(vP, adjMap);</span>
+<span class="fc" id="L188">            gP = subgraph(vP, adjMap);</span>
             
             /*
             if implementing (1):
@@ -206,7 +205,7 @@ import thirdparty.HungarianAlgorithm;
             }
             */
             
-            //NOTE: this could be revised to use paralell spawn and sync comments
+            //NOTE: this could be revised to use parallel spawn and sync comments
             // or the parallel concurrency keyword in comments
             // as is used in the dynamic multithreading parallelism model.
             // (see Chap 27 of Cormen, Leiserson, Rivest, and Stein &quot;Introduction to Algorithms&quot; whose
@@ -218,48 +217,48 @@ import thirdparty.HungarianAlgorithm;
             /*
             if implementing (2):
             */
-<span class="fc" id="L221">            s.clear();</span>
-<span class="fc" id="L222">            iterV = vP.iterator();</span>
-<span class="fc bfc" id="L223" title="All 2 branches covered.">            while (iterV.hasNext()) {</span>
-<span class="fc" id="L224">                v = iterV.next();</span>
-<span class="fc" id="L225">                d = gP.get(v).size();</span>
+<span class="fc" id="L220">            s.clear();</span>
+<span class="fc" id="L221">            iterV = vP.iterator();</span>
+<span class="fc bfc" id="L222" title="All 2 branches covered.">            while (iterV.hasNext()) {</span>
+<span class="fc" id="L223">                v = iterV.next();</span>
+<span class="fc" id="L224">                d = gP.get(v).size();</span>
                 //pV = 1./(2.*d);
-<span class="fc" id="L227">                pV = 1./d;</span>
+<span class="fc" id="L226">                pV = 1./d;</span>
                 
-<span class="fc" id="L229">                r = rand.nextDouble();</span>
-<span class="fc" id="L230">                System.out.printf(&quot;r=%.4f, pV=%.4f\n&quot;, r, pV);</span>
+<span class="fc" id="L228">                r = rand.nextDouble();</span>
+<span class="fc" id="L229">                System.out.printf(&quot;r=%.4f, pV=%.4f\n&quot;, r, pV);</span>
                                 
-<span class="fc bfc" id="L232" title="All 2 branches covered.">                if (r &lt;= pV) {</span>
-<span class="fc" id="L233">                    s.add(v);</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">                if (r &lt;= pV) {</span>
+<span class="fc" id="L232">                    s.add(v);</span>
                 }
             }
             
             // ---- look for E(G') in S. calling them edge conflicts ----
-<span class="fc" id="L238">            resolveEdgeConflicts(s, gP);</span>
+<span class="fc" id="L237">            resolveEdgeConflicts(s, gP);</span>
            
             // I = I union S′.
-<span class="fc" id="L241">            indep.addAll(s);</span>
+<span class="fc" id="L240">            indep.addAll(s);</span>
             
             //Let V′ = V′ \ (S′ union N_G′(S′)).
-<span class="fc" id="L244">            iterV = s.iterator();</span>
-<span class="fc bfc" id="L245" title="All 2 branches covered.">            while (iterV.hasNext()) {</span>
-<span class="fc" id="L246">                v = iterV.next();</span>
-<span class="fc" id="L247">                vP.remove(v);</span>
-<span class="pc bpc" id="L248" title="1 of 2 branches missed.">                if (gP.containsKey(v)) {</span>
-<span class="fc" id="L249">                    nhbrsSet = gP.get(v);</span>
-<span class="fc" id="L250">                    iterNhbr = nhbrsSet.iterator();</span>
-<span class="fc bfc" id="L251" title="All 2 branches covered.">                    while (iterNhbr.hasNext()) {</span>
-<span class="fc" id="L252">                        nhbr = iterNhbr.next();</span>
-<span class="fc" id="L253">                        vP.remove(nhbr);</span>
+<span class="fc" id="L243">            iterV = s.iterator();</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">            while (iterV.hasNext()) {</span>
+<span class="fc" id="L245">                v = iterV.next();</span>
+<span class="fc" id="L246">                vP.remove(v);</span>
+<span class="pc bpc" id="L247" title="1 of 2 branches missed.">                if (gP.containsKey(v)) {</span>
+<span class="fc" id="L248">                    nhbrsSet = gP.get(v);</span>
+<span class="fc" id="L249">                    iterNhbr = nhbrsSet.iterator();</span>
+<span class="fc bfc" id="L250" title="All 2 branches covered.">                    while (iterNhbr.hasNext()) {</span>
+<span class="fc" id="L251">                        nhbr = iterNhbr.next();</span>
+<span class="fc" id="L252">                        vP.remove(nhbr);</span>
                     }
                 }
             }
-<span class="fc" id="L257">            nIter++;</span>
+<span class="fc" id="L256">            nIter++;</span>
         }
         
-<span class="fc" id="L260">        System.out.printf(&quot;|V|=%d, nIter=%d\n&quot;, nV, nIter);</span>
+<span class="fc" id="L259">        System.out.printf(&quot;|V|=%d, nIter=%d\n&quot;, nV, nIter);</span>
         
-<span class="fc" id="L262">        return indep;</span>
+<span class="fc" id="L261">        return indep;</span>
     }
     
     /**
@@ -272,7 +271,7 @@ import thirdparty.HungarianAlgorithm;
      * An independent set, stable set, coclique or anticlique is a set of 
      * vertices in a graph, no two of which are adjacent.
      * 
-     * runtime complexity is O(log_2(|E|).
+     * runtime complexity is O(log_2(|E|)).
      * &lt;pre&gt;
       References:
      
@@ -285,9 +284,9 @@ import thirdparty.HungarianAlgorithm;
 
       https://en.wikipedia.org/wiki/Maximal_independent_set#Listing_all_maximal_independent_sets
       &lt;/pre&gt;
-     * @param adjMap and adjacency map with key = vertex u and value = set of
+     @param adjMap and adjacency map with key = vertex u and value = set of
      * neighbors connected to u.
-     * @return returns a maximal independent set of graph G defined by adjMap
+     @return returns a maximal independent set of graph G defined by adjMap
      */
     public static TIntSet findOne(TIntObjectMap&lt;TIntSet&gt; adjMap){
         /*
@@ -304,31 +303,31 @@ import thirdparty.HungarianAlgorithm;
                 3. Output I
         */
         
-<span class="fc" id="L307">        TIntObjectMap&lt;TIntSet&gt; toFromAdjMap = extractInOut(adjMap);</span>
+<span class="fc" id="L306">        TIntObjectMap&lt;TIntSet&gt; toFromAdjMap = extractInOut(adjMap);</span>
         
-<span class="fc" id="L309">        TIntSet indep = new TIntHashSet();</span>
-<span class="fc" id="L310">        TIntSet vP = extractAllVertices(adjMap);</span>
+<span class="fc" id="L308">        TIntSet indep = new TIntHashSet();</span>
+<span class="fc" id="L309">        TIntSet vP = extractAllVertices(adjMap);</span>
         int v;
         TIntSet nhbrs;
         TIntIterator iter;
-<span class="fc bfc" id="L314" title="All 2 branches covered.">        while (!vP.isEmpty()) {</span>
+<span class="fc bfc" id="L313" title="All 2 branches covered.">        while (!vP.isEmpty()) {</span>
             
-<span class="fc" id="L316">            v = vP.iterator().next();</span>
+<span class="fc" id="L315">            v = vP.iterator().next();</span>
             
-<span class="fc" id="L318">            indep.add(v);</span>
+<span class="fc" id="L317">            indep.add(v);</span>
             
-<span class="fc" id="L320">            vP.remove(v);</span>
+<span class="fc" id="L319">            vP.remove(v);</span>
             
-<span class="fc" id="L322">            nhbrs = toFromAdjMap.get(v);</span>
-<span class="pc bpc" id="L323" title="1 of 2 branches missed.">            if (nhbrs != null) {</span>
-<span class="fc" id="L324">                iter = nhbrs.iterator();</span>
-<span class="fc bfc" id="L325" title="All 2 branches covered.">                while (iter.hasNext()) {</span>
-<span class="fc" id="L326">                    vP.remove(iter.next());</span>
+<span class="fc" id="L321">            nhbrs = toFromAdjMap.get(v);</span>
+<span class="pc bpc" id="L322" title="1 of 2 branches missed.">            if (nhbrs != null) {</span>
+<span class="fc" id="L323">                iter = nhbrs.iterator();</span>
+<span class="fc bfc" id="L324" title="All 2 branches covered.">                while (iter.hasNext()) {</span>
+<span class="fc" id="L325">                    vP.remove(iter.next());</span>
                 }
             }
         }
         
-<span class="fc" id="L331">        return indep;</span>
+<span class="fc" id="L330">        return indep;</span>
     }
     
     /**
@@ -337,9 +336,9 @@ import thirdparty.HungarianAlgorithm;
      * The method internally builds a bipartite graph and then aggregates the
      * matching sets of vertices into independent sets of maximum size.
      * runtime complexity is:
-     * @param adjMap directed graph G as an adjacency map
-     * @param nV the number of vertexes
-     * @return returns a list of all maximum independent sets.  note that a
+     @param adjMap directed graph G as an adjacency map
+     @param nV the number of vertexes
+     @return returns a list of all maximum independent sets.  note that a
      * complete graph will return an empty list.
      */
     public static List&lt;TIntSet&gt; findAllMaximum(TIntObjectMap&lt;TIntSet&gt; adjMap, int nV) {
@@ -347,62 +346,62 @@ import thirdparty.HungarianAlgorithm;
         // === build a cost matrix with all 1's excepting the diagonal and existing edges
         //     which are set to infinity ======
         
-<span class="fc" id="L350">        float[][] matrix = new float[nV][];</span>
+<span class="fc" id="L349">        float[][] matrix = new float[nV][];</span>
         int i;
         int j;
-<span class="fc bfc" id="L353" title="All 2 branches covered.">        for (i = 0; i &lt; nV; ++i) {</span>
-<span class="fc" id="L354">            matrix[i] = new float[nV];</span>
-<span class="fc" id="L355">            Arrays.fill(matrix[i], 1);</span>
-<span class="fc" id="L356">            matrix[i][i] = Float.POSITIVE_INFINITY;</span>
+<span class="fc bfc" id="L352" title="All 2 branches covered.">        for (i = 0; i &lt; nV; ++i) {</span>
+<span class="fc" id="L353">            matrix[i] = new float[nV];</span>
+<span class="fc" id="L354">            Arrays.fill(matrix[i], 1);</span>
+<span class="fc" id="L355">            matrix[i][i] = Float.POSITIVE_INFINITY;</span>
         }
-<span class="fc" id="L358">        TIntObjectIterator&lt;TIntSet&gt; iter = adjMap.iterator();</span>
+<span class="fc" id="L357">        TIntObjectIterator&lt;TIntSet&gt; iter = adjMap.iterator();</span>
         TIntSet set;
         TIntIterator iter2;
         int u;
         int v;
-<span class="fc bfc" id="L363" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
-<span class="fc" id="L364">            iter.advance();</span>
-<span class="fc" id="L365">            u = iter.key();</span>
-<span class="fc" id="L366">            set = iter.value();</span>
-<span class="pc bpc" id="L367" title="2 of 4 branches missed.">            if (set == null || set.isEmpty()) {</span>
-<span class="nc" id="L368">                continue;</span>
+<span class="fc bfc" id="L362" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L363">            iter.advance();</span>
+<span class="fc" id="L364">            u = iter.key();</span>
+<span class="fc" id="L365">            set = iter.value();</span>
+<span class="pc bpc" id="L366" title="2 of 4 branches missed.">            if (set == null || set.isEmpty()) {</span>
+<span class="nc" id="L367">                continue;</span>
             }
-<span class="fc" id="L370">            iter2 = set.iterator();</span>
-<span class="fc bfc" id="L371" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
-<span class="fc" id="L372">                v = iter2.next();</span>
-<span class="fc" id="L373">                matrix[u][v] = Float.POSITIVE_INFINITY;</span>
+<span class="fc" id="L369">            iter2 = set.iterator();</span>
+<span class="fc bfc" id="L370" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
+<span class="fc" id="L371">                v = iter2.next();</span>
+<span class="fc" id="L372">                matrix[u][v] = Float.POSITIVE_INFINITY;</span>
             }
         }
         
-        //TOOD: consider cases where bipartite doesn't produce MIS.
+        //TODO: consider cases where bipartite doesn't produce MIS.
         //      e.g. complete graphs?  every item in matrix would be infinity, so
-        //       one would need to either to put responsiblity onto the user of graph not
+        //       one would need to either to put responsibility onto the user of graph not
         //       being complete, or assert the condition at start of method, or let
         //       bipartite proceed and then check that each matched pair is
         //       an independent set.  the later is useful for all graphs and
         //       only adds a linear runtime complexity to the algorithm.)
                         
         // -- runtime complexity for bipartite matching is 
-<span class="fc" id="L386">        HungarianAlgorithm ha = new HungarianAlgorithm();</span>
-<span class="fc" id="L387">        int[][] matched = ha.computeAssignments(matrix);</span>
+<span class="fc" id="L385">        HungarianAlgorithm ha = new HungarianAlgorithm();</span>
+<span class="fc" id="L386">        int[][] matched = ha.computeAssignments(matrix);</span>
         
         // === assert that each matched is an independent set and add it to a set of independent sets called s ======
 
-<span class="fc" id="L391">        Set&lt;TIntSet&gt; s = new HashSet&lt;TIntSet&gt;();</span>
+<span class="fc" id="L390">        Set&lt;TIntSet&gt; s = new HashSet&lt;TIntSet&gt;();</span>
         
-<span class="fc bfc" id="L393" title="All 2 branches covered.">        for (i = 0; i &lt; matched.length; ++i) {</span>
-<span class="fc" id="L394">            System.out.printf(&quot;matched: %s\n&quot;, Arrays.toString(matched[i]));</span>
-<span class="pc bpc" id="L395" title="2 of 4 branches missed.">            if (matched[i][0] &lt; 0 || matched[i][1] &lt; 0) {</span>
-<span class="nc" id="L396">                continue;</span>
+<span class="fc bfc" id="L392" title="All 2 branches covered.">        for (i = 0; i &lt; matched.length; ++i) {</span>
+<span class="fc" id="L393">            System.out.printf(&quot;matched: %s\n&quot;, Arrays.toString(matched[i]));</span>
+<span class="pc bpc" id="L394" title="2 of 4 branches missed.">            if (matched[i][0] &lt; 0 || matched[i][1] &lt; 0) {</span>
+<span class="nc" id="L395">                continue;</span>
             }
-<span class="pc bpc" id="L398" title="2 of 4 branches missed.">            if (!(adjMap.containsKey(matched[i][0]) &amp;&amp; adjMap.get(matched[i][0]).contains(matched[i][1])) </span>
-<span class="pc bpc" id="L399" title="2 of 4 branches missed.">              &amp;&amp; !(adjMap.containsKey(matched[i][1]) &amp;&amp; adjMap.get(matched[i][1]).contains(matched[i][0]))){</span>
-<span class="fc" id="L400">                s.add(new TIntHashSet(matched[i]));</span>
+<span class="pc bpc" id="L397" title="2 of 4 branches missed.">            if (!(adjMap.containsKey(matched[i][0]) &amp;&amp; adjMap.get(matched[i][0]).contains(matched[i][1])) </span>
+<span class="pc bpc" id="L398" title="2 of 4 branches missed.">              &amp;&amp; !(adjMap.containsKey(matched[i][1]) &amp;&amp; adjMap.get(matched[i][1]).contains(matched[i][0]))){</span>
+<span class="fc" id="L399">                s.add(new TIntHashSet(matched[i]));</span>
             }
         }
         
         // -- runtime complexity is O(n) for forming mis --
-<span class="fc" id="L405">        return findAllMaximum(s, adjMap);</span>
+<span class="fc" id="L404">        return findAllMaximum(s, adjMap);</span>
     }
     
     /**
@@ -412,9 +411,9 @@ import thirdparty.HungarianAlgorithm;
      * the maximum matching bipartite graph and then aggregates the
      * matching sets of vertices into independent sets of maximum size.
      * runtime complexity is:
-     * @param adjMap directed graph G as an adjacency map
-     * @param nV the number of vertexes
-     * @return returns a list of all maximum independent sets.  note that a
+     @param adjMap directed graph G as an adjacency map
+     @param nV the number of vertexes
+     @return returns a list of all maximum independent sets.  note that a
      * complete graph will return an empty list.
      */
     public static List&lt;TIntSet&gt; findAllMaximum2(TIntObjectMap&lt;TIntSet&gt; adjMap, int nV) {
@@ -423,20 +422,21 @@ import thirdparty.HungarianAlgorithm;
         //     edges which are set to 1 ======
         
         // --- runtime complexity of graph complement is O(|V|^2) ---
-<span class="fc" id="L426">        Set&lt;PairInt&gt; comp = Complement.graphComplement(adjMap);</span>
-<span class="fc" id="L427">        float[][] matrix = new float[nV][];</span>
+<span class="fc" id="L425">        Set&lt;PairInt&gt; comp = Complement.graphComplement(adjMap);</span>
+<span class="fc" id="L426">        float[][] matrix = new float[nV][];</span>
         int i;
         int j;
-<span class="fc bfc" id="L430" title="All 2 branches covered.">        for (i = 0; i &lt; nV; ++i) {</span>
-<span class="fc" id="L431">            matrix[i] = new float[nV];</span>
-<span class="fc" id="L432">            Arrays.fill(matrix[i], Float.POSITIVE_INFINITY);</span>
+<span class="fc bfc" id="L429" title="All 2 branches covered.">        for (i = 0; i &lt; nV; ++i) {</span>
+<span class="fc" id="L430">            matrix[i] = new float[nV];</span>
+<span class="fc" id="L431">            Arrays.fill(matrix[i], Float.POSITIVE_INFINITY);</span>
         }
-<span class="fc bfc" id="L434" title="All 2 branches covered.">        for (PairInt p : comp) {</span>
-<span class="pc bpc" id="L435" title="1 of 2 branches missed.">            if (p.getX() == p.getY()) {</span>
-<span class="nc" id="L436">                continue;</span>
+<span class="fc bfc" id="L433" title="All 2 branches covered.">        for (PairInt p : comp) {</span>
+<span class="pc bpc" id="L434" title="1 of 2 branches missed.">            if (p.getX() == p.getY()) {</span>
+<span class="nc" id="L435">                continue;</span>
             }
-<span class="fc" id="L438">            matrix[p.getX()][p.getY()] = 1;</span>
-<span class="fc" id="L439">        }</span>
+<span class="fc" id="L437">            matrix[p.getX()][p.getY()] = 1;</span>
+<span class="fc" id="L438">        }</span>
+        // --- runtime complexity of graph complement is O(|V|^3) ---
 <span class="fc" id="L440">        HungarianAlgorithm ha = new HungarianAlgorithm();</span>
 <span class="fc" id="L441">        int[][] matched = ha.computeAssignments(matrix);</span>
         
@@ -464,14 +464,15 @@ import thirdparty.HungarianAlgorithm;
      * The method internally builds a bipartite graph and then aggregates the
      * matching sets of vertices into independent sets of maximum size.
      * runtime complexity is:
-     * @param adjMap directed graph G as an adjacency map
-     * @return returns a list of all maximum independent sets.  note that a
+     @param s the sets of maximal independent sets
+     @param adjMap directed graph G as an adjacency map
+     @return returns a list of all maximum independent sets.  note that a
      * complete graph will return an empty list.
      */
     static List&lt;TIntSet&gt; findAllMaximum(Set&lt;TIntSet&gt; s, TIntObjectMap&lt;TIntSet&gt; adjMap) {
         
-<span class="pc bpc" id="L473" title="1 of 2 branches missed.">        if (s.isEmpty()) {</span>
-<span class="nc" id="L474">            return new ArrayList&lt;TIntSet&gt;();</span>
+<span class="pc bpc" id="L474" title="1 of 2 branches missed.">        if (s.isEmpty()) {</span>
+<span class="nc" id="L475">            return new ArrayList&lt;TIntSet&gt;();</span>
         }
         
         int u, v, j;
@@ -484,162 +485,162 @@ import thirdparty.HungarianAlgorithm;
         boolean hasEdge;
         TIntSet m;
         int nMIS;
-<span class="fc" id="L487">        List&lt;TIntSet&gt; mis = new ArrayList&lt;TIntSet&gt;();</span>
+<span class="fc" id="L488">        List&lt;TIntSet&gt; mis = new ArrayList&lt;TIntSet&gt;();</span>
         TIntIterator iter3;
-<span class="fc bfc" id="L489" title="All 2 branches covered.">        for (TIntSet si : s) {</span>
-<span class="fc" id="L490">            notAdded = true;</span>
-<span class="fc" id="L491">            nMIS = mis.size();</span>
-<span class="fc bfc" id="L492" title="All 2 branches covered.">            for (j = 0; j &lt; nMIS; ++j) {</span>
-<span class="fc" id="L493">                m = mis.get(j);</span>
+<span class="fc bfc" id="L490" title="All 2 branches covered.">        for (TIntSet si : s) {</span>
+<span class="fc" id="L491">            notAdded = true;</span>
+<span class="fc" id="L492">            nMIS = mis.size();</span>
+<span class="fc bfc" id="L493" title="All 2 branches covered.">            for (j = 0; j &lt; nMIS; ++j) {</span>
+<span class="fc" id="L494">                m = mis.get(j);</span>
                 // check whether any element of m, along with si elements, is an edge in graph G represented by adj
-<span class="fc" id="L495">                hasEdge = false;</span>
-<span class="fc" id="L496">                iter2 = m.iterator();</span>
-<span class="fc bfc" id="L497" title="All 2 branches covered.">                while (iter2.hasNext()) {</span>
-<span class="fc" id="L498">                    v = iter2.next();</span>
-<span class="fc" id="L499">                    iter3 = si.iterator();</span>
-<span class="fc bfc" id="L500" title="All 4 branches covered.">                    while (!hasEdge &amp;&amp; iter3.hasNext()) {</span>
-<span class="fc" id="L501">                        u = iter3.next();</span>
-<span class="pc bpc" id="L502" title="1 of 4 branches missed.">                        if ((adjMap.containsKey(u) &amp;&amp; adjMap.get(u).contains(v))</span>
-<span class="pc bpc" id="L503" title="2 of 4 branches missed.">                        || (adjMap.containsKey(v) &amp;&amp; adjMap.get(v).contains(u))) {</span>
-<span class="fc" id="L504">                            hasEdge = true;</span>
-<span class="fc" id="L505">                            break;</span>
+<span class="fc" id="L496">                hasEdge = false;</span>
+<span class="fc" id="L497">                iter2 = m.iterator();</span>
+<span class="fc bfc" id="L498" title="All 2 branches covered.">                while (iter2.hasNext()) {</span>
+<span class="fc" id="L499">                    v = iter2.next();</span>
+<span class="fc" id="L500">                    iter3 = si.iterator();</span>
+<span class="fc bfc" id="L501" title="All 4 branches covered.">                    while (!hasEdge &amp;&amp; iter3.hasNext()) {</span>
+<span class="fc" id="L502">                        u = iter3.next();</span>
+<span class="pc bpc" id="L503" title="1 of 4 branches missed.">                        if ((adjMap.containsKey(u) &amp;&amp; adjMap.get(u).contains(v))</span>
+<span class="pc bpc" id="L504" title="2 of 4 branches missed.">                        || (adjMap.containsKey(v) &amp;&amp; adjMap.get(v).contains(u))) {</span>
+<span class="fc" id="L505">                            hasEdge = true;</span>
+<span class="fc" id="L506">                            break;</span>
                         }
                     }
                 }
-<span class="fc bfc" id="L509" title="All 2 branches covered.">                if (!hasEdge) {</span>
-<span class="fc" id="L510">                    m.addAll(si);</span>
-<span class="fc" id="L511">                    notAdded = false;</span>
+<span class="fc bfc" id="L510" title="All 2 branches covered.">                if (!hasEdge) {</span>
+<span class="fc" id="L511">                    m.addAll(si);</span>
+<span class="fc" id="L512">                    notAdded = false;</span>
                 }
             }
-<span class="fc bfc" id="L514" title="All 2 branches covered.">            if (notAdded) {</span>
-<span class="fc" id="L515">                mis.add(new TIntHashSet(si));</span>
+<span class="fc bfc" id="L515" title="All 2 branches covered.">            if (notAdded) {</span>
+<span class="fc" id="L516">                mis.add(new TIntHashSet(si));</span>
             }
-<span class="fc" id="L517">        }</span>
+<span class="fc" id="L518">        }</span>
         
         // keep only the maximum size maximal sets
         
-<span class="fc" id="L521">        int maxN = 0;</span>
-<span class="fc bfc" id="L522" title="All 2 branches covered.">        for (j = 0; j &lt; mis.size(); ++j) {</span>
-<span class="fc" id="L523">            m = mis.get(j);</span>
-<span class="fc bfc" id="L524" title="All 2 branches covered.">            if (m.size() &gt; maxN) {</span>
-<span class="fc" id="L525">                maxN = m.size();</span>
+<span class="fc" id="L522">        int maxN = 0;</span>
+<span class="fc bfc" id="L523" title="All 2 branches covered.">        for (j = 0; j &lt; mis.size(); ++j) {</span>
+<span class="fc" id="L524">            m = mis.get(j);</span>
+<span class="fc bfc" id="L525" title="All 2 branches covered.">            if (m.size() &gt; maxN) {</span>
+<span class="fc" id="L526">                maxN = m.size();</span>
             }
         }
-<span class="fc bfc" id="L528" title="All 2 branches covered.">        for (j = mis.size() - 1; j &gt; 0; j--) {</span>
-<span class="fc" id="L529">            m = mis.get(j);</span>
-<span class="pc bpc" id="L530" title="1 of 2 branches missed.">            if (m.size() != maxN) {</span>
-<span class="nc" id="L531">                mis.remove(j);</span>
+<span class="fc bfc" id="L529" title="All 2 branches covered.">        for (j = mis.size() - 1; j &gt; 0; j--) {</span>
+<span class="fc" id="L530">            m = mis.get(j);</span>
+<span class="pc bpc" id="L531" title="1 of 2 branches missed.">            if (m.size() != maxN) {</span>
+<span class="nc" id="L532">                mis.remove(j);</span>
             }
         }        
         
-<span class="fc" id="L535">        return mis;</span>
+<span class="fc" id="L536">        return mis;</span>
     }
 
     static TIntObjectMap&lt;TIntSet&gt; extractInOut(TIntObjectMap&lt;TIntSet&gt; adjMap) {
         
-<span class="fc" id="L540">        TIntObjectMap&lt;TIntSet&gt; out = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
+<span class="fc" id="L541">        TIntObjectMap&lt;TIntSet&gt; out = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
         
-<span class="fc" id="L542">        TIntObjectIterator&lt;TIntSet&gt; iter = adjMap.iterator();</span>
+<span class="fc" id="L543">        TIntObjectIterator&lt;TIntSet&gt; iter = adjMap.iterator();</span>
         TIntSet set, outSetI, outSetJ;
         int i, j;
         TIntIterator iter2;
         
-<span class="fc bfc" id="L547" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
-<span class="fc" id="L548">            iter.advance();</span>
-<span class="fc" id="L549">            i = iter.key();</span>
-<span class="fc" id="L550">            set = iter.value();</span>
+<span class="fc bfc" id="L548" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L549">            iter.advance();</span>
+<span class="fc" id="L550">            i = iter.key();</span>
+<span class="fc" id="L551">            set = iter.value();</span>
             
-<span class="pc bpc" id="L552" title="1 of 2 branches missed.">            if (set == null) {</span>
-<span class="nc" id="L553">                continue;</span>
+<span class="pc bpc" id="L553" title="1 of 2 branches missed.">            if (set == null) {</span>
+<span class="nc" id="L554">                continue;</span>
             }
             
-<span class="fc" id="L556">            outSetI = out.get(i);</span>
-<span class="fc bfc" id="L557" title="All 2 branches covered.">            if (outSetI == null) {</span>
-<span class="fc" id="L558">                outSetI = new TIntHashSet();</span>
-<span class="fc" id="L559">                out.put(i, outSetI);</span>
+<span class="fc" id="L557">            outSetI = out.get(i);</span>
+<span class="fc bfc" id="L558" title="All 2 branches covered.">            if (outSetI == null) {</span>
+<span class="fc" id="L559">                outSetI = new TIntHashSet();</span>
+<span class="fc" id="L560">                out.put(i, outSetI);</span>
             }
             
-<span class="fc" id="L562">            iter2 = set.iterator();</span>
-<span class="fc bfc" id="L563" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
-<span class="fc" id="L564">                j = iter2.next();</span>
+<span class="fc" id="L563">            iter2 = set.iterator();</span>
+<span class="fc bfc" id="L564" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
+<span class="fc" id="L565">                j = iter2.next();</span>
 
-<span class="fc" id="L566">                outSetJ = out.get(j);</span>
-<span class="fc bfc" id="L567" title="All 2 branches covered.">                if (outSetJ == null) {</span>
-<span class="fc" id="L568">                    outSetJ = new TIntHashSet();</span>
-<span class="fc" id="L569">                    out.put(j, outSetJ);</span>
+<span class="fc" id="L567">                outSetJ = out.get(j);</span>
+<span class="fc bfc" id="L568" title="All 2 branches covered.">                if (outSetJ == null) {</span>
+<span class="fc" id="L569">                    outSetJ = new TIntHashSet();</span>
+<span class="fc" id="L570">                    out.put(j, outSetJ);</span>
                 }
 
-<span class="fc" id="L572">                outSetI.add(j);</span>
-<span class="fc" id="L573">                outSetJ.add(i);</span>
+<span class="fc" id="L573">                outSetI.add(j);</span>
+<span class="fc" id="L574">                outSetJ.add(i);</span>
             }
         }
-<span class="fc" id="L576">        return out;</span>
+<span class="fc" id="L577">        return out;</span>
     }
 
     static TIntSet extractAllVertices(TIntObjectMap&lt;TIntSet&gt; adjMap) {
-<span class="fc" id="L580">        TIntSet out = new TIntHashSet();</span>
+<span class="fc" id="L581">        TIntSet out = new TIntHashSet();</span>
         
-<span class="fc" id="L582">        TIntObjectIterator&lt;TIntSet&gt; iter = adjMap.iterator();</span>
+<span class="fc" id="L583">        TIntObjectIterator&lt;TIntSet&gt; iter = adjMap.iterator();</span>
         TIntIterator iter2;
         TIntSet set;
-<span class="fc bfc" id="L585" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
-<span class="fc" id="L586">            iter.advance();</span>
-<span class="fc" id="L587">            out.add(iter.key());</span>
-<span class="fc" id="L588">            set = iter.value();</span>
-<span class="pc bpc" id="L589" title="1 of 2 branches missed.">            if (set == null) {</span>
-<span class="nc" id="L590">                continue;</span>
+<span class="fc bfc" id="L586" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L587">            iter.advance();</span>
+<span class="fc" id="L588">            out.add(iter.key());</span>
+<span class="fc" id="L589">            set = iter.value();</span>
+<span class="pc bpc" id="L590" title="1 of 2 branches missed.">            if (set == null) {</span>
+<span class="nc" id="L591">                continue;</span>
             }
-<span class="fc" id="L592">            iter2 = set.iterator();</span>
-<span class="fc bfc" id="L593" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
-<span class="fc" id="L594">                out.add(iter2.next());</span>
+<span class="fc" id="L593">            iter2 = set.iterator();</span>
+<span class="fc bfc" id="L594" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
+<span class="fc" id="L595">                out.add(iter2.next());</span>
             }
         }
         
-<span class="fc" id="L598">        return out;</span>
+<span class="fc" id="L599">        return out;</span>
     }
 
     static void sort(List&lt;PairInt&gt; edgeConflicts, TIntList edgeDegreesLow) {
         
-<span class="fc" id="L603">        int n = edgeConflicts.size();</span>
+<span class="fc" id="L604">        int n = edgeConflicts.size();</span>
         
-<span class="pc bpc" id="L605" title="1 of 2 branches missed.">        if (n != edgeDegreesLow.size()){</span>
-<span class="nc" id="L606">            throw new IllegalArgumentException(&quot;arguments must be the same size&quot;);</span>
+<span class="pc bpc" id="L606" title="1 of 2 branches missed.">        if (n != edgeDegreesLow.size()){</span>
+<span class="nc" id="L607">            throw new IllegalArgumentException(&quot;arguments must be the same size&quot;);</span>
         }
         
-<span class="fc" id="L609">        int[] indexes = new int[n];</span>
+<span class="fc" id="L610">        int[] indexes = new int[n];</span>
         int i;
-<span class="pc bpc" id="L611" title="1 of 2 branches missed.">        for(i = 0; i &lt; n; ++i) {</span>
-<span class="nc" id="L612">            indexes[i] = i;</span>
+<span class="pc bpc" id="L612" title="1 of 2 branches missed.">        for(i = 0; i &lt; n; ++i) {</span>
+<span class="nc" id="L613">            indexes[i] = i;</span>
         }
         
-<span class="fc" id="L615">        int[] a = Arrays.copyOf(edgeDegreesLow.toArray(), n);</span>
+<span class="fc" id="L616">        int[] a = Arrays.copyOf(edgeDegreesLow.toArray(), n);</span>
         
-<span class="fc" id="L617">        MiscSorter.sortBy1stArg(a, indexes);</span>
+<span class="fc" id="L618">        MiscSorter.sortBy1stArg(a, indexes);</span>
         
-<span class="fc" id="L619">        PairInt[] s1 = new PairInt[n];</span>
-<span class="pc bpc" id="L620" title="1 of 2 branches missed.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="nc" id="L621">            s1[i] = edgeConflicts.get(indexes[i]);</span>
+<span class="fc" id="L620">        PairInt[] s1 = new PairInt[n];</span>
+<span class="pc bpc" id="L621" title="1 of 2 branches missed.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="nc" id="L622">            s1[i] = edgeConflicts.get(indexes[i]);</span>
         }
-<span class="fc" id="L623">        edgeConflicts.clear();</span>
-<span class="fc" id="L624">        edgeDegreesLow.clear();</span>
-<span class="pc bpc" id="L625" title="1 of 2 branches missed.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="nc" id="L626">            edgeConflicts.add(s1[i]);</span>
-<span class="nc" id="L627">            edgeDegreesLow.add(a[i]);</span>
+<span class="fc" id="L624">        edgeConflicts.clear();</span>
+<span class="fc" id="L625">        edgeDegreesLow.clear();</span>
+<span class="pc bpc" id="L626" title="1 of 2 branches missed.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="nc" id="L627">            edgeConflicts.add(s1[i]);</span>
+<span class="nc" id="L628">            edgeDegreesLow.add(a[i]);</span>
         }
         
-<span class="fc" id="L630">    }</span>
+<span class="fc" id="L631">    }</span>
 
     /**
      * creates subgraph of adjMap out of vertexes vP.  note that
        it also creates edges uv and vu as G is undirected, and
        in order to make the degree counting easier where needed.
-     * @param vP
-     * @param adjMap
-     * @return 
+     @param vP
+     @param adjMap
+     @return 
      */
     static TIntObjectMap&lt;TIntSet&gt; subgraph(TIntSet vP, TIntObjectMap&lt;TIntSet&gt; adjMap) {
         
-<span class="fc" id="L642">        TIntObjectMap&lt;TIntSet&gt; out = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
+<span class="fc" id="L643">        TIntObjectMap&lt;TIntSet&gt; out = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
         
         TIntIterator iter;
         int v, adj;
@@ -648,38 +649,38 @@ import thirdparty.HungarianAlgorithm;
         TIntSet adjSet;
         TIntSet outSet2;
         
-<span class="fc" id="L651">        iter = vP.iterator();</span>
-<span class="fc bfc" id="L652" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
-<span class="fc" id="L653">            v = iter.next();</span>
-<span class="fc" id="L654">            outSet = out.get(v);</span>
-<span class="fc bfc" id="L655" title="All 2 branches covered.">            if (outSet == null) {</span>
-<span class="fc" id="L656">                outSet = new TIntHashSet();</span>
-<span class="fc" id="L657">                out.put(v, outSet);</span>
+<span class="fc" id="L652">        iter = vP.iterator();</span>
+<span class="fc bfc" id="L653" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L654">            v = iter.next();</span>
+<span class="fc" id="L655">            outSet = out.get(v);</span>
+<span class="fc bfc" id="L656" title="All 2 branches covered.">            if (outSet == null) {</span>
+<span class="fc" id="L657">                outSet = new TIntHashSet();</span>
+<span class="fc" id="L658">                out.put(v, outSet);</span>
             }
             
-<span class="fc" id="L660">            adjSet = adjMap.get(v);</span>
+<span class="fc" id="L661">            adjSet = adjMap.get(v);</span>
             
-<span class="pc bpc" id="L662" title="2 of 4 branches missed.">            if (adjSet == null || adjSet.isEmpty()) {</span>
-<span class="nc" id="L663">                continue;</span>
+<span class="pc bpc" id="L663" title="2 of 4 branches missed.">            if (adjSet == null || adjSet.isEmpty()) {</span>
+<span class="nc" id="L664">                continue;</span>
             }
             
-<span class="fc" id="L666">            iter2 = adjSet.iterator();</span>
-<span class="fc bfc" id="L667" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
-<span class="fc" id="L668">                adj = iter2.next();</span>
+<span class="fc" id="L667">            iter2 = adjSet.iterator();</span>
+<span class="fc bfc" id="L668" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
+<span class="fc" id="L669">                adj = iter2.next();</span>
                 
-<span class="fc" id="L670">                outSet.add(adj);</span>
+<span class="fc" id="L671">                outSet.add(adj);</span>
                 
-<span class="fc" id="L672">                outSet2 = out.get(adj);</span>
-<span class="fc bfc" id="L673" title="All 2 branches covered.">                if (outSet2 == null) {</span>
-<span class="fc" id="L674">                    outSet2 = new TIntHashSet();</span>
-<span class="fc" id="L675">                    out.put(adj, outSet2);</span>
+<span class="fc" id="L673">                outSet2 = out.get(adj);</span>
+<span class="fc bfc" id="L674" title="All 2 branches covered.">                if (outSet2 == null) {</span>
+<span class="fc" id="L675">                    outSet2 = new TIntHashSet();</span>
+<span class="fc" id="L676">                    out.put(adj, outSet2);</span>
                 }
                 
-<span class="fc" id="L678">                outSet2.add(v);</span>
+<span class="fc" id="L679">                outSet2.add(v);</span>
             }
         }
         
-<span class="fc" id="L682">        return out;</span>
+<span class="fc" id="L683">        return out;</span>
     }
 
     private static void resolveEdgeConflicts(TIntSet s, TIntObjectMap&lt;TIntSet&gt; gP) {
@@ -692,8 +693,8 @@ import thirdparty.HungarianAlgorithm;
         //     to find the max size S, by a greedy pick. 
 
         // these will be ordered by lowest degree, to remove a vertex in each edge from S
-<span class="fc" id="L695">        List&lt;PairInt&gt; edgeConflicts = new ArrayList&lt;PairInt&gt;();</span>
-<span class="fc" id="L696">        TIntList edgeDegreesLow = new TIntArrayList();</span>
+<span class="fc" id="L696">        List&lt;PairInt&gt; edgeConflicts = new ArrayList&lt;PairInt&gt;();</span>
+<span class="fc" id="L697">        TIntList edgeDegreesLow = new TIntArrayList();</span>
 
         int dU;
         TIntObjectIterator&lt;TIntSet&gt; iterGP;
@@ -702,56 +703,56 @@ import thirdparty.HungarianAlgorithm;
         TIntSet nhbrsSet;
         TIntIterator iterNhbr;
 
-<span class="fc" id="L705">        iterGP = gP.iterator();</span>
-<span class="fc bfc" id="L706" title="All 2 branches covered.">        while (iterGP.hasNext()) {</span>
-<span class="fc" id="L707">            iterGP.advance();</span>
+<span class="fc" id="L706">        iterGP = gP.iterator();</span>
+<span class="fc bfc" id="L707" title="All 2 branches covered.">        while (iterGP.hasNext()) {</span>
+<span class="fc" id="L708">            iterGP.advance();</span>
 
-<span class="fc" id="L709">            v = iterGP.key();</span>
-<span class="fc" id="L710">            nhbrsSet = iterGP.value();</span>
+<span class="fc" id="L710">            v = iterGP.key();</span>
+<span class="fc" id="L711">            nhbrsSet = iterGP.value();</span>
 
-<span class="pc bpc" id="L712" title="2 of 6 branches missed.">            if (!s.contains(v) || nhbrsSet == null || nhbrsSet.isEmpty()) {</span>
-<span class="nc" id="L713">                continue;</span>
+<span class="pc bpc" id="L713" title="2 of 6 branches missed.">            if (!s.contains(v) || nhbrsSet == null || nhbrsSet.isEmpty()) {</span>
+<span class="nc" id="L714">                continue;</span>
             }
 
-<span class="fc" id="L716">            iterNhbr = nhbrsSet.iterator();</span>
-<span class="fc bfc" id="L717" title="All 2 branches covered.">            while (iterNhbr.hasNext()) {</span>
+<span class="fc" id="L717">            iterNhbr = nhbrsSet.iterator();</span>
+<span class="fc bfc" id="L718" title="All 2 branches covered.">            while (iterNhbr.hasNext()) {</span>
 
-<span class="fc" id="L719">                nhbr = iterNhbr.next();</span>
+<span class="fc" id="L720">                nhbr = iterNhbr.next();</span>
 
-<span class="pc bpc" id="L721" title="1 of 2 branches missed.">                if (!s.contains(nhbr)) {</span>
-<span class="fc" id="L722">                    continue;</span>
+<span class="pc bpc" id="L722" title="1 of 2 branches missed.">                if (!s.contains(nhbr)) {</span>
+<span class="fc" id="L723">                    continue;</span>
                 }
 
-<span class="nc" id="L725">                dU = gP.get(nhbr).size();</span>
-<span class="nc bnc" id="L726" title="All 2 branches missed.">                if (v &lt; nhbr) {</span>
-<span class="nc" id="L727">                    edgeConflicts.add(new PairInt(v, nhbr));</span>
+<span class="nc" id="L726">                dU = gP.get(nhbr).size();</span>
+<span class="nc bnc" id="L727" title="All 2 branches missed.">                if (v &lt; nhbr) {</span>
+<span class="nc" id="L728">                    edgeConflicts.add(new PairInt(v, nhbr));</span>
                 } else {
-<span class="nc" id="L729">                    edgeConflicts.add(new PairInt(nhbr, v));</span>
+<span class="nc" id="L730">                    edgeConflicts.add(new PairInt(nhbr, v));</span>
                 }
-<span class="nc" id="L731">                edgeDegreesLow.add(Math.min(nhbrsSet.size(), dU));</span>
+<span class="nc" id="L732">                edgeDegreesLow.add(Math.min(nhbrsSet.size(), dU));</span>
             }
         }
 
-<span class="fc" id="L735">        sort(edgeConflicts, edgeDegreesLow);</span>
+<span class="fc" id="L736">        sort(edgeConflicts, edgeDegreesLow);</span>
 
         int u;
         int d;
         
-<span class="pc bpc" id="L740" title="1 of 2 branches missed.">        for (PairInt uv : edgeConflicts) {</span>
-<span class="nc" id="L741">            u = uv.getX();</span>
-<span class="nc" id="L742">            v = uv.getY();</span>
+<span class="pc bpc" id="L741" title="1 of 2 branches missed.">        for (PairInt uv : edgeConflicts) {</span>
+<span class="nc" id="L742">            u = uv.getX();</span>
+<span class="nc" id="L743">            v = uv.getY();</span>
             //for each conflicting edge, check again for presence in S and then keep only the higher degree vertex
-<span class="nc bnc" id="L744" title="All 4 branches missed.">            if (s.contains(u) &amp;&amp; s.contains(v)) {</span>
-<span class="nc" id="L745">                d = gP.get(v).size();</span>
-<span class="nc" id="L746">                dU = gP.get(u).size();</span>
-<span class="nc bnc" id="L747" title="All 2 branches missed.">                if (dU &gt; d) {</span>
-<span class="nc" id="L748">                    s.remove(v);</span>
+<span class="nc bnc" id="L745" title="All 4 branches missed.">            if (s.contains(u) &amp;&amp; s.contains(v)) {</span>
+<span class="nc" id="L746">                d = gP.get(v).size();</span>
+<span class="nc" id="L747">                dU = gP.get(u).size();</span>
+<span class="nc bnc" id="L748" title="All 2 branches missed.">                if (dU &gt; d) {</span>
+<span class="nc" id="L749">                    s.remove(v);</span>
                 } else {
-<span class="nc" id="L750">                    s.remove(u);</span>
+<span class="nc" id="L751">                    s.remove(u);</span>
                 }
             }
-<span class="nc" id="L753">        }</span>
+<span class="nc" id="L754">        }</span>
                     
-<span class="fc" id="L755">    }</span>
+<span class="fc" id="L756">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

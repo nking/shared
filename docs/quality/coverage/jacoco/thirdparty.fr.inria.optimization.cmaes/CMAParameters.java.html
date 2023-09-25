@@ -77,51 +77,55 @@ public class CMAParameters implements java.io.Serializable {
 
 	double chiN;
 
-<span class="fc" id="L80">	public CMAParameters() { </span>
-<span class="fc" id="L81">		mucov = -1;</span>
-<span class="fc" id="L82">		ccov = -1; </span>
-<span class="fc" id="L83">	}</span>
+    /**
+     *
+     */
+<span class="fc" id="L83">    public CMAParameters() { </span>
+<span class="fc" id="L84">		mucov = -1;</span>
+<span class="fc" id="L85">		ccov = -1; </span>
+<span class="fc" id="L86">	}</span>
 
 	/**
 	 *  Checks strategy parameter setting with respect to principle 
 	 *  consistency. Returns a string with description of the first
 	 *  error found, otherwise an empty string &quot;&quot;.  
-	 *  */
+	 *
+     @return  */
 	public String check() {
-<span class="pc bpc" id="L91" title="1 of 2 branches missed.">		if (lambda &lt;= 1)</span>
-<span class="nc" id="L92">			return &quot;offspring population size lambda must be greater than onem is &quot; + lambda;</span>
-<span class="pc bpc" id="L93" title="1 of 2 branches missed.">		if (mu &lt; 1)</span>
-<span class="nc" id="L94">			return &quot;parent number mu must be greater or equal to one, is &quot; + mu;</span>
-<span class="pc bpc" id="L95" title="1 of 2 branches missed.">		if (mu &gt; lambda)</span>
-<span class="nc" id="L96">			return &quot;parent number mu &quot; + mu + &quot; must be smaller or equal to offspring population size lambda &quot; + lambda;</span>
-<span class="pc bpc" id="L97" title="1 of 2 branches missed.">		if (weights.length != mu)</span>
-<span class="nc" id="L98">			return &quot;number of recombination weights &quot; + weights.length + &quot; disagrees with parent number mu &quot; + mu; </span>
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">		if (lambda &lt;= 1)</span>
+<span class="nc" id="L96">			return &quot;offspring population size lambda must be greater than onem is &quot; + lambda;</span>
+<span class="pc bpc" id="L97" title="1 of 2 branches missed.">		if (mu &lt; 1)</span>
+<span class="nc" id="L98">			return &quot;parent number mu must be greater or equal to one, is &quot; + mu;</span>
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">		if (mu &gt; lambda)</span>
+<span class="nc" id="L100">			return &quot;parent number mu &quot; + mu + &quot; must be smaller or equal to offspring population size lambda &quot; + lambda;</span>
+<span class="pc bpc" id="L101" title="1 of 2 branches missed.">		if (weights.length != mu)</span>
+<span class="nc" id="L102">			return &quot;number of recombination weights &quot; + weights.length + &quot; disagrees with parent number mu &quot; + mu; </span>
 
-<span class="pc bpc" id="L100" title="2 of 4 branches missed.">		if (cs &lt;= 0 || cs &gt; 1)</span>
-<span class="nc" id="L101">			return &quot;0 &lt; cs &lt;= 1 must hold for step-size cumulation parameter cs, is &quot; + cs;</span>
-<span class="pc bpc" id="L102" title="1 of 2 branches missed.">		if (damps &lt;= 0)</span>
-<span class="nc" id="L103">			return &quot;step-size damping parameter damps must be greater than zero, is &quot; + damps; </span>
-<span class="pc bpc" id="L104" title="2 of 4 branches missed.">		if (cc &lt;= 0 || cc &gt; 1)</span>
-<span class="nc" id="L105">			return &quot;0 &lt; cc &lt;= 1 must hold for cumulation parameter cc, is &quot; + cc;</span>
-<span class="pc bpc" id="L106" title="1 of 2 branches missed.">		if (mucov &lt; 0)</span>
-<span class="nc" id="L107">			return &quot;mucov &gt;= 0 must hold, is &quot; + mucov; </span>
-<span class="pc bpc" id="L108" title="1 of 2 branches missed.">		if (ccov &lt; 0)</span>
-<span class="nc" id="L109">			return &quot;learning parameter ccov &gt;= 0 must hold, is &quot; + ccov;</span>
-<span class="fc" id="L110">		return &quot;&quot;;</span>
+<span class="pc bpc" id="L104" title="2 of 4 branches missed.">		if (cs &lt;= 0 || cs &gt; 1)</span>
+<span class="nc" id="L105">			return &quot;0 &lt; cs &lt;= 1 must hold for step-size cumulation parameter cs, is &quot; + cs;</span>
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">		if (damps &lt;= 0)</span>
+<span class="nc" id="L107">			return &quot;step-size damping parameter damps must be greater than zero, is &quot; + damps; </span>
+<span class="pc bpc" id="L108" title="2 of 4 branches missed.">		if (cc &lt;= 0 || cc &gt; 1)</span>
+<span class="nc" id="L109">			return &quot;0 &lt; cc &lt;= 1 must hold for cumulation parameter cc, is &quot; + cc;</span>
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">		if (mucov &lt; 0)</span>
+<span class="nc" id="L111">			return &quot;mucov &gt;= 0 must hold, is &quot; + mucov; </span>
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">		if (ccov &lt; 0)</span>
+<span class="nc" id="L113">			return &quot;learning parameter ccov &gt;= 0 must hold, is &quot; + ccov;</span>
+<span class="fc" id="L114">		return &quot;&quot;;</span>
 	}
 	/** get default parameter setting depending on given dimension N
 	 * 
-	 * @param N dimension
-	 * @return default parameter setting
+	 @param N dimension
+	 @return default parameter setting
 	 * @see #getDefaults(int, int)
 	 */
 	public CMAParameters getDefaults(int N) {
-<span class="nc bnc" id="L119" title="All 2 branches missed.">		if (N == 0)</span>
-<span class="nc" id="L120">			error(&quot;default parameters needs dimension been set&quot;);</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">		if (N == 0)</span>
+<span class="nc" id="L124">			error(&quot;default parameters needs dimension been set&quot;);</span>
 
-<span class="nc" id="L122">		CMAParameters p = new CMAParameters();</span>
-<span class="nc" id="L123">		p.supplementRemainders(N, new CMAOptions()); </span>
-<span class="nc" id="L124">		return p; </span>
+<span class="nc" id="L126">		CMAParameters p = new CMAParameters();</span>
+<span class="nc" id="L127">		p.supplementRemainders(N, new CMAOptions()); </span>
+<span class="nc" id="L128">		return p; </span>
 	}
 
 	/** get default parameter setting depending on dimension N and 
@@ -136,134 +140,135 @@ public class CMAParameters implements java.io.Serializable {
      * int also_the_same = cma.getParameterDefaults(42).getMu();
 	 * &lt;/PRE&gt;
 	 * 
-	 * @param N
-	 * @param lambda
-	 * @return default parameter setting
+	 @param N
+	 @param lambda
+	 @return default parameter setting
      * @see #getDefaults(int, int)
 	 */
 	public CMAParameters getDefaults(int N, int lambda) {
-<span class="nc" id="L145">        CMAParameters p = new CMAParameters();</span>
-<span class="nc" id="L146">        p.setLambda(lambda);</span>
-<span class="nc" id="L147">        p.supplementRemainders(N, new CMAOptions()); </span>
-<span class="nc" id="L148">        return p;</span>
+<span class="nc" id="L149">        CMAParameters p = new CMAParameters();</span>
+<span class="nc" id="L150">        p.setLambda(lambda);</span>
+<span class="nc" id="L151">        p.supplementRemainders(N, new CMAOptions()); </span>
+<span class="nc" id="L152">        return p;</span>
     }
 
 	/**
 	 * Supplements all default parameter values that were not explicitly set already. 
 	 * Also checks whether the values that were already explicitly set are fine. 
-	 * @param N search space dimension
-	 * @param opts {@link CMAOptions} where stopMaxFunEvals and 
+	 @param N search space dimension
+	 @param opts {@link CMAOptions} where stopMaxFunEvals and 
 	 * stopMaxIter are used to set step-size damping parameter damps. This is of minor relevance.
 	 */
 	public void supplementRemainders(int N, CMAOptions opts) {
 		// parameters that can be zero were initialized to -1
-<span class="pc bpc" id="L160" title="1 of 2 branches missed.">		if (supplemented &gt; 0)</span>
-<span class="nc" id="L161">			error(&quot;defaults cannot be supplemented twice&quot;);</span>
-<span class="pc bpc" id="L162" title="1 of 2 branches missed.">		if (N == 0)</span>
-<span class="nc" id="L163">			error(&quot;dimension must be greater than zero&quot;);</span>
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">		if (supplemented &gt; 0)</span>
+<span class="nc" id="L165">			error(&quot;defaults cannot be supplemented twice&quot;);</span>
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">		if (N == 0)</span>
+<span class="nc" id="L167">			error(&quot;dimension must be greater than zero&quot;);</span>
 
-<span class="fc" id="L165">		supplemented = 1;</span>
-<span class="fc" id="L166">		locked = 1;</span>
+<span class="fc" id="L169">		supplemented = 1;</span>
+<span class="fc" id="L170">		locked = 1;</span>
 
-<span class="fc" id="L168">		chiN = Math.sqrt(N)</span>
+<span class="fc" id="L172">		chiN = Math.sqrt(N)</span>
 		* (1.0 - 1.0 / (4.0 * N) + 1.0 / (21.0 * N * N));
 
 		// set parameters to their default if they were not set before
-<span class="pc bpc" id="L172" title="1 of 2 branches missed.">		if (lambda &lt;= 0)</span>
-<span class="fc" id="L173">			lambda = (int) (4.0 + 3.0 * Math.log(N));</span>
-<span class="pc bpc" id="L174" title="1 of 2 branches missed.">		if (mu &lt;= 0)</span>
-<span class="fc" id="L175">			mu = (int) Math.floor(lambda/2.);</span>
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">		if (lambda &lt;= 0)</span>
+<span class="fc" id="L177">			lambda = (int) (4.0 + 3.0 * Math.log(N));</span>
+<span class="pc bpc" id="L178" title="1 of 2 branches missed.">		if (mu &lt;= 0)</span>
+<span class="fc" id="L179">			mu = (int) Math.floor(lambda/2.);</span>
 
-<span class="pc bpc" id="L177" title="1 of 2 branches missed.">		if (weights == null)</span>
-<span class="fc" id="L178">			setWeights(mu, recombinationType);</span>
-<span class="nc bnc" id="L179" title="All 2 branches missed.">		else if (weights.length == 0)</span>
-<span class="nc" id="L180">			setWeights(mu, recombinationType);</span>
+<span class="pc bpc" id="L181" title="1 of 2 branches missed.">		if (weights == null)</span>
+<span class="fc" id="L182">			setWeights(mu, recombinationType);</span>
+<span class="nc bnc" id="L183" title="All 2 branches missed.">		else if (weights.length == 0)</span>
+<span class="nc" id="L184">			setWeights(mu, recombinationType);</span>
 
-<span class="pc bpc" id="L182" title="1 of 2 branches missed.">		if (cs &lt;= 0)</span>
-<span class="fc" id="L183">			cs = (mueff+2) / (N+mueff+3);</span>
+<span class="pc bpc" id="L186" title="1 of 2 branches missed.">		if (cs &lt;= 0)</span>
+<span class="fc" id="L187">			cs = (mueff+2) / (N+mueff+3);</span>
 
-<span class="pc bpc" id="L185" title="1 of 2 branches missed.">		if (damps &lt;= 0)</span>
-<span class="fc" id="L186">			damps = </span>
-<span class="fc" id="L187">				(1 + 2 * Math.max(0, Math.sqrt((mueff - 1.) / (N + 1.)) - 1))</span>
-<span class="fc" id="L188">				* Math.max(0.3, 1 -                         /* modification for short runs */ </span>
-<span class="fc" id="L189">						N / (1e-6+Math.min(opts.stopMaxIter, </span>
+<span class="pc bpc" id="L189" title="1 of 2 branches missed.">		if (damps &lt;= 0)</span>
+<span class="fc" id="L190">			damps = </span>
+<span class="fc" id="L191">				(1 + 2 * Math.max(0, Math.sqrt((mueff - 1.) / (N + 1.)) - 1))</span>
+<span class="fc" id="L192">				* Math.max(0.3, 1 -                         /* modification for short runs */ </span>
+<span class="fc" id="L193">						N / (1e-6+Math.min(opts.stopMaxIter, </span>
 								opts.stopMaxFunEvals/lambda)))	
 								+ cs ;                                      /* minor increment */
 
-<span class="pc bpc" id="L193" title="1 of 2 branches missed.">		if (cc &lt;= 0)</span>
-<span class="fc" id="L194">			cc = 4.0 / (N + 4.0);</span>
+<span class="pc bpc" id="L197" title="1 of 2 branches missed.">		if (cc &lt;= 0)</span>
+<span class="fc" id="L198">			cc = 4.0 / (N + 4.0);</span>
 
-<span class="pc bpc" id="L196" title="1 of 2 branches missed.">		if (mucov &lt; 0)</span>
-<span class="fc" id="L197">			mucov = mueff;</span>
+<span class="pc bpc" id="L200" title="1 of 2 branches missed.">		if (mucov &lt; 0)</span>
+<span class="fc" id="L201">			mucov = mueff;</span>
 
-<span class="pc bpc" id="L199" title="1 of 2 branches missed.">		if (ccov &lt; 0) { // TODO: setting should depend on gendiagonalcov </span>
-<span class="fc" id="L200">			ccov = 2.0 / (N + 1.41) / (N + 1.41) / mucov</span>
+<span class="pc bpc" id="L203" title="1 of 2 branches missed.">		if (ccov &lt; 0) { // TODO: setting should depend on gendiagonalcov </span>
+<span class="fc" id="L204">			ccov = 2.0 / (N + 1.41) / (N + 1.41) / mucov</span>
 			+ (1 - (1.0 / mucov))
-<span class="fc" id="L202">			* Math.min(1, (2 * mueff - 1) / (mueff + (N + 2) * (N + 2)));</span>
-<span class="fc" id="L203">			ccovsep = Math.min(1, ccov * (N + 1.5) / 3.0);</span>
+<span class="fc" id="L206">			* Math.min(1, (2 * mueff - 1) / (mueff + (N + 2) * (N + 2)));</span>
+<span class="fc" id="L207">			ccovsep = Math.min(1, ccov * (N + 1.5) / 3.0);</span>
 		}
 
 		// check everything
-<span class="fc" id="L207">		String s = check();</span>
-<span class="pc bpc" id="L208" title="1 of 2 branches missed.">		if (s == null)</span>
-<span class="nc" id="L209">			;</span>
-<span class="pc bpc" id="L210" title="1 of 2 branches missed.">		else if (s.equals(&quot;&quot;))</span>
-<span class="fc" id="L211">			;</span>
+<span class="fc" id="L211">		String s = check();</span>
+<span class="pc bpc" id="L212" title="1 of 2 branches missed.">		if (s == null)</span>
+<span class="nc" id="L213">			;</span>
+<span class="pc bpc" id="L214" title="1 of 2 branches missed.">		else if (s.equals(&quot;&quot;))</span>
+<span class="fc" id="L215">			;</span>
 		else
-<span class="nc" id="L213">			error(s); // if any prior setting does not work</span>
+<span class="nc" id="L217">			error(s); // if any prior setting does not work</span>
 
-<span class="fc" id="L215">	} // supplementRemainders</span>
+<span class="fc" id="L219">	} // supplementRemainders</span>
 
 	/**
 	 * Getter for property mu.
 	 * 
-	 * @return Value of property mu.
+	 @return Value of property mu.
 	 * 
 	 */
 	public int getMu() {
-<span class="fc" id="L224">		return mu;</span>
+<span class="fc" id="L228">		return mu;</span>
 	}
 
 	/**
 	 * Setter for parent number mu, be aware of the recombinationType when setting mu 
 	 * 
-	 * @param mu
+	 @param mu
 	 *            New value for the number of parents mu.
 	 * @see #setRecombination(int, CMAParameters.RecombinationType)
 	 * @see #setRecombinationWeights(CMAParameters.RecombinationType)
 	 */
 	public void setMu(int mu) {
-<span class="nc bnc" id="L236" title="All 2 branches missed.">		if (locked != 0) // needed because of recombination weights</span>
-<span class="nc" id="L237">			error(&quot;parameters are locked&quot;);</span>
-<span class="nc" id="L238">		this.mu = mu;</span>
-<span class="nc" id="L239">	}</span>
+<span class="nc bnc" id="L240" title="All 2 branches missed.">		if (locked != 0) // needed because of recombination weights</span>
+<span class="nc" id="L241">			error(&quot;parameters are locked&quot;);</span>
+<span class="nc" id="L242">		this.mu = mu;</span>
+<span class="nc" id="L243">	}</span>
 
 	/**
 	 * Getter for offspring population size lambda, no check, whether lambda was already set properly
 	 * 
-	 * @return Value of lambda
+	 @return Value of lambda
 	 * 
 	 */
 	public int getLambda() {
-<span class="fc" id="L248">		return lambda;</span>
+<span class="fc" id="L252">		return lambda;</span>
 	}
 
-<span class="fc" id="L251">	int flgLambdaChanged = 0; // not in use yet</span>
+<span class="fc" id="L255">	int flgLambdaChanged = 0; // not in use yet</span>
 	/**
 	 * Setter for offspring population size alias sample size
 	 * alias lambda, use setPopulationSize() for outside use.
 	 * 
-	 * @param lambda  set population size
+	 @param lambda  set population size
 	 * @see #setPopulationSize() 
 	 */
 	void setLambda(int lambda) {
-<span class="nc bnc" id="L260" title="All 2 branches missed.">		if (locked != 0)</span>
-<span class="nc" id="L261">			error(&quot;parameters cannot be set anymore&quot;);</span>
-<span class="nc" id="L262">		this.lambda = lambda; </span>
-<span class="nc" id="L263">	}</span>
-	/** @see #getLambda() */
+<span class="nc bnc" id="L264" title="All 2 branches missed.">		if (locked != 0)</span>
+<span class="nc" id="L265">			error(&quot;parameters cannot be set anymore&quot;);</span>
+<span class="nc" id="L266">		this.lambda = lambda; </span>
+<span class="nc" id="L267">	}</span>
+	/**
+     @return  *  @see #getLambda() */
 	public int getPopulationSize() {
-<span class="nc" id="L266">		return getLambda();</span>
+<span class="nc" id="L271">		return getLambda();</span>
 	}
 
 	/**
@@ -272,37 +277,55 @@ public class CMAParameters implements java.io.Serializable {
 	 * subsequently learning rates for the covariance matrix etc. are
 	 * chosen accordingly  
 	 * 
-	 * @param lambda is the offspring population size
+	 @param lambda is the offspring population size
 	 */
 	public void setPopulationSize(int lambda) {
-<span class="nc" id="L278">		setLambda(lambda);</span>
-<span class="nc" id="L279">	}</span>
+<span class="nc" id="L283">		setLambda(lambda);</span>
+<span class="nc" id="L284">	}</span>
 	
-	public enum RecombinationType {superlinear, linear, equal};
-<span class="fc" id="L282">	RecombinationType recombinationType = RecombinationType.superlinear; // otherwise null</span>
+    /**
+     *
+     */
+    public enum RecombinationType {
+
+            /**
+             *
+             */
+            superlinear, 
+
+            /**
+             *
+             */
+            linear, 
+
+            /**
+             *
+             */
+            equal};
+<span class="fc" id="L305">	RecombinationType recombinationType = RecombinationType.superlinear; // otherwise null</span>
 	/**
 	 * Getter for property weights.
 	 * 
-	 * @return Value of property weights.
+	 @return Value of property weights.
 	 * 
 	 */
 	public double[] getWeights() {
-<span class="fc" id="L290">		return this.weights;</span>
+<span class="fc" id="L313">		return this.weights;</span>
 	}
 
 	/**
 	 * Recombination weights can be equal, linearly 
 	 * decreasing, or super-linearly decreasing (default). The respective parameter value is 
 	 * in enum RecombinationType. 
-	 * @param recombinationType
+	 @param recombinationType
 	 * @see #setRecombination 
 	 * @see #setMu
 	 */
 	public void setRecombinationWeights(RecombinationType recombinationType) {
-<span class="nc bnc" id="L302" title="All 2 branches missed.">		if (locked != 0)</span>
-<span class="nc" id="L303">			error(&quot;parameters cannot be set anymore&quot;);</span>
-<span class="nc" id="L304">		this.recombinationType = recombinationType;</span>
-<span class="nc" id="L305">	}</span>
+<span class="nc bnc" id="L325" title="All 2 branches missed.">		if (locked != 0)</span>
+<span class="nc" id="L326">			error(&quot;parameters cannot be set anymore&quot;);</span>
+<span class="nc" id="L327">		this.recombinationType = recombinationType;</span>
+<span class="nc" id="L328">	}</span>
 
 	/**
 	 * Sets parent number mu and the policy for choosing the recombination weights. 
@@ -311,37 +334,39 @@ public class CMAParameters implements java.io.Serializable {
 	 * The respective parameter value is 
 	 * in enum RecombinationType. 
 	 * For equal recombination weights mu=lambda/4 is appropriate, otherwise mu=lambda/2. 
-	 * @param mu
-	 * @param recombinationType
+	 @param mu
+	 @param recombinationType
 	 */
 	public void setRecombination(int mu, RecombinationType recombinationType) {
-<span class="nc bnc" id="L318" title="All 2 branches missed.">		if (locked != 0)</span>
-<span class="nc" id="L319">			error(&quot;parameters are locked&quot;);</span>
-<span class="nc" id="L320">		this.mu = mu; </span>
-<span class="nc" id="L321">		this.recombinationType = recombinationType;</span>
-<span class="nc" id="L322">	}</span>
+<span class="nc bnc" id="L341" title="All 2 branches missed.">		if (locked != 0)</span>
+<span class="nc" id="L342">			error(&quot;parameters are locked&quot;);</span>
+<span class="nc" id="L343">		this.mu = mu; </span>
+<span class="nc" id="L344">		this.recombinationType = recombinationType;</span>
+<span class="nc" id="L345">	}</span>
 
 	/**
 	 * Setter for recombination weights
 	 *
-	 * @param mu is the number of parents, number of weights &gt; 0 
+	 @param mu is the number of parents, number of weights &gt; 0 
+     @param recombinationType 
 	 */
 	private void setWeights(int mu, RecombinationType recombinationType) {
-<span class="fc" id="L330">		double[] w = new double[mu];</span>
-<span class="pc bpc" id="L331" title="1 of 2 branches missed.">		if (recombinationType == RecombinationType.equal)</span>
-<span class="nc bnc" id="L332" title="All 2 branches missed.">			for (int i = 0; i &lt; mu; ++i) </span>
-<span class="nc" id="L333">				w[i] = 1;</span>
-<span class="pc bpc" id="L334" title="1 of 2 branches missed.">		else if (recombinationType == RecombinationType.linear)</span>
-<span class="nc bnc" id="L335" title="All 2 branches missed.">			for (int i = 0; i &lt; mu; ++i) </span>
-<span class="nc" id="L336">				w[i] = mu - i;</span>
+<span class="fc" id="L354">		double[] w = new double[mu];</span>
+<span class="pc bpc" id="L355" title="1 of 2 branches missed.">		if (recombinationType == RecombinationType.equal)</span>
+<span class="nc bnc" id="L356" title="All 2 branches missed.">			for (int i = 0; i &lt; mu; ++i) </span>
+<span class="nc" id="L357">				w[i] = 1;</span>
+<span class="pc bpc" id="L358" title="1 of 2 branches missed.">		else if (recombinationType == RecombinationType.linear)</span>
+<span class="nc bnc" id="L359" title="All 2 branches missed.">			for (int i = 0; i &lt; mu; ++i) </span>
+<span class="nc" id="L360">				w[i] = mu - i;</span>
 		else // default, seems as enums can be null
-<span class="fc bfc" id="L338" title="All 2 branches covered.">		for (int i = 0; i &lt; mu; ++i) 	</span>
-<span class="fc" id="L339">			w[i] = (Math.log(mu + 1) - Math.log(i + 1));</span>
+<span class="fc bfc" id="L362" title="All 2 branches covered.">		for (int i = 0; i &lt; mu; ++i) 	</span>
+<span class="fc" id="L363">			w[i] = (Math.log(mu + 1) - Math.log(i + 1));</span>
 
-<span class="fc" id="L341">		setWeights(w);</span>
-<span class="fc" id="L342">	}</span>
+<span class="fc" id="L365">		setWeights(w);</span>
+<span class="fc" id="L366">	}</span>
 
-	/** normalizes recombination weights vector and sets mueff **/
+	/** normalizes recombination weights vector and sets mueff
+     @param weights **/
 	protected void setWeights(double[] weights) {
 		//assert locked == 0;
 		//NLK: commented out assert because this method
@@ -350,30 +375,30 @@ public class CMAParameters implements java.io.Serializable {
         //     can revise the code to work with reentrant locks
         //     if the intention was to create guards/mutexes for
         //     multithreaded use.  
-<span class="fc" id="L353">        double sum = 0;</span>
-<span class="fc bfc" id="L354" title="All 2 branches covered.">		for (int i = 0; i &lt; weights.length; ++i)</span>
-<span class="fc" id="L355">			sum += weights[i];</span>
-<span class="fc bfc" id="L356" title="All 2 branches covered.">		for (int i = 0; i &lt; weights.length; ++i)</span>
-<span class="fc" id="L357">			weights[i] /= sum;</span>
-<span class="fc" id="L358">		this.weights = weights;</span>
+<span class="fc" id="L378">        double sum = 0;</span>
+<span class="fc bfc" id="L379" title="All 2 branches covered.">		for (int i = 0; i &lt; weights.length; ++i)</span>
+<span class="fc" id="L380">			sum += weights[i];</span>
+<span class="fc bfc" id="L381" title="All 2 branches covered.">		for (int i = 0; i &lt; weights.length; ++i)</span>
+<span class="fc" id="L382">			weights[i] /= sum;</span>
+<span class="fc" id="L383">		this.weights = weights;</span>
 		// setMu(weights.length);
-<span class="fc" id="L360">		double sum1 = 0;</span>
-<span class="fc" id="L361">		double sum2 = 0;</span>
-<span class="fc bfc" id="L362" title="All 2 branches covered.">		for (int i = 0; i &lt; mu; ++i) {</span>
-<span class="fc" id="L363">			sum1 += weights[i];</span>
-<span class="fc" id="L364">			sum2 += weights[i] * weights[i];</span>
+<span class="fc" id="L385">		double sum1 = 0;</span>
+<span class="fc" id="L386">		double sum2 = 0;</span>
+<span class="fc bfc" id="L387" title="All 2 branches covered.">		for (int i = 0; i &lt; mu; ++i) {</span>
+<span class="fc" id="L388">			sum1 += weights[i];</span>
+<span class="fc" id="L389">			sum2 += weights[i] * weights[i];</span>
 		}
-<span class="fc" id="L366">		this.mueff = sum1 * sum1 / sum2;</span>
-<span class="fc" id="L367">	}</span>
+<span class="fc" id="L391">		this.mueff = sum1 * sum1 / sum2;</span>
+<span class="fc" id="L392">	}</span>
 
 	/**
 	 * Getter for property mueff, the &quot;variance effective selection mass&quot;.
 	 * 
-	 * @return Value of property mueff.
+	 @return Value of property mueff.
 	 * 
 	 */
 	public double getMueff() {
-<span class="fc" id="L376">		return mueff;</span>
+<span class="fc" id="L401">		return mueff;</span>
 	}
 
 	/**
@@ -381,48 +406,48 @@ public class CMAParameters implements java.io.Serializable {
 	 * mixing between rank-one and rank-mu update. For
 	 * mucov = 1, no rank-mu updated takes place. 
 	 * 
-	 * @return Value of property mucov.
+	 @return Value of property mucov.
 	 * 
 	 */
 	public double getMucov() {
-<span class="fc" id="L388">		return mucov;</span>
+<span class="fc" id="L413">		return mucov;</span>
 	}
 
 	/**
 	 * Setter for mucov.
 	 * 
-	 * @param mucov
+	 @param mucov
 	 *            New value of mucov.
 	 * @see #getMucov()  
 	 */
 	public void setMucov(double mucov) {
-<span class="nc bnc" id="L399" title="All 2 branches missed.">		if (locked != 0) // on the save side as mucov -&gt; ccov, but in principle not essential</span>
-<span class="nc" id="L400">			error(&quot;parameters cannot be set anymore&quot;);</span>
-<span class="nc" id="L401">		this.mucov = mucov; // can be set anytime</span>
-<span class="nc" id="L402">	}</span>
+<span class="nc bnc" id="L424" title="All 2 branches missed.">		if (locked != 0) // on the save side as mucov -&gt; ccov, but in principle not essential</span>
+<span class="nc" id="L425">			error(&quot;parameters cannot be set anymore&quot;);</span>
+<span class="nc" id="L426">		this.mucov = mucov; // can be set anytime</span>
+<span class="nc" id="L427">	}</span>
 
 	/**
 	 * Getter for property covariance matrix learning rate ccov
 	 * 
-	 * @param flgdiag 
+	 @param flgdiag 
 	 *        boolean, true for getting the learning rate when 
 	 *        only the diagonal of the covariance matrix is updated
-	 * @return Value of property ccov.
+	 @return Value of property ccov.
 	 * 
 	 */
 	public double getCcov(boolean flgdiag) {
-<span class="pc bpc" id="L414" title="1 of 2 branches missed.">		if (flgdiag)</span>
-<span class="nc" id="L415">			return ccovsep;</span>
-<span class="fc" id="L416">		return ccov;</span>
+<span class="pc bpc" id="L439" title="1 of 2 branches missed.">		if (flgdiag)</span>
+<span class="nc" id="L440">			return ccovsep;</span>
+<span class="fc" id="L441">		return ccov;</span>
 	}
 	/**
 	 * Getter for property covariance matrix learning rate ccov
 	 * 
-	 * @return Value of property ccov.
+	 @return Value of property ccov.
 	 * 
 	 */
 	public double getCcov() {
-<span class="fc" id="L425">		return ccov;</span>
+<span class="fc" id="L450">		return ccov;</span>
 	}
 
 
@@ -431,82 +456,84 @@ public class CMAParameters implements java.io.Serializable {
 	 * matrix adaptation takes place and only &lt;EM&gt;Cumulation Step-Size 
 	 * Adaptation (CSA)&lt;/EM&gt; is conducted, also know as &lt;EM&gt;Path Length Control&lt;/EM&gt;.
 	 * 
-	 * @param ccov
+	 @param ccov
 	 *            New value of property ccov.
 	 * @see #getCcov()
 	 */
 	public void setCcov(double ccov) {
-<span class="nc" id="L439">		this.ccov = ccov; // can be set anytime, cave: switching from diagonal to full cov</span>
-<span class="nc" id="L440">	}</span>
+<span class="nc" id="L464">		this.ccov = ccov; // can be set anytime, cave: switching from diagonal to full cov</span>
+<span class="nc" id="L465">	}</span>
 
 	/**
 	 * Getter for step-size damping damps.  The damping damps
 	 * determines the amount of step size change. 
 	 * 
-	 * @return Value of damps.
+	 @return Value of damps.
 	 * 
 	 */
 	public double getDamps() {
-<span class="fc" id="L450">		return damps;</span>
+<span class="fc" id="L475">		return damps;</span>
 	}
 
 	/**
 	 * Setter for damps.
 	 * 
-	 * @param damps
+	 @param damps
 	 *            New value of damps.
 	 * @see #getDamps()
 	 */
 	public void setDamps(double damps) {
-<span class="nc bnc" id="L461" title="All 2 branches missed.">		if (locked != 0) // not really necessary!?</span>
-<span class="nc" id="L462">			error(&quot;parameters cannot be set anymore&quot;);</span>
-<span class="nc" id="L463">		this.damps = damps;</span>
-<span class="nc" id="L464">	}</span>
+<span class="nc bnc" id="L486" title="All 2 branches missed.">		if (locked != 0) // not really necessary!?</span>
+<span class="nc" id="L487">			error(&quot;parameters cannot be set anymore&quot;);</span>
+<span class="nc" id="L488">		this.damps = damps;</span>
+<span class="nc" id="L489">	}</span>
 
 	/**
 	 * Getter for backward time horizon parameter cc for
 	 * distribution cumulation (for evolution path
 	 * p&lt;sub&gt;c&lt;/sub&gt;).
 	 * 
-	 * @return Value of cc.
+	 @return Value of cc.
 	 * 
 	 */
 	public double getCc() {
-<span class="fc" id="L475">		return cc;</span>
+<span class="fc" id="L500">		return cc;</span>
 	}
 
 	/**
 	 * Setter for cc to default value.
 	 * 
+     @param cc
 	 */
 	public void setCc(double cc) {
-<span class="nc" id="L483">		this.cc = cc;</span>
-<span class="nc" id="L484">	}</span>
+<span class="nc" id="L509">		this.cc = cc;</span>
+<span class="nc" id="L510">	}</span>
 
 	/**
 	 * Getter for cs, parameter for the backward time horizon for the cumulation for sigma.
 	 * 
-	 * @return Value of property cs.
+	 @return Value of property cs.
 	 * 
 	 */
 	public double getCs() {
-<span class="fc" id="L493">		return cs;</span>
+<span class="fc" id="L519">		return cs;</span>
 	}
 
 	/**
 	 * Setter for cs to default value.
+     @param cs
 	 * @see #getCs()
 	 */
 	public void setCs(double cs) {
-<span class="nc bnc" id="L501" title="All 2 branches missed.">		if (locked != 0)</span>
-<span class="nc" id="L502">			error(&quot;parameters cannot be set anymore&quot;);</span>
-<span class="nc" id="L503">		this.cs = cs;</span>
-<span class="nc" id="L504">	}</span>
+<span class="nc bnc" id="L528" title="All 2 branches missed.">		if (locked != 0)</span>
+<span class="nc" id="L529">			error(&quot;parameters cannot be set anymore&quot;);</span>
+<span class="nc" id="L530">		this.cs = cs;</span>
+<span class="nc" id="L531">	}</span>
     private void error(String s) { // somehow a relict from the C history of this code
-<span class="nc" id="L506">        System.out.println(&quot; CMA-ES error: &quot; + s);</span>
+<span class="nc" id="L533">        System.out.println(&quot; CMA-ES error: &quot; + s);</span>
         //e.printStackTrace();            // output goes to System.err
         //e.printStackTrace(System.out);  // send trace to stdout
-<span class="nc" id="L509">        throw new CMAEvolutionStrategy().new CMAException(&quot; CMA-ES error: &quot; + s); // TODO this looks like a real hack</span>
+<span class="nc" id="L536">        throw new CMAEvolutionStrategy().new CMAException(&quot; CMA-ES error: &quot; + s); // TODO this looks like a real hack</span>
         //      System.exit(-1); 
     }
 

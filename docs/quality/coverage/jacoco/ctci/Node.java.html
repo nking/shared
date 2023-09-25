@@ -3,37 +3,87 @@
 /**
  *
  * @author nichole
+ @param &lt;K&gt;
+ @param &lt;V&gt;
  */
 public class Node&lt;K,V&gt; {
-  protected final K key;
-  protected final V data;
-<span class="nc" id="L10">  protected Node&lt;K,V&gt; prev = null;</span>
-<span class="nc" id="L11">  protected Node&lt;K,V&gt; next = null;</span>
 
-<span class="nc" id="L13">  public Node(K key, V value) {</span>
-<span class="nc" id="L14">    this.key = key;</span>
-<span class="nc" id="L15">    this.data = value;</span>
-<span class="nc" id="L16">  }</span>
+    /**
+     *
+     */
+    protected final K key;
 
-  public void setNext(Node&lt;K,V&gt; node) {
-<span class="nc" id="L19">    this.next = node;</span>
-<span class="nc" id="L20">  }</span>
-  public void setPrev(Node&lt;K,V&gt; node) {
-<span class="nc" id="L22">    this.prev = node;</span>
-<span class="nc" id="L23">  }</span>
+    /**
+     *
+     */
+    protected final V data;
 
-  public K getKey() {
-<span class="nc" id="L26">    return key;</span>
+    /**
+     *
+     */
+<span class="nc" id="L24">    protected Node&lt;K,V&gt; prev = null;</span>
+
+    /**
+     *
+     */
+<span class="nc" id="L29">    protected Node&lt;K,V&gt; next = null;</span>
+
+    /**
+     *
+     @param key
+     @param value
+     */
+<span class="nc" id="L36">    public Node(K key, V value) {</span>
+<span class="nc" id="L37">    this.key = key;</span>
+<span class="nc" id="L38">    this.data = value;</span>
+<span class="nc" id="L39">  }</span>
+
+    /**
+     *
+     @param node
+     */
+    public void setNext(Node&lt;K,V&gt; node) {
+<span class="nc" id="L46">    this.next = node;</span>
+<span class="nc" id="L47">  }</span>
+
+    /**
+     *
+     @param node
+     */
+    public void setPrev(Node&lt;K,V&gt; node) {
+<span class="nc" id="L54">    this.prev = node;</span>
+<span class="nc" id="L55">  }</span>
+
+    /**
+     *
+     @return
+     */
+    public K getKey() {
+<span class="nc" id="L62">    return key;</span>
   }
-  public V getData() {
-<span class="nc" id="L29">    return data;</span>
+
+    /**
+     *
+     @return
+     */
+    public V getData() {
+<span class="nc" id="L70">    return data;</span>
   }
   
-  public Node&lt;K,V&gt; getNext() {
-<span class="nc" id="L33">    return next;</span>
+    /**
+     *
+     @return
+     */
+    public Node&lt;K,V&gt; getNext() {
+<span class="nc" id="L78">    return next;</span>
   }
-  public Node&lt;K,V&gt; getPrev() {
-<span class="nc" id="L36">    return prev;</span>
+
+    /**
+     *
+     @return
+     */
+    public Node&lt;K,V&gt; getPrev() {
+<span class="nc" id="L86">    return prev;</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

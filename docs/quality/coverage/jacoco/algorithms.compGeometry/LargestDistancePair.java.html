@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LargestDistancePair.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.compGeometry</a> &gt; <span class="el_source">LargestDistancePair.java</span></div><h1>LargestDistancePair.java</h1><pre class="source lang-java linenums">package algorithms.compGeometry;
+
+import algorithms.compGeometry.convexHull.GrahamScan;
+import algorithms.compGeometry.convexHull.GrahamScan.CHL;
+import algorithms.compGeometry.convexHull.GrahamScanPairInt;
+import algorithms.compGeometry.convexHull.GrahamScanTooFewPointsException;
+import algorithms.matrix.MatrixUtil;
+import algorithms.util.PairInt;
+import gnu.trove.list.TDoubleList;
+import gnu.trove.list.array.TDoubleArrayList;
+import gnu.trove.set.TDoubleSet;
+
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+
+/**
+ * finds the pair of points most distant from one another a.k.a. the
+ * furthest pair problem.
+ * one can imagine a rough estimate by fitting an ellipse around the given points
+ * and determining the major axis of the points.
+ * even more precisely, one can fit a convex hull around the points and
+ * determine which pair of points has the largest distance between them.
+ * Note that the convex hull returns points ordered in a counter-clockwise manner
+ * so is suitable for ordered traversal already.
+ * The runtime complexity for this convex hull, which uses a linear time sort,
+ * is O(n).
+ *
+ * One can speculate that a &quot;rotating calipers&quot; approach could reduce the
+ * further search by half, that is, only traversing half of the convex hull points
+ * (the savings by roughly half arises by terminating each leading points' search
+ * for distance pair as soon as the distances start to decrease),
+ * but random input testing shows that the possibly very uneven distribution
+ * of points on the convex hull means that all points should be visited.
+ * 
+ * In this algorithm, since integers are given as input, the convex hull
+ * uses an internal sorting by polar angles rounded to integers between 0
+ * and 359, inclusive, making the convex hull algorithm runtime complexity
+ * O(N) where N is the number of x, y points given to this class.
+ * If higher resolution than 1 degree is needed for a specific hull, then
+ * this algorithm for finding the largest distance pair of points is not
+ * the right algorithm for that problem.
+ * 
+ * The largest distance between a pair algorithm then proceeds to use the number of
+ * points on the convex hull, n_H.  The runtime complexity of this part of
+ * the algorithm is O(n_h^2).
+ * 
+ * We can speculate about the size of the hull from information in Cormen
+ * et al. Introduction to Algorithms, Exercise 33-5
+ * for sparse-hulled distributions of a unit-radius disk, a convex polygon with k sides,
+ * and a 2-D normal distribution respectively as n^(1/3), log_2(n), sqrt(log_2(n)).
+ * 
+ * Then, assuming that N &gt; n_h^2, this algorithm's total runtime complexity is
+ * O(N).
+
+first implemented in project
+     https://github.com/nking/curvature-scale-space-corners-and-transformations
+     w/ Copyright (c) 2014 Climb With Your Feet
+     and using The MIT License (MIT)
+
+   then moved to this shared library project which has the same copyright
+   and license.
+
+ * 
+ * @author nichole
+ */
+<span class="nc" id="L68">public class LargestDistancePair {</span>
+
+    /**
+     * find the largest distance between the given pairs of points.
+     * The runtime complexity is &lt;em&gt;max(O(N), O(n_h^2))&lt;/em&gt; if useLinear is true,
+     * else is O(N*log_2(N)) if useLinear is false.
+     *
+     * @param x input array of x coordinates.  note that this method modifies the order of x
+     *          upon CCW sorting of x and y, so copy the arrays in if need to kep the
+     *          original order.
+     * @param y x input array of x coordinates.  note that this method modifies the order of x
+     *          upon CCW sorting of x and y, so copy the arrays in if need to kep the
+     *          original order.
+     * @param useLinear if true, uses a O(n) runtime algorithm to compute the convex hull.  if false, uses
+     *                  a O(n*log_2(n)) algorithm to compute the convex hull.
+     *                  The linear algorithm is usually correct.   random input testing shows that
+     *                  for 3 out of 100 tests, the largest separation pair is wrong, shorter than the true value
+     *                  by less than 10 percent.
+     *                  TODO: test more to improve the possible error stats empirically, and consider the geometry for
+     *                  theoretical limits to error.
+     * @return the convex hull and the indexes for the pairs of points on the hull which are furthest from each other.
+     *
+     * @throws algorithms.compGeometry.convexHull.GrahamScanTooFewPointsException if the unique polar angles w.r.t. the smallest y point in the arrays
+     *                                                                            are fewer than 3 in number.
+     */
+    public static PairAndHull find(long[] x, long[] y, boolean useLinear) throws GrahamScanTooFewPointsException {
+
+        // x and y
+<span class="fc" id="L96">        CHL ch = GrahamScan.computeHull(x, y, useLinear);</span>
+
+<span class="fc" id="L98">        int n = ch.getXH().length;</span>
+
+<span class="fc" id="L100">        long maxDistSq = Long.MIN_VALUE;</span>
+<span class="fc" id="L101">        int maxI = -1;</span>
+<span class="fc" id="L102">        int maxJ = -1;</span>
+        long maxDistSqJ;
+<span class="fc" id="L104">        int maxJ2 = -1;</span>
+
+        long distSq;
+        long xd;
+        long yd;
+
+        long xRef;
+        long yRef;
+
+<span class="fc" id="L113">        int nScan = n - 1;</span>
+
+        int j;
+        int i;
+<span class="fc bfc" id="L117" title="All 2 branches covered.">        for (i = 0; i &lt; nScan; ++i) {</span>
+<span class="fc" id="L118">            xRef = ch.getXH()[i];</span>
+<span class="fc" id="L119">            yRef = ch.getYH()[i];</span>
+<span class="fc" id="L120">            maxDistSqJ = Long.MIN_VALUE;</span>
+
+<span class="fc bfc" id="L122" title="All 2 branches covered.">            for (j = i+1; j &lt; nScan; ++j) {</span>
+<span class="fc" id="L123">                xd = ch.getXH()[j] - xRef;</span>
+<span class="fc" id="L124">                yd = ch.getYH()[j] - yRef;</span>
+<span class="fc" id="L125">                distSq = xd * xd + yd * yd;</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">                if (distSq &gt;= maxDistSqJ) {</span>
+<span class="fc" id="L127">                    maxDistSqJ = distSq;</span>
+<span class="fc" id="L128">                    maxJ2 = j;</span>
+                } else {
+                    break;
+                }
+            } // end loop over j
+<span class="fc bfc" id="L133" title="All 2 branches covered.">            if (maxDistSqJ &gt; maxDistSq) {</span>
+<span class="fc" id="L134">                maxI = i;</span>
+<span class="fc" id="L135">                maxJ = maxJ2;</span>
+<span class="fc" id="L136">                maxDistSq = maxDistSqJ;</span>
+            }
+        } //end loop over i
+
+<span class="fc" id="L140">        PairAndHull ph = new PairAndHull(maxI, maxJ, maxDistSq, ch);</span>
+
+<span class="fc" id="L142">        return ph;</span>
+    }
+
+    public static class PairAndHull {
+        public final int i0;
+        public final int i1;
+        public final double[] xHull;
+        public final double[] yHull;
+        public final double distSq;
+        public PairAndHull(int i0, int i1, long distSq, CHL hull) {
+            this.i0 = i0;
+            this.i1 = i1;
+            this.distSq = distSq;
+            this.xHull = MatrixUtil.copyLongToDouble(hull.getXH());
+            this.yHull = MatrixUtil.copyLongToDouble(hull.getYH());
+        }
+        public PairAndHull(int i0, int i1, double distSq, GrahamScan.CHD hull) {
+            this.i0 = i0;
+            this.i1 = i1;
+            this.distSq = distSq;
+            int n = hull.getXH().length;
+            this.xHull = Arrays.copyOf(hull.getXH(), n);
+            this.yHull = Arrays.copyOf(hull.getYH(), n);
+        }
+        public double[] getXY0() {
+            return new double[]{xHull[i0], yHull[i0]};
+        }
+        public double[] getXY1() {
+            return new double[]{xHull[i1], yHull[i1]};
+        }
+
+        /**
+         *
+         * @param coordStringFormat format for String.format to use in printing each coordinate of the hull.  e.g. &quot;%.2f&quot;
+         * @return
+         */
+        public String toString(String coordStringFormat) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(String.format(&quot;furthest pair indexes = %d, %d\nhull:\n&quot;, i0, i1));
+            String cFmt = String.format(&quot;(%s, %s)\n&quot;, coordStringFormat, coordStringFormat);
+            for (int i = 0; i &lt; xHull.length; ++i) {
+                sb.append(String.format(cFmt, xHull[i], yHull[i]));
+            }
+            return sb.toString();
+        }
+    }
+
+    /**
+     * find the pair of points with the largest separation.  The runtime complexity is O(N*log_2(N)).
+     * Note this method can be modified for a linear runtime option upon need.
+     * @param points
+     * @return
+     * @throws GrahamScanTooFewPointsException
+     */
+    public static &lt;T extends PairInt&gt; T[] find(T[] points) throws GrahamScanTooFewPointsException {
+
+<span class="fc" id="L198">        GrahamScanPairInt&lt;T&gt; scan = new GrahamScanPairInt&lt;T&gt;();</span>
+<span class="fc" id="L199">        scan.computeHull(points);</span>
+
+<span class="fc" id="L201">        List&lt;T&gt; hull = scan.getHull();</span>
+
+<span class="fc" id="L203">        int n = hull.size();</span>
+
+<span class="fc" id="L205">        long maxDistSq = Long.MIN_VALUE;</span>
+<span class="fc" id="L206">        int maxI = -1;</span>
+<span class="fc" id="L207">        int maxJ = -1;</span>
+        long maxDistSqJ;
+<span class="fc" id="L209">        int maxJ2 = -1;</span>
+
+        long distSq;
+        long xd;
+        long yd;
+
+        long xRef;
+        long yRef;
+
+<span class="fc" id="L218">        int nScan = n - 1;</span>
+
+        int j;
+        int i;
+<span class="fc bfc" id="L222" title="All 2 branches covered.">        for (i = 0; i &lt; nScan; ++i) {</span>
+<span class="fc" id="L223">            xRef = hull.get(i).getX();</span>
+<span class="fc" id="L224">            yRef = hull.get(i).getY();</span>
+<span class="fc" id="L225">            maxDistSqJ = Long.MIN_VALUE;</span>
+
+<span class="fc bfc" id="L227" title="All 2 branches covered.">            for (j = i+1; j &lt; nScan; ++j) {</span>
+<span class="fc" id="L228">                xd = hull.get(j).getX() - xRef;</span>
+<span class="fc" id="L229">                yd = hull.get(j).getY() - yRef;</span>
+<span class="fc" id="L230">                distSq = xd * xd + yd * yd;</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">                if (distSq &gt;= maxDistSqJ) {</span>
+<span class="fc" id="L232">                    maxDistSqJ = distSq;</span>
+<span class="fc" id="L233">                    maxJ2 = j;</span>
+                } else {
+                    break;
+                }
+            } // end loop over j
+<span class="fc bfc" id="L238" title="All 2 branches covered.">            if (maxDistSqJ &gt; maxDistSq) {</span>
+<span class="fc" id="L239">                maxI = i;</span>
+<span class="fc" id="L240">                maxJ = maxJ2;</span>
+<span class="fc" id="L241">                maxDistSq = maxDistSqJ;</span>
+            }
+        } //end loop over i
+
+        // or specifiy type of class in method arguments
+<span class="fc" id="L246">        T[] pairs = (T[]) Array.newInstance(PairInt.class, 2);</span>
+<span class="fc" id="L247">        pairs[0] = hull.get(maxI);</span>
+<span class="fc" id="L248">        pairs[1] = hull.get(maxJ);</span>
+<span class="fc" id="L249">        return pairs;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

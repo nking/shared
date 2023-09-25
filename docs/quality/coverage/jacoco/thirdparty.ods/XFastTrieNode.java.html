@@ -3,8 +3,10 @@
 import algorithms.util.ObjectSpaceEstimator;
 
 /**
+ * @author nichole
+ @param &lt;T&gt;
  */
-<span class="fc" id="L7">public class XFastTrieNode&lt;T&gt; extends BinaryTrieNode&lt;T&gt; {</span>
+<span class="fc" id="L9">public class XFastTrieNode&lt;T&gt; extends BinaryTrieNode&lt;T&gt; {</span>
     
     int prefix;
 
@@ -12,22 +14,22 @@ import algorithms.util.ObjectSpaceEstimator;
     @Override
     public boolean equals(Object u) {
         
-<span class="pc bpc" id="L15" title="1 of 2 branches missed.">        if (!(u instanceof XFastTrieNode&lt;?&gt;)) {</span>
-<span class="nc" id="L16">            return false;</span>
+<span class="pc bpc" id="L17" title="1 of 2 branches missed.">        if (!(u instanceof XFastTrieNode&lt;?&gt;)) {</span>
+<span class="nc" id="L18">            return false;</span>
         }
         
-<span class="fc" id="L19">        XFastTrieNode&lt;T&gt; uu = (XFastTrieNode&lt;T&gt;)u;</span>
+<span class="fc" id="L21">        XFastTrieNode&lt;T&gt; uu = (XFastTrieNode&lt;T&gt;)u;</span>
         
-<span class="fc bfc" id="L21" title="All 2 branches covered.">        if (this.prefix == uu.prefix) {</span>
-<span class="fc" id="L22">            return true;</span>
+<span class="fc bfc" id="L23" title="All 2 branches covered.">        if (this.prefix == uu.prefix) {</span>
+<span class="fc" id="L24">            return true;</span>
         }
         
-<span class="fc" id="L25">        return false;</span>
+<span class="fc" id="L27">        return false;</span>
     }
 
     @Override
     public int hashCode() {
-<span class="fc" id="L30">        return prefix;</span>
+<span class="fc" id="L32">        return prefix;</span>
     }
    
 }

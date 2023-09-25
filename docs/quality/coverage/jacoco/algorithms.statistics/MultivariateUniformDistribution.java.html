@@ -155,9 +155,9 @@ import java.util.Arrays;
           and the interior of the circle (a disk) is a 2-ball.
      &lt;/pre&gt;
      * Muller / Marsaglia (‘Normalized Gaussians’).
-     * @param d number of dimensions.
-     * @param rand
-     * @return vector p of size d defined as uniform points on a space S^d
+     @param d number of dimensions.
+     @param rand
+     @return vector p of size d defined as uniform points on a space S^d
      * by a stochastic process in which all p_i ∈ S have equal probability
      * P_i = c to be generated.
      */
@@ -192,8 +192,8 @@ import java.util.Arrays;
           and the interior of the circle (a disk) is a 2-ball.
      &lt;/pre&gt;
      * Muller / Marsaglia (‘Normalized Gaussians’).
-     * @param d number of dimensions.
-     * @return vector of size d
+     @param d number of dimensions.
+     @return vector of size d
      * @throws NoSuchAlgorithmException 
      */
     public static double[] generateOnUnitStandardNSphere(int d) 
@@ -230,12 +230,13 @@ import java.util.Arrays;
           and the interior of the circle (a disk) is a 2-ball.
      &lt;/pre&gt;
      * Muller / Marsaglia (‘Normalized Gaussians’).
-     * @param d number of dimensions.
-     * @return vector of size d
+     @param d number of dimensions.
+     @param rand
+     @return vector of size d
      */
     public static double[] generateInUnitStandardNBall(int d, SecureRandom rand) {
         
-<span class="nc" id="L238">        return _generateUnitStandardNSphere(d, rand, false);</span>
+<span class="nc" id="L239">        return _generateUnitStandardNSphere(d, rand, false);</span>
     }
     
     /**
@@ -261,19 +262,19 @@ import java.util.Arrays;
           and the interior of the circle (a disk) is a 2-ball.
      &lt;/pre&gt;
      * Muller / Marsaglia (‘Normalized Gaussians’).
-     * @param d number of dimensions.
-     * @return vector of size d
+     @param d number of dimensions.
+     @return vector of size d
      * @throws NoSuchAlgorithmException 
      */
     public static double[] generateInUnitStandardNBall(int d) 
         throws NoSuchAlgorithmException {
         
-<span class="nc" id="L271">         SecureRandom rand = SecureRandom.getInstanceStrong();</span>
-<span class="nc" id="L272">        long seed = System.nanoTime();</span>
+<span class="nc" id="L272">         SecureRandom rand = SecureRandom.getInstanceStrong();</span>
+<span class="nc" id="L273">        long seed = System.nanoTime();</span>
         //System.out.println(&quot;SEED=&quot; + seed);
-<span class="nc" id="L274">        rand.setSeed(seed);</span>
+<span class="nc" id="L275">        rand.setSeed(seed);</span>
         
-<span class="nc" id="L276">        return _generateUnitStandardNSphere(d, rand, false);</span>
+<span class="nc" id="L277">        return _generateUnitStandardNSphere(d, rand, false);</span>
     }
     
     /**
@@ -303,13 +304,13 @@ import java.util.Arrays;
           and the interior of the circle (a disk) is a 2-ball.
      &lt;/pre&gt;
      * Muller / Marsaglia (‘Normalized Gaussians’).
-     * @param d number of dimensions.
-     * @param rand
-     * @param onSurface when true the method generates points on the 
+     @param d number of dimensions.
+     @param rand
+     @param onSurface when true the method generates points on the 
      * unit hyper-sphere that and assumes that d has already been incremented to d+1,
      * else when false the method generates points within the unit hyper-sphere
      * that is within the d-ball.
-     * @return vector of length d normalized by squart root of sum of squares.
+     @return vector of length d normalized by squart root of sum of squares.
      */
     public static double[] _generateUnitStandardNSphere(int d, SecureRandom rand, boolean onSurface) 
         {
@@ -343,29 +344,29 @@ import java.util.Arrays;
         //     that is freely available, but also proprietary.  see license in
         //     comments at end of this file.
        
-<span class="fc" id="L346">        double[] u = new double[d];</span>
+<span class="fc" id="L347">        double[] u = new double[d];</span>
                 
-<span class="fc" id="L348">        u = UnivariateNormalDistribution.randomSampleOfUnitStandard(rand, d);</span>
+<span class="fc" id="L349">        u = UnivariateNormalDistribution.randomSampleOfUnitStandard(rand, d);</span>
         
         // then normalization of each is the sqrt(sum of squares of all)
-<span class="fc" id="L351">        double norm = 0;</span>
-<span class="fc bfc" id="L352" title="All 2 branches covered.">        for (double v : u) {</span>
-<span class="fc" id="L353">            norm += (v * v);</span>
+<span class="fc" id="L352">        double norm = 0;</span>
+<span class="fc bfc" id="L353" title="All 2 branches covered.">        for (double v : u) {</span>
+<span class="fc" id="L354">            norm += (v * v);</span>
         }
-<span class="fc" id="L355">        norm = 1./Math.sqrt(norm);</span>
+<span class="fc" id="L356">        norm = 1./Math.sqrt(norm);</span>
         
-<span class="pc bpc" id="L357" title="1 of 2 branches missed.">        if (!onSurface) {</span>
+<span class="pc bpc" id="L358" title="1 of 2 branches missed.">        if (!onSurface) {</span>
             // to avoid bunching at the center of hypersphere
-<span class="nc" id="L359">            double b = Math.pow(rand.nextDouble(), 1./d);</span>
+<span class="nc" id="L360">            double b = Math.pow(rand.nextDouble(), 1./d);</span>
         
-<span class="nc" id="L361">            norm *= b;</span>
+<span class="nc" id="L362">            norm *= b;</span>
         }
         
-<span class="fc bfc" id="L364" title="All 2 branches covered.">        for (int i = 0; i &lt; u.length; ++i) {</span>
-<span class="fc" id="L365">            u[i] *= norm;</span>
+<span class="fc bfc" id="L365" title="All 2 branches covered.">        for (int i = 0; i &lt; u.length; ++i) {</span>
+<span class="fc" id="L366">            u[i] *= norm;</span>
         }
               
-<span class="fc" id="L368">        return u;</span>
+<span class="fc" id="L369">        return u;</span>
     }
     
     /*
@@ -496,56 +497,61 @@ These are details from Nengo issue above and source code below:
      * used for high order dimensions because the percentage of points rejected
      * for being larger than a distance of '1' from the origin becomes larger
      * and that increases the number of iterations.
-     * @param d number of dimensions of the n-sphere or n-ball
-     * @param n number of points to generate (where 1 point has d-dimension real number components)
-     * @param rand
-     * @param onSurface
-     * @return an array of length n, of d-dimension vectors of points randomly
+     @param d number of dimensions of the n-sphere or n-ball
+     @param n number of points to generate (where 1 point has d-dimension real number components)
+     @param rand
+     @param onSurface
+     @return an array of length n, of d-dimension vectors of points randomly
      * generated on a uniform n-sphere if onSurface=true, else uniformly randomly 
      * generated points within an n-ball.
      */
     public static double[][] generateUnitStandardNSphereWithRejection(
         final int d, final int n, SecureRandom rand, boolean onSurface) {
         
-<span class="fc bfc" id="L510" title="All 2 branches covered.">        if (d &gt; 5) {</span>
-<span class="fc" id="L511">            System.err.println(&quot;this method should not be used for higher order dimensions &quot;</span>
+<span class="fc bfc" id="L511" title="All 2 branches covered.">        if (d &gt; 5) {</span>
+<span class="fc" id="L512">            System.err.println(&quot;this method should not be used for higher order dimensions &quot;</span>
                 + &quot; because the number of iteations needed increases due to increased number of rejected &quot;
                     + &quot; random throws &quot;);
         }
         
-<span class="fc" id="L516">        double[][] s = new double[n][d];</span>
+<span class="fc" id="L517">        double[][] s = new double[n][d];</span>
         
         double distSq, dist;
         int i, j;
-<span class="fc bfc" id="L520" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L521">            s[i] = new double[d];</span>
+<span class="fc bfc" id="L521" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L522">            s[i] = new double[d];</span>
         }        
-<span class="fc" id="L523">        i = 0;</span>
-<span class="fc bfc" id="L524" title="All 2 branches covered.">        while (i &lt; n) {</span>
-<span class="fc bfc" id="L525" title="All 2 branches covered.">            for (j = 0; j &lt; d; ++j) {</span>
-<span class="fc" id="L526">                s[i][j] = -1. + 2.*rand.nextDouble();</span>
+<span class="fc" id="L524">        i = 0;</span>
+<span class="fc bfc" id="L525" title="All 2 branches covered.">        while (i &lt; n) {</span>
+<span class="fc bfc" id="L526" title="All 2 branches covered.">            for (j = 0; j &lt; d; ++j) {</span>
+<span class="fc" id="L527">                s[i][j] = -1. + 2.*rand.nextDouble();</span>
             }
-<span class="fc" id="L528">            distSq = distSquaredFromOrigin(s[i]);</span>
-<span class="fc bfc" id="L529" title="All 2 branches covered.">            if (distSq &gt; 1.) {</span>
-<span class="fc" id="L530">                continue;</span>
+<span class="fc" id="L529">            distSq = distSquaredFromOrigin(s[i]);</span>
+<span class="fc bfc" id="L530" title="All 2 branches covered.">            if (distSq &gt; 1.) {</span>
+<span class="fc" id="L531">                continue;</span>
             }
-<span class="fc bfc" id="L532" title="All 2 branches covered.">            if (onSurface) {</span>
-<span class="fc" id="L533">                dist = Math.sqrt(distSq);</span>
-<span class="fc bfc" id="L534" title="All 2 branches covered.">                for (j = 0; j &lt; d; ++j) {</span>
-<span class="fc" id="L535">                    s[i][j] /= dist;</span>
+<span class="fc bfc" id="L533" title="All 2 branches covered.">            if (onSurface) {</span>
+<span class="fc" id="L534">                dist = Math.sqrt(distSq);</span>
+<span class="fc bfc" id="L535" title="All 2 branches covered.">                for (j = 0; j &lt; d; ++j) {</span>
+<span class="fc" id="L536">                    s[i][j] /= dist;</span>
                 }
             }
-<span class="fc" id="L538">            ++i;</span>
+<span class="fc" id="L539">            ++i;</span>
         }
-<span class="fc" id="L540">        return s;</span>
+<span class="fc" id="L541">        return s;</span>
     }
     
+    /**
+     *
+     @param a
+     @return
+     */
     public static double distSquaredFromOrigin(double[] a) {
-<span class="fc" id="L544">        double sum = 0;</span>
-<span class="fc bfc" id="L545" title="All 2 branches covered.">        for (double b : a) {</span>
-<span class="fc" id="L546">            sum += b*b;</span>
+<span class="fc" id="L550">        double sum = 0;</span>
+<span class="fc bfc" id="L551" title="All 2 branches covered.">        for (double b : a) {</span>
+<span class="fc" id="L552">            sum += b*b;</span>
         }
-<span class="fc" id="L548">        return sum;</span>
+<span class="fc" id="L554">        return sum;</span>
     }
     
    

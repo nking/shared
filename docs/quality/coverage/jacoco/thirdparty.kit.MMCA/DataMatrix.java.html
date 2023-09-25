@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DataMatrix.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">thirdparty.kit.MMCA</a> &gt; <span class="el_source">DataMatrix.java</span></div><h1>DataMatrix.java</h1><pre class="source lang-java linenums">package thirdparty.kit.MMCA;
+
+import java.util.*;
+
+/**
+Java source code (April 2014) by Hoang-Vu Nguyen
+downloaded from https://eda.mmci.uni-saarland.de/prj/mac/mac.zip
+
+Nguyen, H-V, Müller, E, Vreeken, J &amp; Böhm, K 
+Multivariate Maximal Correlation Analysis. 
+In: Proceedings of the International Conference on Machine Learning (ICML), 
+pp 775-783, JMLR: W&amp;CP vol.32, 2014. 
+
+@author Hoang-Vu Nguyen
+*/
+public class DataMatrix 
+{
+	public int rows;
+	public int cols;
+	public ArrayList&lt;DataPoint&gt; data;
+	
+	public DataMatrix()
+<span class="nc" id="L23">	{</span>
+		// do nothing
+<span class="nc" id="L25">	}</span>
+	
+	public DataMatrix(int rows, int cols)
+<span class="nc" id="L28">	{</span>
+<span class="nc" id="L29">		this.rows = rows;</span>
+<span class="nc" id="L30">		this.cols = cols;</span>
+<span class="nc" id="L31">		this.data = new ArrayList&lt;DataPoint&gt;();</span>
+<span class="nc" id="L32">	}</span>
+	
+	public DataMatrix(int rows, int cols, ArrayList&lt;DataPoint&gt; data)
+<span class="nc" id="L35">	{</span>
+<span class="nc" id="L36">		this.rows = rows;</span>
+<span class="nc" id="L37">		this.cols = cols;</span>
+<span class="nc" id="L38">		this.data = data;</span>
+<span class="nc" id="L39">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

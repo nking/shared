@@ -44,6 +44,10 @@ implementing a star structure and related methods following the
 
     /** index of root; label of root*/
     public int rootIdx;  
+
+    /**
+     *
+     */
     public int rootLabel;
     /** the adjacent vertexes of root in V[i] treated as leaves.  
     vLabels values are labels.  vLabels is sorted by value already.
@@ -60,34 +64,42 @@ implementing a star structure and related methods following the
     /**
      * convert the graph vertex rootIndex and it's immediate neighbors into
      * a star structure.
-     * @param g
-     * @param rootIndex the vertex index in g that will be the root of the star structure.
+     @param g
+     @param rootIndex the vertex index in g that will be the root of the star structure.
      */
-<span class="fc" id="L66">    public StarStructure(Graph g, int rootIndex) {</span>
-<span class="fc" id="L67">        init(g, rootIndex);</span>
-<span class="fc" id="L68">    }</span>
+<span class="fc" id="L70">    public StarStructure(Graph g, int rootIndex) {</span>
+<span class="fc" id="L71">        init(g, rootIndex);</span>
+<span class="fc" id="L72">    }</span>
     
     private void init(Graph g, int rootIndex) {
-<span class="fc" id="L71">        TIntList vL = new TIntArrayList();</span>
-<span class="fc" id="L72">        TIntList eL = new TIntArrayList();</span>
-<span class="fc" id="L73">        TIntList vLIdxs = new TIntArrayList();</span>
-<span class="fc" id="L74">        TIntSet rNeighbors = g.adjMap.get(rootIndex);</span>
-<span class="fc" id="L75">        TIntIterator iter = rNeighbors.iterator();</span>
+<span class="fc" id="L75">        TIntList vL = new TIntArrayList();</span>
+<span class="fc" id="L76">        TIntList eL = new TIntArrayList();</span>
+<span class="fc" id="L77">        TIntList vLIdxs = new TIntArrayList();</span>
+<span class="fc" id="L78">        TIntSet rNeighbors = g.adjMap.get(rootIndex);</span>
+<span class="fc" id="L79">        TIntIterator iter = rNeighbors.iterator();</span>
         int nhbrIdx;
-<span class="fc bfc" id="L77" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
-<span class="fc" id="L78">            nhbrIdx = iter.next();</span>
-<span class="fc" id="L79">            vLIdxs.add(nhbrIdx);</span>
-<span class="fc" id="L80">            vL.add(g.vLabels.get(nhbrIdx));</span>
-<span class="fc" id="L81">            eL.add(g.eLabels.get(nhbrIdx));</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L82">            nhbrIdx = iter.next();</span>
+<span class="fc" id="L83">            vLIdxs.add(nhbrIdx);</span>
+<span class="fc" id="L84">            vL.add(g.vLabels.get(nhbrIdx));</span>
+<span class="fc" id="L85">            eL.add(g.eLabels.get(nhbrIdx));</span>
         }
-<span class="fc" id="L83">        sortAndSet(rootIndex, g.vLabels.get(rootIndex), vL.toArray(), </span>
-<span class="fc" id="L84">            eL.toArray(), vLIdxs.toArray());</span>
-<span class="fc" id="L85">    }</span>
+<span class="fc" id="L87">        sortAndSet(rootIndex, g.vLabels.get(rootIndex), vL.toArray(), </span>
+<span class="fc" id="L88">            eL.toArray(), vLIdxs.toArray());</span>
+<span class="fc" id="L89">    }</span>
     
+    /**
+     *
+     @param rIdx
+     @param rLabel
+     @param vLabels
+     @param eLabels
+     @param vIndexes
+     */
     public StarStructure(int rIdx, int rLabel, int[] vLabels, 
-<span class="fc" id="L88">        int[] eLabels, int[] vIndexes) {</span>
-<span class="fc" id="L89">        sortAndSet(rIdx, rLabel, vLabels, eLabels, vIndexes);</span>
-<span class="fc" id="L90">    }</span>
+<span class="fc" id="L100">        int[] eLabels, int[] vIndexes) {</span>
+<span class="fc" id="L101">        sortAndSet(rIdx, rLabel, vLabels, eLabels, vIndexes);</span>
+<span class="fc" id="L102">    }</span>
     
     /**
     node and edge labeling functions which can be overridden with 
@@ -97,26 +109,26 @@ implementing a star structure and related methods following the
     by ascending sort on vLabels.  All results are stored in this instance.
     NOTE: the design uses specialization of labeling, but could be refactored to use 
     composition.
-     * @param rIdx
-     * @param rLabel
-     * @param vLabels
-     * @param eLabels
-     * @param vIndexes indexes of the vertexes of vLabels in the context of the original graph g.
+     @param rIdx
+     @param rLabel
+     @param vLabels
+     @param eLabels
+     @param vIndexes indexes of the vertexes of vLabels in the context of the original graph g.
     */
     protected void sortAndSet(int rIdx, int rLabel, int[] vLabels, int[] eLabels, int[] vIndexes) {
-<span class="fc" id="L107">        MultiArrayMergeSort.sortBy1stArgThen2nd(vLabels, eLabels, vIndexes);</span>
-<span class="fc" id="L108">        this.rootIdx = rIdx;</span>
-<span class="fc" id="L109">        this.rootLabel = rLabel;</span>
-<span class="fc" id="L110">        this.vLabels = vLabels;</span>
-<span class="fc" id="L111">        this.eLabels = eLabels;</span>
-<span class="fc" id="L112">        this.origVIndexes = vIndexes;</span>
-<span class="fc" id="L113">    }</span>
+<span class="fc" id="L119">        MultiArrayMergeSort.sortBy1stArgThen2nd(vLabels, eLabels, vIndexes);</span>
+<span class="fc" id="L120">        this.rootIdx = rIdx;</span>
+<span class="fc" id="L121">        this.rootLabel = rLabel;</span>
+<span class="fc" id="L122">        this.vLabels = vLabels;</span>
+<span class="fc" id="L123">        this.eLabels = eLabels;</span>
+<span class="fc" id="L124">        this.origVIndexes = vIndexes;</span>
+<span class="fc" id="L125">    }</span>
     
     /**
      * Lemma 4.1
-     * @param s1
-     * @param s2
-     * @return edit distance for transforming s1 into s2.  the cost includes
+     @param s1
+     @param s2
+     @return edit distance for transforming s1 into s2.  the cost includes
      * vertex insert, delete, and substitutions, and edge substitutions.
      */
     public static int calculateEditDistance(StarStructure s1, StarStructure s2) {
@@ -137,26 +149,26 @@ implementing a star structure and related methods following the
         
         // see Zeng et al. 4.2.2, points 1-3
         
-<span class="fc" id="L140">        int t = 0;</span>
+<span class="fc" id="L152">        int t = 0;</span>
         //T(r1, t2)
-<span class="fc bfc" id="L142" title="All 2 branches covered.">        if (s1.rootLabel != s2.rootLabel) {</span>
-<span class="fc" id="L143">            t++;</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">        if (s1.rootLabel != s2.rootLabel) {</span>
+<span class="fc" id="L155">            t++;</span>
         }
         
-<span class="fc" id="L146">        int dLs = calculateEditDistanceL1L2(s1, s2);</span>
+<span class="fc" id="L158">        int dLs = calculateEditDistanceL1L2(s1, s2);</span>
         //lambda(s1, s2) = T(r1, t2) + d(L1, L2) + d(L1E, L2E)
-<span class="fc" id="L148">        int editDist = t + dLs;</span>
+<span class="fc" id="L160">        int editDist = t + dLs;</span>
 
-<span class="fc" id="L150">        return editDist;        </span>
+<span class="fc" id="L162">        return editDist;        </span>
     }
     
     /**
      * for the graph model with vertex labeling, but no edge labeling,
      * calculate the edit distance between star structures s1 and s2.
      * Lemma 4.1
-     * @param s1
-     * @param s2
-     * @return edit distance for transforming s1 into s2.  the cost includes
+     @param s1
+     @param s2
+     @return edit distance for transforming s1 into s2.  the cost includes
      * vertex insert, delete, and substitutions, and edge substitutions.
      */
     public static int calculateEditDistanceV(StarStructure s1, StarStructure s2) {
@@ -170,31 +182,31 @@ implementing a star structure and related methods following the
                lambda(s1, s2) = T(r1, t2) + d(L1, L2)
         */
         
-<span class="fc" id="L173">        int t = 0;</span>
+<span class="fc" id="L185">        int t = 0;</span>
         //T(r1, t2)
-<span class="fc bfc" id="L175" title="All 2 branches covered.">        if (s1.rootLabel != s2.rootLabel) {</span>
-<span class="fc" id="L176">            t++;</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">        if (s1.rootLabel != s2.rootLabel) {</span>
+<span class="fc" id="L188">            t++;</span>
         }
         
-<span class="fc" id="L179">        int[] inters = MatrixUtil.multisetIntersection(s1.vLabels, s2.vLabels);</span>
+<span class="fc" id="L191">        int[] inters = MatrixUtil.multisetIntersection(s1.vLabels, s2.vLabels);</span>
        
-<span class="fc" id="L181">        int pL1 = s1.eLabels.length;</span>
-<span class="fc" id="L182">        int pL2 = s2.eLabels.length;</span>
+<span class="fc" id="L193">        int pL1 = s1.eLabels.length;</span>
+<span class="fc" id="L194">        int pL2 = s2.eLabels.length;</span>
         
         //M(L1,L2) = max( |psi(L1)|, |psi(L2)| ) - | intersection of psi(L1) with psi(L2) |
-<span class="fc" id="L185">        int mL1L2 = Math.max(pL1, pL2) - inters.length;</span>
+<span class="fc" id="L197">        int mL1L2 = Math.max(pL1, pL2) - inters.length;</span>
         //d(L1, L2) = ||L1|-|L2|| + M(L1, L2)
-<span class="fc" id="L187">        int dL1L2 = /*Math.abs(pL1 - pL2)*/ + mL1L2; </span>
-<span class="fc" id="L188">        int editDist = t + dL1L2;</span>
+<span class="fc" id="L199">        int dL1L2 = /*Math.abs(pL1 - pL2)*/ + mL1L2; </span>
+<span class="fc" id="L200">        int editDist = t + dL1L2;</span>
         
-<span class="fc" id="L190">        return editDist;        </span>
+<span class="fc" id="L202">        return editDist;        </span>
     }
     
     /**
      * calculating d(L1, L2) + d(L1E, L2E)
-     * @param s1
-     * @param s2
-     * @return edit distance for transforming s1 into s2.  the cost includes
+     @param s1
+     @param s2
+     @return edit distance for transforming s1 into s2.  the cost includes
      * vertex insert, delete, and substitutions, and edge substitutions where
      * all operations cost +1.
      */
@@ -227,51 +239,51 @@ implementing a star structure and related methods following the
         
         // map key is intersecting vertex label values
         // map value is list of the s1 edge values for the index i
-<span class="fc" id="L230">        TIntObjectMap&lt;TIntList&gt; s1InterMap = new TIntObjectHashMap&lt;TIntList&gt;();</span>
+<span class="fc" id="L242">        TIntObjectMap&lt;TIntList&gt; s1InterMap = new TIntObjectHashMap&lt;TIntList&gt;();</span>
         
         // map key is intersecting vertex label values
         // map value is list of the s2 edge values for the index j
-<span class="fc" id="L234">        TIntObjectMap&lt;TIntList&gt; s2InterMap = new TIntObjectHashMap&lt;TIntList&gt;();</span>
+<span class="fc" id="L246">        TIntObjectMap&lt;TIntList&gt; s2InterMap = new TIntObjectHashMap&lt;TIntList&gt;();</span>
         
         // 2 more maps to count multiplicity of edge labels
-<span class="fc" id="L237">        TIntIntMap s1InterCountMap = new TIntIntHashMap();</span>
-<span class="fc" id="L238">        TIntIntMap s2InterCountMap = new TIntIntHashMap();</span>
+<span class="fc" id="L249">        TIntIntMap s1InterCountMap = new TIntIntHashMap();</span>
+<span class="fc" id="L250">        TIntIntMap s2InterCountMap = new TIntIntHashMap();</span>
         
-<span class="fc" id="L240">        int i = 0, j = 0, nVIntersect = 0, c;</span>
-<span class="fc bfc" id="L241" title="All 4 branches covered.">        while (i &lt; s1.vLabels.length &amp;&amp; j &lt; s2.vLabels.length) {</span>
-<span class="fc bfc" id="L242" title="All 2 branches covered.">            if (s1.vLabels[i] == s2.vLabels[j]) {</span>
-<span class="fc bfc" id="L243" title="All 2 branches covered.">                if (!s1InterMap.containsKey(s1.vLabels[i])) {</span>
-<span class="fc" id="L244">                    s1InterMap.put(s1.vLabels[i], new TIntArrayList());</span>
-<span class="fc" id="L245">                    s2InterMap.put(s2.vLabels[j], new TIntArrayList());</span>
+<span class="fc" id="L252">        int i = 0, j = 0, nVIntersect = 0, c;</span>
+<span class="fc bfc" id="L253" title="All 4 branches covered.">        while (i &lt; s1.vLabels.length &amp;&amp; j &lt; s2.vLabels.length) {</span>
+<span class="fc bfc" id="L254" title="All 2 branches covered.">            if (s1.vLabels[i] == s2.vLabels[j]) {</span>
+<span class="fc bfc" id="L255" title="All 2 branches covered.">                if (!s1InterMap.containsKey(s1.vLabels[i])) {</span>
+<span class="fc" id="L256">                    s1InterMap.put(s1.vLabels[i], new TIntArrayList());</span>
+<span class="fc" id="L257">                    s2InterMap.put(s2.vLabels[j], new TIntArrayList());</span>
                 }
-<span class="fc" id="L247">                s1InterMap.get(s1.vLabels[i]).add(s1.eLabels[i]);</span>
-<span class="fc" id="L248">                s2InterMap.get(s2.vLabels[j]).add(s2.eLabels[j]);</span>
+<span class="fc" id="L259">                s1InterMap.get(s1.vLabels[i]).add(s1.eLabels[i]);</span>
+<span class="fc" id="L260">                s2InterMap.get(s2.vLabels[j]).add(s2.eLabels[j]);</span>
                 
                 // count multiplicity of edges:
-<span class="fc bfc" id="L251" title="All 2 branches covered.">                c = s1InterCountMap.containsKey(s1.eLabels[i]) ? </span>
-<span class="fc" id="L252">                    s1InterCountMap.get(s1.eLabels[i]) : 0;</span>
-<span class="fc" id="L253">                s1InterCountMap.put(s1.eLabels[i], c + 1);</span>
-<span class="fc bfc" id="L254" title="All 2 branches covered.">                c = s2InterCountMap.containsKey(s2.eLabels[j]) ? </span>
-<span class="fc" id="L255">                    s2InterCountMap.get(s2.eLabels[j]) : 0;</span>
-<span class="fc" id="L256">                s2InterCountMap.put(s2.eLabels[j], c + 1);</span>
+<span class="fc bfc" id="L263" title="All 2 branches covered.">                c = s1InterCountMap.containsKey(s1.eLabels[i]) ? </span>
+<span class="fc" id="L264">                    s1InterCountMap.get(s1.eLabels[i]) : 0;</span>
+<span class="fc" id="L265">                s1InterCountMap.put(s1.eLabels[i], c + 1);</span>
+<span class="fc bfc" id="L266" title="All 2 branches covered.">                c = s2InterCountMap.containsKey(s2.eLabels[j]) ? </span>
+<span class="fc" id="L267">                    s2InterCountMap.get(s2.eLabels[j]) : 0;</span>
+<span class="fc" id="L268">                s2InterCountMap.put(s2.eLabels[j], c + 1);</span>
                 
-<span class="fc" id="L258">                nVIntersect++;</span>
-<span class="fc" id="L259">                i++; </span>
-<span class="fc" id="L260">                j++;</span>
-<span class="fc bfc" id="L261" title="All 2 branches covered.">            } else if (s1.vLabels[i] &lt; s2.vLabels[j]) {</span>
-<span class="fc" id="L262">                i++;</span>
+<span class="fc" id="L270">                nVIntersect++;</span>
+<span class="fc" id="L271">                i++; </span>
+<span class="fc" id="L272">                j++;</span>
+<span class="fc bfc" id="L273" title="All 2 branches covered.">            } else if (s1.vLabels[i] &lt; s2.vLabels[j]) {</span>
+<span class="fc" id="L274">                i++;</span>
             } else {
-<span class="fc" id="L264">                j++;</span>
+<span class="fc" id="L276">                j++;</span>
             }
         }
         
-<span class="fc" id="L268">        int pL1 = s1.vLabels.length;</span>
-<span class="fc" id="L269">        int pL2 = s2.vLabels.length;</span>
+<span class="fc" id="L280">        int pL1 = s1.vLabels.length;</span>
+<span class="fc" id="L281">        int pL2 = s2.vLabels.length;</span>
         
         //M(L1,L2) = max( |psi(L1)|, |psi(L2)| ) - | intersection of psi(L1) with psi(L2) |
-<span class="fc" id="L272">        int mL1L2 = Math.max(pL1, pL2) - nVIntersect;</span>
+<span class="fc" id="L284">        int mL1L2 = Math.max(pL1, pL2) - nVIntersect;</span>
         //d(L1, L2) = ||L1|-|L2|| + M(L1, L2)
-<span class="fc" id="L274">        int dL1L2 = /*Math.abs(pL1 - pL2)*/ + mL1L2;</span>
+<span class="fc" id="L286">        int dL1L2 = /*Math.abs(pL1 - pL2)*/ + mL1L2;</span>
         
         /*
         for the edges that are in the vertex intersection (in s*InterMap),
@@ -282,276 +294,285 @@ implementing a star structure and related methods following the
         */
         
         // assign edges int the vertex intersection and count those that match
-<span class="fc" id="L285">        TIntObjectIterator&lt;TIntList&gt; iter1 = s1InterMap.iterator();</span>
+<span class="fc" id="L297">        TIntObjectIterator&lt;TIntList&gt; iter1 = s1InterMap.iterator();</span>
         int[] s1InterE, s2InterE;
         int[] interE;
-<span class="fc" id="L288">        int nEIntersect = 0;</span>
-<span class="fc bfc" id="L289" title="All 2 branches covered.">        for (i = 0; i &lt; s1InterMap.size(); ++i) {</span>
-<span class="fc" id="L290">            iter1.advance();</span>
-<span class="fc" id="L291">            s1InterE = iter1.value().toArray();</span>
-<span class="fc" id="L292">            s2InterE = s2InterMap.get(iter1.key()).toArray();</span>
+<span class="fc" id="L300">        int nEIntersect = 0;</span>
+<span class="fc bfc" id="L301" title="All 2 branches covered.">        for (i = 0; i &lt; s1InterMap.size(); ++i) {</span>
+<span class="fc" id="L302">            iter1.advance();</span>
+<span class="fc" id="L303">            s1InterE = iter1.value().toArray();</span>
+<span class="fc" id="L304">            s2InterE = s2InterMap.get(iter1.key()).toArray();</span>
             // sort then count the intersection
-<span class="fc" id="L294">            Arrays.sort(s1InterE);</span>
-<span class="fc" id="L295">            Arrays.sort(s2InterE);</span>
-<span class="fc" id="L296">            interE = MatrixUtil.multisetIntersection(s1InterE, s2InterE);</span>
-<span class="fc" id="L297">            nEIntersect += interE.length;</span>
+<span class="fc" id="L306">            Arrays.sort(s1InterE);</span>
+<span class="fc" id="L307">            Arrays.sort(s2InterE);</span>
+<span class="fc" id="L308">            interE = MatrixUtil.multisetIntersection(s1InterE, s2InterE);</span>
+<span class="fc" id="L309">            nEIntersect += interE.length;</span>
         }
         
-<span class="fc" id="L300">        int n2 = s1.eLabels.length - nVIntersect;</span>
-<span class="fc bfc" id="L301" title="All 2 branches covered.">        if (n2 &gt; 0) {</span>
-<span class="fc" id="L302">            j = 0;</span>
-<span class="fc" id="L303">            int[] s1NotInterE = new int[n2];</span>
-<span class="fc bfc" id="L304" title="All 2 branches covered.">            for (i = 0; i &lt; s1.eLabels.length; ++i) {</span>
-<span class="fc bfc" id="L305" title="All 2 branches covered.">                if (s1InterCountMap.containsKey(s1.eLabels[i])) {</span>
-<span class="fc" id="L306">                    c = s1InterCountMap.get(s1.eLabels[i]);</span>
-<span class="fc" id="L307">                    c--;</span>
-<span class="fc bfc" id="L308" title="All 2 branches covered.">                    if (c == 0) {</span>
-<span class="fc" id="L309">                        s1InterCountMap.remove(s1.eLabels[i]);</span>
+<span class="fc" id="L312">        int n2 = s1.eLabels.length - nVIntersect;</span>
+<span class="fc bfc" id="L313" title="All 2 branches covered.">        if (n2 &gt; 0) {</span>
+<span class="fc" id="L314">            j = 0;</span>
+<span class="fc" id="L315">            int[] s1NotInterE = new int[n2];</span>
+<span class="fc bfc" id="L316" title="All 2 branches covered.">            for (i = 0; i &lt; s1.eLabels.length; ++i) {</span>
+<span class="fc bfc" id="L317" title="All 2 branches covered.">                if (s1InterCountMap.containsKey(s1.eLabels[i])) {</span>
+<span class="fc" id="L318">                    c = s1InterCountMap.get(s1.eLabels[i]);</span>
+<span class="fc" id="L319">                    c--;</span>
+<span class="fc bfc" id="L320" title="All 2 branches covered.">                    if (c == 0) {</span>
+<span class="fc" id="L321">                        s1InterCountMap.remove(s1.eLabels[i]);</span>
                     } else {
-<span class="fc" id="L311">                        s1InterCountMap.put(s1.eLabels[i], c);</span>
+<span class="fc" id="L323">                        s1InterCountMap.put(s1.eLabels[i], c);</span>
                     }
-<span class="fc" id="L313">                    continue;</span>
+<span class="fc" id="L325">                    continue;</span>
                 }
-<span class="fc" id="L315">                s1NotInterE[j] = s1.eLabels[i];</span>
-<span class="fc" id="L316">                j++;</span>
+<span class="fc" id="L327">                s1NotInterE[j] = s1.eLabels[i];</span>
+<span class="fc" id="L328">                j++;</span>
             }
-<span class="fc" id="L318">            j = 0;</span>
-<span class="fc" id="L319">            int[] s2NotInterE = new int[s2.eLabels.length - nVIntersect];</span>
-<span class="fc bfc" id="L320" title="All 2 branches covered.">            for (i = 0; i &lt; s2.eLabels.length; ++i) {</span>
-<span class="fc bfc" id="L321" title="All 2 branches covered.">                if (s2InterCountMap.containsKey(s2.eLabels[i])) {</span>
-<span class="fc" id="L322">                    c = s2InterCountMap.get(s2.eLabels[i]);</span>
-<span class="fc" id="L323">                    c--;</span>
-<span class="fc bfc" id="L324" title="All 2 branches covered.">                    if (c == 0) {</span>
-<span class="fc" id="L325">                        s2InterCountMap.remove(s2.eLabels[i]);</span>
+<span class="fc" id="L330">            j = 0;</span>
+<span class="fc" id="L331">            int[] s2NotInterE = new int[s2.eLabels.length - nVIntersect];</span>
+<span class="fc bfc" id="L332" title="All 2 branches covered.">            for (i = 0; i &lt; s2.eLabels.length; ++i) {</span>
+<span class="fc bfc" id="L333" title="All 2 branches covered.">                if (s2InterCountMap.containsKey(s2.eLabels[i])) {</span>
+<span class="fc" id="L334">                    c = s2InterCountMap.get(s2.eLabels[i]);</span>
+<span class="fc" id="L335">                    c--;</span>
+<span class="fc bfc" id="L336" title="All 2 branches covered.">                    if (c == 0) {</span>
+<span class="fc" id="L337">                        s2InterCountMap.remove(s2.eLabels[i]);</span>
                     } else {
-<span class="fc" id="L327">                        s2InterCountMap.put(s2.eLabels[i], c);</span>
+<span class="fc" id="L339">                        s2InterCountMap.put(s2.eLabels[i], c);</span>
                     }
-<span class="fc" id="L329">                    continue;</span>
+<span class="fc" id="L341">                    continue;</span>
                 }
-<span class="fc" id="L331">                s2NotInterE[j] = s2.eLabels[i];</span>
-<span class="fc" id="L332">                j++;</span>
+<span class="fc" id="L343">                s2NotInterE[j] = s2.eLabels[i];</span>
+<span class="fc" id="L344">                j++;</span>
             }
-<span class="fc" id="L334">            int[] intersE2 = MatrixUtil.multisetUnorderedIntersection(s1NotInterE, s2NotInterE);</span>
+<span class="fc" id="L346">            int[] intersE2 = MatrixUtil.multisetUnorderedIntersection(s1NotInterE, s2NotInterE);</span>
 
-<span class="fc" id="L336">            nEIntersect += intersE2.length;</span>
+<span class="fc" id="L348">            nEIntersect += intersE2.length;</span>
         }
         
-<span class="fc" id="L339">        int mL1L2E = Math.max(pL1, pL2) - nEIntersect;</span>
+<span class="fc" id="L351">        int mL1L2E = Math.max(pL1, pL2) - nEIntersect;</span>
 
-<span class="fc" id="L341">        int dL1EL2E = /*Math.abs(pL1 - pL2)*/ + mL1L2E;</span>
+<span class="fc" id="L353">        int dL1EL2E = /*Math.abs(pL1 - pL2)*/ + mL1L2E;</span>
         
-<span class="fc" id="L343">        return dL1L2 + dL1EL2E;        </span>
+<span class="fc" id="L355">        return dL1L2 + dL1EL2E;        </span>
     }
     
     /**
      * the edit distance for use with sub-graph search.
      * section 5.2.1 of Zeng et al. 2009.
-     * @param s1
-     * @param s2
-     * @return 
+     @param s1
+     @param s2
+     @return 
      */
     public static int calculateEditDistanceNoRelabeling(StarStructure s1, StarStructure s2) {
-<span class="fc" id="L354">        int t = 0;</span>
+<span class="fc" id="L366">        int t = 0;</span>
         //T'(r1, t2)
-<span class="fc bfc" id="L356" title="All 2 branches covered.">        if (s1.rootLabel != s2.rootLabel) {</span>
-<span class="fc" id="L357">            t = 2 + s1.vLabels.length + s2.vLabels.length;</span>
+<span class="fc bfc" id="L368" title="All 2 branches covered.">        if (s1.rootLabel != s2.rootLabel) {</span>
+<span class="fc" id="L369">            t = 2 + s1.vLabels.length + s2.vLabels.length;</span>
         }
         
-<span class="fc" id="L360">        int dLs = calculateEditDistanceL1L2(s1, s2);</span>
+<span class="fc" id="L372">        int dLs = calculateEditDistanceL1L2(s1, s2);</span>
         //lambda'(s1, s2) = T'(r1, t2) + d(L1, L2) + d(L1E, L2E)
-<span class="fc" id="L362">        int editDist = t + dLs;</span>
+<span class="fc" id="L374">        int editDist = t + dLs;</span>
 
-<span class="fc" id="L364">        return editDist;        </span>
+<span class="fc" id="L376">        return editDist;        </span>
     }
     
     /**
      * for the graph model with vertex labeling, but no edge labeling, calculate
      * the edit distance for use with sub-graph search.
      * section 5.2.1 of Zeng et al. 2009.
-     * @param s1
-     * @param s2
-     * @return 
+     @param s1
+     @param s2
+     @return 
      */
     public static int calculateEditDistanceNoRelabelingV(StarStructure s1, StarStructure s2) {
-<span class="nc" id="L376">        int t = 0;</span>
+<span class="nc" id="L388">        int t = 0;</span>
         //T'(r1, t2)
-<span class="nc bnc" id="L378" title="All 2 branches missed.">        if (s1.rootLabel != s2.rootLabel) {</span>
-<span class="nc" id="L379">            t = 2 + s1.vLabels.length + s2.vLabels.length;</span>
+<span class="nc bnc" id="L390" title="All 2 branches missed.">        if (s1.rootLabel != s2.rootLabel) {</span>
+<span class="nc" id="L391">            t = 2 + s1.vLabels.length + s2.vLabels.length;</span>
         }
         
-<span class="nc" id="L382">        int[] inters = MatrixUtil.multisetIntersection(s1.vLabels, s2.vLabels);</span>
+<span class="nc" id="L394">        int[] inters = MatrixUtil.multisetIntersection(s1.vLabels, s2.vLabels);</span>
        
-<span class="nc" id="L384">        int pL1 = s1.vLabels.length;</span>
-<span class="nc" id="L385">        int pL2 = s2.vLabels.length;</span>
+<span class="nc" id="L396">        int pL1 = s1.vLabels.length;</span>
+<span class="nc" id="L397">        int pL2 = s2.vLabels.length;</span>
         
         //M(L1,L2) = max( |psi(L1)|, |psi(L2)| ) - | intersection of psi(L1) with psi(L2) |
-<span class="nc" id="L388">        int mL1L2 = Math.max(pL1, pL2) - inters.length;</span>
+<span class="nc" id="L400">        int mL1L2 = Math.max(pL1, pL2) - inters.length;</span>
         //d(L1, L2) = ||L1|-|L2|| + M(L1, L2)
-<span class="nc" id="L390">        int dL1L2 = /*Math.abs(pL1 - pL2)*/ + mL1L2;</span>
-<span class="nc" id="L391">        int editDist = t + dL1L2;</span>
+<span class="nc" id="L402">        int dL1L2 = /*Math.abs(pL1 - pL2)*/ + mL1L2;</span>
+<span class="nc" id="L403">        int editDist = t + dL1L2;</span>
 
-<span class="nc" id="L393">        return editDist;                </span>
+<span class="nc" id="L405">        return editDist;                </span>
     }
 
     /**create edit distance matrix for S(g_1) to S(g_2) from 
     StarStructure.calculateEditDistance.
     * for use with approx full-graph search and graphs with vertex and edge labels.
-     * @param sg1
-     * @param sg2
-     * @return 
+     @param sg1
+     @param sg2
+     @return 
     */
     public static double[][] createDistanceMatrix(StarStructure[] sg1, StarStructure[] sg2) {
-<span class="fc" id="L404">        int m = sg1.length;</span>
-<span class="fc" id="L405">        int n = sg2.length;</span>
-<span class="fc" id="L406">        double[][] dist = new double[m][];</span>
+<span class="fc" id="L416">        int m = sg1.length;</span>
+<span class="fc" id="L417">        int n = sg2.length;</span>
+<span class="fc" id="L418">        double[][] dist = new double[m][];</span>
         int i, j;
         StarStructure s1, s2;
-<span class="fc bfc" id="L409" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
-<span class="fc" id="L410">            dist[i] = new double[n];</span>
-<span class="fc" id="L411">            s1 = sg1[i];</span>
-<span class="pc bnc" id="L412" title="All 2 branches missed.">            assert(s1.rootIdx == i);</span>
-<span class="fc bfc" id="L413" title="All 2 branches covered.">            for (j = 0; j &lt; n; ++j) {</span>
-<span class="fc" id="L414">                s2 = sg2[j];</span>
-<span class="pc bnc" id="L415" title="All 2 branches missed.">                assert(s2.rootIdx == j);</span>
-<span class="fc" id="L416">                dist[i][j] = calculateEditDistance(s1, s2);</span>
+<span class="fc bfc" id="L421" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
+<span class="fc" id="L422">            dist[i] = new double[n];</span>
+<span class="fc" id="L423">            s1 = sg1[i];</span>
+<span class="pc bnc" id="L424" title="All 2 branches missed.">            assert(s1.rootIdx == i);</span>
+<span class="fc bfc" id="L425" title="All 2 branches covered.">            for (j = 0; j &lt; n; ++j) {</span>
+<span class="fc" id="L426">                s2 = sg2[j];</span>
+<span class="pc bnc" id="L427" title="All 2 branches missed.">                assert(s2.rootIdx == j);</span>
+<span class="fc" id="L428">                dist[i][j] = calculateEditDistance(s1, s2);</span>
             }
         }
-<span class="fc" id="L419">        return dist;</span>
+<span class="fc" id="L431">        return dist;</span>
     }
     
     /**for the graph model with vertex labeling, but no edge labeling,
      * create edit distance matrix for S(g_1) to S(g_2) from 
     StarStructure.calculateEditDistance.
     * for use with approx full-graph search and graphs with vertex labels and no edge labels.
-     * @param sg1
-     * @param sg2
-     * @return 
+     @param sg1
+     @param sg2
+     @return 
     */
     public static double[][] createDistanceMatrixV(StarStructure[] sg1, StarStructure[] sg2) {
-<span class="nc" id="L431">        int m = sg1.length;</span>
-<span class="nc" id="L432">        int n = sg2.length;</span>
-<span class="nc" id="L433">        double[][] dist = new double[m][];</span>
+<span class="nc" id="L443">        int m = sg1.length;</span>
+<span class="nc" id="L444">        int n = sg2.length;</span>
+<span class="nc" id="L445">        double[][] dist = new double[m][];</span>
         int i, j;
         StarStructure s1, s2;
-<span class="nc bnc" id="L436" title="All 2 branches missed.">        for (i = 0; i &lt; m; ++i) {</span>
-<span class="nc" id="L437">            dist[i] = new double[n];</span>
-<span class="nc" id="L438">            s1 = sg1[i];</span>
-<span class="nc bnc" id="L439" title="All 2 branches missed.">            assert(s1.rootIdx == i);</span>
-<span class="nc bnc" id="L440" title="All 2 branches missed.">            for (j = 0; j &lt; n; ++j) {</span>
-<span class="nc" id="L441">                s2 = sg2[j];</span>
-<span class="nc bnc" id="L442" title="All 2 branches missed.">                assert(s2.rootIdx == j);</span>
-<span class="nc" id="L443">                dist[i][j] = calculateEditDistanceV(s1, s2);</span>
+<span class="nc bnc" id="L448" title="All 2 branches missed.">        for (i = 0; i &lt; m; ++i) {</span>
+<span class="nc" id="L449">            dist[i] = new double[n];</span>
+<span class="nc" id="L450">            s1 = sg1[i];</span>
+<span class="nc bnc" id="L451" title="All 2 branches missed.">            assert(s1.rootIdx == i);</span>
+<span class="nc bnc" id="L452" title="All 2 branches missed.">            for (j = 0; j &lt; n; ++j) {</span>
+<span class="nc" id="L453">                s2 = sg2[j];</span>
+<span class="nc bnc" id="L454" title="All 2 branches missed.">                assert(s2.rootIdx == j);</span>
+<span class="nc" id="L455">                dist[i][j] = calculateEditDistanceV(s1, s2);</span>
             }
         }
-<span class="nc" id="L446">        return dist;</span>
+<span class="nc" id="L458">        return dist;</span>
     }
 
     /**create edit distance matrix for S(g_1) to S(g_2) for use with
      * approx sub-graph search and graphs with vertex and edge labels.
-     * @param sg1
-     * @param sg2
-     * @return 
+     @param sg1
+     @param sg2
+     @return 
     */
     public static double[][] createDistanceMatrixNoRelabeling(StarStructure[] sg1, StarStructure[] sg2) {
-<span class="fc" id="L456">        int m = sg1.length;</span>
-<span class="fc" id="L457">        int n = sg2.length;</span>
-<span class="fc" id="L458">        double[][] dist = new double[m][];</span>
+<span class="fc" id="L468">        int m = sg1.length;</span>
+<span class="fc" id="L469">        int n = sg2.length;</span>
+<span class="fc" id="L470">        double[][] dist = new double[m][];</span>
         int i, j;
         StarStructure s1, s2;
-<span class="fc bfc" id="L461" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
-<span class="fc" id="L462">            dist[i] = new double[n];</span>
-<span class="fc" id="L463">            s1 = sg1[i];</span>
-<span class="pc bnc" id="L464" title="All 2 branches missed.">            assert(s1.rootIdx == i);</span>
-<span class="fc bfc" id="L465" title="All 2 branches covered.">            for (j = 0; j &lt; n; ++j) {</span>
-<span class="fc" id="L466">                s2 = sg2[j];</span>
-<span class="pc bnc" id="L467" title="All 2 branches missed.">                assert(s2.rootIdx == j);</span>
-<span class="fc" id="L468">                dist[i][j] = calculateEditDistanceNoRelabeling(s1, s2);</span>
+<span class="fc bfc" id="L473" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
+<span class="fc" id="L474">            dist[i] = new double[n];</span>
+<span class="fc" id="L475">            s1 = sg1[i];</span>
+<span class="pc bnc" id="L476" title="All 2 branches missed.">            assert(s1.rootIdx == i);</span>
+<span class="fc bfc" id="L477" title="All 2 branches covered.">            for (j = 0; j &lt; n; ++j) {</span>
+<span class="fc" id="L478">                s2 = sg2[j];</span>
+<span class="pc bnc" id="L479" title="All 2 branches missed.">                assert(s2.rootIdx == j);</span>
+<span class="fc" id="L480">                dist[i][j] = calculateEditDistanceNoRelabeling(s1, s2);</span>
             }
         }
-<span class="fc" id="L471">        return dist;</span>
+<span class="fc" id="L483">        return dist;</span>
     }
     
     /**for the graph model with vertex labeling, but no edge labeling,
      * create edit distance matrix for S(g_1) to S(g_2) from 
     StarStructure.calculateEditDistance.
     * for use with approx sub-graph search and graphs with vertex labels, but no edge labels.
-     * @param sg1
-     * @param sg2
-     * @return 
+     @param sg1
+     @param sg2
+     @return 
     */
     public static double[][] createDistanceMatrixNoRelabelingV(StarStructure[] sg1, StarStructure[] sg2) {
-<span class="nc" id="L483">        int m = sg1.length;</span>
-<span class="nc" id="L484">        int n = sg2.length;</span>
-<span class="nc" id="L485">        double[][] dist = new double[m][];</span>
+<span class="nc" id="L495">        int m = sg1.length;</span>
+<span class="nc" id="L496">        int n = sg2.length;</span>
+<span class="nc" id="L497">        double[][] dist = new double[m][];</span>
         int i, j;
         StarStructure s1, s2;
-<span class="nc bnc" id="L488" title="All 2 branches missed.">        for (i = 0; i &lt; m; ++i) {</span>
-<span class="nc" id="L489">            dist[i] = new double[n];</span>
-<span class="nc" id="L490">            s1 = sg1[i];</span>
-<span class="nc bnc" id="L491" title="All 2 branches missed.">            assert(s1.rootIdx == i);</span>
-<span class="nc bnc" id="L492" title="All 2 branches missed.">            for (j = 0; j &lt; n; ++j) {</span>
-<span class="nc" id="L493">                s2 = sg2[j];</span>
-<span class="nc bnc" id="L494" title="All 2 branches missed.">                assert(s2.rootIdx == j);</span>
-<span class="nc" id="L495">                dist[i][j] = calculateEditDistanceNoRelabelingV(s1, s2);</span>
+<span class="nc bnc" id="L500" title="All 2 branches missed.">        for (i = 0; i &lt; m; ++i) {</span>
+<span class="nc" id="L501">            dist[i] = new double[n];</span>
+<span class="nc" id="L502">            s1 = sg1[i];</span>
+<span class="nc bnc" id="L503" title="All 2 branches missed.">            assert(s1.rootIdx == i);</span>
+<span class="nc bnc" id="L504" title="All 2 branches missed.">            for (j = 0; j &lt; n; ++j) {</span>
+<span class="nc" id="L505">                s2 = sg2[j];</span>
+<span class="nc bnc" id="L506" title="All 2 branches missed.">                assert(s2.rootIdx == j);</span>
+<span class="nc" id="L507">                dist[i][j] = calculateEditDistanceNoRelabelingV(s1, s2);</span>
             }
         }
-<span class="nc" id="L498">        return dist;</span>
+<span class="nc" id="L510">        return dist;</span>
     }
     
     /**create multi-set of |V| star structures from graph g with |V| vertices
-     * @param g graph holding adjacency map, vertex labels, and edge labels.
+     @param g graph holding adjacency map, vertex labels, and edge labels.
      * Note that g must use vertices 0 through g.vLabels.size() - 1, inclusive.
-     * @return star structures for each vertex
+     @return star structures for each vertex
      */
     public static StarStructure[] createStarStructureMultiset(Graph g) {
-<span class="fc" id="L507">        int n = g.vLabels.size();</span>
-<span class="fc" id="L508">        StarStructure[] out = new StarStructure[n];</span>
+<span class="fc" id="L519">        int n = g.vLabels.size();</span>
+<span class="fc" id="L520">        StarStructure[] out = new StarStructure[n];</span>
         int i, vertexIdx;
-<span class="fc" id="L510">        TIntObjectIterator&lt;TIntSet&gt; iter = g.adjMap.iterator();</span>
-<span class="fc bfc" id="L511" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L512">            iter.advance();</span>
-<span class="fc" id="L513">            vertexIdx = iter.key();</span>
-<span class="pc bpc" id="L514" title="2 of 4 branches missed.">            if (vertexIdx &gt;= n || vertexIdx &lt; 0) {</span>
-<span class="nc" id="L515">                throw new IllegalArgumentException(&quot;g.adjMap is inconsistent &quot;</span>
+<span class="fc" id="L522">        TIntObjectIterator&lt;TIntSet&gt; iter = g.adjMap.iterator();</span>
+<span class="fc bfc" id="L523" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L524">            iter.advance();</span>
+<span class="fc" id="L525">            vertexIdx = iter.key();</span>
+<span class="pc bpc" id="L526" title="2 of 4 branches missed.">            if (vertexIdx &gt;= n || vertexIdx &lt; 0) {</span>
+<span class="nc" id="L527">                throw new IllegalArgumentException(&quot;g.adjMap is inconsistent &quot;</span>
                         + &quot; with g.vLabels.  g must use vertices 0 through &quot;
                         + &quot;g.vLabels.size() - 1, inclusive.&quot;);
             }
-<span class="fc" id="L519">            out[vertexIdx] = new StarStructure(g, vertexIdx);</span>
+<span class="fc" id="L531">            out[vertexIdx] = new StarStructure(g, vertexIdx);</span>
         }
-<span class="fc" id="L521">        return out;</span>
+<span class="fc" id="L533">        return out;</span>
     }
     
+    /**
+     *
+     @param s
+     @return
+     */
     public static StarStructure[] copy(StarStructure[] s) {
-<span class="fc" id="L525">        int n = s.length;</span>
-<span class="fc" id="L526">        StarStructure[] c = new StarStructure[n];</span>
+<span class="fc" id="L542">        int n = s.length;</span>
+<span class="fc" id="L543">        StarStructure[] c = new StarStructure[n];</span>
         int i;
-<span class="fc bfc" id="L528" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L529">            c[i] = s[i].copy();</span>
+<span class="fc bfc" id="L545" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L546">            c[i] = s[i].copy();</span>
         }
-<span class="fc" id="L531">        return c;</span>
+<span class="fc" id="L548">        return c;</span>
     }
     
+    /**
+     *
+     @return
+     */
     public StarStructure copy() {
-<span class="fc" id="L535">        return new StarStructure(rootIdx, rootLabel, </span>
-<span class="fc" id="L536">            Arrays.copyOf(vLabels, vLabels.length), </span>
-<span class="fc" id="L537">            Arrays.copyOf(eLabels, eLabels.length), </span>
-<span class="fc" id="L538">            Arrays.copyOf(origVIndexes, origVIndexes.length));</span>
+<span class="fc" id="L556">        return new StarStructure(rootIdx, rootLabel, </span>
+<span class="fc" id="L557">            Arrays.copyOf(vLabels, vLabels.length), </span>
+<span class="fc" id="L558">            Arrays.copyOf(eLabels, eLabels.length), </span>
+<span class="fc" id="L559">            Arrays.copyOf(origVIndexes, origVIndexes.length));</span>
     }
     
     /**
      * calculate the sum of the degree of the vertices which are adjacent to 
      * vertex v, i.e., support (v) = s(v) = ∑ d(u).
-     * @param sg the graph as an array of star structures.
-     * @param vIdx the index of vertex v in the star structure array sg.
-     * @return 
+     @param sg the graph as an array of star structures.
+     @param vIdx the index of vertex v in the star structure array sg.
+     @return 
      */
     public static int calculateSupport(StarStructure[] sg, int vIdx) {
-<span class="fc" id="L549">        int s = 0, jIdx;</span>
-<span class="fc bfc" id="L550" title="All 2 branches covered.">        for (int j = 0; j &lt; sg[vIdx].vLabels.length; ++j) {</span>
-<span class="fc" id="L551">            jIdx = sg[vIdx].origVIndexes[j];</span>
-<span class="fc" id="L552">            s += sg[jIdx].vLabels.length;</span>
+<span class="fc" id="L570">        int s = 0, jIdx;</span>
+<span class="fc bfc" id="L571" title="All 2 branches covered.">        for (int j = 0; j &lt; sg[vIdx].vLabels.length; ++j) {</span>
+<span class="fc" id="L572">            jIdx = sg[vIdx].origVIndexes[j];</span>
+<span class="fc" id="L573">            s += sg[jIdx].vLabels.length;</span>
         }
-<span class="fc" id="L554">        return s;</span>
+<span class="fc" id="L575">        return s;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

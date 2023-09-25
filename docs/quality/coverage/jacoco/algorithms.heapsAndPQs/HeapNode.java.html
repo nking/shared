@@ -2,32 +2,43 @@
 
 import algorithms.DoubleLinkedCircularList;
 
+/**
+ *
+ * @author nichole
+ */
 public class HeapNode {
     
 	/* fields needed for node in circular, doubly linked list */
-<span class="fc" id="L8">	private long key = DoubleLinkedCircularList.noValue;</span>
-<span class="fc" id="L9">    private HeapNode right = null;</span>
-<span class="fc" id="L10">    private HeapNode left = null;</span>
+<span class="fc" id="L12">	private long key = DoubleLinkedCircularList.noValue;</span>
+<span class="fc" id="L13">    private HeapNode right = null;</span>
+<span class="fc" id="L14">    private HeapNode left = null;</span>
 
     /* fields needed for a Fibonacci Heap Node */
-<span class="fc" id="L13">    private HeapNode parent = null;</span>
-<span class="fc" id="L14">    private DoubleLinkedCircularList children = null;</span>
+<span class="fc" id="L17">    private HeapNode parent = null;</span>
+<span class="fc" id="L18">    private DoubleLinkedCircularList children = null;</span>
     
     /* field to carry data  */
-<span class="fc" id="L17">    private Object data = null;</span>
+<span class="fc" id="L21">    private Object data = null;</span>
 
     /**
      * a.k.a. degree
      */
-<span class="fc" id="L22">    private int numberOfChildren = 0;</span>
-<span class="fc" id="L23">    private boolean mark = false;</span>
+<span class="fc" id="L26">    private int numberOfChildren = 0;</span>
+<span class="fc" id="L27">    private boolean mark = false;</span>
 
-<span class="fc" id="L25">    public HeapNode() {</span>
-<span class="fc" id="L26">    }</span>
+    /**
+     *
+     */
+<span class="fc" id="L32">    public HeapNode() {</span>
+<span class="fc" id="L33">    }</span>
     
-<span class="fc" id="L28">    public HeapNode(long key) {</span>
-<span class="fc" id="L29">        this.key = key;</span>
-<span class="fc" id="L30">    }</span>
+    /**
+     *
+     @param key
+     */
+<span class="fc" id="L39">    public HeapNode(long key) {</span>
+<span class="fc" id="L40">        this.key = key;</span>
+<span class="fc" id="L41">    }</span>
     
     /**
      * add node to list of children.  numberOfChildren is incremented.
@@ -36,199 +47,206 @@ public class HeapNode {
      * it's fast and meant to be
      * accessed synchronously only (children are not protected by mutex).
      *
-     * @param child
+     @param child
      */
     public void addChild(HeapNode child) {
-<span class="fc bfc" id="L42" title="All 2 branches covered.">    	if (children == null) {</span>
-<span class="fc" id="L43">    		children = new DoubleLinkedCircularList();</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">    	if (children == null) {</span>
+<span class="fc" id="L54">    		children = new DoubleLinkedCircularList();</span>
     	}
-<span class="fc" id="L45">    	children.insert(child);</span>
-<span class="fc" id="L46">    	child.parent = this;</span>
-<span class="fc" id="L47">    	numberOfChildren++;</span>
-<span class="fc" id="L48">    }</span>
+<span class="fc" id="L56">    	children.insert(child);</span>
+<span class="fc" id="L57">    	child.parent = this;</span>
+<span class="fc" id="L58">    	numberOfChildren++;</span>
+<span class="fc" id="L59">    }</span>
     
+    /**
+     *
+     */
     public void removeChildren() {
-<span class="fc" id="L51">        this.children = null;</span>
-<span class="fc" id="L52">    }</span>
+<span class="fc" id="L65">        this.children = null;</span>
+<span class="fc" id="L66">    }</span>
 
     /** note that this method is not for use with multiple threads.  
      * it's fast and meant to be
      * accessed synchronously only (children are not protected by mutex)
      *
-     * @param child
+     @param child
      */
     public void removeChild(HeapNode child) {
-<span class="pc bpc" id="L61" title="1 of 2 branches missed.">    	if (children == null) {</span>
-<span class="nc" id="L62">    		return;</span>
+<span class="pc bpc" id="L75" title="1 of 2 branches missed.">    	if (children == null) {</span>
+<span class="nc" id="L76">    		return;</span>
     	}
-<span class="fc" id="L64">    	child.parent = null;</span>
-<span class="fc" id="L65">    	children.remove(child);</span>
-<span class="fc" id="L66">    	numberOfChildren--;</span>
-<span class="fc" id="L67">    }</span>
+<span class="fc" id="L78">    	child.parent = null;</span>
+<span class="fc" id="L79">    	children.remove(child);</span>
+<span class="fc" id="L80">    	numberOfChildren--;</span>
+<span class="fc" id="L81">    }</span>
 
     /** note that this method is not for use with multiple threads.  
      * it's fast and meant to be
      * accessed synchronously only (children are not protected by mutex)
      *
-     * @param childKey
+     @param childKey
      */
     public void removeChild(long childKey) {
-<span class="nc bnc" id="L76" title="All 2 branches missed.">    	if (children == null) {</span>
-<span class="nc" id="L77">    		return;</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">    	if (children == null) {</span>
+<span class="nc" id="L91">    		return;</span>
     	}
-<span class="nc" id="L79">    	children.remove(childKey);</span>
-<span class="nc" id="L80">    	numberOfChildren--;</span>
-<span class="nc" id="L81">    }</span>
+<span class="nc" id="L93">    	children.remove(childKey);</span>
+<span class="nc" id="L94">    	numberOfChildren--;</span>
+<span class="nc" id="L95">    }</span>
 
     /** note that this method is not for use with multiple threads.  
      * it's fast and meant to be
      * accessed synchronously only (children are not protected by mutex 
      * and are not copied out)
      * 
-     * @return
+     @return
      */
     public DoubleLinkedCircularList getChildren() {
-<span class="fc bfc" id="L91" title="All 2 branches covered.">    	if (children == null) {</span>
-<span class="fc" id="L92">    		children = new DoubleLinkedCircularList();</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">    	if (children == null) {</span>
+<span class="fc" id="L106">    		children = new DoubleLinkedCircularList();</span>
     	}
-<span class="fc" id="L94">    	return children;</span>
+<span class="fc" id="L108">    	return children;</span>
     }
 
     /**
-     * @return the key
+     @return the key
      */
     public long getKey() {
-<span class="fc" id="L101">        return key;</span>
+<span class="fc" id="L115">        return key;</span>
     }
 
     /**
-     * @return the right
+     @return the right
      */
     public HeapNode getRight() {
-<span class="fc" id="L108">        return right;</span>
+<span class="fc" id="L122">        return right;</span>
     }
 
     /**
-     * @return the left
+     @return the left
      */
     public HeapNode getLeft() {
-<span class="fc" id="L115">        return left;</span>
+<span class="fc" id="L129">        return left;</span>
     }
 
     /**
-     * @return the parent
+     @return the parent
      */
     public HeapNode getParent() {
-<span class="fc" id="L122">        return parent;</span>
+<span class="fc" id="L136">        return parent;</span>
     }
 
     /**
-     * @return the numberOfChildren
+     @return the numberOfChildren
      */
     public int getNumberOfChildren() {
-<span class="fc" id="L129">        return numberOfChildren;</span>
+<span class="fc" id="L143">        return numberOfChildren;</span>
     }
 
     /**
-     * @return the mark
+     @return the mark
      */
     public boolean isMark() {
-<span class="fc" id="L136">        return mark;</span>
+<span class="fc" id="L150">        return mark;</span>
     }
 
     /**
-     * @return the data
+     @return the data
      */
     public Object getData() {
-<span class="fc" id="L143">        return data;</span>
+<span class="fc" id="L157">        return data;</span>
     }
 
     /**
-     * @param key the key to set
+     @param key the key to set
      */
     public void setKey(long key) {
-<span class="fc" id="L150">        this.key = key;</span>
-<span class="fc" id="L151">    }</span>
-
-    /**
-     * @param right the right to set
-     */
-    public void setRight(HeapNode right) {
-<span class="fc" id="L157">        this.right = right;</span>
-<span class="fc" id="L158">    }</span>
-
-    /**
-     * @param theLeft the left to set
-     */
-    public void setLeft(HeapNode theLeft) {
-<span class="fc" id="L164">        left = theLeft;</span>
+<span class="fc" id="L164">        this.key = key;</span>
 <span class="fc" id="L165">    }</span>
 
     /**
-     * @param theParent the parent to set
+     @param right the right to set
      */
-    public void setParent(HeapNode theParent) {
-<span class="fc" id="L171">        parent = theParent;</span>
+    public void setRight(HeapNode right) {
+<span class="fc" id="L171">        this.right = right;</span>
 <span class="fc" id="L172">    }</span>
 
     /**
-     * @param children the children to set
+     @param theLeft the left to set
+     */
+    public void setLeft(HeapNode theLeft) {
+<span class="fc" id="L178">        left = theLeft;</span>
+<span class="fc" id="L179">    }</span>
+
+    /**
+     @param theParent the parent to set
+     */
+    public void setParent(HeapNode theParent) {
+<span class="fc" id="L185">        parent = theParent;</span>
+<span class="fc" id="L186">    }</span>
+
+    /**
+     @param children the children to set
      */
     public void setChildren(DoubleLinkedCircularList children) {
-<span class="fc" id="L178">        this.children = children;</span>
-<span class="pc bpc" id="L179" title="1 of 2 branches missed.">        if (children != null) {</span>
-<span class="nc" id="L180">            numberOfChildren = (int) children.getNumberOfNodes();</span>
+<span class="fc" id="L192">        this.children = children;</span>
+<span class="pc bpc" id="L193" title="1 of 2 branches missed.">        if (children != null) {</span>
+<span class="nc" id="L194">            numberOfChildren = (int) children.getNumberOfNodes();</span>
         }
-<span class="fc" id="L182">    }</span>
-
-    /**
-     * @param numberOfChildren the numberOfChildren to set
-     */
-    public void setNumberOfChildren(int numberOfChildren) {
-<span class="fc" id="L188">        this.numberOfChildren = numberOfChildren;</span>
-<span class="fc" id="L189">    }</span>
-
-    /**
-     * @param data the data to set
-     */
-    public void setData(Object data) {
-<span class="fc" id="L195">        this.data = data;</span>
 <span class="fc" id="L196">    }</span>
 
     /**
-     * @param mark the mark to set
+     @param numberOfChildren the numberOfChildren to set
      */
-    public void setMark(boolean mark) {
-<span class="fc" id="L202">        this.mark = mark;</span>
+    public void setNumberOfChildren(int numberOfChildren) {
+<span class="fc" id="L202">        this.numberOfChildren = numberOfChildren;</span>
 <span class="fc" id="L203">    }</span>
 
+    /**
+     @param data the data to set
+     */
+    public void setData(Object data) {
+<span class="fc" id="L209">        this.data = data;</span>
+<span class="fc" id="L210">    }</span>
+
+    /**
+     @param mark the mark to set
+     */
+    public void setMark(boolean mark) {
+<span class="fc" id="L216">        this.mark = mark;</span>
+<span class="fc" id="L217">    }</span>
+
+    /**
+     *
+     @return
+     */
     @SuppressWarnings({&quot;rawtypes&quot;})
     public static Class getType() {
-<span class="nc" id="L207">        return HeapNode.class;</span>
+<span class="nc" id="L225">        return HeapNode.class;</span>
     }
     
     @Override
     public String toString() {
        
-<span class="fc" id="L213">        StringBuilder sb = new StringBuilder();</span>
-<span class="fc" id="L214">        sb.append(&quot;key=&quot;).append(Long.toString(key))</span>
-<span class="fc" id="L215">            .append(&quot; nChildren=&quot;).append(Integer.toString(numberOfChildren))</span>
-<span class="fc" id="L216">            .append(&quot; mark=&quot;).append(Boolean.toString(mark))</span>
-<span class="fc" id="L217">            .append(&quot; data=&quot;);</span>
-<span class="pc bpc" id="L218" title="1 of 2 branches missed.">        if (data != null) {</span>
-<span class="nc" id="L219">            sb.append(data.toString());</span>
+<span class="fc" id="L231">        StringBuilder sb = new StringBuilder();</span>
+<span class="fc" id="L232">        sb.append(&quot;key=&quot;).append(Long.toString(key))</span>
+<span class="fc" id="L233">            .append(&quot; nChildren=&quot;).append(Integer.toString(numberOfChildren))</span>
+<span class="fc" id="L234">            .append(&quot; mark=&quot;).append(Boolean.toString(mark))</span>
+<span class="fc" id="L235">            .append(&quot; data=&quot;);</span>
+<span class="pc bpc" id="L236" title="1 of 2 branches missed.">        if (data != null) {</span>
+<span class="nc" id="L237">            sb.append(data.toString());</span>
         }
-<span class="pc bpc" id="L221" title="1 of 2 branches missed.">        if (parent != null) {</span>
-<span class="nc" id="L222">            sb.append(&quot; prnt=&quot;).append(parent.getKey());</span>
+<span class="pc bpc" id="L239" title="1 of 2 branches missed.">        if (parent != null) {</span>
+<span class="nc" id="L240">            sb.append(&quot; prnt=&quot;).append(parent.getKey());</span>
         }
-<span class="pc bpc" id="L224" title="1 of 2 branches missed.">        if (left != null) {</span>
-<span class="fc" id="L225">            sb.append(&quot; lft=&quot;).append(left.getKey());</span>
+<span class="pc bpc" id="L242" title="1 of 2 branches missed.">        if (left != null) {</span>
+<span class="fc" id="L243">            sb.append(&quot; lft=&quot;).append(left.getKey());</span>
         }
-<span class="pc bpc" id="L227" title="1 of 2 branches missed.">        if (right != null) {</span>
-<span class="fc" id="L228">            sb.append(&quot; rgt=&quot;).append(right.getKey());</span>
+<span class="pc bpc" id="L245" title="1 of 2 branches missed.">        if (right != null) {</span>
+<span class="fc" id="L246">            sb.append(&quot; rgt=&quot;).append(right.getKey());</span>
         }
         
-<span class="fc" id="L231">        return sb.toString();</span>
+<span class="fc" id="L249">        return sb.toString();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

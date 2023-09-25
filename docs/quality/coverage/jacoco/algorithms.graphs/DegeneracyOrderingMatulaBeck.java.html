@@ -21,6 +21,9 @@ import java.util.TreeMap;
  * The degeneracy of a graph is a measure of how sparse it is, and is within 
  * a constant factor of other sparsity measures such as the arboricity of a 
  * graph.
+ *
+ * To see the degeneracy in a k-degenerate graph, remove all nodes
+ * that are k
  &lt;pre&gt;
  https://en.wikipedia.org/wiki/Degeneracy_(graph_theory)#Relation_to_other_graph_parameters
 &lt;/pre&gt;
@@ -55,7 +58,7 @@ Degeneracy is also known as the k-core number, width, and linkage, and
  
  * @author nichole
  */
-<span class="pc" id="L58">public class DegeneracyOrderingMatulaBeck {</span>
+<span class="pc" id="L61">public class DegeneracyOrderingMatulaBeck {</span>
     
     /**
      * following
@@ -67,37 +70,37 @@ Degeneracy is also known as the k-core number, width, and linkage, and
         
       &lt;/pre&gt;
  
-     * @param adjMap an undirected graph as an adjacency map with key=vertex index, value =
+     @param adjMap an undirected graph as an adjacency map with key=vertex index, value =
      * set of indexes of vertexes for the neighbors of the key.  note: the method
      * expects that the adjacency map has a key for every vertex listed in the values.
-     * @param out output array of size |V|
-     * @return the degeneracy of the graph.
+     @param out output array of size |V|
+     @return the degeneracy of the graph.
      */
     public static int findDegeneracyOrder(TIntObjectMap&lt;TIntSet&gt; adjMap, int[] out) {
                 
-<span class="fc" id="L78">        int n = adjMap.size(), i;</span>
+<span class="fc" id="L81">        int n = adjMap.size(), i;</span>
         
-<span class="pc bpc" id="L80" title="1 of 2 branches missed.">        if (out.length != n) {</span>
-<span class="nc" id="L81">            throw new IllegalArgumentException(&quot;expecting the the number of vertexes&quot;</span>
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">        if (out.length != n) {</span>
+<span class="nc" id="L84">            throw new IllegalArgumentException(&quot;expecting the the number of vertexes&quot;</span>
                 + &quot; is adjMap.size() and that out.length==adjMap.size()&quot;);
         }
         
         IBucketQueue bQ;
         
-<span class="fc" id="L87">        int maxDegree = calculateMaxDegree(adjMap);</span>
+<span class="fc" id="L90">        int maxDegree = calculateMaxDegree(adjMap);</span>
         
-<span class="fc" id="L89">        System.out.printf(&quot;maxDegree=%d, n=%d\n&quot;, maxDegree, n);</span>
+<span class="fc" id="L92">        System.out.printf(&quot;maxDegree=%d, n=%d\n&quot;, maxDegree, n);</span>
         
         // use a YFastTrie and HashMap to create the bucket queue
         // runtime complexity is O(|V|*log_2(w)) where q=maxDegree
-<span class="fc" id="L93">        bQ = new TBucketQueue(adjMap);</span>
+<span class="fc" id="L96">        bQ = new TBucketQueue(adjMap);</span>
         
         TIntSet bucket, adj;
         
         // initialize output vertex list to -1 for debugging
-<span class="fc" id="L98">        Arrays.fill(out, -1);</span>
+<span class="fc" id="L101">        Arrays.fill(out, -1);</span>
         // keep a set of values of out
-<span class="fc" id="L100">        TIntSet outSet = new TIntHashSet(n);</span>
+<span class="fc" id="L103">        TIntSet outSet = new TIntHashSet(n);</span>
         
         TIntIterator iter2, iter3;
         
@@ -108,90 +111,95 @@ Degeneracy is also known as the k-core number, width, and linkage, and
         // if using a TBucketQueue, the runtime complexity is O( (|V| + |E|) * log_2(w)) where w is maxDegree
         
         // the degree k
-<span class="fc" id="L111">        int v, k = 0, j = 0, w, nW, x;</span>
-<span class="pc bpc" id="L112" title="1 of 4 branches missed.">        while (j &lt; n &amp;&amp; !bQ.isEmpty()) {</span>
+<span class="fc" id="L114">        int v, k = 0, j = 0, w, nW, x;</span>
+<span class="pc bpc" id="L115" title="1 of 4 branches missed.">        while (j &lt; n &amp;&amp; !bQ.isEmpty()) {</span>
             
             // this handles check for null or empty bucket.
             //   note that the internal bucketMap size is out of sync w/ bucketQueue size until remove is invoked
-<span class="fc" id="L116">            i = bQ.extractMinimumPt1();</span>
+<span class="fc" id="L119">            i = bQ.extractMinimumPt1();</span>
             
-<span class="fc" id="L118">            k = Math.max(k, i);</span>
+<span class="fc" id="L121">            k = Math.max(k, i);</span>
             
-<span class="pc bnc" id="L120" title="All 2 branches missed.">            assert(!outSet.contains(i));</span>
+<span class="pc bnc" id="L123" title="All 2 branches missed.">            assert(!outSet.contains(i));</span>
             
-<span class="fc" id="L122">            bucket = bQ.getBucket(i);</span>
+<span class="fc" id="L125">            bucket = bQ.getBucket(i);</span>
             
-<span class="fc" id="L124">            v = bucket.iterator().next();</span>
+<span class="fc" id="L127">            v = bucket.iterator().next();</span>
             // add V to out and remove from bucket in bucketMap.  bucketQueue has been updated already.
-<span class="fc" id="L126">            outSet.add(v);</span>
-<span class="fc" id="L127">            out[n-j-1] = v;</span>
-<span class="fc" id="L128">            bQ.remove(i, v, bucket);</span>
+<span class="fc" id="L129">            outSet.add(v);</span>
+<span class="fc" id="L130">            out[n-j-1] = v;</span>
+<span class="fc" id="L131">            bQ.remove(i, v, bucket);</span>
             
             //System.out.printf(&quot;out=%s\n&quot;, Arrays.toString(out));
               
             // for each neighbor w of v that is not already in L
-<span class="fc" id="L133">            adj = adjMap.get(v);</span>
-<span class="pc bpc" id="L134" title="2 of 4 branches missed.">            if (adj == null || adj.isEmpty()) {</span>
-<span class="nc" id="L135">                j++;</span>
-<span class="nc" id="L136">                continue;</span>
+<span class="fc" id="L136">            adj = adjMap.get(v);</span>
+<span class="pc bpc" id="L137" title="2 of 4 branches missed.">            if (adj == null || adj.isEmpty()) {</span>
+<span class="nc" id="L138">                j++;</span>
+<span class="nc" id="L139">                continue;</span>
             }
             
-<span class="fc" id="L139">            iter2 = adj.iterator();</span>
-<span class="fc bfc" id="L140" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
-<span class="fc" id="L141">                w = iter2.next();</span>
-<span class="fc bfc" id="L142" title="All 2 branches covered.">                if (outSet.contains(w)) {</span>
-<span class="fc" id="L143">                    continue;</span>
+<span class="fc" id="L142">            iter2 = adj.iterator();</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
+<span class="fc" id="L144">                w = iter2.next();</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">                if (outSet.contains(w)) {</span>
+<span class="fc" id="L146">                    continue;</span>
                 }
                 // user should have created adjMap with a key for every vertex
-<span class="pc bnc" id="L146" title="All 2 branches missed.">                assert(adjMap.containsKey(w));</span>
+<span class="pc bnc" id="L149" title="All 2 branches missed.">                assert(adjMap.containsKey(w));</span>
                 // count neighbors of w not already in L
-<span class="fc" id="L148">                nW = 0;</span>
-<span class="pc bpc" id="L149" title="1 of 2 branches missed.">                if (adjMap.get(w).size() &gt; 0) {</span>
-<span class="fc" id="L150">                    iter3 = adjMap.get(w).iterator();</span>
-<span class="fc bfc" id="L151" title="All 2 branches covered.">                    while (iter3.hasNext()) {</span>
-<span class="fc" id="L152">                        x = iter3.next();</span>
-<span class="fc bfc" id="L153" title="All 2 branches covered.">                        if (!outSet.contains(x)) {</span>
-<span class="fc" id="L154">                            nW++;</span>
+<span class="fc" id="L151">                nW = 0;</span>
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">                if (adjMap.get(w).size() &gt; 0) {</span>
+<span class="fc" id="L153">                    iter3 = adjMap.get(w).iterator();</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">                    while (iter3.hasNext()) {</span>
+<span class="fc" id="L155">                        x = iter3.next();</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">                        if (!outSet.contains(x)) {</span>
+<span class="fc" id="L157">                            nW++;</span>
                         }
                     }
                 }
-<span class="fc" id="L158">                nW--;</span>
-<span class="fc bfc" id="L159" title="All 2 branches covered.">                if (nW &lt; 0) {</span>
+<span class="fc" id="L161">                nW--;</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">                if (nW &lt; 0) {</span>
                     //System.out.printf(&quot;vertex w=%d has nW=%d.  bucket size=%d\n&quot;,
                     //    w, nW, bQ.size());
                     //w should remain in bQ until it becomes v
                 } else {
                     // move w from current bucket to bucket dW if dW&gt;=0
-<span class="fc" id="L165">                    bQ.moveItem(w, nW);</span>
+<span class="fc" id="L168">                    bQ.moveItem(w, nW);</span>
                 }
                 
             }
-<span class="fc" id="L169">            j++;</span>
+<span class="fc" id="L172">            j++;</span>
         }
-<span class="fc" id="L171">        return k;</span>
+<span class="fc" id="L174">        return k;</span>
     }
     
+    /**
+     *
+     @param adjMap
+     @return
+     */
     protected static int calculateMaxDegree(TIntObjectMap&lt;TIntSet&gt; adjMap) {
         
-<span class="fc" id="L176">        int n = adjMap.size();</span>
+<span class="fc" id="L184">        int n = adjMap.size();</span>
 
         TIntSet adj;
-<span class="fc" id="L179">        TIntObjectIterator&lt;TIntSet&gt; iter = adjMap.iterator();</span>
-<span class="fc" id="L180">        int i, v, nV, maxDegree = 0;</span>
-<span class="fc bfc" id="L181" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L182">            iter.advance();</span>
-<span class="fc" id="L183">            v = iter.key();</span>
-<span class="fc" id="L184">            adj = iter.value();</span>
-<span class="pc bpc" id="L185" title="1 of 2 branches missed.">            if (adj == null) {</span>
-<span class="nc" id="L186">                nV = 0;</span>
+<span class="fc" id="L187">        TIntObjectIterator&lt;TIntSet&gt; iter = adjMap.iterator();</span>
+<span class="fc" id="L188">        int i, v, nV, maxDegree = 0;</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L190">            iter.advance();</span>
+<span class="fc" id="L191">            v = iter.key();</span>
+<span class="fc" id="L192">            adj = iter.value();</span>
+<span class="pc bpc" id="L193" title="1 of 2 branches missed.">            if (adj == null) {</span>
+<span class="nc" id="L194">                nV = 0;</span>
             } else {
-<span class="fc" id="L188">                nV = adj.size();</span>
+<span class="fc" id="L196">                nV = adj.size();</span>
             }
-<span class="fc bfc" id="L190" title="All 2 branches covered.">            if (nV &gt; maxDegree) {</span>
-<span class="fc" id="L191">                maxDegree = nV;</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">            if (nV &gt; maxDegree) {</span>
+<span class="fc" id="L199">                maxDegree = nV;</span>
             }
         }
-<span class="fc" id="L194">        return maxDegree;</span>
+<span class="fc" id="L202">        return maxDegree;</span>
     }
    
     static class TBucketQueue implements IBucketQueue {
@@ -266,7 +274,7 @@ Degeneracy is also known as the k-core number, width, and linkage, and
          * extract the minimum from the internal priority queue called bucketQueue.
          * note that the internal bucketMap size is out of sync w/ bucketQueue 
          * size until remove is invoked.
-         * @return 
+         @return 
          */
         @Override
         public int extractMinimumPt1() {
@@ -286,8 +294,8 @@ Degeneracy is also known as the k-core number, width, and linkage, and
 
         /**
          * find whether the bucket queue contains the degree key i.
-         * @param i
-         * @return 
+         @param i
+         @return 
          */
         @Override
         public boolean contains(int i) {
@@ -296,8 +304,8 @@ Degeneracy is also known as the k-core number, width, and linkage, and
         
         /**
          * find whether the bucket queue contains the vertex v.
-         * @param v
-         * @return 
+         @param v
+         @return 
          */
         @Override
         public boolean containsVertex(int v) {
@@ -312,8 +320,8 @@ Degeneracy is also known as the k-core number, width, and linkage, and
         /**
          * remove value v from the bucket queue for key k.  this method also
          * removes key entries in bucketMap and bucketQueue if the bucket empties.
-         * @param k
-         * @param v 
+         @param k
+         @param v 
          */
         @Override
         public void remove(int k, int v) {
@@ -336,9 +344,9 @@ Degeneracy is also known as the k-core number, width, and linkage, and
 
         /**
          * 
-         * @param item
-         * @param fromDBucket the bucket degree number to remove item from
-         * @param toDBucket the bucket degree number to add item to
+         @param item
+         @param fromDBucket the bucket degree number to remove item from
+         @param toDBucket the bucket degree number to add item to
          */
         @Override
         public void moveItem(int item, int fromDBucket, int toDBucket) {
@@ -380,8 +388,8 @@ Degeneracy is also known as the k-core number, width, and linkage, and
         
         /**
          * remove item from current bucket that its in, and move it to toDBucket.
-         * @param item
-         * @param toDBucket the bucket degree number to add item to
+         @param item
+         @param toDBucket the bucket degree number to add item to
          */
         @Override
         public void moveItem(int item, int toDBucket) {
@@ -480,7 +488,7 @@ Degeneracy is also known as the k-core number, width, and linkage, and
         /**
          * this is purely a minimum() invocation.  The invoker uses remove 
          * afterwards to remove the entry from the bucket values.
-         * @return 
+         @return 
          */
         @Override
         public int extractMinimumPt1() {
@@ -489,8 +497,8 @@ Degeneracy is also known as the k-core number, width, and linkage, and
 
         /**
          * find whether the bucket queue contains the degree key i.
-         * @param i
-         * @return 
+         @param i
+         @return 
          */
         @Override
         public boolean contains(int i) {
@@ -499,8 +507,8 @@ Degeneracy is also known as the k-core number, width, and linkage, and
         
         /**
          * find whether the bucket queue contains the vertex v.
-         * @param v
-         * @return 
+         @param v
+         @return 
          */
         @Override
         public boolean containsVertex(int v) {
@@ -515,8 +523,8 @@ Degeneracy is also known as the k-core number, width, and linkage, and
         /**
          * remove value v from the bucket queue for key k.  this method also
          * removes key entries in bucketMap and bucketQueue if the bucket empties.
-         * @param k
-         * @param v 
+         @param k
+         @param v 
          */
         @Override
         public void remove(int k, int v) {
@@ -538,9 +546,9 @@ Degeneracy is also known as the k-core number, width, and linkage, and
 
         /**
          * 
-         * @param item
-         * @param fromDBucket the bucket degree number to remove item from
-         * @param toDBucket the bucket degree number to add item to
+         @param item
+         @param fromDBucket the bucket degree number to remove item from
+         @param toDBucket the bucket degree number to add item to
          */
         @Override
         public void moveItem(int item, int fromDBucket, int toDBucket) {
@@ -576,8 +584,8 @@ Degeneracy is also known as the k-core number, width, and linkage, and
         
         /**
          * remove item from current bucket that its in, and move it to toDBucket.
-         * @param item
-         * @param toDBucket the bucket degree number to add item to
+         @param item
+         @param toDBucket the bucket degree number to add item to
          */
         @Override
         public void moveItem(int item, int toDBucket) {
@@ -592,16 +600,16 @@ Degeneracy is also known as the k-core number, width, and linkage, and
         /**
          * find whether the bucket queue contains the degree key i.
          *
-         * @param i
-         * @return
+         @param i
+         @return
          */
         boolean contains(int i);
 
         /**
          * find whether the bucket queue contains the vertex v.
          *
-         * @param v
-         * @return
+         @param v
+         @return
          */
         boolean containsVertex(int v);
 
@@ -610,7 +618,7 @@ Degeneracy is also known as the k-core number, width, and linkage, and
          * bucketQueue. note that the internal bucketMap size is out of sync w/
          * bucketQueue size until remove is invoked.
          *
-         * @return
+         @return
          */
         int extractMinimumPt1();
 
@@ -622,9 +630,9 @@ Degeneracy is also known as the k-core number, width, and linkage, and
 
         /**
          *
-         * @param item
-         * @param fromDBucket the bucket degree number to remove item from
-         * @param toDBucket the bucket degree number to add item to
+         @param item
+         @param fromDBucket the bucket degree number to remove item from
+         @param toDBucket the bucket degree number to add item to
          */
         void moveItem(int item, int fromDBucket, int toDBucket);
 
@@ -632,8 +640,8 @@ Degeneracy is also known as the k-core number, width, and linkage, and
          * remove item from current bucket that its in, and move it to
          * toDBucket.
          *
-         * @param item
-         * @param toDBucket the bucket degree number to add item to
+         @param item
+         @param toDBucket the bucket degree number to add item to
          */
         void moveItem(int item, int toDBucket);
 
@@ -642,8 +650,8 @@ Degeneracy is also known as the k-core number, width, and linkage, and
          * removes key entries in bucketMap and bucketQueue if the bucket
          * empties.
          *
-         * @param k
-         * @param v
+         @param k
+         @param v
          */
         void remove(int k, int v);
 

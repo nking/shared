@@ -62,6 +62,9 @@ import java.util.Queue;
  */
 <span class="fc" id="L63">public class Huffman {</span>
 
+    /**
+     *
+     */
     public static class HuffmanEncoding {
         
         /**
@@ -89,6 +92,9 @@ import java.util.Queue;
          */
         public VeryLongBitString encoded = null;
         
+        /**
+         *
+         */
         public void print() {
             System.out.println(&quot;freqMap:&quot;);
             if (freqMap != null) {
@@ -107,6 +113,9 @@ import java.util.Queue;
         }
     }
     
+    /**
+     *
+     */
     protected static class EncodingSymbols {
         
         /**
@@ -124,6 +133,9 @@ import java.util.Queue;
          */
         TIntIntMap codeSymbolMap = null;
         
+        /**
+         *
+         */
         public void print() {
             System.out.println(&quot;codeSymbolMap:&quot;);
             if (codeSymbolMap != null) {
@@ -144,180 +156,180 @@ import java.util.Queue;
      * text string c, though can be as high as O(n * log_2(n)) if Fibonacci heap
      * is used.
      *
-     * @param c text to encode
-     * @return returns the Huffman encoded text and the symbol code map.
+     @param c text to encode
+     @return returns the Huffman encoded text and the symbol code map.
      */
     public HuffmanEncoding compress(String c) {
 
-<span class="fc" id="L152">        int n = c.length();</span>
+<span class="fc" id="L164">        int n = c.length();</span>
 
         // key = code point of character, value = number of times character is in c
-<span class="fc" id="L155">        int sumF = 0;</span>
-<span class="fc" id="L156">        TIntIntMap f = new TIntIntHashMap();</span>
+<span class="fc" id="L167">        TIntIntMap f = new TIntIntHashMap();</span>
+<span class="fc" id="L168">        int sumF = 0;</span>
         int cP;
         int fP;
         int i;
-<span class="fc bfc" id="L160" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L161">            cP = c.codePointAt(i);</span>
-<span class="fc" id="L162">            fP = 1;</span>
-<span class="fc bfc" id="L163" title="All 2 branches covered.">            if (f.containsKey(cP)) {</span>
-<span class="fc" id="L164">                fP += f.get(cP);</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L173">            cP = c.codePointAt(i);</span>
+<span class="fc" id="L174">            fP = 1;</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">            if (f.containsKey(cP)) {</span>
+<span class="fc" id="L176">                fP += f.get(cP);</span>
             }
-<span class="fc" id="L166">            f.put(cP, fP);</span>
-<span class="fc" id="L167">            sumF += fP;</span>
+<span class="fc" id="L178">            f.put(cP, fP);</span>
+<span class="fc" id="L179">            sumF += fP;</span>
         }
 
-<span class="fc" id="L170">        EncodingSymbols symbols = buildSymbolCodeTree(f, sumF);</span>
+<span class="fc" id="L182">        EncodingSymbols symbols = buildSymbolCodeTree(f, sumF);</span>
         
         // encode c         
-<span class="fc" id="L173">        VeryLongBitString encoded = encode(c, symbols.codeSymbolMap);</span>
+<span class="fc" id="L185">        VeryLongBitString encoded = encode(c, symbols.codeSymbolMap);</span>
         
-<span class="fc" id="L175">        HuffmanEncoding h = new HuffmanEncoding();</span>
-<span class="fc" id="L176">        h.symbolTree = symbols.symbolTree;</span>
-<span class="fc" id="L177">        h.freqMap = f;</span>
-<span class="fc" id="L178">        h.encoded = encoded;</span>
+<span class="fc" id="L187">        HuffmanEncoding h = new HuffmanEncoding();</span>
+<span class="fc" id="L188">        h.symbolTree = symbols.symbolTree;</span>
+<span class="fc" id="L189">        h.freqMap = f;</span>
+<span class="fc" id="L190">        h.encoded = encoded;</span>
         
-<span class="fc" id="L180">        return h;</span>
+<span class="fc" id="L192">        return h;</span>
     }
 
     /**
-     * @param f map with key=code-point, value=frequency of code-point in 
+     @param f map with key=code-point, value=frequency of code-point in 
      * original text.
-     * @param sumF the sum of all frequencies in f.  it's used to assign
+     @param sumF the sum of all frequencies in f.  it's used to assign
      * a maximum bit-length needed by an internal YFastTrie data structure.
-     * @return 
+     @return 
      */
     protected HeapNode buildFrequencyCodeTree(TIntIntMap f, int sumF) {
         
-<span class="fc" id="L192">        int n = f.size();</span>
+<span class="fc" id="L204">        int n = f.size();</span>
 
         // initialize heap with C set of characters which are the keys of f
-<span class="fc" id="L195">        int maxQ = sumF;</span>
-<span class="fc" id="L196">        YFastTrieWrapper q = new YFastTrieWrapper(maxQ + 1);</span>
-<span class="fc" id="L197">        TIntIntIterator iter = f.iterator();</span>
+<span class="fc" id="L207">        int maxQ = sumF;</span>
+<span class="fc" id="L208">        YFastTrieWrapper q = new YFastTrieWrapper(maxQ + 1);</span>
+<span class="fc" id="L209">        TIntIntIterator iter = f.iterator();</span>
         int cP;
         int fP;
         // or PriorityQueue&lt;Integer&gt; q = new PriorityQueue&lt;&gt;(n);
         HeapNode node;
-<span class="fc bfc" id="L202" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
-<span class="fc" id="L203">            iter.advance();;</span>
-<span class="fc" id="L204">            cP = iter.key();</span>
-<span class="fc" id="L205">            fP = iter.value();</span>
-<span class="fc" id="L206">            node = new HeapNode(fP);</span>
-<span class="fc" id="L207">            node.setData(cP);</span>
-<span class="fc" id="L208">            q.insert(node);</span>
+<span class="fc bfc" id="L214" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L215">            iter.advance();</span>
+<span class="fc" id="L216">            cP = iter.key();</span>
+<span class="fc" id="L217">            fP = iter.value();</span>
+<span class="fc" id="L218">            node = new HeapNode(fP);</span>
+<span class="fc" id="L219">            node.setData(cP);</span>
+<span class="fc" id="L220">            q.insert(node);</span>
         }
 
         //build a tree from the bottom up
         HeapNode nodeZ;
         int i;
-<span class="fc bfc" id="L214" title="All 2 branches covered.">        for (i = 1; i &lt; n; ++i) {</span>
-<span class="fc" id="L215">            nodeZ = new HeapNode();</span>
-<span class="fc" id="L216">            nodeZ.setLeft(q.extractMin());</span>
-<span class="fc" id="L217">            nodeZ.setRight(q.extractMin());</span>
-<span class="fc" id="L218">            nodeZ.setKey(nodeZ.getLeft().getKey() + nodeZ.getRight().getKey());</span>
+<span class="fc bfc" id="L226" title="All 2 branches covered.">        for (i = 1; i &lt; n; ++i) {</span>
+<span class="fc" id="L227">            nodeZ = new HeapNode();</span>
+<span class="fc" id="L228">            nodeZ.setLeft(q.extractMin());</span>
+<span class="fc" id="L229">            nodeZ.setRight(q.extractMin());</span>
+<span class="fc" id="L230">            nodeZ.setKey(nodeZ.getLeft().getKey() + nodeZ.getRight().getKey());</span>
             
-<span class="fc" id="L220">            q.insert(nodeZ);</span>
+<span class="fc" id="L232">            q.insert(nodeZ);</span>
         }
         
-<span class="pc bnc" id="L223" title="All 2 branches missed.">        assert (q.getNumberOfNodes() == 1);</span>
+<span class="pc bnc" id="L235" title="All 2 branches missed.">        assert (q.getNumberOfNodes() == 1);</span>
 
-<span class="fc" id="L225">        HeapNode t = q.extractMin();</span>
+<span class="fc" id="L237">        HeapNode t = q.extractMin();</span>
         
-<span class="fc" id="L227">        t = repairToUniqueIfNeeded(t);</span>
+<span class="fc" id="L239">        t = repairToUniqueIfNeeded(t);</span>
         
-<span class="fc" id="L229">        return t;</span>
+<span class="fc" id="L241">        return t;</span>
     }
     
     /**
      * 
-     * @param f map with key=code-point, value=frequency of code-point in 
+     @param f map with key=code-point, value=frequency of code-point in 
      * original text.
-     * @param sumF the sum of all frequencies in f.  it's used to assign
+     @param sumF the sum of all frequencies in f.  it's used to assign
      * a maximum bit-length needed by an internal YFastTrie data structure.
-     * @return 
+     @return 
      */
     protected EncodingSymbols buildSymbolCodeTree(TIntIntMap f, int sumF) {
         
         //System.out.println(&quot;freqMap:&quot;);
         //printMap(f);   
         
-
-<span class="fc" id="L246">        HeapNode t = buildFrequencyCodeTree(f, sumF);</span>
+        // key = combined frequency, data=code point.
+<span class="fc" id="L258">        HeapNode t = buildFrequencyCodeTree(f, sumF);</span>
         
         
         //System.out.println(&quot;freq code tree:&quot;);
         //TreeTraversal.printLevelOrder(t);
         
 
-<span class="fc" id="L253">        TIntIntMap symbolCodeMap = new TIntIntHashMap();</span>
+<span class="fc" id="L265">        TIntIntMap symbolCodeMap = new TIntIntHashMap();</span>
 
         // convert the tree into variable-length binary prefix-code.
         // traversal is level-order.
-<span class="fc" id="L257">        HeapNode node = t;</span>
+<span class="fc" id="L269">        HeapNode node = t;</span>
         // the node key here is changed from frequency to binary code
-<span class="fc" id="L259">        t.setKey(0);// key=freq-&gt;code, value=cP</span>
-<span class="fc" id="L260">        Queue&lt;HeapNode&gt; queue = new ArrayDeque&lt;&gt;();</span>
+<span class="fc" id="L271">        t.setKey(0);// key=freq-&gt;code, value=cP</span>
+<span class="fc" id="L272">        Queue&lt;HeapNode&gt; queue = new ArrayDeque&lt;&gt;();</span>
         long key;
-<span class="fc bfc" id="L262" title="All 2 branches covered.">        while (node != null) {</span>
-<span class="fc bfc" id="L263" title="All 4 branches covered.">            if (node.getLeft() == null &amp;&amp; node.getRight() == null) {</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">        while (node != null) {</span>
+<span class="fc bfc" id="L275" title="All 4 branches covered.">            if (node.getLeft() == null &amp;&amp; node.getRight() == null) {</span>
                 // this is a leaf, so is one of the characters
-<span class="fc" id="L265">                symbolCodeMap.put((Integer) node.getData(), (int) node.getKey());</span>
+<span class="fc" id="L277">                symbolCodeMap.put((Integer) node.getData(), (int) node.getKey());</span>
             } else {
-<span class="fc bfc" id="L267" title="All 2 branches covered.">                if (node.getLeft() != null) {</span>
+<span class="fc bfc" id="L279" title="All 2 branches covered.">                if (node.getLeft() != null) {</span>
                     //change left key: append 0 to node key
-<span class="fc" id="L269">                    key = node.getKey() &lt;&lt; 1;</span>
-<span class="fc" id="L270">                    node.getLeft().setKey(key);</span>
-<span class="fc" id="L271">                    queue.add(node.getLeft());</span>
+<span class="fc" id="L281">                    key = node.getKey() &lt;&lt; 1;</span>
+<span class="fc" id="L282">                    node.getLeft().setKey(key);</span>
+<span class="fc" id="L283">                    queue.add(node.getLeft());</span>
                 }
-<span class="pc bpc" id="L273" title="1 of 2 branches missed.">                if (node.getRight() != null) {</span>
+<span class="pc bpc" id="L285" title="1 of 2 branches missed.">                if (node.getRight() != null) {</span>
                     //change right key: append 1 to node key
-<span class="fc" id="L275">                    key = node.getKey() &lt;&lt; 1;</span>
-<span class="fc" id="L276">                    key |= 1;</span>
-<span class="fc" id="L277">                    node.getRight().setKey(key);</span>
-<span class="fc" id="L278">                    queue.add(node.getRight());</span>
+<span class="fc" id="L287">                    key = node.getKey() &lt;&lt; 1;</span>
+<span class="fc" id="L288">                    key |= 1;</span>
+<span class="fc" id="L289">                    node.getRight().setKey(key);</span>
+<span class="fc" id="L290">                    queue.add(node.getRight());</span>
                 }
             }
-<span class="fc" id="L281">            node = queue.poll(); // returns null if empty</span>
+<span class="fc" id="L293">            node = queue.poll(); // returns null if empty</span>
         }
         
-<span class="fc" id="L284">        EncodingSymbols eS = new EncodingSymbols();</span>
-<span class="fc" id="L285">        eS.symbolTree = t;</span>
-<span class="fc" id="L286">        eS.codeSymbolMap = symbolCodeMap;</span>
+<span class="fc" id="L296">        EncodingSymbols eS = new EncodingSymbols();</span>
+<span class="fc" id="L297">        eS.symbolTree = t;</span>
+<span class="fc" id="L298">        eS.codeSymbolMap = symbolCodeMap;</span>
         
         //eS.print();
 
-<span class="fc" id="L290">        return eS;</span>
+<span class="fc" id="L302">        return eS;</span>
     }
     
     private long count(String c, TIntIntMap codeSymbolMap) {
-<span class="fc" id="L294">        long nBits = 0;</span>
+<span class="fc" id="L306">        long nBits = 0;</span>
         int cP;
         int s;
-<span class="fc bfc" id="L297" title="All 2 branches covered.">        for (int i = 0; i &lt; c.length(); ++i) {</span>
-<span class="fc" id="L298">            cP = c.codePointAt(i);</span>
-<span class="fc" id="L299">            s = codeSymbolMap.get(cP);</span>
-<span class="fc" id="L300">            nBits += MiscMath0.numberOfBits(s);</span>
+<span class="fc bfc" id="L309" title="All 2 branches covered.">        for (int i = 0; i &lt; c.length(); ++i) {</span>
+<span class="fc" id="L310">            cP = c.codePointAt(i);</span>
+<span class="fc" id="L311">            s = codeSymbolMap.get(cP);</span>
+<span class="fc" id="L312">            nBits += MiscMath0.numberOfBits(s);</span>
         }
-<span class="fc" id="L302">        return nBits;</span>
+<span class="fc" id="L314">        return nBits;</span>
     }
 
     /**
      * encode the text c, given the code symbol map.
-     * @param c uncoded text to be encoded.
-     * @param codeSymbolMap map with key = alphabet code point, value = 
+     @param c uncoded text to be encoded.
+     @param codeSymbolMap map with key = alphabet code point, value = 
      * bit-string symbol.
-     * @return returns the encoding of text 'c', stored as a VeryLongBitString.
+     @return returns the encoding of text 'c', stored as a VeryLongBitString.
      */
     VeryLongBitString encode(String c, TIntIntMap codeSymbolMap) {
         
         // count the number of bits the encoded string will be.
         // this is needed to construct the VeryLongBitString.
-<span class="fc" id="L316">        long nE = count(c, codeSymbolMap);</span>
+<span class="fc" id="L328">        long nE = count(c, codeSymbolMap);</span>
         
         //NOTE: could use java's BigInteger, but that creates a new BigInteger 
         //      for every modifying operation such as setBit().
-<span class="fc" id="L320">        VeryLongBitString encoded = new VeryLongBitString(nE);</span>
+<span class="fc" id="L332">        VeryLongBitString encoded = new VeryLongBitString(nE);</span>
        
         /*
         network data is usually passed as big endian
@@ -335,77 +347,77 @@ import java.util.Queue;
          
         int cP;
         int s;
-<span class="fc" id="L338">        long b = 0;</span>
+<span class="fc" id="L350">        long b = 0;</span>
         long b2;
         int nB;
-<span class="fc bfc" id="L341" title="All 2 branches covered.">        for (int i = 0; i &lt; c.length(); ++i) {</span>
-<span class="fc" id="L342">            cP = c.codePointAt(i);</span>
-<span class="fc" id="L343">            s = codeSymbolMap.get(cP);</span>
+<span class="fc bfc" id="L353" title="All 2 branches covered.">        for (int i = 0; i &lt; c.length(); ++i) {</span>
+<span class="fc" id="L354">            cP = c.codePointAt(i);</span>
+<span class="fc" id="L355">            s = codeSymbolMap.get(cP);</span>
             
-<span class="fc" id="L345">            nB = MiscMath0.numberOfBits(s);</span>
+<span class="fc" id="L357">            nB = MiscMath0.numberOfBits(s);</span>
             
             // set bits, reversing them from b to b+nB for the bit-string tree path
             // _ _ _ _ _ _  b=0, nB=3   7 6 5 4 3 2 1 0
             //              s=100: write s[0] to  c[(b+nB-1)]
-<span class="fc" id="L350">            b2 = b + nB - 1;</span>
-<span class="fc bfc" id="L351" title="All 2 branches covered.">            while (nB &gt; 0) {</span>
-<span class="fc bfc" id="L352" title="All 2 branches covered.">                if ((s &amp; 1) == 1) {</span>
-<span class="fc" id="L353">                    encoded.setBit(b2);</span>
+<span class="fc" id="L362">            b2 = b + nB - 1;</span>
+<span class="fc bfc" id="L363" title="All 2 branches covered.">            while (nB &gt; 0) {</span>
+<span class="fc bfc" id="L364" title="All 2 branches covered.">                if ((s &amp; 1) == 1) {</span>
+<span class="fc" id="L365">                    encoded.setBit(b2);</span>
                 }
-<span class="fc" id="L355">                s &gt;&gt;= 1;</span>
-<span class="fc" id="L356">                ++b;</span>
-<span class="fc" id="L357">                --nB;</span>
-<span class="fc" id="L358">                --b2;</span>
+<span class="fc" id="L367">                s &gt;&gt;= 1;</span>
+<span class="fc" id="L368">                ++b;</span>
+<span class="fc" id="L369">                --nB;</span>
+<span class="fc" id="L370">                --b2;</span>
             }
         }
         
-<span class="fc" id="L362">        return encoded;</span>
+<span class="fc" id="L374">        return encoded;</span>
     }
     
     /**
      * decode the Huffman encoded tree. runtime complexity is O(N) where N is
      * the number of characters in the original text.
      *
-     * @param symbolTree the symbol code map
-     * @param encoded text
-     * @return returns the decoded text.
+     @param symbolTree the symbol code map
+     @param encoded text
+     @return returns the decoded text.
      */
     public String decompress(HeapNode symbolTree, VeryLongBitString encoded) {
         
-<span class="fc" id="L375">        StringBuilder sb = new StringBuilder();</span>
+<span class="fc" id="L387">        StringBuilder sb = new StringBuilder();</span>
         
-<span class="fc" id="L377">        HeapNode node = symbolTree;</span>
+<span class="fc" id="L389">        HeapNode node = symbolTree;</span>
              
-<span class="pc bpc" id="L379" title="1 of 2 branches missed.">        if (node == null) {</span>
-<span class="nc" id="L380">            return &quot;&quot;;</span>
+<span class="pc bpc" id="L391" title="1 of 2 branches missed.">        if (node == null) {</span>
+<span class="nc" id="L392">            return &quot;&quot;;</span>
         }
         
-<span class="fc" id="L383">        long n = encoded.getInstantiatedBitSize();</span>
+<span class="fc" id="L395">        long n = encoded.getInstantiatedBitSize();</span>
         long i;
         int cP;
-<span class="fc bfc" id="L386" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc bfc" id="L387" title="All 4 branches covered.">            if (node.getLeft() == null &amp;&amp; node.getRight() == null) {</span>
+<span class="fc bfc" id="L398" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc bfc" id="L399" title="All 4 branches covered.">            if (node.getLeft() == null &amp;&amp; node.getRight() == null) {</span>
                 
                 // this is a leaf node, so we have a letter in the decoded alphabet now
-<span class="fc" id="L390">                cP = (Integer)node.getData();</span>
+<span class="fc" id="L402">                cP = (Integer)node.getData();</span>
                 
-<span class="fc" id="L392">                sb.append(Character.toChars(cP));</span>
-<span class="fc" id="L393">                node = symbolTree;</span>
+<span class="fc" id="L404">                sb.append(Character.toChars(cP));</span>
+<span class="fc" id="L405">                node = symbolTree;</span>
             }
             
-<span class="fc bfc" id="L396" title="All 2 branches covered.">            if (encoded.isSet(i)) {</span>
-<span class="fc" id="L397">                node = node.getRight();</span>
+<span class="fc bfc" id="L408" title="All 2 branches covered.">            if (encoded.isSet(i)) {</span>
+<span class="fc" id="L409">                node = node.getRight();</span>
             } else {
-<span class="fc" id="L399">                node = node.getLeft();</span>
+<span class="fc" id="L411">                node = node.getLeft();</span>
             }
         }
         
-<span class="pc bpc" id="L403" title="2 of 4 branches missed.">        if (node != null &amp;&amp; node.getData() != null) {</span>
-<span class="fc" id="L404">            cP = (Integer)node.getData();</span>
-<span class="fc" id="L405">            sb.append(Character.toChars(cP));</span>
+<span class="pc bpc" id="L415" title="2 of 4 branches missed.">        if (node != null &amp;&amp; node.getData() != null) {</span>
+<span class="fc" id="L416">            cP = (Integer)node.getData();</span>
+<span class="fc" id="L417">            sb.append(Character.toChars(cP));</span>
         }
         
-<span class="fc" id="L408">        return sb.toString();</span>
+<span class="fc" id="L420">        return sb.toString();</span>
     }
     
     private HeapNode repairToUniqueIfNeeded(HeapNode t) {
@@ -414,44 +426,44 @@ import java.util.Queue;
         //    TreeTraversal.printLevelOrder(t);
             
         // there is a possible violation of unique prefix code for
-        // a path from root to leaf that is all left nodes and longer than 1.
-        // can remove the all left path leaf
+        // a path from root to leaf that is all left nodes and with a path length longer than 1.
+        // can remove the &quot;all-left&quot; path leaf
         // add a new root node to top of the tree t and assign the existing tree to its right
         // assign the leaf to the new root's left 
         
-<span class="pc bpc" id="L422" title="1 of 4 branches missed.">        if (!(t.getLeft() != null &amp;&amp; t.getLeft().getLeft() != null)) {</span>
-<span class="fc" id="L423">            return t;</span>
+<span class="pc bpc" id="L434" title="1 of 4 branches missed.">        if (!(t.getLeft() != null &amp;&amp; t.getLeft().getLeft() != null)) {</span>
+<span class="fc" id="L435">            return t;</span>
         }
        
-<span class="fc" id="L426">        HeapNode p = t;</span>
-<span class="fc" id="L427">        HeapNode leaf = p.getLeft();</span>
+<span class="fc" id="L438">        HeapNode p = t;</span>
+<span class="fc" id="L439">        HeapNode leaf = p.getLeft();</span>
                 
-<span class="fc bfc" id="L429" title="All 2 branches covered.">        while (leaf.getLeft() != null) {</span>
-<span class="fc" id="L430">            p = leaf;</span>
-<span class="fc" id="L431">            leaf = leaf.getLeft();</span>
+<span class="fc bfc" id="L441" title="All 2 branches covered.">        while (leaf.getLeft() != null) {</span>
+<span class="fc" id="L442">            p = leaf;</span>
+<span class="fc" id="L443">            leaf = leaf.getLeft();</span>
         }
         
         //System.out.printf(&quot;remove leaf=(%d,%d), p=(%d,%d)\n&quot;, 
         //    leaf.getKey(), (Integer)leaf.getData(), p.getKey(), (Integer)p.getData());
-<span class="fc" id="L436">        p.setLeft(null);</span>
+<span class="fc" id="L448">        p.setLeft(null);</span>
         
-<span class="fc" id="L438">        HeapNode r = new HeapNode(t.getKey() - 1);</span>
-<span class="fc" id="L439">        r.setRight(t);</span>
-<span class="fc" id="L440">        r.setLeft(leaf);</span>
+<span class="fc" id="L450">        HeapNode r = new HeapNode(t.getKey() - 1);</span>
+<span class="fc" id="L451">        r.setRight(t);</span>
+<span class="fc" id="L452">        r.setLeft(leaf);</span>
         
         //System.out.println(&quot;repaired tree:&quot;);
         //TreeTraversal.printLevelOrder(r);
         
-<span class="fc" id="L445">        return r;</span>
+<span class="fc" id="L457">        return r;</span>
     }
     
     private static void printMap(TIntIntMap f) {
-<span class="nc" id="L449">        TIntIntIterator iter = f.iterator();</span>
-<span class="nc bnc" id="L450" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
-<span class="nc" id="L451">            iter.advance();</span>
-<span class="nc" id="L452">            System.out.printf(&quot;key=%d, v=%d\n&quot;, iter.key(), iter.value());</span>
+<span class="nc" id="L461">        TIntIntIterator iter = f.iterator();</span>
+<span class="nc bnc" id="L462" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
+<span class="nc" id="L463">            iter.advance();</span>
+<span class="nc" id="L464">            System.out.printf(&quot;key=%d, v=%d\n&quot;, iter.key(), iter.value());</span>
         }
-<span class="nc" id="L454">    }</span>
+<span class="nc" id="L466">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

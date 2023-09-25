@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PolarAngleMergeSort.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.sort</a> &gt; <span class="el_source">PolarAngleMergeSort.java</span></div><h1>PolarAngleMergeSort.java</h1><pre class="source lang-java linenums">package algorithms.sort;
+
+import algorithms.util.AngleUtil;
+
+import java.util.Arrays;
+
+/**
+ * adapted from 
+ * https://code.google.com/p/two-point-correlation/source/browse/src/test/java/algorithms/compGeometry/convexHull/
+ * under MIT License (MIT), Nichole King 2013
+ * 
+ * The algorithm uses a merge sort which has a worse case runtime is O(N * log_2(N)),
+ * but also includes an additional set of operations to remove inner points with the
+ * same polar angle from P0.
+ *
+first implemented in project
+     https://github.com/nking/curvature-scale-space-corners-and-transformations
+     w/ Copyright (c) 2014 Climb With Your Feet
+     and using The MIT License (MIT)
+
+   then moved to this shared library project which has the same copyright
+   and license.
+
+ */
+<span class="fc" id="L25">public class PolarAngleMergeSort {</span>
+
+    public static int sort(float xP0, float yP0, float[] x, float[] y) {
+
+<span class="fc bfc" id="L29" title="All 2 branches covered.">        if (x == null) {</span>
+<span class="fc" id="L30">        	throw new IllegalArgumentException(&quot;x cannot be null&quot;);</span>
+        }
+<span class="fc bfc" id="L32" title="All 2 branches covered.">        if (y == null) {</span>
+<span class="fc" id="L33">        	throw new IllegalArgumentException(&quot;y cannot be null&quot;);</span>
+        }
+<span class="fc bfc" id="L35" title="All 2 branches covered.">        if (x.length != y.length) {</span>
+<span class="fc" id="L36">        	throw new IllegalArgumentException(&quot;number of items in x must be the same as in y&quot;);</span>
+        }
+        
+<span class="fc bfc" id="L39" title="All 2 branches covered.">        if (x.length == 1) {</span>
+<span class="fc" id="L40">            return 1;</span>
+        }
+
+        // for angles which are same, a delete operation is needed after all processing
+        //    and ability to ignore the point to be deleted.
+<span class="fc" id="L45">        double[] polarAngle = new double[x.length];</span>
+        
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        for (int i = 1; i &lt; x.length; i++) {</span>
+<span class="fc" id="L48">            polarAngle[i] = AngleUtil.polarAngleCCW((double)(x[i] - xP0), </span>
+                (double)(y[i] - yP0));
+        }
+        
+<span class="fc" id="L52">        sort(xP0, yP0, x, y, 1, x.length - 1, polarAngle);</span>
+        
+<span class="fc" id="L54">        int nUsable = PolarAngleQuickSort.reduceToUniquePolarAngles(xP0, yP0, x, y, polarAngle);</span>
+        
+<span class="fc" id="L56">        return nUsable;</span>
+    }
+    
+    protected static void sort(float xP0, float yP0, float[] x, float[] y, 
+        int indexLo, int indexHi, double[] polarAngle) {
+
+<span class="fc bfc" id="L62" title="All 2 branches covered.">        if (indexLo &lt; indexHi) {</span>
+
+<span class="fc" id="L64">            int indexMid = (indexLo + indexHi) &gt;&gt; 1;</span>
+
+<span class="fc" id="L66">            sort(xP0, yP0, x, y, indexLo, indexMid, polarAngle);</span>
+<span class="fc" id="L67">            sort(xP0, yP0, x, y, indexMid + 1, indexHi, polarAngle);</span>
+<span class="fc" id="L68">            merge(xP0, yP0, x, y, indexLo, indexMid, indexHi, polarAngle);</span>
+        }
+<span class="fc" id="L70">    }</span>
+    
+    private static void merge(float xP0, float yP0, float[] x, float[] y, 
+        int indexLo, int indexMid, int indexHi, final double[] polarAngle) {
+
+<span class="fc" id="L75">        int nLeft = indexMid - indexLo + 1;</span>
+<span class="fc" id="L76">        int nRight = indexHi - indexMid;</span>
+
+<span class="fc" id="L78">        float[] xLeft = Arrays.copyOfRange(x, indexLo, indexMid + 2);       // add 1 for sentinel</span>
+<span class="fc" id="L79">        float[] yLeft = Arrays.copyOfRange(y, indexLo, indexMid + 2);</span>
+<span class="fc" id="L80">        double[] angleLeft = Arrays.copyOfRange(polarAngle, indexLo, indexMid + 2);</span>
+
+<span class="fc" id="L82">        float[] xRight = Arrays.copyOfRange(x, indexMid + 1, indexHi + 2);  // add 1 for sentinel</span>
+<span class="fc" id="L83">        float[] yRight = Arrays.copyOfRange(y, indexMid + 1, indexHi + 2);</span>
+<span class="fc" id="L84">        double[] angleRight = Arrays.copyOfRange(polarAngle, indexMid + 1, indexHi + 2);</span>
+
+<span class="fc" id="L86">        xLeft[nLeft] = Float.MAX_VALUE;</span>
+<span class="fc" id="L87">        yLeft[nLeft] = Float.MAX_VALUE;</span>
+<span class="fc" id="L88">        angleLeft[nLeft] = Double.MAX_VALUE;</span>
+<span class="fc" id="L89">        xRight[nRight] = Float.MAX_VALUE;</span>
+<span class="fc" id="L90">        yRight[nRight] = Float.MAX_VALUE;</span>
+<span class="fc" id="L91">        angleRight[nRight] = Double.MAX_VALUE;</span>
+
+<span class="fc" id="L93">        int i = 0;</span>
+<span class="fc" id="L94">        int j = 0;</span>
+
+<span class="fc bfc" id="L96" title="All 2 branches covered.">        for (int k = indexLo; k &lt;= indexHi; k++) {</span>
+
+<span class="fc bfc" id="L98" title="All 2 branches covered.">            if (angleLeft[i] &lt;= angleRight[j]) {</span>
+
+<span class="fc" id="L100">                y[k] = yLeft[i];</span>
+<span class="fc" id="L101">                x[k] = xLeft[i];</span>
+<span class="fc" id="L102">                polarAngle[k] = angleLeft[i];</span>
+<span class="fc" id="L103">                i++;</span>
+            } else {
+
+<span class="fc" id="L106">                y[k] = yRight[j];</span>
+<span class="fc" id="L107">                x[k] = xRight[j];</span>
+<span class="fc" id="L108">                polarAngle[k] = angleRight[j];</span>
+<span class="fc" id="L109">                j++;</span>
+            }
+        }
+<span class="fc" id="L112">    }</span>
+
+    static double relativeLengthOfLine(double x1, double y1, double x2, double y2) {
+<span class="nc" id="L115">        double dx2 = (x2 - x1);</span>
+<span class="nc" id="L116">        dx2 *= dx2;</span>
+<span class="nc" id="L117">        double dy2 = (y2 - y1);</span>
+<span class="nc" id="L118">        dy2 *= dy2;</span>
+        //double d = Math.sqrt(dx2 + dy2);
+<span class="nc" id="L120">        return dx2 + dy2;</span>
+    }
+
+
+    /**
+     * sort the points x, y by their polar angles with respect to the first point (x[0],y[0])
+     * in counterclockwise order, ascending.
+     * It uses a non-recursive merge sort for a runtime complexity of O(n*log_2(n)) and space complexity of O(n).
+     * @param x
+     * @param y
+     * @param outPolarAngle the output array that should already be instantiated to same size
+     *                      as x.  it will be filled with the polar angles of x,y from x[0],y[0]
+     * @param reduceToUniqueAngles if true, for any points having the same polar angle, only the point furthest
+     *                             from the first point in (x,y) will be kept. if false, all points are kept.
+     * @param tolerance if reduceToUniqueAngles is true, tolerance is used to determing if two angles are equivalent.
+     *                  The angles are in radians and so is the tolerance.
+     * for reference, 0.1 degrees = 0.001745 radians.
+     * @return the number of usable points in the sorted arrays. if reduceToUniqueAngles is true,
+     * then for points having same angle,
+     * only the furthest from x[0], y[0] is kept, and so there may be points at the ends of arrays
+     * x,y, and outPolarAngle that are unusable.
+     */
+    public static int sortCCWBy1stPoint(double[] x, double[] y, double[] outPolarAngle, 
+        boolean reduceToUniqueAngles, double tolerance) {
+
+<span class="pc bpc" id="L145" title="2 of 4 branches missed.">        if (x.length != outPolarAngle.length || x.length != y.length) {</span>
+<span class="nc" id="L146">            throw new IllegalArgumentException(&quot;x, y, and outPolarAngle must be same lengths&quot;);</span>
+        }
+
+<span class="fc" id="L149">        double x0 = x[0];</span>
+<span class="fc" id="L150">        double y0 = y[0];</span>
+
+<span class="fc" id="L152">        double[] x1 = Arrays.copyOfRange(x, 1, x.length);</span>
+<span class="fc" id="L153">        double[] y1 = Arrays.copyOfRange(y, 1, y.length);</span>
+<span class="fc" id="L154">        double[] p1 = new double[x1.length];</span>
+
+<span class="fc" id="L156">        int n1 = x1.length;</span>
+        int i;
+        double theta;
+<span class="fc bfc" id="L159" title="All 2 branches covered.">        for (i = 0; i &lt; n1; i++) {</span>
+            // these are in radians
+<span class="fc" id="L161">            theta = Math.atan2((y1[i] - y0), (x1[i] - x0));</span>
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">            if (theta &lt; 0) {</span>
+<span class="nc" id="L163">                theta += 2. * Math.PI;</span>
+            }
+<span class="fc" id="L165">            p1[i] = theta;</span>
+            // to convert to degrees: multiply by (180/math.pi)
+        }
+
+<span class="fc" id="L169">        int[] sortedIndexes1 = MiscSorter.mergeSortIncreasing(p1);</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">        for (i = 0; i &lt; n1; ++i) {</span>
+<span class="fc" id="L171">            x[i+1] = x1[sortedIndexes1[i]];</span>
+<span class="fc" id="L172">            y[i+1] = y1[sortedIndexes1[i]];</span>
+<span class="fc" id="L173">            outPolarAngle[i+1] = p1[i];</span>
+        }
+
+        int nUsable;
+        // need tolerance in radians.  for reference, 0.1 degrees = 0.001745 radians
+<span class="pc bpc" id="L178" title="1 of 2 branches missed.">        if (reduceToUniqueAngles) {</span>
+<span class="fc" id="L179">            nUsable = MiscSorter.reduceToUniquePolarAngles(x, y, outPolarAngle, tolerance);</span>
+        } else {
+<span class="nc" id="L181">            nUsable = x.length;</span>
+        }
+
+<span class="fc" id="L184">        return nUsable;</span>
+    }
+
+
+    /**
+     * sort the points x, y by their polar angles with respect to the first point (x[0],y[0])
+     * in counterclockwise order, ascending.
+     * It uses a non-recursive merge sort for a runtime complexity of O(n*log_2(n)) and space complexity of O(n).
+     * @param x
+     * @param y
+     * @param outPolarAngle the output array that should already be instantiated to same size
+     *                      as x.  it will be filled with the polar angles of x,y from x[0],y[0]
+     * @param reduceToUniqueAngles if true, for any points having the same polar angle, only the point furthest
+     *                             from the first point in (x,y) will be kept. if false, all points are kept.
+     * @param tolerance if reduceToUniqueAngles is true, tolerance is used to determing if two angles are equivalent.
+     *                  The angles are in radians and so is the tolerance.
+     * for reference, 0.1 degrees = 0.001745 radians.
+     * @return the number of usable points in the sorted arrays. if reduceToUniqueAngles is true,
+     * then for points having same angle,
+     * only the furthest from x[0], y[0] is kept, and so there may be points at the ends of arrays
+     * x,y, and outPolarAngle that are unusable.
+     */
+    public static int sortCCWBy1stPoint(long[] x, long[] y, double[] outPolarAngle, boolean reduceToUniqueAngles,
+                                        double tolerance) {
+
+<span class="pc bpc" id="L209" title="2 of 4 branches missed.">        if (x.length != outPolarAngle.length || x.length != y.length) {</span>
+<span class="nc" id="L210">            throw new IllegalArgumentException(&quot;x, y, and outPolarAngle must be same lengths&quot;);</span>
+        }
+
+<span class="fc" id="L213">        long x0 = x[0];</span>
+<span class="fc" id="L214">        long y0 = y[0];</span>
+
+<span class="fc" id="L216">        long[] x1 = Arrays.copyOfRange(x, 1, x.length);</span>
+<span class="fc" id="L217">        long[] y1 = Arrays.copyOfRange(y, 1, y.length);</span>
+<span class="fc" id="L218">        double[] p1 = new double[x1.length];</span>
+
+<span class="fc" id="L220">        int n1 = x1.length;</span>
+        int i;
+        double theta;
+<span class="fc bfc" id="L223" title="All 2 branches covered.">        for (i = 0; i &lt; n1; i++) {</span>
+            // these are in radians
+<span class="fc" id="L225">            theta = Math.atan2((y1[i] - y0), (x1[i] - x0));</span>
+<span class="pc bpc" id="L226" title="1 of 2 branches missed.">            if (theta &lt; 0) {</span>
+<span class="nc" id="L227">                theta += 2. * Math.PI;</span>
+            }
+<span class="fc" id="L229">            p1[i] = theta;</span>
+            // to convert to degrees: multiply by (180/math.pi)
+        }
+
+<span class="fc" id="L233">        int[] sortedIndexes1 = MiscSorter.mergeSortIncreasing(p1);</span>
+<span class="fc bfc" id="L234" title="All 2 branches covered.">        for (i = 0; i &lt; n1; ++i) {</span>
+<span class="fc" id="L235">            x[i+1] = x1[sortedIndexes1[i]];</span>
+<span class="fc" id="L236">            y[i+1] = y1[sortedIndexes1[i]];</span>
+<span class="fc" id="L237">            outPolarAngle[i+1] = p1[i];</span>
+        }
+
+        int nUsable;
+        // need tolerance in radians.  for reference, 0.1 degrees = 0.001745 radians
+<span class="pc bpc" id="L242" title="1 of 2 branches missed.">        if (reduceToUniqueAngles) {</span>
+<span class="fc" id="L243">            nUsable = MiscSorter.reduceToUniquePolarAngles(x, y, outPolarAngle, tolerance);</span>
+        } else {
+<span class="nc" id="L245">            nUsable = x.length;</span>
+        }
+
+<span class="fc" id="L248">        return nUsable;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

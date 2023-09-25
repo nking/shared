@@ -22,9 +22,9 @@ import java.util.List;
        The method uses recursive convolution operations, including previous
        result to make next.
        &lt;/pre&gt;
-     * @param input
-     * @param outputTransformed
-     * @param outputCoeff 
+     @param input
+     @param outputTransformed
+     @param outputCoeff 
      */
     public void calculateWithTriangleScalingFunction(float[] input,
         List&lt;OneDFloatArray&gt; outputTransformed, List&lt;OneDFloatArray&gt; outputCoeff) {
@@ -86,9 +86,9 @@ import java.util.List;
        * ...
        * outputTransformed[8] = sqrt( 8 + 1 ) = sqrt(9) = 3 convolution
        * &lt;/pre&gt;
-     * @param input
-     * @param outputTransformed
-     * @param outputCoeff 
+     @param input
+     @param outputTransformed
+     @param outputCoeff 
      */
     public void calculateWithB3SplineScalingFunction(float[] input,
         List&lt;OneDFloatArray&gt; outputTransformed, List&lt;OneDFloatArray&gt; outputCoeff) {
@@ -126,21 +126,27 @@ import java.util.List;
         
 <span class="fc" id="L127">    }</span>
     
+    /**
+     *
+     @param c0
+     @param mmCoeff
+     @return
+     */
     public float[] reconstruct(float[] c0, List&lt;OneDFloatArray&gt; mmCoeff) {
 
-<span class="fc" id="L131">        int nr = mmCoeff.size();</span>
+<span class="fc" id="L137">        int nr = mmCoeff.size();</span>
 
-<span class="fc" id="L133">        OneDFloatArray output = new OneDFloatArray(Arrays.copyOf(c0, c0.length));</span>
+<span class="fc" id="L139">        OneDFloatArray output = new OneDFloatArray(Arrays.copyOf(c0, c0.length));</span>
 
-<span class="fc bfc" id="L135" title="All 2 branches covered.">        for (int j = 0; j &lt; nr; ++j) {</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">        for (int j = 0; j &lt; nr; ++j) {</span>
            
-<span class="fc" id="L137">            float[] add = mmCoeff.get(j).a;</span>
-<span class="fc bfc" id="L138" title="All 2 branches covered.">            for (int jj = 0; jj &lt; add.length; ++jj) {</span>
-<span class="fc" id="L139">                output.a[jj] += add[jj];</span>
+<span class="fc" id="L143">            float[] add = mmCoeff.get(j).a;</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">            for (int jj = 0; jj &lt; add.length; ++jj) {</span>
+<span class="fc" id="L145">                output.a[jj] += add[jj];</span>
             }
         }
 
-<span class="fc" id="L143">        return output.a;</span>
+<span class="fc" id="L149">        return output.a;</span>
     }
     
     /**
@@ -178,7 +184,7 @@ import java.util.List;
        http://www.uni-kl.de/AG-Heinrich/EMS.pdf)
        suggests different sampling methods, so may change this in the future.
         
-     * @return 
+     @return 
      */
     /*
     private float estimateLocalNoise(float[] data, int pixIdx, int xOffset) {

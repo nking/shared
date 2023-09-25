@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KMP.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.alignment</a> &gt; <span class="el_source">KMP.java</span></div><h1>KMP.java</h1><pre class="source lang-java linenums">package algorithms.alignment;
+
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
+
+/**
+ * Knuth-Morris-Pratt string matcher.
+ * runtime complexity is O(m) + O(n) where m is the length of the
+ * pattern and n is the length of the text to search.
+ *
+ * algorithm is from Introduction to Algorithms, by Corman, Leiserson, Rivest, and Stein (CLRS)
+ */
+<span class="nc" id="L13">public class KMP {</span>
+
+    /**
+     * find the indexes of t where the complete matches of p begin.
+     * The runtime complexity is O(m) + O(n) where m is the length of the
+     * pattern and n is the length of the text to search.
+     &lt;pre&gt;
+         reference:
+         Introduction to Algorithms, by Corman, Leiserson, Rivest, and Stein (CLRS)
+     &lt;/pre&gt;
+     * @param p pattern of characters to find in t
+     * @param t text to be searched for pattern p
+     * @return the indexes of t where the complete matches of p begin.
+     */
+    public static int[] findPatternInText(char[] p, char[] t) {
+<span class="fc" id="L28">        int m = p.length;</span>
+<span class="fc" id="L29">        int n = t.length;</span>
+<span class="fc" id="L30">        int[] pi = computePrefixFunction(p);</span>
+<span class="fc" id="L31">        TIntList idxs = new TIntArrayList();</span>
+
+<span class="fc" id="L33">        int q = 0;</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc bfc" id="L35" title="All 4 branches covered.">            while (q &gt; 0 &amp;&amp; p[q] != t[i]) {</span>
+<span class="fc" id="L36">                q = pi[q - 1];</span>
+            }
+<span class="fc bfc" id="L38" title="All 2 branches covered.">            if (p[q] == t[i]) {</span>
+<span class="fc" id="L39">                ++q;</span>
+            }
+<span class="fc bfc" id="L41" title="All 2 branches covered.">            if (q == m) {</span>
+<span class="fc" id="L42">                idxs.add(i - m + 1);</span>
+<span class="fc" id="L43">                q = pi[q - 1];</span>
+            }
+        }
+<span class="fc" id="L46">        return idxs.toArray();</span>
+    }
+
+    /**
+     * compute the prefix function which returns an offset character index of match of repeated pattern
+     * @param p the pattern
+     * @return prefix function
+     */
+    protected static int[] computePrefixFunction(char[] p) {
+<span class="fc" id="L55">        int m = p.length;</span>
+<span class="fc" id="L56">        int[] pi = new int[m];</span>
+<span class="fc" id="L57">        int k = 0;</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">        for (int q = 1; q &lt; m; ++q) {</span>
+<span class="fc bfc" id="L59" title="All 4 branches covered.">            while (k &gt; 0 &amp;&amp; p[k] != p[q]) {</span>
+<span class="fc" id="L60">                k = pi[k - 1] - 1;</span>
+            }
+<span class="fc bfc" id="L62" title="All 2 branches covered.">            if (p[k] == p[q]) {</span>
+<span class="fc" id="L63">                ++k;</span>
+            }
+<span class="fc" id="L65">            pi[q] = k;</span>
+        }
+<span class="fc" id="L67">        return pi;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

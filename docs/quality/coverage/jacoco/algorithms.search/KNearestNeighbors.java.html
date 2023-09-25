@@ -59,169 +59,185 @@ import thirdparty.voronoi.VoronoiFortunesSweep.Site;
 <span class="pc" id="L59">    private float ymin = Float.MAX_VALUE;</span>
 <span class="pc" id="L60">    private float ymax = Float.NEGATIVE_INFINITY;</span>
         
-<span class="nc" id="L62">    public KNearestNeighbors(int[] x, int[] y) {</span>
-<span class="nc" id="L63">        init(x, y);</span>
-<span class="nc" id="L64">    }</span>
+    /**
+     *
+     @param x
+     @param y
+     */
+<span class="nc" id="L67">    public KNearestNeighbors(int[] x, int[] y) {</span>
+<span class="nc" id="L68">        init(x, y);</span>
+<span class="nc" id="L69">    }</span>
     
-<span class="fc" id="L66">    public KNearestNeighbors(float[] x, float[] y) {</span>
-<span class="fc" id="L67">        init(x, y);</span>
-<span class="fc" id="L68">    }</span>
+    /**
+     *
+     @param x
+     @param y
+     */
+<span class="fc" id="L76">    public KNearestNeighbors(float[] x, float[] y) {</span>
+<span class="fc" id="L77">        init(x, y);</span>
+<span class="fc" id="L78">    }</span>
     
-<span class="fc" id="L70">    public KNearestNeighbors(TLongSet pixIdxs, int width, int height) {</span>
-<span class="fc" id="L71">        init(pixIdxs, width, height);</span>
-<span class="fc" id="L72">    }</span>
+    /**
+     *
+     @param pixIdxs
+     @param width
+     @param height
+     */
+<span class="fc" id="L86">    public KNearestNeighbors(TLongSet pixIdxs, int width, int height) {</span>
+<span class="fc" id="L87">        init(pixIdxs, width, height);</span>
+<span class="fc" id="L88">    }</span>
     
     private void init(int[] x, int[] y) {
         
-<span class="nc bnc" id="L76" title="All 10 branches missed.">        if (x == null || x.length == 0 || y == null</span>
+<span class="nc bnc" id="L92" title="All 10 branches missed.">        if (x == null || x.length == 0 || y == null</span>
             || y.length == 0 || (x.length != y.length)) {
-<span class="nc" id="L78">            throw new IllegalArgumentException(</span>
+<span class="nc" id="L94">            throw new IllegalArgumentException(</span>
                 &quot;x and y cannot be null or empty &quot;
                     + &quot;and must be same lengths&quot;);
         }
         
-<span class="nc" id="L83">        int n = x.length;</span>
+<span class="nc" id="L99">        int n = x.length;</span>
         
-<span class="nc" id="L85">        float[] x2 = new float[n];</span>
-<span class="nc" id="L86">        float[] y2 = new float[n];</span>
+<span class="nc" id="L101">        float[] x2 = new float[n];</span>
+<span class="nc" id="L102">        float[] y2 = new float[n];</span>
     
-<span class="nc bnc" id="L88" title="All 2 branches missed.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="nc" id="L89">            x2[i] = x[i];</span>
-<span class="nc" id="L90">            y2[i] = y[i];</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="nc" id="L105">            x2[i] = x[i];</span>
+<span class="nc" id="L106">            y2[i] = y[i];</span>
         }
         
-<span class="nc" id="L93">        init(x2, y2);</span>
-<span class="nc" id="L94">    }</span>
+<span class="nc" id="L109">        init(x2, y2);</span>
+<span class="nc" id="L110">    }</span>
     
     private void init(TLongSet pixIdxs, int width, int height) {
         
-<span class="fc" id="L98">        PixelHelper ph = new PixelHelper();</span>
+<span class="fc" id="L114">        PixelHelper ph = new PixelHelper();</span>
         
-<span class="fc" id="L100">        int[] xy = new int[2];</span>
+<span class="fc" id="L116">        int[] xy = new int[2];</span>
         
-<span class="fc" id="L102">        float[] x = new float[pixIdxs.size()];</span>
-<span class="fc" id="L103">        float[] y = new float[x.length];</span>
-<span class="fc" id="L104">        TLongIterator iter = pixIdxs.iterator();</span>
-<span class="fc" id="L105">        int i = 0;</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
-<span class="fc" id="L107">            long pixIdx = iter.next();</span>
-<span class="fc" id="L108">            ph.toPixelCoords(pixIdx, width, xy);</span>
-<span class="fc" id="L109">            x[i] = xy[0];</span>
-<span class="fc" id="L110">            y[i] = xy[1];</span>
-<span class="fc" id="L111">            ++i;</span>
-<span class="fc" id="L112">        }</span>
-<span class="pc bnc" id="L113" title="All 2 branches missed.">        assert(i == x.length);</span>
+<span class="fc" id="L118">        float[] x = new float[pixIdxs.size()];</span>
+<span class="fc" id="L119">        float[] y = new float[x.length];</span>
+<span class="fc" id="L120">        TLongIterator iter = pixIdxs.iterator();</span>
+<span class="fc" id="L121">        int i = 0;</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L123">            long pixIdx = iter.next();</span>
+<span class="fc" id="L124">            ph.toPixelCoords(pixIdx, width, xy);</span>
+<span class="fc" id="L125">            x[i] = xy[0];</span>
+<span class="fc" id="L126">            y[i] = xy[1];</span>
+<span class="fc" id="L127">            ++i;</span>
+<span class="fc" id="L128">        }</span>
+<span class="pc bnc" id="L129" title="All 2 branches missed.">        assert(i == x.length);</span>
         
-<span class="fc" id="L115">        init(x, y);</span>
-<span class="fc" id="L116">    }</span>
+<span class="fc" id="L131">        init(x, y);</span>
+<span class="fc" id="L132">    }</span>
     
     private void init(float[] x, float[] y) {
         
-<span class="pc bpc" id="L120" title="5 of 10 branches missed.">        if (x == null || x.length == 0 || y == null</span>
+<span class="pc bpc" id="L136" title="5 of 10 branches missed.">        if (x == null || x.length == 0 || y == null</span>
             || y.length == 0 || (x.length != y.length)) {
-<span class="nc" id="L122">            throw new IllegalArgumentException(</span>
+<span class="nc" id="L138">            throw new IllegalArgumentException(</span>
                 &quot;x and y cannot be null or empty &quot;
                     + &quot;and must be same lengths&quot;);
         }
-<span class="pc bpc" id="L126" title="1 of 2 branches missed.">        if (x.length &lt; 3) {</span>
-<span class="nc" id="L127">            throw new IllegalArgumentException(&quot;x and y &quot;</span>
+<span class="pc bpc" id="L142" title="1 of 2 branches missed.">        if (x.length &lt; 3) {</span>
+<span class="nc" id="L143">            throw new IllegalArgumentException(&quot;x and y &quot;</span>
             + &quot; must be at least length 3 in size&quot;);
         }
         
-<span class="fc" id="L131">        int n = x.length;</span>
+<span class="fc" id="L147">        int n = x.length;</span>
         
-<span class="fc" id="L133">        xmin = Float.MAX_VALUE;</span>
-<span class="fc" id="L134">        xmax = Float.NEGATIVE_INFINITY;</span>
-<span class="fc" id="L135">        ymin = Float.MAX_VALUE;</span>
-<span class="fc" id="L136">        ymax = Float.NEGATIVE_INFINITY;</span>
-<span class="fc bfc" id="L137" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L138">            float xp = x[i];</span>
-<span class="fc" id="L139">            float yp = y[i];</span>
-<span class="fc bfc" id="L140" title="All 2 branches covered.">            if (xp &lt; xmin) {</span>
-<span class="fc" id="L141">                xmin = xp;</span>
+<span class="fc" id="L149">        xmin = Float.MAX_VALUE;</span>
+<span class="fc" id="L150">        xmax = Float.NEGATIVE_INFINITY;</span>
+<span class="fc" id="L151">        ymin = Float.MAX_VALUE;</span>
+<span class="fc" id="L152">        ymax = Float.NEGATIVE_INFINITY;</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L154">            float xp = x[i];</span>
+<span class="fc" id="L155">            float yp = y[i];</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">            if (xp &lt; xmin) {</span>
+<span class="fc" id="L157">                xmin = xp;</span>
             }
-<span class="fc bfc" id="L143" title="All 2 branches covered.">            if (xp &gt; xmax) {</span>
-<span class="fc" id="L144">                xmax = xp;</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">            if (xp &gt; xmax) {</span>
+<span class="fc" id="L160">                xmax = xp;</span>
             }
-<span class="fc bfc" id="L146" title="All 2 branches covered.">            if (yp &lt; ymin) {</span>
-<span class="fc" id="L147">                ymin = yp;</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">            if (yp &lt; ymin) {</span>
+<span class="fc" id="L163">                ymin = yp;</span>
             }
-<span class="fc bfc" id="L149" title="All 2 branches covered.">            if (yp &gt; ymax) {</span>
-<span class="fc" id="L150">                ymax = yp;</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">            if (yp &gt; ymax) {</span>
+<span class="fc" id="L166">                ymax = yp;</span>
             }
         }
         
-<span class="fc" id="L154">        int minDist = 0;</span>
+<span class="fc" id="L170">        int minDist = 0;</span>
 
-<span class="fc" id="L156">        voronoi = new VoronoiFortunesSweep();</span>
+<span class="fc" id="L172">        voronoi = new VoronoiFortunesSweep();</span>
     
         // O(N * log_2(N)) to build
-<span class="fc" id="L159">        voronoi.generateVoronoi(x, y, xmin, xmax, ymin, ymax,</span>
+<span class="fc" id="L175">        voronoi.generateVoronoi(x, y, xmin, xmax, ymin, ymax,</span>
             minDist);
         
         // TODO: consider a LinkedHashSet here as it is ordered, but the
         // &quot;contains method is O(1).
-<span class="fc" id="L164">        LinkedList&lt;GraphEdge&gt; edges = voronoi.getAllEdges();</span>
+<span class="fc" id="L180">        LinkedList&lt;GraphEdge&gt; edges = voronoi.getAllEdges();</span>
         
-<span class="fc" id="L166">        Site[] sites = voronoi.getSites();</span>
+<span class="fc" id="L182">        Site[] sites = voronoi.getSites();</span>
         
-<span class="fc" id="L168">        siteIndexesMap = new HashMap&lt;PairFloat, Set&lt;Integer&gt;&gt;();</span>
+<span class="fc" id="L184">        siteIndexesMap = new HashMap&lt;PairFloat, Set&lt;Integer&gt;&gt;();</span>
     
-<span class="pc bnc" id="L170" title="All 2 branches missed.">        assert (!edges.isEmpty());</span>
-<span class="fc bfc" id="L171" title="All 2 branches covered.">        for (GraphEdge edge : edges) {</span>
-<span class="fc" id="L172">            int s1 = edge.site1;</span>
-<span class="fc" id="L173">            int s2 = edge.site2;</span>
+<span class="pc bnc" id="L186" title="All 2 branches missed.">        assert (!edges.isEmpty());</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">        for (GraphEdge edge : edges) {</span>
+<span class="fc" id="L188">            int s1 = edge.site1;</span>
+<span class="fc" id="L189">            int s2 = edge.site2;</span>
 
-<span class="fc" id="L175">            PairFloat p1 = sites[s1].getCoord();</span>
-<span class="fc" id="L176">            PairFloat p2 = sites[s2].getCoord();</span>
+<span class="fc" id="L191">            PairFloat p1 = sites[s1].getCoord();</span>
+<span class="fc" id="L192">            PairFloat p2 = sites[s2].getCoord();</span>
 
-<span class="fc" id="L178">            Set&lt;Integer&gt; indexes = siteIndexesMap.get(p1);</span>
-<span class="fc bfc" id="L179" title="All 2 branches covered.">            if (indexes == null) {</span>
-<span class="fc" id="L180">                indexes = new HashSet&lt;Integer&gt;();</span>
-<span class="fc" id="L181">                siteIndexesMap.put(p1, indexes);</span>
+<span class="fc" id="L194">            Set&lt;Integer&gt; indexes = siteIndexesMap.get(p1);</span>
+<span class="fc bfc" id="L195" title="All 2 branches covered.">            if (indexes == null) {</span>
+<span class="fc" id="L196">                indexes = new HashSet&lt;Integer&gt;();</span>
+<span class="fc" id="L197">                siteIndexesMap.put(p1, indexes);</span>
             }
-<span class="fc" id="L183">            indexes.add(Integer.valueOf(s2));</span>
+<span class="fc" id="L199">            indexes.add(Integer.valueOf(s2));</span>
 
-<span class="fc" id="L185">            indexes = siteIndexesMap.get(p2);</span>
-<span class="fc bfc" id="L186" title="All 2 branches covered.">            if (indexes == null) {</span>
-<span class="fc" id="L187">                indexes = new HashSet&lt;Integer&gt;();</span>
-<span class="fc" id="L188">                siteIndexesMap.put(p2, indexes);</span>
+<span class="fc" id="L201">            indexes = siteIndexesMap.get(p2);</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">            if (indexes == null) {</span>
+<span class="fc" id="L203">                indexes = new HashSet&lt;Integer&gt;();</span>
+<span class="fc" id="L204">                siteIndexesMap.put(p2, indexes);</span>
             }
-<span class="fc" id="L190">            indexes.add(Integer.valueOf(s1));</span>
-<span class="fc" id="L191">        }</span>
+<span class="fc" id="L206">            indexes.add(Integer.valueOf(s1));</span>
+<span class="fc" id="L207">        }</span>
 
-<span class="pc bnc" id="L193" title="All 2 branches missed.">        assert(sites.length == x.length);</span>
+<span class="pc bnc" id="L209" title="All 2 branches missed.">        assert(sites.length == x.length);</span>
 
         // points closer than minDist are not present,
         // so the map is possibly smaller than all points.
         // therefore, for this use of voronoi, need minDist=0.
         {//DEBUG
-<span class="pc bpc" id="L199" title="1 of 2 branches missed.">            if (siteIndexesMap.size() != x.length) {</span>
-<span class="nc" id="L200">                Logger.getLogger(this.getClass().getName())</span>
-<span class="nc" id="L201">                    .warning(&quot;siteMap.size=&quot; + siteIndexesMap.size()</span>
+<span class="pc bpc" id="L215" title="1 of 2 branches missed.">            if (siteIndexesMap.size() != x.length) {</span>
+<span class="nc" id="L216">                Logger.getLogger(this.getClass().getName())</span>
+<span class="nc" id="L217">                    .warning(&quot;siteMap.size=&quot; + siteIndexesMap.size()</span>
                     + &quot; x.length=&quot; + x.length);
             }
         }
         //assert(siteIndexesMap.size() == x.length);
         
         // retrieve the points from voronoi sites because they are sorted
-<span class="fc" id="L208">        n = sites.length;</span>
-<span class="fc" id="L209">        float[] xp = new float[n];</span>
-<span class="fc" id="L210">        float[] yp = new float[n];</span>
-<span class="fc bfc" id="L211" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L212">            PairFloat p = sites[i].getCoord();</span>
-<span class="fc" id="L213">            xp[i] = p.getX();</span>
-<span class="fc" id="L214">            yp[i] = p.getY();</span>
+<span class="fc" id="L224">        n = sites.length;</span>
+<span class="fc" id="L225">        float[] xp = new float[n];</span>
+<span class="fc" id="L226">        float[] yp = new float[n];</span>
+<span class="fc bfc" id="L227" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L228">            PairFloat p = sites[i].getCoord();</span>
+<span class="fc" id="L229">            xp[i] = p.getX();</span>
+<span class="fc" id="L230">            yp[i] = p.getY();</span>
         }
         
         //O(N*lg_2(N)
-<span class="fc" id="L218">        kdTree = new KDTreeFloat(xp, yp, true);</span>
-<span class="fc" id="L219">    }</span>
+<span class="fc" id="L234">        kdTree = new KDTreeFloat(xp, yp, true);</span>
+<span class="fc" id="L235">    }</span>
 
     private float dist(float x, float y, PairFloat p) {
-<span class="fc" id="L222">        float diffX = x - p.getX();</span>
-<span class="fc" id="L223">        float diffY = y - p.getY();</span>
-<span class="fc" id="L224">        return (float)Math.sqrt(diffX * diffX) + (diffY * diffY);</span>
+<span class="fc" id="L238">        float diffX = x - p.getX();</span>
+<span class="fc" id="L239">        float diffY = y - p.getY();</span>
+<span class="fc" id="L240">        return (float)Math.sqrt(diffX * diffX) + (diffY * diffY);</span>
     }
     
     private static class PairDist implements Comparable&lt;PairDist&gt;{
@@ -233,18 +249,33 @@ import thirdparty.voronoi.VoronoiFortunesSweep.Site;
         }
     }
     
+    /**
+     *
+     @param k
+     @param x
+     @param y
+     @return
+     */
     public List&lt;PairFloat&gt; findNearest(int k, float x, float y) {
-<span class="fc" id="L237">        return findNearest(k, x, y, Float.MAX_VALUE);</span>
+<span class="fc" id="L260">        return findNearest(k, x, y, Float.MAX_VALUE);</span>
     }
         
+    /**
+     *
+     @param k
+     @param x
+     @param y
+     @param maxDistance
+     @return
+     */
     public List&lt;PairFloat&gt; findNearest(int k, float x, float y, float maxDistance) {
        
         // O(log_2(N) at best, but some extreme queries are O(N).
         // nearest site(s). (if same distances, returns more than one).
-<span class="fc" id="L244">        Set&lt;PairFloat&gt; nearest = kdTree.findNearestNeighbor(x, y);</span>
+<span class="fc" id="L275">        Set&lt;PairFloat&gt; nearest = kdTree.findNearestNeighbor(x, y);</span>
       
-<span class="pc bpc" id="L246" title="1 of 2 branches missed.">        if (nearest == null) {</span>
-<span class="nc" id="L247">            return null;</span>
+<span class="pc bpc" id="L277" title="1 of 2 branches missed.">        if (nearest == null) {</span>
+<span class="nc" id="L278">            return null;</span>
         }
         
         /*
@@ -258,107 +289,112 @@ import thirdparty.voronoi.VoronoiFortunesSweep.Site;
         */
         
         // each fixed size vector comparison on insert is O(log_2(k))
-<span class="fc" id="L261">        FixedSizeSortedVector&lt;PairDist&gt; vec = </span>
+<span class="fc" id="L292">        FixedSizeSortedVector&lt;PairDist&gt; vec = </span>
             new FixedSizeSortedVector&lt;PairDist&gt;(k, PairDist.class);
         
-<span class="fc" id="L264">        Site[] sites = voronoi.getSites();</span>
+<span class="fc" id="L295">        Site[] sites = voronoi.getSites();</span>
         
-<span class="fc" id="L266">        Set&lt;PairFloat&gt; visited = new HashSet&lt;PairFloat&gt;();</span>
+<span class="fc" id="L297">        Set&lt;PairFloat&gt; visited = new HashSet&lt;PairFloat&gt;();</span>
         
-<span class="fc" id="L268">        ArrayDeque&lt;PairFloat&gt; queue = new ArrayDeque&lt;PairFloat&gt;();</span>
-<span class="fc" id="L269">        queue.addAll(nearest);</span>
+<span class="fc" id="L299">        ArrayDeque&lt;PairFloat&gt; queue = new ArrayDeque&lt;PairFloat&gt;();</span>
+<span class="fc" id="L300">        queue.addAll(nearest);</span>
         
-<span class="fc bfc" id="L271" title="All 2 branches covered.">        while (!queue.isEmpty()) {</span>
+<span class="fc bfc" id="L302" title="All 2 branches covered.">        while (!queue.isEmpty()) {</span>
             
-<span class="fc" id="L273">            PairFloat site = queue.pop();</span>
+<span class="fc" id="L304">            PairFloat site = queue.pop();</span>
                  
-<span class="fc bfc" id="L275" title="All 2 branches covered.">            if (visited.contains(site)) {</span>
-<span class="fc" id="L276">                continue;</span>
+<span class="fc bfc" id="L306" title="All 2 branches covered.">            if (visited.contains(site)) {</span>
+<span class="fc" id="L307">                continue;</span>
             }
-<span class="fc" id="L278">            visited.add(site);</span>
+<span class="fc" id="L309">            visited.add(site);</span>
             
-<span class="fc" id="L280">            float dist = dist(x, y, site);</span>
+<span class="fc" id="L311">            float dist = dist(x, y, site);</span>
 
-<span class="pc bpc" id="L282" title="1 of 2 branches missed.">            if (dist &gt; maxDistance) {</span>
-<span class="nc" id="L283">                continue;</span>
+<span class="pc bpc" id="L313" title="1 of 2 branches missed.">            if (dist &gt; maxDistance) {</span>
+<span class="nc" id="L314">                continue;</span>
             }
             
             // if vec is not full or if site is closer than
             //  last full vec member, add site and add it's neighbors
             //  to queue
             
-<span class="fc" id="L290">            int nV = vec.getNumberOfItems();</span>
-<span class="pc bpc" id="L291" title="1 of 4 branches missed.">            if ((nV &lt; k) || ((nV &gt; 0) &amp;&amp; </span>
-<span class="fc bfc" id="L292" title="All 2 branches covered.">                (dist &lt; vec.getArray()[nV-1].dist))) {</span>
+<span class="fc" id="L321">            int nV = vec.getNumberOfItems();</span>
+<span class="pc bpc" id="L322" title="1 of 4 branches missed.">            if ((nV &lt; k) || ((nV &gt; 0) &amp;&amp; </span>
+<span class="fc bfc" id="L323" title="All 2 branches covered.">                (dist &lt; vec.getArray()[nV-1].dist))) {</span>
             
-<span class="fc" id="L294">                PairDist pd = new PairDist();</span>
-<span class="fc" id="L295">                pd.s1 = site;</span>
-<span class="fc" id="L296">                pd.dist = dist;</span>
-<span class="fc" id="L297">                vec.add(pd);                </span>
+<span class="fc" id="L325">                PairDist pd = new PairDist();</span>
+<span class="fc" id="L326">                pd.s1 = site;</span>
+<span class="fc" id="L327">                pd.dist = dist;</span>
+<span class="fc" id="L328">                vec.add(pd);                </span>
             
                 // add neighbors to queue
                 
-<span class="fc" id="L301">                Set&lt;Integer&gt; siteIndexes = siteIndexesMap.get(site);</span>
+<span class="fc" id="L332">                Set&lt;Integer&gt; siteIndexes = siteIndexesMap.get(site);</span>
             
-<span class="pc bpc" id="L303" title="1 of 2 branches missed.">                if (siteIndexes == null) {</span>
-<span class="nc" id="L304">                    throw new IllegalStateException(&quot;error in algorithm:&quot;</span>
+<span class="pc bpc" id="L334" title="1 of 2 branches missed.">                if (siteIndexes == null) {</span>
+<span class="nc" id="L335">                    throw new IllegalStateException(&quot;error in algorithm:&quot;</span>
                         + &quot; voronoi diagram has no neighbors for &quot;
-<span class="nc" id="L306">                        + &quot; (&quot; + site.getX() + &quot;,&quot; + site.getY() + &quot;)&quot;);</span>
+<span class="nc" id="L337">                        + &quot; (&quot; + site.getX() + &quot;,&quot; + site.getY() + &quot;)&quot;);</span>
                 }
             
-<span class="fc bfc" id="L309" title="All 2 branches covered.">                for (Integer index2 : siteIndexes) {</span>
-<span class="fc" id="L310">                    PairFloat site2 = sites[index2.intValue()].getCoord();</span>
-<span class="fc" id="L311">                    queue.add(site2);</span>
-<span class="fc" id="L312">                }</span>
+<span class="fc bfc" id="L340" title="All 2 branches covered.">                for (Integer index2 : siteIndexes) {</span>
+<span class="fc" id="L341">                    PairFloat site2 = sites[index2.intValue()].getCoord();</span>
+<span class="fc" id="L342">                    queue.add(site2);</span>
+<span class="fc" id="L343">                }</span>
             }
-<span class="fc" id="L314">        }</span>
+<span class="fc" id="L345">        }</span>
         
-<span class="fc" id="L316">        List&lt;PairFloat&gt; output = new ArrayList&lt;PairFloat&gt;();</span>
-<span class="fc" id="L317">        PairDist[] a = vec.getArray();</span>
-<span class="fc bfc" id="L318" title="All 2 branches covered.">        for (int i = 0; i &lt; vec.getNumberOfItems(); ++i) {</span>
-<span class="fc" id="L319">            output.add(a[i].s1);</span>
+<span class="fc" id="L347">        List&lt;PairFloat&gt; output = new ArrayList&lt;PairFloat&gt;();</span>
+<span class="fc" id="L348">        PairDist[] a = vec.getArray();</span>
+<span class="fc bfc" id="L349" title="All 2 branches covered.">        for (int i = 0; i &lt; vec.getNumberOfItems(); ++i) {</span>
+<span class="fc" id="L350">            output.add(a[i].s1);</span>
         }
         
-<span class="fc" id="L322">        return output;</span>
+<span class="fc" id="L353">        return output;</span>
     }
     
+    /**
+     *
+     @param fileNumber
+     * @throws IOException
+     */
     public void debug(int fileNumber) throws IOException {
         
-<span class="nc" id="L327">        Site[] sites = voronoi.getSites();</span>
-<span class="nc" id="L328">        int n = sites.length;</span>
-<span class="nc" id="L329">        float[] x = new float[n];</span>
-<span class="nc" id="L330">        float[] y = new float[n];</span>
-<span class="nc bnc" id="L331" title="All 2 branches missed.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="nc" id="L332">            x[i] = sites[i].getCoord().getX();</span>
-<span class="nc" id="L333">            y[i] = sites[i].getCoord().getY();</span>
+<span class="nc" id="L363">        Site[] sites = voronoi.getSites();</span>
+<span class="nc" id="L364">        int n = sites.length;</span>
+<span class="nc" id="L365">        float[] x = new float[n];</span>
+<span class="nc" id="L366">        float[] y = new float[n];</span>
+<span class="nc bnc" id="L367" title="All 2 branches missed.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="nc" id="L368">            x[i] = sites[i].getCoord().getX();</span>
+<span class="nc" id="L369">            y[i] = sites[i].getCoord().getY();</span>
         }
         
-<span class="nc" id="L336">        LinkedList&lt;GraphEdge&gt; edges = voronoi.getAllEdges();</span>
+<span class="nc" id="L372">        LinkedList&lt;GraphEdge&gt; edges = voronoi.getAllEdges();</span>
         
-<span class="nc" id="L338">        PolygonAndPointPlotter plotter = </span>
+<span class="nc" id="L374">        PolygonAndPointPlotter plotter = </span>
             new PolygonAndPointPlotter(xmin, xmax, ymin, ymax);
         
-<span class="nc" id="L341">        float[] xPolygon = null;</span>
-<span class="nc" id="L342">        float[] yPolygon = null;</span>
+<span class="nc" id="L377">        float[] xPolygon = null;</span>
+<span class="nc" id="L378">        float[] yPolygon = null;</span>
         // intentionally null for this because the method will ignore ull
-<span class="nc" id="L344">        plotter.addPlot(x, y, xPolygon, yPolygon, &quot;points&quot;);</span>
+<span class="nc" id="L380">        plotter.addPlot(x, y, xPolygon, yPolygon, &quot;points&quot;);</span>
         
-<span class="nc" id="L346">        int n2 = edges.size();</span>
-<span class="nc" id="L347">        xPolygon = new float[2*n2];</span>
-<span class="nc" id="L348">        yPolygon = new float[2*n2];</span>
-<span class="nc" id="L349">        int count = 0;</span>
-<span class="nc bnc" id="L350" title="All 2 branches missed.">        for (GraphEdge edge : edges) {</span>
-<span class="nc" id="L351">            xPolygon[count] = edge.x1;</span>
-<span class="nc" id="L352">            yPolygon[count] = edge.y1;</span>
-<span class="nc" id="L353">            xPolygon[count + 1] = edge.x2;</span>
-<span class="nc" id="L354">            yPolygon[count + 1] = edge.y2;</span>
-<span class="nc" id="L355">            count += 2;</span>
-<span class="nc" id="L356">        }</span>
-<span class="nc" id="L357">        plotter.addPlotWithLines(x, y, xPolygon, yPolygon, </span>
+<span class="nc" id="L382">        int n2 = edges.size();</span>
+<span class="nc" id="L383">        xPolygon = new float[2*n2];</span>
+<span class="nc" id="L384">        yPolygon = new float[2*n2];</span>
+<span class="nc" id="L385">        int count = 0;</span>
+<span class="nc bnc" id="L386" title="All 2 branches missed.">        for (GraphEdge edge : edges) {</span>
+<span class="nc" id="L387">            xPolygon[count] = edge.x1;</span>
+<span class="nc" id="L388">            yPolygon[count] = edge.y1;</span>
+<span class="nc" id="L389">            xPolygon[count + 1] = edge.x2;</span>
+<span class="nc" id="L390">            yPolygon[count + 1] = edge.y2;</span>
+<span class="nc" id="L391">            count += 2;</span>
+<span class="nc" id="L392">        }</span>
+<span class="nc" id="L393">        plotter.addPlotWithLines(x, y, xPolygon, yPolygon, </span>
             &quot;edges&quot;);
-<span class="nc" id="L359">        String filePath = plotter.writeFile(&quot;debug_voron_&quot; + fileNumber);</span>
-<span class="nc" id="L360">        System.out.println(&quot;wrote file=&quot; + filePath);</span>
-<span class="nc" id="L361">    }</span>
+<span class="nc" id="L395">        String filePath = plotter.writeFile(&quot;debug_voron_&quot; + fileNumber);</span>
+<span class="nc" id="L396">        System.out.println(&quot;wrote file=&quot; + filePath);</span>
+<span class="nc" id="L397">    }</span>
     
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

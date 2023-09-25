@@ -1,0 +1,451 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AngleUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.util</a> &gt; <span class="el_source">AngleUtil.java</span></div><h1>AngleUtil.java</h1><pre class="source lang-java linenums">package algorithms.util;
+
+import algorithms.sort.MultiArrayMergeSort;
+import algorithms.QuickSort;
+import java.util.List;
+
+/**
+ *
+ * @author nichole
+ */
+<span class="fc" id="L11">public class AngleUtil {</span>
+
+    /**
+    calculates the difference of angles between pairs of points in set1 and
+    set 2 ( angle of (diffX1, diffY1) - angle of (diffX2, diffY2).
+    * diffX1, diffX2 are the difference
+    * in x and y between 2 points in set 1, and diffX2, diffY2 are the
+    * difference for the same matched point pair in set2.  The reference
+    * frame is polar clockwise.
+    * For example, (diffX1, diffY1) being (1, 4) and (diffX2, diffY2) being
+    * (3.536, 2.12) leads to angles 284 minus 329 = -45.  Note that to
+    * transform (diffX1, diffY1) to (diffX2, diffY2) one would apply
+    * -1*result of this method.
+    *
+    * &lt;pre&gt;
+    *       clockwise --&gt;
+              +Y        V
+              270
+           III | IV
+       180 --------- 0   +X
+           II  |  I
+               90
+    * &lt;/pre&gt;
+    * Note that the subtraction is from closest angles.
+    * For example, if point 1 is in qI and point 2 is in qIV, 360 is added to
+    * point 1's angle, then the equation is (2*PI + point1 angle) - (point 2 angle).
+
+     * @param diffX1
+     * @param diffY1
+     * @param diffX2
+     * @param diffY2
+     * @return
+     */
+    public double subtract(double diffX1, double diffY1, double diffX2,
+        double diffY2) {
+
+        /*  clockwise --&gt;
+              +Y        V
+              270
+           III | IV
+       180 --------- 0   +X
+           II  |  I
+               90
+        */
+
+<span class="fc" id="L56">        double theta1 = polarAngleCW(diffX1, diffY1);</span>
+
+<span class="fc" id="L58">        double theta2 = polarAngleCW(diffX2, diffY2);</span>
+        
+<span class="fc" id="L60">        double twoPi = 2. * Math.PI;</span>
+
+<span class="fc bfc" id="L62" title="All 2 branches covered.">        if (theta1 &gt; theta2) {</span>
+            // add a phase to next value if it's closer to current with addition
+<span class="fc bfc" id="L64" title="All 2 branches covered.">            if ((theta1 - theta2) &gt; Math.abs(theta1 - (theta2 + twoPi))) {</span>
+<span class="fc" id="L65">                theta2 += twoPi;</span>
+            }
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">        } else if (theta2 &gt; theta1) {</span>
+            // add a phase to next value if it's closer to current with addition
+<span class="fc bfc" id="L69" title="All 2 branches covered.">            if ((theta2 - theta1) &gt; Math.abs(theta2 - (theta1 + twoPi))) {</span>
+<span class="fc" id="L70">                theta1 += twoPi;</span>
+            }
+        }
+
+<span class="fc" id="L74">        return theta1 - theta2;</span>
+    }
+
+    /**
+    calculates the polar theta in radians given x and y w.r.t. origin.  theta increases
+    * in value in a counter clockwise direction (CCW).  range of returned
+    * values is 0 to 2*pi.
+
+     * @param x
+     * @param y
+     * @return angle in range [0, 2*Math.PI)
+     */
+    public static double polarAngleCCW(double x, double y) {
+
+        /*
+                  +Y
+                 90
+        QII       |       QI
+                  |
+                  |
+     180-------------------- +X  0, 360
+                  |
+                  |
+         QIII     |       QIV
+                 270
+
+
+        Math.atan2 angles are:
+                 90
+           135    |    45
+                  |
+        180 ---------------  0
+                  |
+          -135    |   -45
+                 -90
+        so, for d &lt; 0, need 360+d
+        */
+
+<span class="fc" id="L112">        double theta = Math.atan2(y, x);</span>
+
+<span class="fc bfc" id="L114" title="All 2 branches covered.">        if (theta &lt; 0) {</span>
+<span class="fc" id="L115">            theta += 2. * Math.PI;</span>
+        }
+
+<span class="fc" id="L118">        return theta;</span>
+    }
+
+    /**
+    calculates the polar theta in radians given x and y w.r.t. origin.  theta increases
+    * in value in a clockwise direction (CW).
+
+     * @param x
+     * @param y
+     * @return polar angle in radians
+     */
+    public static double polarAngleCW(double x, double y) {
+
+        /*
+                  +Y
+                 270
+        QIII      |       QIV
+                  |
+                  |
+     180-------------------- +X  0, 360
+                  |
+                  |
+         QII      |       QI
+                  90
+
+        Math.atan2 angles are:
+                 90
+           135    |    45
+                  |
+        180 ---------------  0
+                  |
+          -135    |   -45
+                 -90
+        so need -1*d, then for d &lt; 0, need 360+d
+        */
+
+<span class="fc" id="L154">        double theta = -1 * Math.atan2(y, x);</span>
+
+<span class="fc bfc" id="L156" title="All 2 branches covered.">        if (theta &lt; 0) {</span>
+<span class="fc" id="L157">            theta += 2. * Math.PI;</span>
+        }
+
+<span class="fc" id="L160">        return theta;</span>
+    }
+
+    /**
+     * get the difference in angles, making correction for quadrants.
+     * @param rotDegrees0
+     * @param rotDegrees1
+     * @return 
+     */
+    public static float getAngleDifference(float rotDegrees0, float rotDegrees1) {
+
+        /*
+                  270
+               III | IV
+          180  --------- 0
+               II  |  I
+                   90
+        */
+
+<span class="nc" id="L179">        double twoPi = 360;</span>
+
+<span class="nc bnc" id="L181" title="All 2 branches missed.">        if (rotDegrees0 &gt; rotDegrees1) {</span>
+            // add a phase to next value if it's closer to current with addition
+<span class="nc bnc" id="L183" title="All 2 branches missed.">            if ((rotDegrees0 - rotDegrees1) &gt; Math.abs(rotDegrees0 - (rotDegrees1 + twoPi))) {</span>
+<span class="nc" id="L184">                rotDegrees1 += twoPi;</span>
+            }
+<span class="nc bnc" id="L186" title="All 2 branches missed.">        } else if (rotDegrees1 &gt; rotDegrees0) {</span>
+            // add a phase to next value if it's closer to current with addition
+<span class="nc bnc" id="L188" title="All 2 branches missed.">            if ((rotDegrees1 - rotDegrees0) &gt; Math.abs(rotDegrees1 - (rotDegrees0 + twoPi))) {</span>
+<span class="nc" id="L189">                rotDegrees0 += twoPi;</span>
+            }
+        }
+
+<span class="nc" id="L193">        return rotDegrees0 - rotDegrees1;</span>
+    }
+
+    public static float getAngleAverageInDegrees(float rotDegrees0, float rotDegrees1) {
+
+<span class="nc" id="L198">        double angleAvg = getAngleAverage(rotDegrees0, rotDegrees1, false);</span>
+
+<span class="nc" id="L200">        return (float) angleAvg;</span>
+    }
+
+    public static double getAngleAverageInRadians(double rotation0, double rotation1) {
+
+<span class="fc" id="L205">        double angleAvg = getAngleAverage(rotation0, rotation1, true);</span>
+
+<span class="fc" id="L207">        return angleAvg;</span>
+    }
+
+    /**
+     * given twoPi in degrees or in radians, return the angle average.
+     * @param rot0
+     * @param rot1
+     * @param useRadians
+     * @return
+     */
+    protected static double getAngleAverage(double rot0, double rot1, boolean useRadians) {
+
+         /*
+                  270
+               III | IV
+          180  --------- 0
+               II  |  I
+                   90
+        */
+<span class="fc" id="L226">        double angleAvg = calcAngleAddition(rot0, rot1, useRadians)/2.;</span>
+
+<span class="fc" id="L228">        return angleAvg;</span>
+    }
+
+    /**
+     * given twoPi in degrees or in radians, return the angle sum corrected to
+     * the larger angle frame, e.g. 0 + 350 = 710.
+     * @param theta1
+     * @param theta2
+     * @param useRadians
+     * @return
+     */
+    public static double calcAngleAddition(double theta1, double theta2,
+        boolean useRadians) {
+
+<span class="pc bpc" id="L242" title="2 of 4 branches missed.">        if (theta1 &lt; 0 || theta2 &lt; 0) {</span>
+<span class="nc" id="L243">            throw new IllegalArgumentException(</span>
+                &quot;theta1 and theta2 cannot be negative numbers&quot;);
+        }
+
+        /*
+                  270
+               III | IV
+          180  --------- 0
+               II  |  I
+                   90
+        */
+
+<span class="fc bfc" id="L255" title="All 2 branches covered.">        double twoPi = useRadians ? 2. * Math.PI : 360;</span>
+
+<span class="fc bfc" id="L257" title="All 2 branches covered.">        if (theta1 &gt; theta2) {</span>
+            // add a phase to next value if it's closer to current with addition
+<span class="pc bpc" id="L259" title="1 of 2 branches missed.">            if ((theta1 - theta2) &gt; Math.abs(theta1 - (theta2 + twoPi))) {</span>
+<span class="nc" id="L260">                theta2 += twoPi;</span>
+            }
+<span class="fc bfc" id="L262" title="All 2 branches covered.">        } else if (theta2 &gt; theta1) {</span>
+            // add a phase to next value if it's closer to current with addition
+<span class="pc bpc" id="L264" title="1 of 2 branches missed.">            if ((theta2 - theta1) &gt; Math.abs(theta2 - (theta1 + twoPi))) {</span>
+<span class="fc" id="L265">                theta1 += twoPi;</span>
+            }
+        }
+
+<span class="fc" id="L269">        return theta1 + theta2;</span>
+    }
+
+    /**
+     * given angles in degrees or in radians, return the angle sum corrected to
+     * the larger angle frame, e.g. 0 + 350 = 710.  It always chooses the
+     * smallest difference in quadrant space
+     * between the two angles (adding a cycle if needed) before adding.
+     * @param theta1
+     * @param theta2
+     * @param useRadians
+     * @param outputQuadrantCorrected quadrant corrected values of
+     * [rotationInDegrees0, rotationInDegrees1]
+     * @return
+     */
+    public static double calcAngleAddition(double theta1, double theta2,
+        boolean useRadians, double[] outputQuadrantCorrected) {
+
+<span class="nc bnc" id="L287" title="All 4 branches missed.">        if (theta1 &lt; 0 || theta2 &lt; 0) {</span>
+<span class="nc" id="L288">            throw new IllegalArgumentException(</span>
+                &quot;theta1 and theta2 cannot be negative numbers&quot;);
+        }
+
+        /*
+                  270
+               III | IV
+          180  --------- 0
+               II  |  I
+                   90
+        */
+<span class="nc bnc" id="L299" title="All 2 branches missed.">        double twoPi = useRadians ? 2. * Math.PI : 360;</span>
+        
+<span class="nc bnc" id="L301" title="All 2 branches missed.">        if (theta1 &gt; theta2) {</span>
+            // add a phase to next value if it's closer to current with addition
+<span class="nc bnc" id="L303" title="All 2 branches missed.">            if ((theta1 - theta2) &gt; Math.abs(theta1 - (theta2 + twoPi))) {</span>
+<span class="nc" id="L304">                theta2 += twoPi;</span>
+            }
+<span class="nc bnc" id="L306" title="All 2 branches missed.">        } else if (theta2 &gt; theta1) {</span>
+            // add a phase to next value if it's closer to current with addition
+<span class="nc bnc" id="L308" title="All 2 branches missed.">            if ((theta2 - theta1) &gt; Math.abs(theta2 - (theta1 + twoPi))) {</span>
+<span class="nc" id="L309">                theta1 += twoPi;</span>
+            }
+        }
+        
+<span class="nc" id="L313">        outputQuadrantCorrected[0] = theta1;</span>
+<span class="nc" id="L314">        outputQuadrantCorrected[1] = theta2;</span>
+        
+<span class="nc" id="L316">        return theta1 + theta2;</span>
+    }
+
+    /**
+     * calculate the angular average of rotDegrees0 and rotDegrees1 with
+     * corrections for quadrants if necessary.  For example, 0 averaged with
+     * 350 is 355.  Any changes in the given angles for quadrant math
+     * are seen in the populated outputQuadrantCorrected.
+     * @param outputQuadrantCorrected quadrant corrected values of
+     * [rotationInDegrees0, rotationInDegrees1]
+     * @return
+    */
+    protected static double getAngleAverageInDegrees(
+        double rotationInDegrees0, double rotationInDegrees1,
+        double[] outputQuadrantCorrected) {
+
+<span class="nc" id="L332">        boolean useRadians = false;</span>
+
+<span class="nc" id="L334">        double sum = calcAngleAddition(rotationInDegrees0,</span>
+            rotationInDegrees1, useRadians, outputQuadrantCorrected);
+
+<span class="nc" id="L337">        return sum/2.;</span>
+    }
+
+    /**
+     calculate the average of the angles using quadrant corrections (note,
+     * angles is modified by descending sort).
+     Runtime complexity is O(N*lg2N) for sort plus O(N).
+     * Note, may change to use CountingSort for N &gt; 80 and max(angles) ~ 360
+     * in the future.
+
+     * @param angles angles in units of degrees.  Note that this array
+     * is modified by use here so pass a copy if it should not be.
+     * @param useRadians
+     * @return
+     */
+    public static double calculateAverageWithQuadrantCorrections(
+        double[] angles, boolean useRadians) {
+
+        //TODO: because 360 is usually the max value, if N is &gt; 80, can
+        // use CountingSort here for better performance.
+        // CountingSort is O(maxValue) while MergeSort is O(N*lg_2(N))
+<span class="fc" id="L358">        QuickSort.descendingSort(angles);</span>
+
+<span class="fc bfc" id="L360" title="All 2 branches covered.">        double twoPI = useRadians ? 2. * Math.PI : 360;</span>
+        
+        // visit in order of large values to low to store quadrant corrections
+<span class="fc" id="L363">        double avg = 0;</span>
+<span class="fc bfc" id="L364" title="All 2 branches covered.">        for (int i = 0; i &lt; angles.length; ++i) {</span>
+
+<span class="fc" id="L366">            double angle1 = angles[i];</span>
+
+<span class="fc bfc" id="L368" title="All 2 branches covered.">            if (i == 0) {</span>
+
+<span class="fc" id="L370">                avg = angle1;</span>
+
+            } else {
+
+<span class="fc" id="L374">                double angle0 = avg;</span>
+
+                // add a phase to next value if it's closer to current with addition
+<span class="fc bfc" id="L377" title="All 2 branches covered.">                if ((angle0 - angle1) &gt; Math.abs(angle0 - (angle1 + twoPI))) {</span>
+<span class="fc" id="L378">                    angle1 += twoPI;</span>
+<span class="fc bfc" id="L379" title="All 2 branches covered.">                    if (useRadians) {</span>
+<span class="fc" id="L380">                        angles[i] = angle1;</span>
+                    } else {
+<span class="fc" id="L382">                        angles[i] = Math.round(angle1);</span>
+                    }
+                }
+
+<span class="fc" id="L386">                avg = (angle0 + angle1)/2.f;</span>
+            }
+        }
+        
+<span class="fc" id="L390">        avg = 0;</span>
+<span class="fc bfc" id="L391" title="All 2 branches covered.">        for (double a : angles) {</span>
+<span class="fc" id="L392">            avg += a;</span>
+        }
+<span class="fc" id="L394">        avg /= (double)angles.length;</span>
+        
+<span class="fc bfc" id="L396" title="All 2 branches covered.">        if (avg &gt; twoPI) {</span>
+<span class="fc" id="L397">            avg -= twoPI;</span>
+        }
+
+<span class="fc" id="L400">        return avg;</span>
+    }
+
+    /**
+     Runtime complexity is O(N*lg2N) for sort plus O(N).
+     * Note, may change to use CountingSort for N &gt; 80 and max(angles) ~ 360
+     * in the future.
+
+     */
+    public static void correctForQuadrants(List&lt;Double&gt; thetas,
+        boolean useRadians) {
+
+<span class="nc bnc" id="L412" title="All 4 branches missed.">        if (thetas == null || thetas.size() &lt; 2) {</span>
+<span class="nc" id="L413">            return;</span>
+        }
+
+<span class="nc" id="L416">        double[] angles = new double[thetas.size()];</span>
+<span class="nc" id="L417">        int[] indexes = new int[thetas.size()];</span>
+
+<span class="nc bnc" id="L419" title="All 2 branches missed.">        for (int i = 0; i &lt; thetas.size(); ++i) {</span>
+<span class="nc" id="L420">            angles[i] = thetas.get(i).doubleValue();</span>
+<span class="nc" id="L421">            indexes[i] = i;</span>
+        }
+
+<span class="nc" id="L424">        MultiArrayMergeSort.sortByDecr(angles, indexes);</span>
+
+<span class="nc bnc" id="L426" title="All 2 branches missed.">        double twoPi = useRadians ? 2. * Math.PI : 360;</span>
+        
+<span class="nc" id="L428">        double avg = 0;</span>
+<span class="nc bnc" id="L429" title="All 2 branches missed.">        for (int i = 0; i &lt; angles.length; ++i) {</span>
+<span class="nc" id="L430">            double angle1 = angles[i];</span>
+<span class="nc bnc" id="L431" title="All 2 branches missed.">            if (i == 0) {</span>
+<span class="nc" id="L432">                avg = angle1;</span>
+            } else {
+<span class="nc" id="L434">                double angle0 = avg;</span>
+<span class="nc bnc" id="L435" title="All 2 branches missed.">                if ((angle0 - angle1) &gt; Math.abs(angle0 - (angle1 + twoPi))) {</span>
+<span class="nc" id="L436">                    angle1 += twoPi;</span>
+<span class="nc" id="L437">                    angles[i] = Math.round(angle1);</span>
+                }
+<span class="nc" id="L439">                avg = (angle0 + angle1)/2.f;</span>
+            }
+        }
+
+<span class="nc bnc" id="L443" title="All 2 branches missed.">        for (int i = 0; i &lt; angles.length; ++i) {</span>
+<span class="nc" id="L444">            int idx = indexes[i];</span>
+<span class="nc" id="L445">            double v = angles[i];</span>
+<span class="nc" id="L446">            thetas.set(idx, v);</span>
+        }
+<span class="nc" id="L448">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

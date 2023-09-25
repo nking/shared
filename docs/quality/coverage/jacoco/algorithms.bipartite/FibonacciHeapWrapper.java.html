@@ -23,158 +23,167 @@ public class FibonacciHeapWrapper {
     
 <span class="nc" id="L24">    private int n = 0;</span>
     
-<span class="nc" id="L26">    public FibonacciHeapWrapper(int nEstimate, int maxC) {</span>
+    /**
+     *
+     @param nEstimate
+     @param maxC
+     */
+<span class="nc" id="L31">    public FibonacciHeapWrapper(int nEstimate, int maxC) {</span>
         
-<span class="nc" id="L28">        int pow2 = (int)Math.ceil(Math.log(nEstimate)/Math.log(2));</span>
+<span class="nc" id="L33">        int pow2 = (int)Math.ceil(Math.log(nEstimate)/Math.log(2));</span>
     
-<span class="nc" id="L30">        nApprox = nEstimate;</span>
+<span class="nc" id="L35">        nApprox = nEstimate;</span>
         
-<span class="nc bnc" id="L32" title="All 4 branches missed.">        if (pow2 &gt; 6 &amp;&amp; (maxC &gt; 1)) {</span>
+<span class="nc bnc" id="L37" title="All 4 branches missed.">        if (pow2 &gt; 6 &amp;&amp; (maxC &gt; 1)) {</span>
             
             // make multiple maps separated by sequential partitions of values
-<span class="nc" id="L35">            int nBins = pow2;</span>
+<span class="nc" id="L40">            int nBins = pow2;</span>
             
-<span class="nc bnc" id="L37" title="All 2 branches missed.">            if (maxC &lt; pow2) {</span>
+<span class="nc bnc" id="L42" title="All 2 branches missed.">            if (maxC &lt; pow2) {</span>
                 //pow2 range is 5 to 31
-<span class="nc" id="L39">                nBins = maxC;</span>
+<span class="nc" id="L44">                nBins = maxC;</span>
             }
             
-<span class="nc" id="L42">            binSz = (int)Math.ceil((float)maxC/(float)nBins);</span>
+<span class="nc" id="L47">            binSz = (int)Math.ceil((float)maxC/(float)nBins);</span>
             
-<span class="nc" id="L44">            heaps = new Heap[nBins];</span>
+<span class="nc" id="L49">            heaps = new Heap[nBins];</span>
             
-<span class="nc" id="L46">        } else {</span>
-<span class="nc" id="L47">            heaps = new Heap[1];</span>
-<span class="nc" id="L48">            binSz = Integer.MAX_VALUE;</span>
+<span class="nc" id="L51">        } else {</span>
+<span class="nc" id="L52">            heaps = new Heap[1];</span>
+<span class="nc" id="L53">            binSz = Integer.MAX_VALUE;</span>
         }
-<span class="nc" id="L50">    }</span>
+<span class="nc" id="L55">    }</span>
     
     /**
      * runtime is O(1).  makes no attempt to consolidate tree.
-     * @param node 
+     @param node 
      */
     public void insert(HeapNode node) {
         
-<span class="nc" id="L58">        int key = (int)node.getKey();</span>
+<span class="nc" id="L63">        int key = (int)node.getKey();</span>
         
         int binIdx;
-<span class="nc bnc" id="L61" title="All 2 branches missed.">        if (heaps.length == 1) {</span>
-<span class="nc" id="L62">            binIdx = 0;</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">        if (heaps.length == 1) {</span>
+<span class="nc" id="L67">            binIdx = 0;</span>
         } else {
-<span class="nc" id="L64">            binIdx = key/binSz;</span>
+<span class="nc" id="L69">            binIdx = key/binSz;</span>
         }
         
-<span class="nc bnc" id="L67" title="All 2 branches missed.">        if (heaps[binIdx] == null) {</span>
-<span class="nc" id="L68">            heaps[binIdx] = new Heap();</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">        if (heaps[binIdx] == null) {</span>
+<span class="nc" id="L73">            heaps[binIdx] = new Heap();</span>
         }
         
-<span class="nc" id="L71">        heaps[binIdx].insert(node);</span>
+<span class="nc" id="L76">        heaps[binIdx].insert(node);</span>
         
-<span class="nc" id="L73">        n++;</span>
+<span class="nc" id="L78">        n++;</span>
         
-<span class="nc bnc" id="L75" title="All 2 branches missed.">        if (key &lt; lastKnownMinKey) {</span>
-<span class="nc" id="L76">            lastKnownMinKey = key;</span>
-<span class="nc" id="L77">            lastKnownMinKeyIdx = binIdx;</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">        if (key &lt; lastKnownMinKey) {</span>
+<span class="nc" id="L81">            lastKnownMinKey = key;</span>
+<span class="nc" id="L82">            lastKnownMinKeyIdx = binIdx;</span>
         }
-<span class="nc bnc" id="L79" title="All 2 branches missed.">        if (key &gt; lastKnownMaxKey) {</span>
-<span class="nc" id="L80">            lastKnownMaxKey = key;</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">        if (key &gt; lastKnownMaxKey) {</span>
+<span class="nc" id="L85">            lastKnownMaxKey = key;</span>
         }
-<span class="nc" id="L82">    }</span>
+<span class="nc" id="L87">    }</span>
 
     /**
      * note, key1 and key2 are in same heap, the runtime is 
      * O(1) for decrease key, else the runtime is a 
      * delete and insert as O(log_2(n)).
      * 
-     * @param node
-     * @param key2 
+     @param node
+     @param key2 
      */
     public void decreaseKey(HeapNode node, long key2) {
         
-<span class="nc" id="L94">        int key = (int)node.getKey();</span>
+<span class="nc" id="L99">        int key = (int)node.getKey();</span>
         
         int binIdx1, binIdx2;
-<span class="nc bnc" id="L97" title="All 2 branches missed.">        if (heaps.length == 1) {</span>
-<span class="nc" id="L98">            binIdx1 = 0;</span>
-<span class="nc" id="L99">            binIdx2 = 0;</span>
+<span class="nc bnc" id="L102" title="All 2 branches missed.">        if (heaps.length == 1) {</span>
+<span class="nc" id="L103">            binIdx1 = 0;</span>
+<span class="nc" id="L104">            binIdx2 = 0;</span>
         } else {
-<span class="nc" id="L101">            binIdx1 = key/binSz;</span>
-<span class="nc" id="L102">            binIdx2 = (int)key2/binSz;</span>
+<span class="nc" id="L106">            binIdx1 = key/binSz;</span>
+<span class="nc" id="L107">            binIdx2 = (int)key2/binSz;</span>
         }
                 
-<span class="nc bnc" id="L105" title="All 2 branches missed.">        if (binIdx1 == binIdx2) {</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">        if (binIdx1 == binIdx2) {</span>
             
-<span class="nc" id="L107">            heaps[binIdx1].decreaseKey(node, key2);</span>
+<span class="nc" id="L112">            heaps[binIdx1].decreaseKey(node, key2);</span>
             
         } else {
         
             //runtime is that of extractMin, O(log_2(n))
-<span class="nc" id="L112">            heaps[binIdx1].remove(node);</span>
+<span class="nc" id="L117">            heaps[binIdx1].remove(node);</span>
                 
-<span class="nc" id="L114">            node.setKey(key2);</span>
+<span class="nc" id="L119">            node.setKey(key2);</span>
      
-<span class="nc bnc" id="L116" title="All 2 branches missed.">            if (heaps[binIdx2] == null) {</span>
-<span class="nc" id="L117">               heaps[binIdx2] = new Heap();</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">            if (heaps[binIdx2] == null) {</span>
+<span class="nc" id="L122">               heaps[binIdx2] = new Heap();</span>
             }
             
             //runtime is O(1).  makes no attempt to consolidate tree.
-<span class="nc" id="L121">            heaps[binIdx2].insert(node);</span>
+<span class="nc" id="L126">            heaps[binIdx2].insert(node);</span>
         }
         
-<span class="nc bnc" id="L124" title="All 2 branches missed.">        if (key2 &lt; lastKnownMinKey) {</span>
-<span class="nc" id="L125">            lastKnownMinKey = key2;</span>
-<span class="nc" id="L126">            lastKnownMinKeyIdx = binIdx2;</span>
+<span class="nc bnc" id="L129" title="All 2 branches missed.">        if (key2 &lt; lastKnownMinKey) {</span>
+<span class="nc" id="L130">            lastKnownMinKey = key2;</span>
+<span class="nc" id="L131">            lastKnownMinKeyIdx = binIdx2;</span>
         }
-<span class="nc" id="L128">    }</span>
+<span class="nc" id="L133">    }</span>
     
     /**
      * runtime is O(log_2 N) or better.
-     * @return 
+     @return 
      */
     public HeapNode extractMin() {
         
-<span class="nc bnc" id="L136" title="All 2 branches missed.">        if (n == 0) {</span>
-<span class="nc" id="L137">            return null;</span>
+<span class="nc bnc" id="L141" title="All 2 branches missed.">        if (n == 0) {</span>
+<span class="nc" id="L142">            return null;</span>
         }
      
-<span class="nc bnc" id="L140" title="All 2 branches missed.">        for (int i = (int)lastKnownMinKey; i &lt; heaps.length; ++i) {</span>
+<span class="nc bnc" id="L145" title="All 2 branches missed.">        for (int i = (int)lastKnownMinKey; i &lt; heaps.length; ++i) {</span>
             
-<span class="nc bnc" id="L142" title="All 4 branches missed.">            if ((heaps[i] == null) || (heaps[i].getNumberOfNodes() == 0)) {</span>
-<span class="nc" id="L143">                continue;</span>
+<span class="nc bnc" id="L147" title="All 4 branches missed.">            if ((heaps[i] == null) || (heaps[i].getNumberOfNodes() == 0)) {</span>
+<span class="nc" id="L148">                continue;</span>
             }
             
-<span class="nc" id="L146">            HeapNode node = heaps[i].extractMin();</span>
-<span class="nc" id="L147">            lastKnownMinKey = i;</span>
-<span class="nc" id="L148">            n--;</span>
+<span class="nc" id="L151">            HeapNode node = heaps[i].extractMin();</span>
+<span class="nc" id="L152">            lastKnownMinKey = i;</span>
+<span class="nc" id="L153">            n--;</span>
             
-<span class="nc" id="L150">            return node;</span>
+<span class="nc" id="L155">            return node;</span>
         }
         
-<span class="nc" id="L153">        return null;</span>
+<span class="nc" id="L158">        return null;</span>
     }
     
     /**
      * runtime complexity is O(log_2(n))
-     * @param node 
+     @param node 
      */
     public void remove(HeapNode node) {
         
-<span class="nc" id="L162">        int key = (int)node.getKey();</span>
+<span class="nc" id="L167">        int key = (int)node.getKey();</span>
         
         int binIdx;
-<span class="nc bnc" id="L165" title="All 2 branches missed.">        if (heaps.length == 1) {</span>
-<span class="nc" id="L166">            binIdx = 0;</span>
+<span class="nc bnc" id="L170" title="All 2 branches missed.">        if (heaps.length == 1) {</span>
+<span class="nc" id="L171">            binIdx = 0;</span>
         } else {
-<span class="nc" id="L168">            binIdx = key/binSz;</span>
+<span class="nc" id="L173">            binIdx = key/binSz;</span>
         }
         //runtime is that of extractMin, O(log_2(n))
-<span class="nc" id="L171">        heaps[binIdx].remove(node);</span>
+<span class="nc" id="L176">        heaps[binIdx].remove(node);</span>
         
-<span class="nc" id="L173">        n--;</span>
-<span class="nc" id="L174">    }</span>
+<span class="nc" id="L178">        n--;</span>
+<span class="nc" id="L179">    }</span>
     
+    /**
+     *
+     @return
+     */
     public long getNumberOfNodes() {
-<span class="nc" id="L177">        return n;</span>
+<span class="nc" id="L186">        return n;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

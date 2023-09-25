@@ -4,13 +4,16 @@ import algorithms.util.PairInt;
 import algorithms.util.SimpleLinkedListNode;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.iterator.TIntObjectIterator;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 
-import java.util.Arrays;
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * miscellaneous graph methods.
@@ -21,7 +24,7 @@ import java.util.Iterator;
  * 
  * @author nichole
  */
-<span class="nc" id="L24">public class GraphUtil {</span>
+<span class="nc" id="L27">public class GraphUtil {</span>
     
     /**
      * create an adjacency list from the given graph knowing that the vertexes 
@@ -30,17 +33,17 @@ import java.util.Iterator;
      * vertex u to vertex v, only one is present in the adjacency list for that
      * directional edge in the returned adjacency list.
      * runtime complexity is O(|V| + |E|).
-     * @param g
-     * @return 
+     @param g
+     @return 
      */
     public static SimpleLinkedListNode[] createAdjacencyList(
         NewmanGMLParser.GMLGraph g) {
         
-<span class="fc" id="L39">        int nV = g.nodeIdLabelMap.size();</span>
+<span class="fc" id="L42">        int nV = g.nodeIdLabelMap.size();</span>
         
-<span class="fc" id="L41">        SimpleLinkedListNode[] out = createAdjacencyList(g, nV);</span>
+<span class="fc" id="L44">        SimpleLinkedListNode[] out = createAdjacencyList(g, nV);</span>
         
-<span class="fc" id="L43">        return out;</span>
+<span class="fc" id="L46">        return out;</span>
     }
     
     /**
@@ -51,130 +54,524 @@ import java.util.Iterator;
      * Note that even if more than one edge is present in the direction from 
      * vertex u to vertex v, only one is present in the adjacency list for that
      * directional edge in the returned adjacency list.
-     * @param g
-     * @return 
+     @param g
+     @return 
      */
     public static SimpleLinkedListNode[] createAdjacencyList2(
         NewmanGMLParser.GMLGraph g) {
         
-<span class="fc" id="L60">        int[] vs = g.nodeIdLabelMap.keys();</span>
-<span class="fc" id="L61">        Arrays.sort(vs, 0, vs.length);</span>
-<span class="fc" id="L62">        int nV = vs[vs.length - 1] + 1;</span>
+<span class="fc" id="L63">        int[] vs = g.nodeIdLabelMap.keys();</span>
+<span class="fc" id="L64">        Arrays.sort(vs, 0, vs.length);</span>
+<span class="fc" id="L65">        int nV = vs[vs.length - 1] + 1;</span>
         
-<span class="fc" id="L64">        SimpleLinkedListNode[] out = createAdjacencyList(g, nV);</span>
+<span class="fc" id="L67">        SimpleLinkedListNode[] out = createAdjacencyList(g, nV);</span>
         
-<span class="fc" id="L66">        return out;</span>
+<span class="fc" id="L69">        return out;</span>
     }
     
     private static SimpleLinkedListNode[] createAdjacencyList(
         NewmanGMLParser.GMLGraph g, final int nVertexes) {
         
-<span class="fc" id="L72">        SimpleLinkedListNode[] out = new SimpleLinkedListNode[nVertexes];</span>
-<span class="fc bfc" id="L73" title="All 2 branches covered.">        for (int v = 0; v &lt; nVertexes; ++v) {</span>
-<span class="fc" id="L74">            out[v] = new SimpleLinkedListNode();</span>
+<span class="fc" id="L75">        SimpleLinkedListNode[] out = new SimpleLinkedListNode[nVertexes];</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">        for (int v = 0; v &lt; nVertexes; ++v) {</span>
+<span class="fc" id="L77">            out[v] = new SimpleLinkedListNode();</span>
         }
         
         //Entry&lt;PairInt, TFloatList&gt;entry;
         PairInt uv;
         //TFloatList wList;
         //Iterator&lt;Entry&lt;PairInt, TFloatList&gt;&gt; iter = g.edgeWeightMap.entrySet().iterator();
-<span class="fc" id="L81">        Iterator&lt;PairInt&gt; iter = g.edgeWeightMap.keySet().iterator();</span>
-<span class="fc bfc" id="L82" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L84">        Iterator&lt;PairInt&gt; iter = g.edgeWeightMap.keySet().iterator();</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
             //entry = iter.next();
             //uv = entry.getKey();
             //wList = entry.getValue();
-<span class="fc" id="L86">            uv = iter.next();</span>
-<span class="fc" id="L87">            out[uv.getX()].insert(uv.getY());</span>
+<span class="fc" id="L89">            uv = iter.next();</span>
+<span class="fc" id="L90">            out[uv.getX()].insert(uv.getY());</span>
         }
         
-<span class="fc" id="L90">        return out;</span>
+<span class="fc" id="L93">        return out;</span>
     }
 
 
     /**
-     * convert the adjacency graph g in TIntObjectMap&lt;TIntSet&gt; into a graph built with
+     * convert the adjacency graph g in TIntObjectMap TIntSet  into a graph built with
      * SimpleLinkedListNode[].  note that this method assumes that the vertexes are ordered such
      * that the final range of indexes returned is [0, max Vertex number].
-     * @param g
-     * @return
+     @param g
+     @return
      */
     public static SimpleLinkedListNode[] convertGraph(TIntObjectMap&lt;TIntSet&gt; g) {
-<span class="fc" id="L102">        int[] minMax = minAndMaxVertexNumbers(g);</span>
-<span class="fc" id="L103">        int n = minMax[1] + 1;</span>
+<span class="fc" id="L105">        int[] minMax = minAndMaxVertexNumbers(g);</span>
+<span class="fc" id="L106">        int n = minMax[1] + 1;</span>
 
-<span class="fc" id="L105">        SimpleLinkedListNode[] g2 = new SimpleLinkedListNode[n];</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L107">            g2[i] = new SimpleLinkedListNode();</span>
+<span class="fc" id="L108">        SimpleLinkedListNode[] g2 = new SimpleLinkedListNode[n];</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L110">            g2[i] = new SimpleLinkedListNode();</span>
         }
-<span class="fc" id="L109">        TIntObjectIterator&lt;TIntSet&gt; iter = g.iterator();</span>
+<span class="fc" id="L112">        TIntObjectIterator&lt;TIntSet&gt; iter = g.iterator();</span>
         TIntIterator iter2;
         int u, v;
-<span class="fc bfc" id="L112" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
-<span class="fc" id="L113">            iter.advance();</span>
-<span class="fc" id="L114">            u = iter.key();</span>
-<span class="fc" id="L115">            iter2 = iter.value().iterator();</span>
-<span class="fc bfc" id="L116" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
-<span class="fc" id="L117">                v = iter2.next();</span>
-<span class="fc" id="L118">                g2[u].insert(v);</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L116">            iter.advance();</span>
+<span class="fc" id="L117">            u = iter.key();</span>
+<span class="fc" id="L118">            iter2 = iter.value().iterator();</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
+<span class="fc" id="L120">                v = iter2.next();</span>
+<span class="fc" id="L121">                g2[u].insert(v);</span>
             }
         }
-<span class="fc" id="L121">        return g2;</span>
+<span class="fc" id="L124">        return g2;</span>
     }
 
+    /**
+     *
+     @param g
+     @return
+     */
     public static int[] minAndMaxVertexNumbers(TIntObjectMap&lt;TIntSet&gt; g) {
-<span class="fc" id="L125">        int min = Integer.MAX_VALUE;</span>
-<span class="fc" id="L126">        int max = Integer.MIN_VALUE;</span>
-<span class="fc" id="L127">        TIntObjectIterator&lt;TIntSet&gt; iter = g.iterator();</span>
+<span class="fc" id="L133">        int min = Integer.MAX_VALUE;</span>
+<span class="fc" id="L134">        int max = Integer.MIN_VALUE;</span>
+<span class="fc" id="L135">        TIntObjectIterator&lt;TIntSet&gt; iter = g.iterator();</span>
         TIntIterator iter2;
         int u, v;
-<span class="fc bfc" id="L130" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
-<span class="fc" id="L131">            iter.advance();</span>
-<span class="fc" id="L132">            u = iter.key();</span>
-<span class="fc bfc" id="L133" title="All 2 branches covered.">            if (u &lt; min) {</span>
-<span class="fc" id="L134">                min = u;</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L139">            iter.advance();</span>
+<span class="fc" id="L140">            u = iter.key();</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">            if (u &lt; min) {</span>
+<span class="fc" id="L142">                min = u;</span>
             }
-<span class="fc bfc" id="L136" title="All 2 branches covered.">            if (u &gt; max) {</span>
-<span class="fc" id="L137">                max = u;</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">            if (u &gt; max) {</span>
+<span class="fc" id="L145">                max = u;</span>
             }
-<span class="fc" id="L139">            iter2 = iter.value().iterator();</span>
-<span class="fc bfc" id="L140" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
-<span class="fc" id="L141">                v = iter2.next();</span>
-<span class="fc bfc" id="L142" title="All 2 branches covered.">                if (v &lt; min) {</span>
-<span class="fc" id="L143">                    min = v;</span>
+<span class="fc" id="L147">            iter2 = iter.value().iterator();</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
+<span class="fc" id="L149">                v = iter2.next();</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">                if (v &lt; min) {</span>
+<span class="fc" id="L151">                    min = v;</span>
                 }
-<span class="pc bpc" id="L145" title="1 of 2 branches missed.">                if (v &gt; max) {</span>
-<span class="nc" id="L146">                    max = v;</span>
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">                if (v &gt; max) {</span>
+<span class="nc" id="L154">                    max = v;</span>
                 }
             }
         }
-<span class="fc" id="L150">        return new int[]{min, max};</span>
+<span class="fc" id="L158">        return new int[]{min, max};</span>
     }
 
     /**
      * convert the adjacency graph g in SimpleLinkedListNode[] into a
-     * graph built with TIntObjectMap&lt;TIntSet&gt;.
-     * @param g
-     * @return
+     * graph built with TIntObjectMap TIntSet .
+     @param g
+     @return
      */
     public static TIntObjectMap&lt;TIntSet&gt; convertGraph(SimpleLinkedListNode[] g) {
-<span class="fc" id="L160">        TIntObjectMap&lt;TIntSet&gt; g2 = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
+<span class="fc" id="L168">        TIntObjectMap&lt;TIntSet&gt; g2 = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
         int u, v;
         SimpleLinkedListNode vNode;
         TIntSet uSet;
-<span class="fc bfc" id="L164" title="All 2 branches covered.">        for (u = 0; u &lt; g.length; ++u) {</span>
-<span class="fc" id="L165">            uSet = g2.get(u);</span>
-<span class="pc bpc" id="L166" title="1 of 2 branches missed.">            if (uSet == null) {</span>
-<span class="fc" id="L167">                uSet = new TIntHashSet();</span>
-<span class="fc" id="L168">                g2.put(u, uSet);</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">        for (u = 0; u &lt; g.length; ++u) {</span>
+<span class="fc" id="L173">            uSet = g2.get(u);</span>
+<span class="pc bpc" id="L174" title="1 of 2 branches missed.">            if (uSet == null) {</span>
+<span class="fc" id="L175">                uSet = new TIntHashSet();</span>
+<span class="fc" id="L176">                g2.put(u, uSet);</span>
             }
-<span class="fc" id="L170">            vNode = g[u];</span>
-<span class="fc bfc" id="L171" title="All 2 branches covered.">            while (vNode != null) {</span>
-<span class="fc" id="L172">                uSet.add(vNode.getKey());</span>
-<span class="fc" id="L173">                vNode = vNode.getNext();</span>
+<span class="fc" id="L178">            vNode = g[u];</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">            while (vNode != null) {</span>
+<span class="fc" id="L180">                uSet.add(vNode.getKey());</span>
+<span class="fc" id="L181">                vNode = vNode.getNext();</span>
             }
         }
-<span class="fc" id="L176">        return g2;</span>
+<span class="fc" id="L184">        return g2;</span>
     }
 
+    /**
+     * Find the bandwidth of the given graph as the maximum distance between 2 adjacent
+     * vertices where the distance is the absolute difference between the index
+     * numbers.
+     * @param adjMap
+     * @return the maximum difference between vertex numbers of adjacent vertexes.
+     * returns -1 for a map without edges.
+     */
+    public static int measureBandwidth(Map&lt;Integer, Set&lt;Integer&gt;&gt; adjMap) {
+
+<span class="nc" id="L197">        int max = -1;</span>
+<span class="nc" id="L198">        Iterator&lt;Map.Entry&lt;Integer, Set&lt;Integer&gt;&gt;&gt; iter = adjMap.entrySet().iterator();</span>
+        int u;
+        int b;
+<span class="nc bnc" id="L201" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
+<span class="nc" id="L202">            Map.Entry&lt;Integer, Set&lt;Integer&gt;&gt; entry = iter.next();</span>
+<span class="nc" id="L203">            u = entry.getKey();</span>
+<span class="nc bnc" id="L204" title="All 2 branches missed.">            for (int v  : entry.getValue()) {</span>
+<span class="nc" id="L205">                b = Math.abs(u - v);</span>
+<span class="nc bnc" id="L206" title="All 2 branches missed.">                if (b &gt; max) {</span>
+<span class="nc" id="L207">                    max = b;</span>
+                }
+<span class="nc" id="L209">            }</span>
+<span class="nc" id="L210">        }</span>
+<span class="nc" id="L211">        return max;</span>
+    }
+
+    /**
+     * Find the bandwidth of the given graph as the maximum distance between 2 adjacent
+     * vertices where the distance is the absolute difference between the index
+     * numbers.
+     * @param adjList
+     *  @return the maximum difference between vertex numbers of adjacent vertexes.
+     *  returns -1 for a map without edges.
+     */
+    public static int measureBandwidth(SimpleLinkedListNode[] adjList) {
+<span class="nc" id="L223">        int max = -1;</span>
+        int v;
+        int b;
+        SimpleLinkedListNode uNode;
+        SimpleLinkedListNode vNode;
+<span class="nc bnc" id="L228" title="All 2 branches missed.">        for (int u = 0; u &lt; adjList.length; ++u) {</span>
+<span class="nc" id="L229">            uNode = adjList[u];</span>
+<span class="nc" id="L230">            vNode = uNode.getNext();</span>
+<span class="nc bnc" id="L231" title="All 4 branches missed.">            if (vNode != null &amp;&amp; vNode.getKey() != -1) {</span>
+<span class="nc" id="L232">                v = vNode.getKey();</span>
+<span class="nc" id="L233">                b = Math.abs(u - v);</span>
+<span class="nc bnc" id="L234" title="All 2 branches missed.">                if (b &gt; max) {</span>
+<span class="nc" id="L235">                    max = b;</span>
+                }
+            }
+        }
+<span class="nc" id="L239">        return max;</span>
+    }
+
+    /**
+     * Find the bandwidth of the given graph as the maximum distance between 2 adjacent
+     * vertices where the distance is the absolute difference between the index
+     * numbers.
+     * @param adjMap
+     * @return the maximum difference between vertex numbers of adjacent vertexes.
+     * returns -1 for a map without edges.
+     */
+    public static int measureBandwidth(TIntObjectMap&lt;TIntSet&gt; adjMap) {
+
+<span class="nc" id="L252">        int max = -1;</span>
+<span class="nc" id="L253">        TIntObjectIterator&lt;TIntSet&gt; iter = adjMap.iterator();</span>
+        int u, v;
+        int b;
+        TIntIterator iter2;
+<span class="nc bnc" id="L257" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
+<span class="nc" id="L258">            iter.advance();</span>
+<span class="nc" id="L259">            u = iter.key();</span>
+<span class="nc" id="L260">            iter2 = iter.value().iterator();</span>
+<span class="nc bnc" id="L261" title="All 2 branches missed.">            while (iter2.hasNext()) {</span>
+<span class="nc" id="L262">                v = iter2.next();</span>
+<span class="nc" id="L263">                b = Math.abs(u - v);</span>
+<span class="nc bnc" id="L264" title="All 2 branches missed.">                if (b &gt; max) {</span>
+<span class="nc" id="L265">                    max = b;</span>
+                }
+            }
+        }
+<span class="nc" id="L269">        return max;</span>
+    }
+
+    /**
+     * Find the bandwidth of the given graph as the maximum distance between 2 adjacent
+     * vertices where the distance is the absolute difference between the index
+     * numbers.
+     * @param edges
+     * @return the maximum difference between vertex numbers of adjacent vertexes.
+     * returns -1 for a map without edges.
+     */
+    public static int measureBandwidth(Set&lt;PairInt&gt; edges) {
+
+<span class="fc" id="L282">        int max = -1;</span>
+        int u, v;
+        int b;
+<span class="fc bfc" id="L285" title="All 2 branches covered.">        for (PairInt edge : edges) {</span>
+<span class="fc" id="L286">            b = Math.abs(edge.getX() - edge.getY());</span>
+<span class="fc bfc" id="L287" title="All 2 branches covered.">            if (b &gt; max) {</span>
+<span class="fc" id="L288">                max = b;</span>
+            }
+<span class="fc" id="L290">        }</span>
+<span class="fc" id="L291">        return max;</span>
+    }
+
+    /**
+     * relabel the graph vertexes to use the numbers in rIdxs
+     * @param edges
+     * @param rIdxs
+     * @return relabeled graph
+     */
+    public static Set&lt;PairInt&gt; relabel(Set&lt;PairInt&gt; edges, int[] rIdxs) {
+<span class="fc" id="L301">        Set&lt;PairInt&gt; r = new HashSet&lt;&gt;();</span>
+<span class="fc bfc" id="L302" title="All 2 branches covered.">        for (PairInt edge : edges) {</span>
+<span class="fc" id="L303">            r.add(new PairInt(rIdxs[edge.getX()], rIdxs[edge.getY()]));</span>
+<span class="fc" id="L304">        }</span>
+<span class="fc" id="L305">        return r;</span>
+    }
+
+    /**
+     * relabel the graph vertexes to use the numbers in rIdxs as reverse indexes.
+     *
+     * @param edges
+     * @param rIdxs
+     * @return relabeled graph
+     */
+    public static Set&lt;PairInt&gt; relabelWithReverse(Set&lt;PairInt&gt; edges, int[] rIdxs) {
+<span class="nc" id="L316">        TIntIntMap iSet = new TIntIntHashMap();</span>
+<span class="nc bnc" id="L317" title="All 2 branches missed.">        for (int i = 0; i &lt; rIdxs.length; ++i) {</span>
+<span class="nc" id="L318">            iSet.put(rIdxs[i], i);</span>
+        }
+<span class="nc" id="L320">        Set&lt;PairInt&gt; r = new HashSet&lt;&gt;();</span>
+<span class="nc bnc" id="L321" title="All 2 branches missed.">        for (PairInt edge : edges) {</span>
+<span class="nc" id="L322">            r.add(new PairInt(iSet.get(edge.getX()), iSet.get(edge.getY())));</span>
+<span class="nc" id="L323">        }</span>
+<span class="nc" id="L324">        return r;</span>
+    }
+
+    public static Map&lt;Integer, Set&lt;Integer&gt;&gt; copy(Map&lt;Integer, Set&lt;Integer&gt;&gt; adjMap) {
+<span class="fc" id="L328">        Map&lt;Integer, Set&lt;Integer&gt;&gt; c = new HashMap&lt;Integer, Set&lt;Integer&gt;&gt;();</span>
+
+<span class="fc" id="L330">        Iterator&lt;Map.Entry&lt;Integer, Set&lt;Integer&gt;&gt;&gt; iter = adjMap.entrySet().iterator();</span>
+<span class="fc bfc" id="L331" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L332">            Map.Entry&lt;Integer, Set&lt;Integer&gt;&gt; entry = iter.next();</span>
+<span class="fc" id="L333">            Set&lt;Integer&gt; set = new HashSet&lt;Integer&gt;(entry.getValue());</span>
+<span class="fc" id="L334">            c.put(entry.getKey(), set);</span>
+<span class="fc" id="L335">        }</span>
+<span class="fc" id="L336">        return c;</span>
+    }
+
+    /**
+     * find the vertex with the largest number of neighbors.
+     * @param adjMap an adjacency map with key = vertex index and values = adjacent vertexes
+     * @return the vertex index with the largest number of neighbors and the degree
+     */
+    public static int[] findMaxDegreeVertex(TIntObjectMap&lt;TIntSet&gt; adjMap) {
+<span class="nc" id="L345">        int max = Integer.MIN_VALUE;</span>
+<span class="nc" id="L346">        int maxIdx = -1;</span>
+
+<span class="nc" id="L348">        TIntObjectIterator&lt;TIntSet&gt; iter = adjMap.iterator();</span>
+<span class="nc bnc" id="L349" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
+<span class="nc" id="L350">            iter.advance();</span>
+<span class="nc bnc" id="L351" title="All 2 branches missed.">            if (iter.value().size() &gt; max) {</span>
+<span class="nc" id="L352">                max = iter.value().size();</span>
+<span class="nc" id="L353">                maxIdx = iter.key();</span>
+            }
+        }
+<span class="nc" id="L356">        return new int[]{maxIdx, max};</span>
+    }
+
+    public static Map&lt;Integer, Integer&gt; createDegreeMapForVertices(Set&lt;Integer&gt; vertices,
+                                                                   Map&lt;Integer, Set&lt;Integer&gt;&gt; adjMap) {
+<span class="fc" id="L361">        Map&lt;Integer, Integer&gt; degreeMap = new HashMap&lt;Integer, Integer&gt;();</span>
+
+        int nA;
+<span class="fc bfc" id="L364" title="All 2 branches covered.">        for (int v : vertices) {</span>
+<span class="pc bpc" id="L365" title="1 of 2 branches missed.">            if (!adjMap.containsKey(v)) {</span>
+<span class="nc" id="L366">                nA = 0;</span>
+            } else {
+<span class="fc" id="L368">                nA = adjMap.get(v).size();</span>
+            }
+<span class="fc" id="L370">            degreeMap.put(v, nA);</span>
+<span class="fc" id="L371">        }</span>
+<span class="fc" id="L372">        return degreeMap;</span>
+    }
+
+    /**
+     * given graph G=(v,E) as the adjacency map adjMap, subtract vertex v from the graph.
+     * Note that the vertexes adjacent to v are expected to still be present in the map as
+     * keys themselves.
+     * More specifically, this method removes v as key in adjMap and v in any values of adjMap.
+     * revAdjMap is also updated.
+     * @param adjMap
+     */
+    public static void subtractVertex(final int v, Map&lt;Integer, Set&lt;Integer&gt;&gt; adjMap, Map&lt;Integer, Set&lt;Integer&gt;&gt; revAdjMap) {
+
+<span class="pc bpc" id="L385" title="1 of 2 branches missed.">        if (!adjMap.containsKey(v)) {</span>
+<span class="nc" id="L386">            return;</span>
+        }
+<span class="fc" id="L388">        Set&lt;Integer&gt; adjSet = adjMap.remove(v);</span>
+<span class="fc" id="L389">        Set&lt;Integer&gt; revSet = revAdjMap.remove(v);</span>
+<span class="fc bfc" id="L390" title="All 2 branches covered.">        for (int x : adjSet) {</span>
+<span class="pc bpc" id="L391" title="1 of 2 branches missed.">            if (revAdjMap.containsKey(x)) {</span>
+<span class="fc" id="L392">                revAdjMap.get(x).remove(v);</span>
+                /*if (revAdjMap.get(x).isEmpty()) {// can remove if is in color map
+                    revAdjMap.remove(x);
+                }*/
+            }
+<span class="fc" id="L397">        }</span>
+<span class="fc bfc" id="L398" title="All 2 branches covered.">        for (int x : revSet) {</span>
+<span class="pc bpc" id="L399" title="1 of 2 branches missed.">            if (adjMap.containsKey(x)) {</span>
+<span class="fc" id="L400">                adjMap.get(x).remove(v);</span>
+                /*if (adjMap.get(x).isEmpty()) {// can remove if is in color map
+                    adjMap.remove(x);
+                }*/
+            }
+<span class="fc" id="L405">        }</span>
+
+        /*
+        v = 2
+        adjMap: {1:{2, 3}, 2:{3}}
+        revMap: {2:{1}, 3:{1,2}}
+
+        adjSet = {3}
+        revSet = {1}
+
+        update revMap values using adjSet={3}: revMap: {2:{1}, 3:{1}}
+        remove key '2' in revMap: {3:{1}}
+        update adjMap values using revSet={1} : adjMap: {1:{3}, 2:{3}}
+        remove key '2' in adjMap: {1:{3}}
+        */
+
+<span class="fc" id="L421">    }</span>
+
+    public static Map&lt;Integer, Set&lt;Integer&gt;&gt; createReverseMapping(Map&lt;Integer, Set&lt;Integer&gt;&gt; adjMap) {
+        //adj mapping: {1:{2,3}, 2:{3}}
+        //  1--&gt; 2, 3
+        //  2--&gt; 3
+        //rev mapping: {2:{1}, 3:{1,2}}
+        // 2 is a neighbor of 1
+        // 3 is a neighbor of 1 and 2
+
+<span class="fc" id="L431">        Map&lt;Integer, Set&lt;Integer&gt;&gt; revMapping = new HashMap&lt;Integer, Set&lt;Integer&gt;&gt;();</span>
+
+<span class="fc" id="L433">        Iterator&lt;Map.Entry&lt;Integer, Set&lt;Integer&gt;&gt;&gt; iter = adjMap.entrySet().iterator();</span>
+        int u;
+        Set&lt;Integer&gt; set;
+        Set&lt;Integer&gt; vSet;
+        Map.Entry&lt;Integer, Set&lt;Integer&gt;&gt; entry;
+<span class="fc bfc" id="L438" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L439">            entry = iter.next();</span>
+<span class="fc" id="L440">            u = entry.getKey();</span>
+<span class="fc" id="L441">            set = entry.getValue();</span>
+<span class="fc bfc" id="L442" title="All 2 branches covered.">            for (int v : set) {</span>
+<span class="fc" id="L443">                vSet = revMapping.get(v);</span>
+<span class="fc bfc" id="L444" title="All 2 branches covered.">                if (vSet == null) {</span>
+<span class="fc" id="L445">                    vSet = new HashSet&lt;Integer&gt;();</span>
+<span class="fc" id="L446">                    revMapping.put(v, vSet);</span>
+                }
+<span class="fc" id="L448">                vSet.add(u);</span>
+<span class="fc" id="L449">            }</span>
+        }
+<span class="fc" id="L451">        return revMapping;</span>
+    }
+
+    /**
+     * given a degree map holding key=vertex, value=degree and a set of vertexes p,
+     * find the vertex in p that has the largest value in degreeMap
+     * @param p
+     * @param degreeMap
+     * @return the vertex in p that has the largest value in degreeMap. if no members of p are in degreeMap, a -1 is returned.
+     */
+    public static int findMaxDegreeVertex(Set&lt;Integer&gt; p, Map&lt;Integer, Integer&gt; degreeMap) {
+<span class="fc" id="L462">        int maxIdx = -1;</span>
+<span class="fc" id="L463">        int max = -1;</span>
+        int n;
+<span class="fc bfc" id="L465" title="All 2 branches covered.">        for (int v : p) {</span>
+<span class="pc bpc" id="L466" title="1 of 2 branches missed.">            if (!degreeMap.containsKey(v)) {</span>
+<span class="nc" id="L467">                continue;</span>
+            }
+<span class="fc" id="L469">            n = degreeMap.get(v);</span>
+<span class="fc bfc" id="L470" title="All 2 branches covered.">            if (max &lt; n) {</span>
+<span class="fc" id="L471">                max = n;</span>
+<span class="fc" id="L472">                maxIdx = v;</span>
+            }
+<span class="fc" id="L474">        }</span>
+<span class="fc" id="L475">        return maxIdx;</span>
+    }
+
+    /**
+     * given degreeMap holding key=vertex, value=degree, return the vertex with largest value
+     * @param degreeMap
+     * @return the vertex with largest value
+     */
+    public static int findMaxDegreeVertex(Map&lt;Integer, Integer&gt; degreeMap) {
+<span class="fc" id="L484">        int maxIdx = -1;</span>
+<span class="fc" id="L485">        int max = -1;</span>
+<span class="fc" id="L486">        Iterator&lt;Map.Entry&lt;Integer, Integer&gt;&gt; iter = degreeMap.entrySet().iterator();</span>
+        Map.Entry&lt;Integer, Integer&gt; entry;
+        int n;
+<span class="fc bfc" id="L489" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L490">            entry = iter.next();</span>
+<span class="fc" id="L491">            n = entry.getValue();</span>
+<span class="fc bfc" id="L492" title="All 2 branches covered.">            if (max &lt; n) {</span>
+<span class="fc" id="L493">                max = n;</span>
+<span class="fc" id="L494">                maxIdx = entry.getKey();</span>
+            }
+        }
+<span class="fc" id="L497">        return maxIdx;</span>
+    }
+
+    public static boolean addEdge(int v, int w, Map&lt;Integer, Set&lt;Integer&gt;&gt; adjMap) {
+<span class="nc" id="L501">        Set&lt;Integer&gt; set = adjMap.get(v);</span>
+<span class="nc bnc" id="L502" title="All 2 branches missed.">        if (set == null) {</span>
+<span class="nc" id="L503">            set = new HashSet&lt;Integer&gt;();</span>
+<span class="nc" id="L504">            adjMap.put(v, set);</span>
+        }
+<span class="nc" id="L506">        return set.add(w);</span>
+    }
+    public static boolean removeEdge(int v, int w, Map&lt;Integer, Set&lt;Integer&gt;&gt; adjMap) {
+<span class="nc" id="L509">        Set&lt;Integer&gt; set = adjMap.get(v);</span>
+<span class="nc bnc" id="L510" title="All 2 branches missed.">        if (set == null) {</span>
+<span class="nc" id="L511">            return false;</span>
+        }
+<span class="nc" id="L513">        return set.remove(w);</span>
+    }
+
+    /**
+     * runtime complexity is O(N*log_2(N)) because it sorts the adjacency list if sort=true
+     * @param adjMap
+     * @return
+     */
+    public static TIntObjectMap&lt;TIntList&gt; copyToOrderedAdjMap(Map&lt;Integer, Set&lt;Integer&gt;&gt; adjMap, boolean sort) {
+<span class="fc" id="L522">        TIntObjectMap&lt;TIntList&gt; map = new TIntObjectHashMap&lt;TIntList&gt;();</span>
+<span class="fc" id="L523">        Iterator&lt;Map.Entry&lt;Integer, Set&lt;Integer&gt;&gt;&gt; iter = adjMap.entrySet().iterator();</span>
+        Set&lt;Integer&gt; set;
+        TIntList list;
+        int u;
+        Map.Entry&lt;Integer, Set&lt;Integer&gt;&gt; entry;
+<span class="fc bfc" id="L528" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L529">            entry = iter.next();</span>
+<span class="fc" id="L530">            u = entry.getKey();</span>
+<span class="fc" id="L531">            set = entry.getValue();</span>
+<span class="fc" id="L532">            list = new TIntArrayList();</span>
+<span class="fc bfc" id="L533" title="All 2 branches covered.">            for (int v : set) {</span>
+<span class="fc" id="L534">                list.add(v);</span>
+<span class="fc" id="L535">            }</span>
+<span class="fc bfc" id="L536" title="All 2 branches covered.">            if (sort) {</span>
+<span class="fc" id="L537">                list.sort();</span>
+            }
+<span class="fc" id="L539">            map.put(u, list);</span>
+        }
+<span class="fc" id="L541">        return map;</span>
+    }
+
+    public static Set&lt;PairInt&gt; extractEdges(Map&lt;Integer, Set&lt;Integer&gt;&gt; adjMap) {
+<span class="fc" id="L545">        Set&lt;PairInt&gt; edges = new HashSet&lt;PairInt&gt;();</span>
+<span class="fc" id="L546">        Iterator&lt;Map.Entry&lt;Integer, Set&lt;Integer&gt;&gt;&gt; iter = adjMap.entrySet().iterator();</span>
+        int u;
+        Map.Entry&lt;Integer, Set&lt;Integer&gt;&gt; entry;
+<span class="fc bfc" id="L549" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L550">            entry = iter.next();</span>
+<span class="fc" id="L551">            u = entry.getKey();</span>
+<span class="fc bfc" id="L552" title="All 2 branches covered.">            for (int v : entry.getValue()) {</span>
+<span class="fc" id="L553">                edges.add(new PairInt(u, v));</span>
+<span class="fc" id="L554">            }</span>
+        }
+<span class="fc" id="L556">        return edges;</span>
+    }
+    public static Set&lt;PairInt&gt; extractEdgesUsingLexicographicOrder(Map&lt;Integer, Set&lt;Integer&gt;&gt; adjMap) {
+<span class="fc" id="L559">        Set&lt;PairInt&gt; edges = new HashSet&lt;PairInt&gt;();</span>
+<span class="fc" id="L560">        Iterator&lt;Map.Entry&lt;Integer, Set&lt;Integer&gt;&gt;&gt; iter = adjMap.entrySet().iterator();</span>
+        int u;
+        Map.Entry&lt;Integer, Set&lt;Integer&gt;&gt; entry;
+<span class="fc bfc" id="L563" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L564">            entry = iter.next();</span>
+<span class="fc" id="L565">            u = entry.getKey();</span>
+<span class="fc bfc" id="L566" title="All 2 branches covered.">            for (int v : entry.getValue()) {</span>
+<span class="fc bfc" id="L567" title="All 2 branches covered.">                if (u &lt;= v) {</span>
+<span class="fc" id="L568">                    edges.add(new PairInt(u, v));</span>
+                } else {
+<span class="fc" id="L570">                    edges.add(new PairInt(v, u));</span>
+                }
+<span class="fc" id="L572">            }</span>
+        }
+<span class="fc" id="L574">        return edges;</span>
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -65,32 +65,51 @@ import java.util.Arrays;
  */
 <span class="fc" id="L66">public abstract class AbstractGeometricMedianFunction implements IFunction {</span>
         
-<span class="fc" id="L68">    public static double eps = 1e-17;</span>
+    /**
+     *
+     */
+<span class="fc" id="L71">    public static double eps = 1e-17;</span>
     
+    /**
+     *
+     @return
+     */
     public abstract int getNDimensions();
     
+    /**
+     *
+     @return
+     */
     public abstract double[] getObs();
     
+    /**
+     *
+     @return
+     */
     public abstract double getFDEps();
     
+    /**
+     *
+     @return
+     */
     public int getNData() {
-<span class="fc" id="L77">        return getObs().length/getNDimensions();</span>
+<span class="fc" id="L96">        return getObs().length/getNDimensions();</span>
     }
     
     /**
      * calculate centroid of data. the centroid can be used
      * as a possible starting point for the search.
      *
-     * @return an array of the centroids of the observations for each dimension
+     @return an array of the centroids of the observations for each dimension
      */
      public double[] calculateCentroid() {
 
-<span class="fc" id="L88">        final int nDimensions = getNDimensions();</span>
-<span class="fc" id="L89">        final double[] obs = getObs();</span>
+<span class="fc" id="L107">        final int nDimensions = getNDimensions();</span>
+<span class="fc" id="L108">        final double[] obs = getObs();</span>
 
-<span class="fc" id="L91">        double[] c = MiscMath0.mean(obs, nDimensions);</span>
+<span class="fc" id="L110">        double[] c = MiscMath0.mean(obs, nDimensions);</span>
 
-<span class="fc" id="L93">        return c;</span>
+<span class="fc" id="L112">        return c;</span>
     }
 
     /**
@@ -101,33 +120,33 @@ import java.util.Arrays;
      * point_0 in all dimensions, followed by point_1 in all dimensions, etc.
      * e.g. for numberOfDimensions=3, observations={x0, y0, z0, x1, y1, z1, ...
      *     x_(nPoints-1), y_(nPoints-1), z_(nPoints-1)}.
-     * @param geoMedian
-     * @return array of geometric median - observations.  the array is ordered
+     @param geoMedian
+     @return array of geometric median - observations.  the array is ordered
      * in the same manner as obs and is the same length.
      */     
     public double[] calculateDifferences(final double[] geoMedian) {
 
-<span class="fc" id="L110">        final int nDimensions = getNDimensions();</span>
+<span class="fc" id="L129">        final int nDimensions = getNDimensions();</span>
 
-<span class="pc bpc" id="L112" title="1 of 2 branches missed.">        if (geoMedian.length != nDimensions) {</span>
-<span class="nc" id="L113">            throw new IllegalArgumentException(&quot;geoMedian length must == nDimensions&quot;);</span>
+<span class="pc bpc" id="L131" title="1 of 2 branches missed.">        if (geoMedian.length != nDimensions) {</span>
+<span class="nc" id="L132">            throw new IllegalArgumentException(&quot;geoMedian length must == nDimensions&quot;);</span>
         }
 
-<span class="fc" id="L116">        final double[] obs = getObs();</span>
-<span class="fc" id="L117">        double[] diff = new double[obs.length];</span>
-<span class="fc" id="L118">        int nData = (int) (obs.length / nDimensions);</span>
+<span class="fc" id="L135">        final double[] obs = getObs();</span>
+<span class="fc" id="L136">        double[] diff = new double[obs.length];</span>
+<span class="fc" id="L137">        int nData = (int) (obs.length / nDimensions);</span>
 
         int i, j, d;
         double a, b;
-<span class="fc bfc" id="L122" title="All 2 branches covered.">        for (i = 0; i &lt; nData; ++i) {</span>
-<span class="fc bfc" id="L123" title="All 2 branches covered.">            for (d = 0; d &lt; nDimensions; ++d) {</span>
-<span class="fc" id="L124">                j = i * nDimensions + d;</span>
-<span class="fc" id="L125">                a = geoMedian[d];</span>
-<span class="fc" id="L126">                b = obs[j];</span>
-<span class="fc" id="L127">                diff[j] = a - b;</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">        for (i = 0; i &lt; nData; ++i) {</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">            for (d = 0; d &lt; nDimensions; ++d) {</span>
+<span class="fc" id="L143">                j = i * nDimensions + d;</span>
+<span class="fc" id="L144">                a = geoMedian[d];</span>
+<span class="fc" id="L145">                b = obs[j];</span>
+<span class="fc" id="L146">                diff[j] = a - b;</span>
             }
         }
-<span class="fc" id="L130">        return diff;</span>
+<span class="fc" id="L149">        return diff;</span>
     }
     
     /**
@@ -138,15 +157,13 @@ import java.util.Arrays;
      * point_0 in all dimensions, followed by point_1 in all dimensions, etc.
      * e.g. for numberOfDimensions=3, observations={x0, y0, z0, x1, y1, z1, ...
      *     x_(nPoints-1), y_(nPoints-1), z_(nPoints-1)}.
-     * @param geoMedian
-     * @param output output array of length obs.length to hold results
-     * @return array of geometric median - observations.  the array is ordered
-     * in the same manner as obs and is the same length.
+     @param geoMedian
+     @param output output array of length obs.length to hold results
      */
     void calculateDifferences(final double[] geoMedian, double[] output) {
-<span class="nc" id="L147">        double[] diffs = calculateDifferences(geoMedian);</span>
-<span class="nc" id="L148">        System.arraycopy(diffs, 0, output, 0, diffs.length);</span>
-<span class="nc" id="L149">    }</span>
+<span class="nc" id="L164">        double[] diffs = calculateDifferences(geoMedian);</span>
+<span class="nc" id="L165">        System.arraycopy(diffs, 0, output, 0, diffs.length);</span>
+<span class="nc" id="L166">    }</span>
     
     /**
      * given observed the geometric median X=(x_geo_median, y_geo_median, ...) 
@@ -154,36 +171,36 @@ import java.util.Arrays;
      * || X-obs ||_2, that is, the X which minimizes the sum of the differences, 
      * where _2 is notation for using L2 distances.
      *
-     * @param geoMedian input variable holding coordinates of current
+     @param geoMedian input variable holding coordinates of current
      * estimate of geometric median.
-     * @return evaluation of the objective, summation_i=1_n(|| geoMedian - obs_i
+     @return evaluation of the objective, summation_i=1_n(|| geoMedian - obs_i
      * ||^2)/n
      */
     double evaluateGeoMedian(double[] geoMedian) {
         
-<span class="fc" id="L164">        int nDimensions = geoMedian.length;</span>
+<span class="fc" id="L181">        int nDimensions = geoMedian.length;</span>
 
         //double[] geoMedian0 = Arrays.copyOf(geoMedian, geoMedian.length);
 
-<span class="fc" id="L168">        double[] diffs = calculateDifferences(geoMedian);</span>
+<span class="fc" id="L185">        double[] diffs = calculateDifferences(geoMedian);</span>
         
-<span class="fc" id="L170">        int nData = (int) (diffs.length / nDimensions);</span>
+<span class="fc" id="L187">        int nData = (int) (diffs.length / nDimensions);</span>
         
         int i, j, d;
         double dist;
-<span class="fc" id="L174">        double sum = 0;</span>
-<span class="fc bfc" id="L175" title="All 2 branches covered.">        for (i = 0; i &lt; nData; ++i) {</span>
-<span class="fc" id="L176">            dist = 0;</span>
-<span class="fc bfc" id="L177" title="All 2 branches covered.">            for (d = 0; d &lt; nDimensions; ++d) {</span>
-<span class="fc" id="L178">                j = i * nDimensions + d;</span>
-<span class="fc" id="L179">                dist += (diffs[j] * diffs[j]);</span>
+<span class="fc" id="L191">        double sum = 0;</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">        for (i = 0; i &lt; nData; ++i) {</span>
+<span class="fc" id="L193">            dist = 0;</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">            for (d = 0; d &lt; nDimensions; ++d) {</span>
+<span class="fc" id="L195">                j = i * nDimensions + d;</span>
+<span class="fc" id="L196">                dist += (diffs[j] * diffs[j]);</span>
             }
-<span class="fc" id="L181">            dist = Math.sqrt(dist);</span>
-<span class="fc" id="L182">            sum += dist;</span>
+<span class="fc" id="L198">            dist = Math.sqrt(dist);</span>
+<span class="fc" id="L199">            sum += dist;</span>
         }
         //sum /= (double)nData;
         
-<span class="fc" id="L186">        return sum;</span>
+<span class="fc" id="L203">        return sum;</span>
     }
     
     /**
@@ -192,101 +209,103 @@ import java.util.Arrays;
      * || X-obs ||_2, that is, the X which minimizes the sum of the differences, 
      * where _2 is notation for using L2 distances.
      *
-     * @param geoMedian input variable holding coordinates of current
+     @param geoMedian input variable holding coordinates of current
      * estimate of geometric median.
-     * @return evaluation of the objective, summation_i=1_n(|| geoMedian - obs_i
+     @return evaluation of the objective, summation_i=1_n(|| geoMedian - obs_i
      * ||^2)/n
      */
     public double[] evaluateGeoMedianPerDimension(double[] geoMedian) {
         
-<span class="fc" id="L202">        int nDimensions = geoMedian.length;</span>
+<span class="fc" id="L219">        int nDimensions = geoMedian.length;</span>
         
-<span class="fc" id="L204">        double[] out = new double[nDimensions];</span>
+<span class="fc" id="L221">        double[] out = new double[nDimensions];</span>
 
         //double[] geoMedian0 = Arrays.copyOf(geoMedian, geoMedian.length);
 
-<span class="fc" id="L208">        double[] diffs = calculateDifferences(geoMedian);</span>
+<span class="fc" id="L225">        double[] diffs = calculateDifferences(geoMedian);</span>
         
-<span class="fc" id="L210">        int nData = (int) (diffs.length / nDimensions);</span>
+<span class="fc" id="L227">        int nData = (int) (diffs.length / nDimensions);</span>
         
         int i, j, d;
-<span class="fc bfc" id="L213" title="All 2 branches covered.">        for (i = 0; i &lt; nData; ++i) {</span>
-<span class="fc bfc" id="L214" title="All 2 branches covered.">            for (d = 0; d &lt; nDimensions; ++d) {</span>
-<span class="fc" id="L215">                j = i * nDimensions + d;</span>
-<span class="fc" id="L216">                out[d] += (diffs[j] * diffs[j]);</span>
+<span class="fc bfc" id="L230" title="All 2 branches covered.">        for (i = 0; i &lt; nData; ++i) {</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">            for (d = 0; d &lt; nDimensions; ++d) {</span>
+<span class="fc" id="L232">                j = i * nDimensions + d;</span>
+<span class="fc" id="L233">                out[d] += (diffs[j] * diffs[j]);</span>
             }
         }
-<span class="fc bfc" id="L219" title="All 2 branches covered.">        for (d = 0; d &lt; nDimensions; ++d) {</span>
-<span class="fc" id="L220">            out[d] /= (double)nData;</span>
+<span class="fc bfc" id="L236" title="All 2 branches covered.">        for (d = 0; d &lt; nDimensions; ++d) {</span>
+<span class="fc" id="L237">            out[d] /= (double)nData;</span>
         }
         
-<span class="fc" id="L223">        return out;</span>
+<span class="fc" id="L240">        return out;</span>
     }
     
     /**
      * calculate the sum of squared differences for each point.
      * Note: the result is length nData, not obs.length or 1.
-     * @param diffs the differences between each point and the current
+     @param diffs the differences between each point and the current
      * geometric-median coordinates.
-     * @return for each point, the sum of differences.
+     @return for each point, the sum of differences.
      */
     public double[] calculateSSDPerPoint(double[] diffs) {
         
-<span class="fc" id="L235">        final int nDimensions = getNDimensions();</span>
-<span class="fc" id="L236">        final double[] obs = getObs();</span>
-<span class="fc" id="L237">        int nData = (obs.length / nDimensions);</span>
+<span class="fc" id="L252">        final int nDimensions = getNDimensions();</span>
+<span class="fc" id="L253">        final double[] obs = getObs();</span>
+<span class="fc" id="L254">        int nData = (obs.length / nDimensions);</span>
         
-<span class="pc bpc" id="L239" title="1 of 2 branches missed.">        if (diffs.length != obs.length) {</span>
-<span class="nc" id="L240">            throw new IllegalArgumentException(&quot;diffs length must == obs.length&quot;);</span>
+<span class="pc bpc" id="L256" title="1 of 2 branches missed.">        if (diffs.length != obs.length) {</span>
+<span class="nc" id="L257">            throw new IllegalArgumentException(&quot;diffs length must == obs.length&quot;);</span>
         }
         
-<span class="fc" id="L243">        double[] ssd = new double[nData];</span>
+<span class="fc" id="L260">        double[] ssd = new double[nData];</span>
         
         int i, j, d;
-<span class="fc bfc" id="L246" title="All 2 branches covered.">        for (i = 0; i &lt; nData; ++i) {</span>
-<span class="fc bfc" id="L247" title="All 2 branches covered.">            for (d = 0; d &lt; nDimensions; ++d) {</span>
-<span class="fc" id="L248">                j = i * nDimensions + d;</span>
-<span class="fc" id="L249">                ssd[i] += (diffs[j] * diffs[j]);</span>
+<span class="fc bfc" id="L263" title="All 2 branches covered.">        for (i = 0; i &lt; nData; ++i) {</span>
+<span class="fc bfc" id="L264" title="All 2 branches covered.">            for (d = 0; d &lt; nDimensions; ++d) {</span>
+<span class="fc" id="L265">                j = i * nDimensions + d;</span>
+<span class="fc" id="L266">                ssd[i] += (diffs[j] * diffs[j]);</span>
             }
         }
-<span class="fc" id="L252">        return ssd;</span>
+<span class="fc" id="L269">        return ssd;</span>
     }
     
     /**
     adapted from dlib optimization.h
     Copyright (C) 2008  Davis E. King (davis@dlib.net)
     License: Boost Software License   See LICENSE.txt for the full license.
+     @param coeffs
+     @return 
     */
     public double[] finiteDifference(double[] coeffs) {
 
         //System.out.println(&quot;a1  x.size=&quot; + coeffs.length);
 
-<span class="fc" id="L264">        int n = coeffs.length;</span>
+<span class="fc" id="L283">        int n = coeffs.length;</span>
         
         //TODO: set this be a fraction of the diagonal of the bounds of obs
-<span class="fc" id="L267">        final double fds = 0.001;//getFDEps();</span>
+<span class="fc" id="L286">        final double fds = 0.001;//getFDEps();</span>
 
-<span class="fc" id="L269">        double[] der = new double[n];</span>
-<span class="fc" id="L270">        double[] e = Arrays.copyOf(coeffs, n);</span>
+<span class="fc" id="L288">        double[] der = new double[n];</span>
+<span class="fc" id="L289">        double[] e = Arrays.copyOf(coeffs, n);</span>
 
-<span class="fc bfc" id="L272" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L273">            final double old_val = e[i];</span>
-<span class="fc" id="L274">            e[i] += fds;</span>
-<span class="fc" id="L275">            final double delta_plus = f(e);</span>
-<span class="fc" id="L276">            e[i] = old_val - fds;</span>
-<span class="fc" id="L277">            final double delta_minus = f(e);</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L292">            final double old_val = e[i];</span>
+<span class="fc" id="L293">            e[i] += fds;</span>
+<span class="fc" id="L294">            final double delta_plus = f(e);</span>
+<span class="fc" id="L295">            e[i] = old_val - fds;</span>
+<span class="fc" id="L296">            final double delta_minus = f(e);</span>
 
             // finite difference:  this is the approx jacobian
-<span class="fc" id="L280">            der[i] = (delta_plus - delta_minus)/(2.*fds); </span>
+<span class="fc" id="L299">            der[i] = (delta_plus - delta_minus)/(2.*fds); </span>
 
             //NOTE: newton's method would continue with:
             // x_(i+1) = x_i - (delta_plus/der(i))
 
             // and finally restore the old value of this element
-<span class="fc" id="L286">            e[i] = old_val;</span>
+<span class="fc" id="L305">            e[i] = old_val;</span>
         }
 
-<span class="fc" id="L289">        return der;</span>
+<span class="fc" id="L308">        return der;</span>
     }
     
     /**
@@ -294,79 +313,87 @@ import java.util.Arrays;
     adapted from dlib optimization.h
     Copyright (C) 2008  Davis E. King (davis@dlib.net)
     License: Boost Software License   See LICENSE.txt for the full license.
+     @param coeffs
+     @param dimensionNumber
+     @return 
     */
     public double finiteDifference(double[] coeffs, int dimensionNumber) {
 
         //System.out.println(&quot;a1  x.size=&quot; + coeffs.length);
 
-<span class="nc" id="L302">        int n = coeffs.length;</span>
+<span class="nc" id="L324">        int n = coeffs.length;</span>
         
         //T0DO: set this be a fraction of the diagonal of the bounds of obs
-<span class="nc" id="L305">        final double fds = 0.001;//getFDEps();</span>
+<span class="nc" id="L327">        final double fds = 0.001;//getFDEps();</span>
 
-<span class="nc" id="L307">        double[] e = Arrays.copyOf(coeffs, n);</span>
+<span class="nc" id="L329">        double[] e = Arrays.copyOf(coeffs, n);</span>
 
-<span class="nc" id="L309">        int i = dimensionNumber;</span>
-<span class="nc" id="L310">        final double old_val = e[i];</span>
-<span class="nc" id="L311">        e[i] += fds;</span>
-<span class="nc" id="L312">        final double delta_plus = f(e);</span>
-<span class="nc" id="L313">        e[i] = old_val - fds;</span>
-<span class="nc" id="L314">        final double delta_minus = f(e);</span>
+<span class="nc" id="L331">        int i = dimensionNumber;</span>
+<span class="nc" id="L332">        final double old_val = e[i];</span>
+<span class="nc" id="L333">        e[i] += fds;</span>
+<span class="nc" id="L334">        final double delta_plus = f(e);</span>
+<span class="nc" id="L335">        e[i] = old_val - fds;</span>
+<span class="nc" id="L336">        final double delta_minus = f(e);</span>
 
         // finite difference:  this is the approx jacobian
-<span class="nc" id="L317">        double der = (delta_plus - delta_minus)/(2.*fds); </span>
+<span class="nc" id="L339">        double der = (delta_plus - delta_minus)/(2.*fds); </span>
 
         //NOTE: newton's method would continue with:
         // x_(i+1) = x_i - (delta_plus/der(i))
 
         // and finally restore the old value of this element
-<span class="nc" id="L323">        e[i] = old_val;</span>
+<span class="nc" id="L345">        e[i] = old_val;</span>
 
-<span class="nc" id="L325">        return der;</span>
+<span class="nc" id="L347">        return der;</span>
     }
 
+    /**
+     *
+     @param a
+     @return
+     */
     public static String toString(double[] a) {
-<span class="fc" id="L329">        StringBuilder sb = new StringBuilder(&quot;[&quot;);</span>
-<span class="fc bfc" id="L330" title="All 2 branches covered.">        for (int i=0;i&lt;a.length;i++) {</span>
-<span class="fc" id="L331">            sb.append(String.format(&quot;%.7e&quot;, a[i]));</span>
-<span class="fc bfc" id="L332" title="All 2 branches covered.">            if (i &lt; a.length - 1) {</span>
-<span class="fc" id="L333">                sb.append(&quot;, &quot;);</span>
+<span class="fc" id="L356">        StringBuilder sb = new StringBuilder(&quot;[&quot;);</span>
+<span class="fc bfc" id="L357" title="All 2 branches covered.">        for (int i=0;i&lt;a.length;i++) {</span>
+<span class="fc" id="L358">            sb.append(String.format(&quot;%.7e&quot;, a[i]));</span>
+<span class="fc bfc" id="L359" title="All 2 branches covered.">            if (i &lt; a.length - 1) {</span>
+<span class="fc" id="L360">                sb.append(&quot;, &quot;);</span>
             }
         }
-<span class="fc" id="L336">        sb.append(&quot;]&quot;);</span>
-<span class="fc" id="L337">        return sb.toString();</span>
+<span class="fc" id="L363">        sb.append(&quot;]&quot;);</span>
+<span class="fc" id="L364">        return sb.toString();</span>
     }
     
     /**
      * 
-     * @param geoMedian
-     * @param isMedian output array holding values of 0 when obs_i does not
+     @param geoMedian
+     @param isMedian output array holding values of 0 when obs_i does not
      * equal the geoMedian, else has value 0.    should be initialized to be
      * same length as obs.
      */
     public void isMedian(double[] geoMedian, int[] isMedian) {
         
-<span class="fc" id="L349">        double[] obs = getObs();</span>
+<span class="fc" id="L376">        double[] obs = getObs();</span>
         
-<span class="fc" id="L351">        int nDimensions = geoMedian.length;</span>
-<span class="fc" id="L352">        int nData = (obs.length / nDimensions);</span>
-<span class="pc bpc" id="L353" title="1 of 2 branches missed.">        if (isMedian.length != nData) {</span>
-<span class="nc" id="L354">            throw new IllegalArgumentException(&quot;isMedian must have length nData&quot;);</span>
+<span class="fc" id="L378">        int nDimensions = geoMedian.length;</span>
+<span class="fc" id="L379">        int nData = (obs.length / nDimensions);</span>
+<span class="pc bpc" id="L380" title="1 of 2 branches missed.">        if (isMedian.length != nData) {</span>
+<span class="nc" id="L381">            throw new IllegalArgumentException(&quot;isMedian must have length nData&quot;);</span>
         }
         
         int i, j, d;
-<span class="fc bfc" id="L358" title="All 2 branches covered.">        for (i = 0; i &lt; nData; ++i) {</span>
+<span class="fc bfc" id="L385" title="All 2 branches covered.">        for (i = 0; i &lt; nData; ++i) {</span>
             // assume it is the same, until find otherwise
-<span class="fc" id="L360">            isMedian[i] = 1;</span>
-<span class="pc bpc" id="L361" title="1 of 2 branches missed.">            for (d = 0; d &lt; nDimensions; ++d) {</span>
-<span class="fc" id="L362">                j = i * nDimensions + d;</span>
-<span class="fc bfc" id="L363" title="All 2 branches covered.">                if (Math.abs(geoMedian[d] - obs[j]) &gt; 1.e-15) {</span>
-<span class="fc" id="L364">                   isMedian[i] = 0;</span>
-<span class="fc" id="L365">                   break;</span>
+<span class="fc" id="L387">            isMedian[i] = 1;</span>
+<span class="pc bpc" id="L388" title="1 of 2 branches missed.">            for (d = 0; d &lt; nDimensions; ++d) {</span>
+<span class="fc" id="L389">                j = i * nDimensions + d;</span>
+<span class="fc bfc" id="L390" title="All 2 branches covered.">                if (Math.abs(geoMedian[d] - obs[j]) &gt; 1.e-15) {</span>
+<span class="fc" id="L391">                   isMedian[i] = 0;</span>
+<span class="fc" id="L392">                   break;</span>
                 }
             }
         }
-<span class="fc" id="L369">    }</span>
+<span class="fc" id="L396">    }</span>
     
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

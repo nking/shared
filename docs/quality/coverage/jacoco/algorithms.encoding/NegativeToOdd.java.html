@@ -6,24 +6,32 @@
  */
 <span class="nc" id="L7">public class NegativeToOdd {</span>
     
+    /**
+     *
+     @param a
+     */
     public static void negativeToOddEncode(int[] a) {
-<span class="fc bfc" id="L10" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L11">            a[i] *= 2;</span>
-<span class="fc bfc" id="L12" title="All 2 branches covered.">            if (a[i] &lt; 0) {</span>
-<span class="fc" id="L13">                a[i] *= -1;</span>
-<span class="fc" id="L14">                a[i] += 1;</span>
+<span class="fc bfc" id="L14" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L15">            a[i] *= 2;</span>
+<span class="fc bfc" id="L16" title="All 2 branches covered.">            if (a[i] &lt; 0) {</span>
+<span class="fc" id="L17">                a[i] *= -1;</span>
+<span class="fc" id="L18">                a[i] += 1;</span>
             }
         }
-<span class="fc" id="L17">    }</span>
+<span class="fc" id="L21">    }</span>
 
+    /**
+     *
+     @param a
+     */
     public static void negativeToOddDecode(int[] a) {
-<span class="fc bfc" id="L20" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc bfc" id="L21" title="All 2 branches covered.">            if ((a[i] &amp; 1) != 0) {</span>
-<span class="fc" id="L22">                a[i] -= 1;</span>
-<span class="fc" id="L23">                a[i] *= -1;</span>
+<span class="fc bfc" id="L28" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">            if ((a[i] &amp; 1) != 0) {</span>
+<span class="fc" id="L30">                a[i] -= 1;</span>
+<span class="fc" id="L31">                a[i] *= -1;</span>
             }
-<span class="fc" id="L25">            a[i] /= 2;</span>
+<span class="fc" id="L33">            a[i] /= 2;</span>
         }
-<span class="fc" id="L27">    }</span>
+<span class="fc" id="L35">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Triangles.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.graphs</a> &gt; <span class="el_source">Triangles.java</span></div><h1>Triangles.java</h1><pre class="source lang-java linenums">package algorithms.graphs;
+
+import algorithms.util.PairInt;
+import algorithms.util.PolyInt;
+
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+<span class="nc" id="L10">public class Triangles {</span>
+
+    /**
+     * count the edges which form triangles in the given undirected graph.
+     * runtime complexity is O(m^(3/2)) where m is the number of edges in the graph.
+     *
+     * Note that for very large undirected graphs, one can create a Count Triangles algorithm to run
+     * on a massive parallel software computing architecture
+     * and distributed file system like MapReduce for the same runtime complexity, O(m^(3/2)),
+     * including the computation cost.
+     * A single MapReduce job can be used to make multiway joins for edges using order constraints
+     * and the relation E in a natural join on E(X, Y) &amp;#8882; &amp;#x22B3;  E(X, Z) &amp;#8882; &amp;#x22B3; E(Y, Z)
+     &lt;pre&gt;
+     reference: Leskovec, Rajaraman, and Ullman, &quot;Mining of Massive Datasets&quot; (a.k.a. MMDS), chap 10.7 and chap 2.
+     &lt;/pre&gt;
+     * @param adjMap undirected graph
+     * @return
+     */
+    public static int count(Map&lt;Integer, Set&lt;Integer&gt;&gt; adjMap) {
+
+        //O(|V|*k) where k is the avg degree of a node
+<span class="fc" id="L31">        Map&lt;Integer, Integer&gt; nodeDegreeMap = GraphUtil.createDegreeMapForVertices(adjMap.keySet(), adjMap);</span>
+
+        //O(|V|*k) where k is the avg degree of a node
+<span class="fc" id="L34">        Set&lt;PairInt&gt; edges = GraphUtil.extractEdgesUsingLexicographicOrder(adjMap);</span>
+
+<span class="fc" id="L36">        int n = adjMap.size();</span>
+<span class="fc" id="L37">        int m = edges.size();</span>
+
+<span class="fc" id="L39">        int mHH = (int)Math.sqrt(m);</span>
+
+<span class="fc" id="L41">        Set&lt;PairInt&gt; hh = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L42">        Set&lt;PolyInt&gt; nonHHTriangles = new HashSet&lt;PolyInt&gt;();</span>
+
+        int u, v;
+        Set&lt;Integer&gt; uAdj;
+        PairInt p2;
+        PolyInt p3;
+        //O(|V|*k) where k is the avg degree of a node
+<span class="fc bfc" id="L49" title="All 2 branches covered.">        for (PairInt p : edges) {</span>
+<span class="fc" id="L50">            u = p.getX();</span>
+<span class="fc" id="L51">            v = p.getY();</span>
+<span class="pc bpc" id="L52" title="2 of 4 branches missed.">            if (nodeDegreeMap.get(u) &gt;= mHH &amp;&amp; nodeDegreeMap.get(v) &gt;= mHH) {</span>
+<span class="fc" id="L53">                hh.add(p);</span>
+<span class="fc" id="L54">                continue;</span>
+            }
+<span class="nc bnc" id="L56" title="All 2 branches missed.">            if (nodeDegreeMap.get(u) &gt;= mHH) {</span>
+<span class="nc" id="L57">                continue;</span>
+            }
+            // count non-hh triangles
+<span class="nc" id="L60">            uAdj = adjMap.get(u);</span>
+<span class="nc bnc" id="L61" title="All 4 branches missed.">            if (uAdj == null || uAdj.isEmpty()) {</span>
+<span class="nc" id="L62">                continue;</span>
+            }
+<span class="nc bnc" id="L64" title="All 2 branches missed.">            for (int uA : uAdj) {</span>
+                //count the triangle {u, v, uA} if and only if the edge (uA, v) exists, and u ≺ uA.
+<span class="nc bnc" id="L66" title="All 2 branches missed.">                if (u &lt; uA) {</span>
+                    // edge is undirected in the original graph so e(v, uA) == e(uA, v),
+                    // but in the ordered edges set, it is present only as (uA, v) since uA &lt; v.
+                    // the triangle (u, v, uA) then has order: u &lt; uA, uA &lt; v, u &lt; v
+<span class="nc" id="L70">                    p2 = new PairInt(uA, v);</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">                    if (edges.contains(p2)) {</span>
+<span class="nc" id="L72">                        p3 = new PolyInt(new int[]{u, v, uA});</span>
+                        //if u==v and in this undirected adjMap, v adj is ame as u adj, this will already be present
+<span class="nc" id="L74">                        nonHHTriangles.add(p3);</span>
+                    }
+                }
+<span class="nc" id="L77">            }</span>
+<span class="nc" id="L78">        }</span>
+
+<span class="fc" id="L80">        Set&lt;PolyInt&gt; hhTriangles = new HashSet&lt;PolyInt&gt;();</span>
+
+        // count triangles in hh
+        // number of hh is &lt;= mHH and degree of each hh is &gt;= mHH
+        // consider sets of 3 of these nodes: C(sqrt(m), 3) ~ O(m^(3/2))
+<span class="fc bfc" id="L85" title="All 2 branches covered.">        for (PairInt p : hh) {</span>
+<span class="fc" id="L86">            u = p.getX();</span>
+<span class="fc" id="L87">            v = p.getY();</span>
+<span class="fc" id="L88">            uAdj = adjMap.get(u);</span>
+<span class="pc bpc" id="L89" title="2 of 4 branches missed.">            if (uAdj == null || uAdj.isEmpty()) {</span>
+<span class="nc" id="L90">                continue;</span>
+            }
+<span class="fc bfc" id="L92" title="All 2 branches covered.">            for (int uA : uAdj) {</span>
+<span class="pc bpc" id="L93" title="1 of 4 branches missed.">                if (nodeDegreeMap.get(uA) &gt;= mHH &amp;&amp; u &lt; uA) {</span>
+<span class="fc" id="L94">                    p2 = new PairInt(v, uA);</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">                    if (hh.contains(p2)) {</span>
+<span class="fc" id="L96">                        p3 = new PolyInt(new int[]{u, v, uA});</span>
+<span class="fc" id="L97">                        hhTriangles.add(p3);</span>
+                    }
+                }
+<span class="fc" id="L100">            }</span>
+<span class="fc" id="L101">        }</span>
+<span class="fc" id="L102">        int nTriangles = nonHHTriangles.size() + hhTriangles.size();</span>
+<span class="fc" id="L103">        return nTriangles;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

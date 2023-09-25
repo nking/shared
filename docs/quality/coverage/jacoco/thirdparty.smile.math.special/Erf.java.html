@@ -54,81 +54,91 @@ public class Erf {
 
     /**
      * The Gauss error function.
+     @param x
+     @return 
      */
     public static double erf(double x) {
-<span class="nc bnc" id="L59" title="All 2 branches missed.">        if (x &gt;= 0.) {</span>
-<span class="nc" id="L60">            return 1.0 - erfccheb(x);</span>
+<span class="nc bnc" id="L61" title="All 2 branches missed.">        if (x &gt;= 0.) {</span>
+<span class="nc" id="L62">            return 1.0 - erfccheb(x);</span>
         } else {
-<span class="nc" id="L62">            return erfccheb(-x) - 1.0;</span>
+<span class="nc" id="L64">            return erfccheb(-x) - 1.0;</span>
         }
     }
 
     /**
      * The complementary error function.
+     @param x
+     @return 
      */
     public static double erfc(double x) {
-<span class="nc bnc" id="L70" title="All 2 branches missed.">        if (x &gt;= 0.) {</span>
-<span class="nc" id="L71">            return erfccheb(x);</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">        if (x &gt;= 0.) {</span>
+<span class="nc" id="L75">            return erfccheb(x);</span>
         } else {
-<span class="nc" id="L73">            return 2.0 - erfccheb(-x);</span>
+<span class="nc" id="L77">            return 2.0 - erfccheb(-x);</span>
         }
     }
 
     /**
      * The complementary error function with fractional error everywhere less
      * than 1.2 &amp;times; 10&lt;sup&gt;-7&lt;/sup&gt;. This concise routine is faster than erfc.
+     @param x
+     @return 
      */
     public static double erfcc(double x) {
-<span class="nc" id="L82">        double z = abs(x);</span>
-<span class="nc" id="L83">        double t = 2.0 / (2.0 + z);</span>
-<span class="nc" id="L84">        double ans = t * exp(-z * z - 1.26551223 + t * (1.00002368 + t * (0.37409196 + t * (0.09678418 +</span>
+<span class="nc" id="L88">        double z = abs(x);</span>
+<span class="nc" id="L89">        double t = 2.0 / (2.0 + z);</span>
+<span class="nc" id="L90">        double ans = t * exp(-z * z - 1.26551223 + t * (1.00002368 + t * (0.37409196 + t * (0.09678418 +</span>
                 t * (-0.18628806 + t * (0.27886807 + t * (-1.13520398 + t * (1.48851587 +
                 t * (-0.82215223 + t * 0.17087277)))))))));
 
-<span class="nc bnc" id="L88" title="All 2 branches missed.">        return (x &gt;= 0.0 ? ans : 2.0 - ans);</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">        return (x &gt;= 0.0 ? ans : 2.0 - ans);</span>
     }
 
     private static double erfccheb(double z) {
-<span class="nc" id="L92">        double t, ty, tmp, d = 0., dd = 0.;</span>
-<span class="nc bnc" id="L93" title="All 2 branches missed.">        if (z &lt; 0.) {</span>
-<span class="nc" id="L94">            throw new IllegalArgumentException(&quot;erfccheb requires nonnegative argument&quot;);</span>
+<span class="nc" id="L98">        double t, ty, tmp, d = 0., dd = 0.;</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">        if (z &lt; 0.) {</span>
+<span class="nc" id="L100">            throw new IllegalArgumentException(&quot;erfccheb requires nonnegative argument&quot;);</span>
         }
-<span class="nc" id="L96">        t = 2. / (2. + z);</span>
-<span class="nc" id="L97">        ty = 4. * t - 2.;</span>
-<span class="nc bnc" id="L98" title="All 2 branches missed.">        for (int j = cof.length - 1; j &gt; 0; j--) {</span>
-<span class="nc" id="L99">            tmp = d;</span>
-<span class="nc" id="L100">            d = ty * d - dd + cof[j];</span>
-<span class="nc" id="L101">            dd = tmp;</span>
+<span class="nc" id="L102">        t = 2. / (2. + z);</span>
+<span class="nc" id="L103">        ty = 4. * t - 2.;</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">        for (int j = cof.length - 1; j &gt; 0; j--) {</span>
+<span class="nc" id="L105">            tmp = d;</span>
+<span class="nc" id="L106">            d = ty * d - dd + cof[j];</span>
+<span class="nc" id="L107">            dd = tmp;</span>
         }
-<span class="nc" id="L103">        return t * exp(-z * z + 0.5 * (cof[0] + ty * d) - dd);</span>
+<span class="nc" id="L109">        return t * exp(-z * z + 0.5 * (cof[0] + ty * d) - dd);</span>
     }
 
     /**
      * The inverse complementary error function.
+     @param p
+     @return 
      */
     public static double inverfc(double p) {
         double x, err, t, pp;
-<span class="nc bnc" id="L111" title="All 2 branches missed.">        if (p &gt;= 2.0) {</span>
-<span class="nc" id="L112">            return -100.;</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">        if (p &gt;= 2.0) {</span>
+<span class="nc" id="L120">            return -100.;</span>
         }
-<span class="nc bnc" id="L114" title="All 2 branches missed.">        if (p &lt;= 0.0) {</span>
-<span class="nc" id="L115">            return 100.;</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">        if (p &lt;= 0.0) {</span>
+<span class="nc" id="L123">            return 100.;</span>
         }
-<span class="nc bnc" id="L117" title="All 2 branches missed.">        pp = (p &lt; 1.0) ? p : 2. - p;</span>
-<span class="nc" id="L118">        t = sqrt(-2. * log(pp / 2.));</span>
-<span class="nc" id="L119">        x = -0.70711 * ((2.30753 + t * 0.27061) / (1. + t * (0.99229 + t * 0.04481)) - t);</span>
-<span class="nc bnc" id="L120" title="All 2 branches missed.">        for (int j = 0; j &lt; 2; j++) {</span>
-<span class="nc" id="L121">            err = erfc(x) - pp;</span>
-<span class="nc" id="L122">            x += err / (1.12837916709551257 * exp(-x * x) - x * err);</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">        pp = (p &lt; 1.0) ? p : 2. - p;</span>
+<span class="nc" id="L126">        t = sqrt(-2. * log(pp / 2.));</span>
+<span class="nc" id="L127">        x = -0.70711 * ((2.30753 + t * 0.27061) / (1. + t * (0.99229 + t * 0.04481)) - t);</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">        for (int j = 0; j &lt; 2; j++) {</span>
+<span class="nc" id="L129">            err = erfc(x) - pp;</span>
+<span class="nc" id="L130">            x += err / (1.12837916709551257 * exp(-x * x) - x * err);</span>
         }
-<span class="nc bnc" id="L124" title="All 2 branches missed.">        return (p &lt; 1.0 ? x : -x);</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">        return (p &lt; 1.0 ? x : -x);</span>
     }
 
     /**
      * The inverse error function.
+     @param p
+     @return 
      */
     public static double inverf(double p) {
-<span class="nc" id="L131">        return inverfc(1. - p);</span>
+<span class="nc" id="L141">        return inverfc(1. - p);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

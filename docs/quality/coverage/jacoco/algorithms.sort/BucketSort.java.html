@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BucketSort.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.sort</a> &gt; <span class="el_source">BucketSort.java</span></div><h1>BucketSort.java</h1><pre class="source lang-java linenums">package algorithms.sort;
+
+import algorithms.misc.MiscMath0;
+import algorithms.util.SimpleLinkedListNode;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
+<span class="nc" id="L14">public class BucketSort {</span>
+
+    /**
+     * sort a, and for ties, prefer the element with a smaller index on a.
+     * runtime complexity is on average O(n) where n is the length of a, but
+     * if the distribution of values in a has a very large range, and large
+     * clusters distibuted over small number of integers, the runtime complexity
+     * will be larger than O(n), but still less than O(n*log_2(n)).
+     * @param a
+     * @return the sorted indexes of a.  these can be used to sort other arrays of data that are associated with a.
+     */
+    public static int[] sortAndReturnIndexes(final double[] a) {
+
+<span class="fc" id="L27">        int n = a.length;</span>
+<span class="fc" id="L28">        double[] minMax = MiscMath0.getMinMax(a);</span>
+<span class="fc" id="L29">        double binWidth = (minMax[1] - minMax[0])/(n - 1.);</span>
+
+<span class="fc" id="L31">        int[] indexes = new int[n];</span>
+
+        int i;
+
+<span class="fc" id="L35">        List&lt;LinkedList&lt;Node&gt;&gt; b = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L37">            b.add(new LinkedList&lt;Node&gt;());</span>
+        }
+        int iB;
+<span class="fc bfc" id="L40" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L41">            iB = (int) ((a[i] - minMax[0])/binWidth);</span>
+<span class="fc" id="L42">            b.get(iB).add(new Node(i, a[i]));</span>
+        }
+<span class="fc" id="L44">        int iOut = 0;</span>
+<span class="fc" id="L45">        double[] out = new double[n];</span>
+        LinkedList&lt;Node&gt; d;
+        Node node;
+<span class="fc bfc" id="L48" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L49">            d = b.get(i);</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">            if (d.isEmpty()){</span>
+<span class="fc" id="L51">                continue;</span>
+            }
+<span class="fc" id="L53">            Collections.sort(d);</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">            while (!d.isEmpty()) {</span>
+<span class="fc" id="L55">                node = d.removeFirst();</span>
+<span class="fc" id="L56">                out[iOut] = node.val;</span>
+<span class="fc" id="L57">                indexes[iOut] = node.idx;</span>
+<span class="fc" id="L58">                ++iOut;</span>
+            }
+        }
+<span class="fc" id="L61">        System.arraycopy(out, 0, a, 0, n);</span>
+<span class="fc" id="L62">        return indexes;</span>
+    }
+
+    /**
+     * sort a, and for ties, prefer the element with a smaller index on a.
+     * runtime complexity is on average O(n) where n is the length of a, but
+     * if the distribution of values in a has a very large range, and large
+     * clusters distibuted over small number of integers, the runtime complexity
+     * will be larger than O(n), but still less than O(n*log_2(n)).
+     * @param a
+     * @return the sorted indexes of a.  these can be used to sort other arrays of data that are associated with a.
+     */
+    public static int[] sortAndReturnIndexes(final int[] a) {
+
+<span class="fc" id="L76">        int n = a.length;</span>
+<span class="fc" id="L77">        int[] minMax = new int[]{MiscMath0.findMin(a), MiscMath0.findMax(a)};</span>
+<span class="fc" id="L78">        double binWidth = ((double)(minMax[1] - minMax[0]))/n;</span>
+
+<span class="fc" id="L80">        int[] indexes = new int[n];</span>
+
+        int i;
+
+<span class="fc" id="L84">        List&lt;LinkedList&lt;Node2&gt;&gt; b = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">        for (i = 0; i &lt; n+1; ++i) {</span>
+<span class="fc" id="L86">            b.add(new LinkedList&lt;Node2&gt;());</span>
+        }
+        int iB;
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L90">            iB = (int) (((double)(a[i] - minMax[0]))/binWidth);</span>
+<span class="fc" id="L91">            b.get(iB).add(new Node2(i, a[i]));</span>
+        }
+<span class="fc" id="L93">        int iOut = 0;</span>
+<span class="fc" id="L94">        int[] out = new int[n];</span>
+        LinkedList&lt;Node2&gt; d;
+        Node2 node;
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        for (i = 0; i &lt; b.size(); ++i) {</span>
+<span class="fc" id="L98">            d = b.get(i);</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">            if (d.isEmpty()){</span>
+<span class="fc" id="L100">                continue;</span>
+            }
+<span class="fc" id="L102">            Collections.sort(d);</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">            while (!d.isEmpty()) {</span>
+<span class="fc" id="L104">                node = d.removeFirst();</span>
+<span class="fc" id="L105">                out[iOut] = node.val;</span>
+<span class="fc" id="L106">                indexes[iOut] = node.idx;</span>
+<span class="fc" id="L107">                ++iOut;</span>
+            }
+        }
+<span class="fc" id="L110">        System.arraycopy(out, 0, a, 0, n);</span>
+<span class="fc" id="L111">        return indexes;</span>
+    }
+
+    private static class Node implements Comparable&lt;Node&gt; {
+        public final int idx;
+        public final double val;
+        public Node(int i, double v) {
+            this.idx = i;
+            this.val = v;
+        }
+
+        @Override
+        public int compareTo(Node o) {
+            if (this.val &lt; o.val) {
+                return -1;
+            } else if (this.val == o.val) {
+                return Integer.compare(this.idx, o.idx);
+            }
+            return +1;
+        }
+    }
+
+    private static class Node2 implements Comparable&lt;Node2&gt; {
+        public final int idx;
+        public final int val;
+        public Node2(int i, int v) {
+            this.idx = i;
+            this.val = v;
+        }
+
+        @Override
+        public int compareTo(Node2 o) {
+            if (this.val &lt; o.val) {
+                return -1;
+            } else if (this.val == o.val) {
+                return Integer.compare(this.idx, o.idx);
+            }
+            return +1;
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

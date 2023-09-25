@@ -59,17 +59,21 @@ package thirdparty.net.oelen.polsolve.pzeros;
     ************************************************************************* 
     * Output variable:                                                      *
     *     IL  : maximum integer such that IL&lt;I, H(IL)=.TRUE.                *
+     @param i
+     @param lo
+     @param h
+     @return 
     *************************************************************************/
     private static int left(int i, int lo, boolean[] h) {
-<span class="pc bpc" id="L64" title="1 of 2 branches missed.">        if (i == lo) {</span>
-<span class="nc" id="L65">            return lo;</span>
+<span class="pc bpc" id="L68" title="1 of 2 branches missed.">        if (i == lo) {</span>
+<span class="nc" id="L69">            return lo;</span>
         }
-<span class="fc bfc" id="L67" title="All 2 branches covered.">        for (i--; i &gt; lo; i--) {</span>
-<span class="fc bfc" id="L68" title="All 2 branches covered.">            if (h[i]) {</span>
-<span class="fc" id="L69">                break;</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">        for (i--; i &gt; lo; i--) {</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">            if (h[i]) {</span>
+<span class="fc" id="L73">                break;</span>
             }
         }
-<span class="fc" id="L72">        return i;</span>
+<span class="fc" id="L76">        return i;</span>
     }
     
     
@@ -91,18 +95,22 @@ package thirdparty.net.oelen.polsolve.pzeros;
     ************************************************************************* 
     * Output variable:                                                      *
     *     IR  : minimum integer such that IR&gt;I, H(IR)=.TRUE.                *
+     @param i
+     @param up
+     @param h
+     @return 
     *************************************************************************/
     
     private static int right(int i, int up, boolean[] h) {
-<span class="pc bpc" id="L97" title="1 of 2 branches missed.">        if (i == up) {</span>
-<span class="nc" id="L98">            return up;</span>
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">        if (i == up) {</span>
+<span class="nc" id="L106">            return up;</span>
         }
-<span class="fc bfc" id="L100" title="All 2 branches covered.">        for (i++; i &lt; up; i++) {</span>
-<span class="fc bfc" id="L101" title="All 2 branches covered.">            if (h[i]) {</span>
-<span class="fc" id="L102">                break;</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">        for (i++; i &lt; up; i++) {</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">            if (h[i]) {</span>
+<span class="fc" id="L110">                break;</span>
             }
         }
-<span class="fc" id="L105">        return i;</span>
+<span class="fc" id="L113">        return i;</span>
     }
     
     
@@ -128,14 +136,19 @@ package thirdparty.net.oelen.polsolve.pzeros;
     *            TOLER, i.e., if                                            *
     *            (A(I)-A(IL))*(IR-I)-(A(IR)-A(I))*(I-IL)&gt;TOLER.             *
     *     .FALSE.,  otherwise.                                              *
+     @param il
+     @param a
+     @param i
+     @param ir
+     @return 
     *************************************************************************/
     
     private static boolean ctest(int il, int i, int ir, double[] a) {
         double s1, s2;
 
-<span class="fc" id="L136">        s1 = (a[i] - a[il]) * (ir - i);</span>
-<span class="fc" id="L137">        s2 = (a[ir] - a[i]) * (i - il);</span>
-<span class="fc bfc" id="L138" title="All 2 branches covered.">        return (s1 - s2 &gt; TOLER);</span>
+<span class="fc" id="L149">        s1 = (a[i] - a[il]) * (ir - i);</span>
+<span class="fc" id="L150">        s2 = (a[ir] - a[i]) * (i - il);</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">        return (s1 - s2 &gt; TOLER);</span>
     }
     
     
@@ -158,47 +171,52 @@ package thirdparty.net.oelen.polsolve.pzeros;
     *     H    : vector defining the vertices of the convex hull, i.e.,     *
     *            H(j) is .TRUE. if (j,A(j)) is a vertex of the convex hull  *
     *            This vector is used also as output.                        *
+     @param lo
+     @param i
+     @param a
+     @param up
+     @param h
     *************************************************************************/
     
     private static void cmerge(int lo, int i, int up, double a[], boolean[] h) {
         int il, ir, ill, irr;
         boolean tstl, tstr;
 
-<span class="fc" id="L167">        ill = lo;</span>
-<span class="fc" id="L168">        irr = up;</span>
-<span class="fc" id="L169">        il = left(i, lo, h);</span>
-<span class="fc" id="L170">        ir = right(i, up, h);</span>
-<span class="fc bfc" id="L171" title="All 2 branches covered.">        if (ctest(il, i, ir, a)) {</span>
-<span class="fc" id="L172">            return;</span>
+<span class="fc" id="L185">        ill = lo;</span>
+<span class="fc" id="L186">        irr = up;</span>
+<span class="fc" id="L187">        il = left(i, lo, h);</span>
+<span class="fc" id="L188">        ir = right(i, up, h);</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">        if (ctest(il, i, ir, a)) {</span>
+<span class="fc" id="L190">            return;</span>
         }
-<span class="fc" id="L174">        h[i] = false;</span>
+<span class="fc" id="L192">        h[i] = false;</span>
         do {
-<span class="fc bfc" id="L176" title="All 2 branches covered.">            if (il == lo) {</span>
-<span class="fc" id="L177">                tstl = true;</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">            if (il == lo) {</span>
+<span class="fc" id="L195">                tstl = true;</span>
             } 
             else {
-<span class="fc" id="L180">                ill = left(il, lo, h);</span>
-<span class="fc" id="L181">                tstl = ctest(ill, il, ir, a);</span>
+<span class="fc" id="L198">                ill = left(il, lo, h);</span>
+<span class="fc" id="L199">                tstl = ctest(ill, il, ir, a);</span>
             }
 
-<span class="fc bfc" id="L184" title="All 2 branches covered.">            if (ir == up) {</span>
-<span class="fc" id="L185">                tstr = true;</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">            if (ir == up) {</span>
+<span class="fc" id="L203">                tstr = true;</span>
             } 
             else {
-<span class="fc" id="L188">                irr = right(ir, up, h);</span>
-<span class="fc" id="L189">                tstr = ctest(il, ir, irr, a);</span>
+<span class="fc" id="L206">                irr = right(ir, up, h);</span>
+<span class="fc" id="L207">                tstr = ctest(il, ir, irr, a);</span>
             }
 
-<span class="fc bfc" id="L192" title="All 2 branches covered.">            if (!tstl) {</span>
-<span class="fc" id="L193">                h[il] = false;</span>
-<span class="fc" id="L194">                il = ill;</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">            if (!tstl) {</span>
+<span class="fc" id="L211">                h[il] = false;</span>
+<span class="fc" id="L212">                il = ill;</span>
             }
-<span class="fc bfc" id="L196" title="All 2 branches covered.">            if (!tstr) {</span>
-<span class="fc" id="L197">                h[ir] = false;</span>
-<span class="fc" id="L198">                ir = irr;</span>
+<span class="fc bfc" id="L214" title="All 2 branches covered.">            if (!tstr) {</span>
+<span class="fc" id="L215">                h[ir] = false;</span>
+<span class="fc" id="L216">                ir = irr;</span>
             }
-<span class="fc bfc" id="L200" title="All 4 branches covered.">        } while (!(tstl &amp;&amp; tstr));</span>
-<span class="fc" id="L201">    }</span>
+<span class="fc bfc" id="L218" title="All 4 branches covered.">        } while (!(tstl &amp;&amp; tstr));</span>
+<span class="fc" id="L219">    }</span>
 
     
     
@@ -210,20 +228,23 @@ package thirdparty.net.oelen.polsolve.pzeros;
     * Compute the convex hull of the data set a[]. The result     *
     * is in the bool vector h[]. The algorithm successively       *
     * merges adjacent convex hulls of sizes 2, 4, 8, ...          *
+     @param n
+     @param a
+     @param h
     ***************************************************************/
     
     static void cnvex(int n, double a[], boolean[] h) {
         int m, c;
 
-<span class="fc bfc" id="L218" title="All 2 branches covered.">        for (m = 0; m &lt;= n; m++) {</span>
-<span class="fc" id="L219">            h[m] = true;</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">        for (m = 0; m &lt;= n; m++) {</span>
+<span class="fc" id="L240">            h[m] = true;</span>
         }
 
-<span class="fc bfc" id="L222" title="All 2 branches covered.">        for (m = 1; m &lt; n; m &lt;&lt;= 1) {</span>
-<span class="fc bfc" id="L223" title="All 2 branches covered.">            for (c = m; c &lt; n; c += 2 * m) {</span>
-<span class="fc" id="L224">                cmerge(c - m, c, MIN(n, c + m), a, h);</span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">        for (m = 1; m &lt; n; m &lt;&lt;= 1) {</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">            for (c = m; c &lt; n; c += 2 * m) {</span>
+<span class="fc" id="L245">                cmerge(c - m, c, MIN(n, c + m), a, h);</span>
             }
         }
-<span class="fc" id="L227">    }</span>
+<span class="fc" id="L248">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -49,8 +49,8 @@ public class Point2D implements Comparable&lt;Point2D&gt; {
 
     /**
      * Initializes a new point (x, y).
-     * @param x the x-coordinate
-     * @param y the y-coordinate
+     @param x the x-coordinate
+     @param y the y-coordinate
      * @throws IllegalArgumentException if either &lt;tt&gt;x&lt;/tt&gt; or &lt;tt&gt;y&lt;/tt&gt;
      *    is &lt;tt&gt;Double.NaN&lt;/tt&gt;, &lt;tt&gt;Double.POSITIVE_INFINITY&lt;/tt&gt; or
      *    &lt;tt&gt;Double.NEGATIVE_INFINITY&lt;/tt&gt;
@@ -69,7 +69,7 @@ public class Point2D implements Comparable&lt;Point2D&gt; {
 
     /**
      * Returns the x-coordinate.
-     * @return the x-coordinate
+     @return the x-coordinate
      */
     public double x() {
 <span class="nc" id="L75">        return x;</span>
@@ -77,7 +77,7 @@ public class Point2D implements Comparable&lt;Point2D&gt; {
 
     /**
      * Returns the y-coordinate.
-     * @return the y-coordinate
+     @return the y-coordinate
      */
     public double y() {
 <span class="nc" id="L83">        return y;</span>
@@ -85,7 +85,7 @@ public class Point2D implements Comparable&lt;Point2D&gt; {
 
     /**
      * Returns the polar radius of this point.
-     * @return the polar radius of this point in polar coordiantes: sqrt(x*x + y*y)
+     @return the polar radius of this point in polar coordiantes: sqrt(x*x + y*y)
      */
     public double r() {
 <span class="nc" id="L91">        return Math.sqrt(x*x + y*y);</span>
@@ -93,7 +93,7 @@ public class Point2D implements Comparable&lt;Point2D&gt; {
 
     /**
      * Returns the angle of this point in polar coordinates.
-     * @return the angle (in radians) of this point in polar coordiantes (between -pi/2 and pi/2)
+     @return the angle (in radians) of this point in polar coordiantes (between -pi/2 and pi/2)
      */
     public double theta() {
 <span class="nc" id="L99">        return Math.atan2(y, x);</span>
@@ -101,59 +101,60 @@ public class Point2D implements Comparable&lt;Point2D&gt; {
 
     /**
      * Returns the angle between this point and that point.
-     * @return the angle in radians (between -pi and pi) between this point and that point (0 if equal)
+     @param that
+     @return the angle in radians (between -pi and pi) between this point and that point (0 if equal)
      */
     private double angleTo(Point2D that) {
-<span class="nc" id="L107">        double dx = that.x - this.x;</span>
-<span class="nc" id="L108">        double dy = that.y - this.y;</span>
-<span class="nc" id="L109">        return Math.atan2(dy, dx);</span>
+<span class="nc" id="L108">        double dx = that.x - this.x;</span>
+<span class="nc" id="L109">        double dy = that.y - this.y;</span>
+<span class="nc" id="L110">        return Math.atan2(dy, dx);</span>
     }
 
     /**
      * Returns true if a to b to c is a counterclockwise turn.
-     * @param a first point
-     * @param b second point
-     * @param c third point
-     * @return { -1, 0, +1 } if a to b to c is a { clockwise, collinear; counterclockwise } turn.
+     @param a first point
+     @param b second point
+     @param c third point
+     @return { -1, 0, +1 } if a to b to c is a { clockwise, collinear; counterclockwise } turn.
      */
     public static int ccw(Point2D a, Point2D b, Point2D c) {
-<span class="nc" id="L120">        double area2 = (b.x-a.x)*(c.y-a.y) - (b.y-a.y)*(c.x-a.x);</span>
-<span class="nc bnc" id="L121" title="All 2 branches missed.">        if      (area2 &lt; 0) return -1;</span>
-<span class="nc bnc" id="L122" title="All 2 branches missed.">        else if (area2 &gt; 0) return +1;</span>
-<span class="nc" id="L123">        else                return  0;</span>
+<span class="nc" id="L121">        double area2 = (b.x-a.x)*(c.y-a.y) - (b.y-a.y)*(c.x-a.x);</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">        if      (area2 &lt; 0) return -1;</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">        else if (area2 &gt; 0) return +1;</span>
+<span class="nc" id="L124">        else                return  0;</span>
     }
 
     /**
      * Returns twice the signed area of the triangle a-b-c.
-     * @param a first point
-     * @param b second point
-     * @param c third point
-     * @return twice the signed area of the triangle a-b-c
+     @param a first point
+     @param b second point
+     @param c third point
+     @return twice the signed area of the triangle a-b-c
      */
     public static double area2(Point2D a, Point2D b, Point2D c) {
-<span class="nc" id="L134">        return (b.x-a.x)*(c.y-a.y) - (b.y-a.y)*(c.x-a.x);</span>
+<span class="nc" id="L135">        return (b.x-a.x)*(c.y-a.y) - (b.y-a.y)*(c.x-a.x);</span>
     }
 
     /**
      * Returns the Euclidean distance between this point and that point.
-     * @param that the other point
-     * @return the Euclidean distance between this point and that point
+     @param that the other point
+     @return the Euclidean distance between this point and that point
      */
     public double distanceTo(Point2D that) {
-<span class="nc" id="L143">        double dx = this.x - that.x;</span>
-<span class="nc" id="L144">        double dy = this.y - that.y;</span>
-<span class="nc" id="L145">        return Math.sqrt(dx*dx + dy*dy);</span>
+<span class="nc" id="L144">        double dx = this.x - that.x;</span>
+<span class="nc" id="L145">        double dy = this.y - that.y;</span>
+<span class="nc" id="L146">        return Math.sqrt(dx*dx + dy*dy);</span>
     }
 
     /**
      * Returns the square of the Euclidean distance between this point and that point.
-     * @param that the other point
-     * @return the square of the Euclidean distance between this point and that point
+     @param that the other point
+     @return the square of the Euclidean distance between this point and that point
      */
     public double distanceSquaredTo(Point2D that) {
-<span class="nc" id="L154">        double dx = this.x - that.x;</span>
-<span class="nc" id="L155">        double dy = this.y - that.y;</span>
-<span class="nc" id="L156">        return dx*dx + dy*dy;</span>
+<span class="nc" id="L155">        double dx = this.x - that.x;</span>
+<span class="nc" id="L156">        double dy = this.y - that.y;</span>
+<span class="nc" id="L157">        return dx*dx + dy*dy;</span>
     }
 
     /**
@@ -161,46 +162,46 @@ public class Point2D implements Comparable&lt;Point2D&gt; {
      * Formally, the invoking point (x0, y0) is less than the argument point (x1, y1)
      * if and only if either y0 &lt; y1 or if y0 = y1 and x0 &lt; x1.
      *
-     * @param  that the other point
-     * @return the value &lt;tt&gt;0&lt;/tt&gt; if this string is equal to the argument
+     @param  that the other point
+     @return the value &lt;tt&gt;0&lt;/tt&gt; if this string is equal to the argument
      *         string (precisely when &lt;tt&gt;equals()&lt;/tt&gt; returns &lt;tt&gt;true&lt;/tt&gt;);
      *         a negative integer if this point is less than the argument
      *         point; and a positive integer if this point is greater than the
      *         argument point
      */
     public int compareTo(Point2D that) {
-<span class="nc bnc" id="L172" title="All 2 branches missed.">        if (this.y &lt; that.y) return -1;</span>
-<span class="nc bnc" id="L173" title="All 2 branches missed.">        if (this.y &gt; that.y) return +1;</span>
-<span class="nc bnc" id="L174" title="All 2 branches missed.">        if (this.x &lt; that.x) return -1;</span>
-<span class="nc bnc" id="L175" title="All 2 branches missed.">        if (this.x &gt; that.x) return +1;</span>
-<span class="nc" id="L176">        return 0;</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">        if (this.y &lt; that.y) return -1;</span>
+<span class="nc bnc" id="L174" title="All 2 branches missed.">        if (this.y &gt; that.y) return +1;</span>
+<span class="nc bnc" id="L175" title="All 2 branches missed.">        if (this.x &lt; that.x) return -1;</span>
+<span class="nc bnc" id="L176" title="All 2 branches missed.">        if (this.x &gt; that.x) return +1;</span>
+<span class="nc" id="L177">        return 0;</span>
     }
 
     /**
      * Compares two points by polar angle (between 0 and 2pi) with respect to this point.
      *
-     * @return the comparator
+     @return the comparator
      */
     public Comparator&lt;Point2D&gt; polarOrder() {
-<span class="nc" id="L185">        return new PolarOrder();</span>
+<span class="nc" id="L186">        return new PolarOrder();</span>
     }
 
     /**
      * Compares two points by atan2() angle (between -pi and pi) with respect to this point.
      *
-     * @return the comparator
+     @return the comparator
      */
     public Comparator&lt;Point2D&gt; atan2Order() {
-<span class="nc" id="L194">        return new Atan2Order();</span>
+<span class="nc" id="L195">        return new Atan2Order();</span>
     }
 
     /**
      * Compares two points by distance to this point.
      *
-     * @return the comparator
+     @return the comparator
      */
     public Comparator&lt;Point2D&gt; distanceToOrder() {
-<span class="nc" id="L203">        return new DistanceToOrder();</span>
+<span class="nc" id="L204">        return new DistanceToOrder();</span>
     }
 
     // compare points according to their x-coordinate
@@ -278,37 +279,37 @@ public class Point2D implements Comparable&lt;Point2D&gt; {
     /**       
      * Compares this point to the specified point.
      *       
-     * @param  other the other point
-     * @return &lt;tt&gt;true&lt;/tt&gt; if this point equals &lt;tt&gt;other&lt;/tt&gt;;
+     @param  other the other point
+     @return &lt;tt&gt;true&lt;/tt&gt; if this point equals &lt;tt&gt;other&lt;/tt&gt;;
      *         &lt;tt&gt;false&lt;/tt&gt; otherwise
      */
     @Override
     public boolean equals(Object other) {
-<span class="nc bnc" id="L287" title="All 2 branches missed.">        if (other == this) return true;</span>
-<span class="nc bnc" id="L288" title="All 2 branches missed.">        if (other == null) return false;</span>
-<span class="nc bnc" id="L289" title="All 2 branches missed.">        if (other.getClass() != this.getClass()) return false;</span>
-<span class="nc" id="L290">        Point2D that = (Point2D) other;</span>
-<span class="nc bnc" id="L291" title="All 4 branches missed.">        return this.x == that.x &amp;&amp; this.y == that.y;</span>
+<span class="nc bnc" id="L288" title="All 2 branches missed.">        if (other == this) return true;</span>
+<span class="nc bnc" id="L289" title="All 2 branches missed.">        if (other == null) return false;</span>
+<span class="nc bnc" id="L290" title="All 2 branches missed.">        if (other.getClass() != this.getClass()) return false;</span>
+<span class="nc" id="L291">        Point2D that = (Point2D) other;</span>
+<span class="nc bnc" id="L292" title="All 4 branches missed.">        return this.x == that.x &amp;&amp; this.y == that.y;</span>
     }
 
     /**
      * Return a string representation of this point.
-     * @return a string representation of this point in the format (x, y)
+     @return a string representation of this point in the format (x, y)
      */
     @Override
     public String toString() {
-<span class="nc" id="L300">        return &quot;(&quot; + x + &quot;, &quot; + y + &quot;)&quot;;</span>
+<span class="nc" id="L301">        return &quot;(&quot; + x + &quot;, &quot; + y + &quot;)&quot;;</span>
     }
 
     /**
      * Returns an integer hash code for this point.
-     * @return an integer hash code for this point
+     @return an integer hash code for this point
      */
     @Override
     public int hashCode() {
-<span class="nc" id="L309">        int hashX = ((Double) x).hashCode();</span>
-<span class="nc" id="L310">        int hashY = ((Double) y).hashCode();</span>
-<span class="nc" id="L311">        return 31*hashX + hashY;</span>
+<span class="nc" id="L310">        int hashX = ((Double) x).hashCode();</span>
+<span class="nc" id="L311">        int hashY = ((Double) y).hashCode();</span>
+<span class="nc" id="L312">        return 31*hashX + hashY;</span>
     }
 
     /*
@@ -323,12 +324,13 @@ public class Point2D implements Comparable&lt;Point2D&gt; {
 
     /**
      * Unit tests the point data type.
+     @param args
      */
     public static void main(String[] args) {
-<span class="nc" id="L328">        int x0 = Integer.parseInt(args[0]);</span>
-<span class="nc" id="L329">        int y0 = Integer.parseInt(args[1]);</span>
-<span class="nc" id="L330">        int n = Integer.parseInt(args[2]);</span>
-<span class="nc" id="L331">    }</span>
+<span class="nc" id="L330">        int x0 = Integer.parseInt(args[0]);</span>
+<span class="nc" id="L331">        int y0 = Integer.parseInt(args[1]);</span>
+<span class="nc" id="L332">        int n = Integer.parseInt(args[2]);</span>
+<span class="nc" id="L333">    }</span>
 }
 
 /******************************************************************************

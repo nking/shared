@@ -73,7 +73,7 @@ public strictfp class RPoly {   // Use strictfp to assure behavior is same on al
      * Constructor of the polynomial, with the coefficients given as an array of
      * doubles.
      *
-     * @param coef The coefficients of the polynomial in the order of the
+     @param coef The coefficients of the polynomial in the order of the
      * constant term to the term with the highest power, i.e. the polynomial is
      * coef[0] + coef[1]*x + coef[2]*x^2 ... coef[N]*x^N, where N+1 is the
      * length of the supplied array. Element coef[N] must be non-zero!
@@ -89,9 +89,9 @@ public strictfp class RPoly {   // Use strictfp to assure behavior is same on al
     /**
      * Evaluates the polynomial at the given double argument.
      *
-     * @param x The real value for which the polynomial must be evaluated. The
+     @param x The real value for which the polynomial must be evaluated. The
      * result is a real value.
-     * @return The value of the polynomial, evaluated at the given argument.
+     @return The value of the polynomial, evaluated at the given argument.
      */
     public double eval(double x) {
 <span class="nc" id="L97">        int deg = coef.length - 1;</span>
@@ -109,11 +109,11 @@ public strictfp class RPoly {   // Use strictfp to assure behavior is same on al
     /**
      * Evaluates the polynomial at the given complex argument.
      *
-     * @param xre The real part of the argument at which the polynomial is
+     @param xre The real part of the argument at which the polynomial is
      * evaluated.
-     * @param xim The imaginary part of the argument at which the polynomial is
+     @param xim The imaginary part of the argument at which the polynomial is
      * evaluated.
-     * @return A double array, which contains the complex value of the
+     @return A double array, which contains the complex value of the
      * polynomial, evaluated at the given argument. The returned array contains
      * two real values. The value at index 0 is the real part of the return
      * value and the value at index 1 is the imaginary part of the return value.
@@ -143,15 +143,15 @@ public strictfp class RPoly {   // Use strictfp to assure behavior is same on al
      * polynomial without the need to allocate many small 2-element arrays
      * for storing the result.
      *
-     * @param result A double-array with at least two elements, in which
+     @param result A double-array with at least two elements, in which
      * the result of the evaluation is stored. The value at index 0 is
      * replaced by the real part of the polynomial value and the value at
      * index 1 is replaced by the imaginary part of the polynomial value.
      * If the supplied array contains more than 2 elements, then the elements
      * with index 2 or larger are not touched at all.
-     * @param xre The real part of the argument at which the polynomial is
+     @param xre The real part of the argument at which the polynomial is
      * evaluated.
-     * @param xim The imaginary part of the argument at which the polynomial is
+     @param xim The imaginary part of the argument at which the polynomial is
      * evaluated.
      */
     public void eval(double[] result, double xre, double xim) {
@@ -176,21 +176,21 @@ public strictfp class RPoly {   // Use strictfp to assure behavior is same on al
      * Evaluates the polynomial and the derivative of the polynomial
      * simultaneously for the given value of x.
      *
-     * @param result A double-array with at least two elements, in which
+     @param result A double-array with at least two elements, in which
      * the result of the evaluation is stored. The value at index 0 is
      * replaced by the real part of the polynomial value and the value at
      * index 1 is replaced by the imaginary part of the polynomial value.
      * If the supplied array contains more than 2 elements, then the elements
      * with index 2 or larger are not touched at all.
-     * @param dresult A double-array with at least two elements, in which
+     @param dresult A double-array with at least two elements, in which
      * the result of the evaluation is stored. The value at index 0 is
      * replaced by the real part of the derivative value and the value at
      * index 1 is replaced by the imaginary part of the derivative value.
      * If the supplied array contains more than 2 elements, then the elements
      * with index 2 or larger are not touched at all.
-     * @param xre The real part of the argument at which the derivative is
+     @param xre The real part of the argument at which the derivative is
      * evaluated.
-     * @param xim The imaginary part of the argument at which the derivative is
+     @param xim The imaginary part of the argument at which the derivative is
      * evaluated.
      */
     public void eval_deriv(double[] result, double[] dresult, double xre, double xim) {
@@ -229,7 +229,7 @@ public strictfp class RPoly {   // Use strictfp to assure behavior is same on al
     /**
      * Returns the degree of the polynomial.
      *
-     * @return The degree of the polynomial.
+     @return The degree of the polynomial.
      */
     public int degree() {
 <span class="nc" id="L235">        return coef.length - 1;</span>
@@ -241,7 +241,7 @@ public strictfp class RPoly {   // Use strictfp to assure behavior is same on al
     /**
      * Creates a String representation of this polynomial.
      *
-     * @return The String representation of this object.
+     @return The String representation of this object.
 	*
      */
     @Override
@@ -272,13 +272,13 @@ public strictfp class RPoly {   // Use strictfp to assure behavior is same on al
     /**
      * This method computes the roots of the polynomial and stores the roots
      * in preallocated arrays, which are passed as arguments.
-     * @param zeror Array, in which the real parts of the zeros will be stored
+     @param zeror Array, in which the real parts of the zeros will be stored
      * after computation of the zeros. This array must have a length of at
      * least N elements, where N is the degree of the polynomial.
-     * @param zeroi Array, in which the imaginary parts of the zeros will be stored
+     @param zeroi Array, in which the imaginary parts of the zeros will be stored
      * after computation of the zeros. This array must have a length of at
      * least N elements, where N is the degree of the polynomial.
-     * @return Returns the degree of the polynomial if the computation succeeds,
+     @return Returns the degree of the polynomial if the computation succeeds,
      * and returns a value less than the degree of the polynomial if an error
      * occurs (e.g. convergence failure). When a value less than the degree of
      * the polynomial is returned, then only part (or none) of the roots could

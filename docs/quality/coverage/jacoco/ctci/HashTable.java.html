@@ -5,43 +5,81 @@ import java.lang.reflect.Array;
 /**
  *
  * @author nichole
+ @param &lt;K&gt;
+ @param &lt;V&gt;
  */
 public class HashTable&lt;K,V&gt; {
   
+    /**
+     *
+     */
     protected final LinkedList&lt;K, V&gt;[] t;
 
-<span class="nc" id="L13">  public HashTable(int capacity) {</span>
-      
-<span class="nc" id="L15">    t = (LinkedList&lt;K, V&gt;[]) Array.newInstance(ctci.LinkedList.class, capacity);</span>
-    
-<span class="nc bnc" id="L17" title="All 2 branches missed.">    for (int i = 0; i &lt; capacity; ++i) {</span>
-<span class="nc" id="L18">      t[i] = new LinkedList&lt;K,V&gt;();</span>
-    }
-<span class="nc" id="L20">  }</span>
+    /**
+     *
+     @param capacity
+     */
+<span class="nc" id="L22">    public HashTable(int capacity) {</span>
 
-  public void addItem(K key, V value) {
-<span class="nc" id="L23">    int i = hash(key);</span>
-<span class="nc" id="L24">    t[i].add(key, value);</span>
-<span class="nc" id="L25">  }</span>
-  public boolean containsKey(K key) {
-<span class="nc" id="L27">    int i = hash(key);</span>
-<span class="nc" id="L28">    return t[i].containsKey(key);</span>
+<span class="nc" id="L24">      t = (LinkedList&lt;K, V&gt;[]) Array.newInstance(ctci.LinkedList.class, capacity);</span>
+
+<span class="nc bnc" id="L26" title="All 2 branches missed.">      for (int i = 0; i &lt; capacity; ++i) {</span>
+<span class="nc" id="L27">        t[i] = new LinkedList&lt;K, V&gt;();</span>
+      }
+<span class="nc" id="L29">    }</span>
+
+    /**
+     *
+     @param key
+     @param value
+     */
+    public void addItem(K key, V value) {
+<span class="nc" id="L37">    int i = hash(key);</span>
+<span class="nc" id="L38">    t[i].add(key, value);</span>
+<span class="nc" id="L39">  }</span>
+
+    /**
+     *
+     @param key
+     @return
+     */
+    public boolean containsKey(K key) {
+<span class="nc" id="L47">    int i = hash(key);</span>
+<span class="nc" id="L48">    return t[i].containsKey(key);</span>
   }
-  public V get(K key) {
-<span class="nc" id="L31">    int i = hash(key);</span>
-<span class="nc" id="L32">    Node&lt;K,V&gt; node = t[i].get(key);</span>
-<span class="nc" id="L33">    return node.getData();</span>
+
+    /**
+     *
+     @param key
+     @return
+     */
+    public V get(K key) {
+<span class="nc" id="L57">    int i = hash(key);</span>
+<span class="nc" id="L58">    Node&lt;K,V&gt; node = t[i].get(key);</span>
+<span class="nc" id="L59">    return node.getData();</span>
   }
-  public V remove(K key) {
-<span class="nc" id="L36">    int i = hash(key);</span>
-<span class="nc" id="L37">    Node&lt;K,V&gt; node = t[i].remove(key);</span>
-<span class="nc" id="L38">    return node.getData();</span>
+
+    /**
+     *
+     @param key
+     @return
+     */
+    public V remove(K key) {
+<span class="nc" id="L68">    int i = hash(key);</span>
+<span class="nc" id="L69">    Node&lt;K,V&gt; node = t[i].remove(key);</span>
+<span class="nc" id="L70">    return node.getData();</span>
   }
-  protected int hash(K key) {
+
+    /**
+     *
+     @param key
+     @return
+     */
+    protected int hash(K key) {
     // this can be improved
-<span class="nc" id="L42">    int hc = key.hashCode();</span>
-<span class="nc" id="L43">    int i = Math.floorMod(hc, t.length);</span>
-<span class="nc" id="L44">    return i;</span>
+<span class="nc" id="L80">    int hc = key.hashCode();</span>
+<span class="nc" id="L81">    int i = Math.floorMod(hc, t.length);</span>
+<span class="nc" id="L82">    return i;</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

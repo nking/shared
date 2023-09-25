@@ -27,7 +27,7 @@ public class AllMaximalCliquesBronKerbosch {
     
     /**
      * 
-     * @param adjMap adjacency map for an undirected graph. 
+     @param adjMap adjacency map for an undirected graph. 
      */
 <span class="fc" id="L32">    public AllMaximalCliquesBronKerbosch(TIntObjectMap&lt;TIntSet&gt; adjMap) {</span>
 <span class="fc" id="L33">        this.adjMap = adjMap;</span>
@@ -61,7 +61,7 @@ public class AllMaximalCliquesBronKerbosch {
      * algorithm BronKerbosch3(G)
      * &lt;/pre&gt;
      * 
-     * @return 
+     @return 
      */
     public List&lt;TIntSet&gt; bronKerBosch() {
         
@@ -105,10 +105,10 @@ public class AllMaximalCliquesBronKerbosch {
      * The worse case runtime complexity is O(3^(n/3)) which is from
      *  Moon and Moser (1965) who found that any n-vertex graph has at most 3^(n/3) maximal cliques.
      * 
-     * @param r
-     * @param p
-     * @param x
-     * @param results array to add results to 
+     @param r
+     @param p
+     @param x
+     @param results array to add results to 
      */
     public void bronKerBosch(TIntSet r, TIntSet p, TIntSet x, List&lt;TIntSet&gt; results) {
 <span class="fc bfc" id="L114" title="All 4 branches covered.">        if (p.isEmpty() &amp;&amp; x.isEmpty()) {</span>
@@ -140,41 +140,47 @@ public class AllMaximalCliquesBronKerbosch {
         }
 <span class="fc" id="L141">    }</span>
     
+    /**
+     *
+     @param a
+     @param b
+     @return
+     */
     protected TIntSet intersection(TIntSet a, TIntSet b) {
         //  (0,1,2,3)  {1,2,4}  C=A-B=0,3  A-C=1,2
-<span class="fc" id="L145">        TIntSet c = new TIntHashSet(a);</span>
-<span class="fc" id="L146">        TIntSet out = new TIntHashSet(a);</span>
-<span class="fc" id="L147">        c.removeAll(b);</span>
-<span class="fc" id="L148">        out.removeAll(c);</span>
-<span class="fc" id="L149">        return out;</span>
+<span class="fc" id="L151">        TIntSet c = new TIntHashSet(a);</span>
+<span class="fc" id="L152">        TIntSet out = new TIntHashSet(a);</span>
+<span class="fc" id="L153">        c.removeAll(b);</span>
+<span class="fc" id="L154">        out.removeAll(c);</span>
+<span class="fc" id="L155">        return out;</span>
     }
     
     private TIntSet extractVertexes(TIntObjectMap&lt;TIntSet&gt; adjMap) {
-<span class="fc" id="L153">        TIntSet vs = new TIntHashSet(adjMap.size());</span>
-<span class="fc" id="L154">        TIntObjectIterator&lt;TIntSet&gt; iter = adjMap.iterator();</span>
+<span class="fc" id="L159">        TIntSet vs = new TIntHashSet(adjMap.size());</span>
+<span class="fc" id="L160">        TIntObjectIterator&lt;TIntSet&gt; iter = adjMap.iterator();</span>
         TIntIterator iter2;
-<span class="fc bfc" id="L156" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
-<span class="fc" id="L157">            iter.advance();</span>
-<span class="fc" id="L158">            vs.add(iter.key());</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L163">            iter.advance();</span>
+<span class="fc" id="L164">            vs.add(iter.key());</span>
             // all vertexes should be a key too, so no need to visit adjacent
             /*iter2 = iter.value().iterator();
             while (iter2.hasNext()) {
                 vs.add(iter2.next());
             }*/
         }
-<span class="fc" id="L165">        return vs;</span>
+<span class="fc" id="L171">        return vs;</span>
     }
 
     //P \ N(u)
     private TIntSet difference(TIntSet p, TIntSet minus) {
-<span class="pc bpc" id="L170" title="1 of 2 branches missed.">        if (p == null) {</span>
-<span class="nc" id="L171">            throw new IllegalArgumentException(&quot;p cannot be null&quot;);</span>
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">        if (p == null) {</span>
+<span class="nc" id="L177">            throw new IllegalArgumentException(&quot;p cannot be null&quot;);</span>
         }
-<span class="fc" id="L173">        TIntSet d = new TIntHashSet(p);</span>
-<span class="pc bpc" id="L174" title="1 of 2 branches missed.">        if (minus != null) {</span>
-<span class="fc" id="L175">            d.removeAll(minus);</span>
+<span class="fc" id="L179">        TIntSet d = new TIntHashSet(p);</span>
+<span class="pc bpc" id="L180" title="1 of 2 branches missed.">        if (minus != null) {</span>
+<span class="fc" id="L181">            d.removeAll(minus);</span>
         }
-<span class="fc" id="L177">        return d;</span>
+<span class="fc" id="L183">        return d;</span>
     }
 
 }

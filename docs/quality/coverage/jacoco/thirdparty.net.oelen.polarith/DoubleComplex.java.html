@@ -13,100 +13,145 @@ package thirdparty.net.oelen.polarith;
 
 import java.io.Serializable;
 
-
-
+/**
+ *
+ * @author nichole
+ */
 public final class DoubleComplex implements Serializable {
     
-<span class="fc" id="L20">    public static final long serialVersionUID = Hash64.hash(&quot;DoubleComplex_v1.0&quot;);</span>
+    /**
+     *
+     */
+<span class="fc" id="L25">    public static final long serialVersionUID = Hash64.hash(&quot;DoubleComplex_v1.0&quot;);</span>
     
-<span class="fc" id="L22">    public static final DoubleComplex ZERO = new DoubleComplex(DoubleDouble.ZERO, DoubleDouble.ZERO);</span>
-<span class="fc" id="L23">    public static final DoubleComplex ONE = new DoubleComplex(DoubleDouble.ONE, DoubleDouble.ZERO);</span>
-<span class="fc" id="L24">    public static final DoubleComplex I = new DoubleComplex(DoubleDouble.ZERO, DoubleDouble.ONE);</span>
+    /**
+     *
+     */
+<span class="fc" id="L30">    public static final DoubleComplex ZERO = new DoubleComplex(DoubleDouble.ZERO, DoubleDouble.ZERO);</span>
+
+    /**
+     *
+     */
+<span class="fc" id="L35">    public static final DoubleComplex ONE = new DoubleComplex(DoubleDouble.ONE, DoubleDouble.ZERO);</span>
+
+    /**
+     *
+     */
+<span class="fc" id="L40">    public static final DoubleComplex I = new DoubleComplex(DoubleDouble.ZERO, DoubleDouble.ONE);</span>
     
+    /**
+     *
+     */
     public final DoubleDouble re;
+
+    /**
+     *
+     */
     public final DoubleDouble im;
     
+    /**
+     *
+     @param a
+     */
+<span class="nc" id="L56">    public DoubleComplex(DoubleDouble a) {</span>
+<span class="nc" id="L57">        re = a;</span>
+<span class="nc" id="L58">        im = DoubleDouble.ZERO;</span>
+<span class="nc" id="L59">    }</span>
     
+    /**
+     *
+     @param a
+     @param b
+     */
+<span class="fc" id="L66">    public DoubleComplex(DoubleDouble a, DoubleDouble b) {</span>
+<span class="fc" id="L67">        re = a;</span>
+<span class="fc" id="L68">        im = b;</span>
+<span class="fc" id="L69">    }</span>
     
-<span class="nc" id="L31">    public DoubleComplex(DoubleDouble a) {</span>
-<span class="nc" id="L32">        re = a;</span>
-<span class="nc" id="L33">        im = DoubleDouble.ZERO;</span>
-<span class="nc" id="L34">    }</span>
+    /**
+     *
+     @param a
+     */
+<span class="fc" id="L75">    public DoubleComplex(Complex a) {</span>
+<span class="fc" id="L76">        re = new DoubleDouble(a.re);</span>
+<span class="fc" id="L77">        im = new DoubleDouble(a.im);</span>
+<span class="fc" id="L78">    }</span>
     
-    
-<span class="fc" id="L37">    public DoubleComplex(DoubleDouble a, DoubleDouble b) {</span>
-<span class="fc" id="L38">        re = a;</span>
-<span class="fc" id="L39">        im = b;</span>
-<span class="fc" id="L40">    }</span>
-    
-    
-    
-<span class="fc" id="L44">    public DoubleComplex(Complex a) {</span>
-<span class="fc" id="L45">        re = new DoubleDouble(a.re);</span>
-<span class="fc" id="L46">        im = new DoubleDouble(a.im);</span>
-<span class="fc" id="L47">    }</span>
-    
-    
-    
-    
-<span class="nc" id="L52">    public DoubleComplex(int a) {</span>
-<span class="nc" id="L53">        re = new DoubleDouble(a);</span>
-<span class="nc" id="L54">        im = DoubleDouble.ZERO;</span>
-<span class="nc" id="L55">    }</span>
-    
-    
-    
-    
-<span class="nc" id="L60">    public DoubleComplex(int a, int b) {</span>
-<span class="nc" id="L61">        re = new DoubleDouble(a);</span>
-<span class="nc" id="L62">        im = new DoubleDouble(b);</span>
-<span class="nc" id="L63">    }</span>
-    
-    
-    
-    
-<span class="nc" id="L68">    public DoubleComplex(long a) {</span>
-<span class="nc" id="L69">        re = new DoubleDouble(a);</span>
-<span class="nc" id="L70">        im = DoubleDouble.ZERO;</span>
-<span class="nc" id="L71">    }</span>
-    
-    
-    
-    
-<span class="nc" id="L76">    public DoubleComplex(long a, long b) {</span>
-<span class="nc" id="L77">        re = new DoubleDouble(a);</span>
-<span class="nc" id="L78">        im = new DoubleDouble(b);</span>
-<span class="nc" id="L79">    }</span>
-    
-    
-    
-    
-<span class="nc" id="L84">    public DoubleComplex(double a) {</span>
+    /**
+     *
+     @param a
+     */
+<span class="nc" id="L84">    public DoubleComplex(int a) {</span>
 <span class="nc" id="L85">        re = new DoubleDouble(a);</span>
 <span class="nc" id="L86">        im = DoubleDouble.ZERO;</span>
 <span class="nc" id="L87">    }</span>
     
+    /**
+     *
+     @param a
+     @param b
+     */
+<span class="nc" id="L94">    public DoubleComplex(int a, int b) {</span>
+<span class="nc" id="L95">        re = new DoubleDouble(a);</span>
+<span class="nc" id="L96">        im = new DoubleDouble(b);</span>
+<span class="nc" id="L97">    }</span>
     
+    /**
+     *
+     @param a
+     */
+<span class="nc" id="L103">    public DoubleComplex(long a) {</span>
+<span class="nc" id="L104">        re = new DoubleDouble(a);</span>
+<span class="nc" id="L105">        im = DoubleDouble.ZERO;</span>
+<span class="nc" id="L106">    }</span>
     
+    /**
+     *
+     @param a
+     @param b
+     */
+<span class="nc" id="L113">    public DoubleComplex(long a, long b) {</span>
+<span class="nc" id="L114">        re = new DoubleDouble(a);</span>
+<span class="nc" id="L115">        im = new DoubleDouble(b);</span>
+<span class="nc" id="L116">    }</span>
     
-<span class="fc" id="L92">    public DoubleComplex(double a, double b) {</span>
-<span class="fc" id="L93">        re = new DoubleDouble(a);</span>
-<span class="fc" id="L94">        im = new DoubleDouble(b);</span>
-<span class="fc" id="L95">    }</span>
+    /**
+     *
+     @param a
+     */
+<span class="nc" id="L122">    public DoubleComplex(double a) {</span>
+<span class="nc" id="L123">        re = new DoubleDouble(a);</span>
+<span class="nc" id="L124">        im = DoubleDouble.ZERO;</span>
+<span class="nc" id="L125">    }</span>
     
+    /**
+     *
+     @param a
+     @param b
+     */
+<span class="fc" id="L132">    public DoubleComplex(double a, double b) {</span>
+<span class="fc" id="L133">        re = new DoubleDouble(a);</span>
+<span class="fc" id="L134">        im = new DoubleDouble(b);</span>
+<span class="fc" id="L135">    }</span>
     
+    /**
+     *
+     @param a
+     */
+<span class="nc" id="L141">    public DoubleComplex(String a) {</span>
+<span class="nc" id="L142">        re = new DoubleDouble(a);</span>
+<span class="nc" id="L143">        im = DoubleDouble.ZERO;</span>
+<span class="nc" id="L144">    }</span>
     
-<span class="nc" id="L99">    public DoubleComplex(String a) {</span>
-<span class="nc" id="L100">        re = new DoubleDouble(a);</span>
-<span class="nc" id="L101">        im = DoubleDouble.ZERO;</span>
-<span class="nc" id="L102">    }</span>
-    
-    
-    
-<span class="fc" id="L106">    public DoubleComplex(String a, String b) {</span>
-<span class="fc" id="L107">        re = new DoubleDouble(a);</span>
-<span class="fc" id="L108">        im = new DoubleDouble(b);</span>
-<span class="fc" id="L109">    }</span>
+    /**
+     *
+     @param a
+     @param b
+     */
+<span class="fc" id="L151">    public DoubleComplex(String a, String b) {</span>
+<span class="fc" id="L152">        re = new DoubleDouble(a);</span>
+<span class="fc" id="L153">        im = new DoubleDouble(b);</span>
+<span class="fc" id="L154">    }</span>
     
     
     
@@ -115,15 +160,15 @@ public final class DoubleComplex implements Serializable {
      * Returns a Complex[] array with approximate values of the supplied
      * DoubleComplex array.
      *
-     * @param arr The DoubleComplex[] array to be converted to Complex[].
-     * @return A Complex[] array with approximate values of the input array.
+     @param arr The DoubleComplex[] array to be converted to Complex[].
+     @return A Complex[] array with approximate values of the input array.
      */
     public static Complex[] toComplex(DoubleComplex[] arr) {
-<span class="fc" id="L122">        Complex[] a = new Complex[arr.length];</span>
-<span class="fc bfc" id="L123" title="All 2 branches covered.">        for (int i=0; i&lt;arr.length; i++) {</span>
-<span class="fc" id="L124">            a[i] = new Complex(arr[i].re.hi + arr[i].re.lo, arr[i].im.hi + arr[i].im.lo);</span>
+<span class="fc" id="L167">        Complex[] a = new Complex[arr.length];</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">        for (int i=0; i&lt;arr.length; i++) {</span>
+<span class="fc" id="L169">            a[i] = new Complex(arr[i].re.hi + arr[i].re.lo, arr[i].im.hi + arr[i].im.lo);</span>
         }
-<span class="fc" id="L126">        return a;</span>
+<span class="fc" id="L171">        return a;</span>
     }
     
     
@@ -132,15 +177,15 @@ public final class DoubleComplex implements Serializable {
      * Returns a DoubleDouble[] array with all real values of the supplied
      * DoubleComplex array.
      *
-     * @param arr The DoubleComplex[] array to be converted to real values.
-     * @return A DoubleDouble[] array with real values from the input array.
+     @param arr The DoubleComplex[] array to be converted to real values.
+     @return A DoubleDouble[] array with real values from the input array.
      */
     public static DoubleDouble[] toReal(DoubleComplex[] arr) {
-<span class="nc" id="L139">        DoubleDouble[] arr_re = new DoubleDouble[arr.length];</span>
-<span class="nc bnc" id="L140" title="All 2 branches missed.">        for (int i=0; i&lt;arr.length; i++) {</span>
-<span class="nc" id="L141">            arr_re[i] = arr[i].re;</span>
+<span class="nc" id="L184">        DoubleDouble[] arr_re = new DoubleDouble[arr.length];</span>
+<span class="nc bnc" id="L185" title="All 2 branches missed.">        for (int i=0; i&lt;arr.length; i++) {</span>
+<span class="nc" id="L186">            arr_re[i] = arr[i].re;</span>
         }
-<span class="nc" id="L143">        return arr_re;</span>
+<span class="nc" id="L188">        return arr_re;</span>
     }
     
     
@@ -149,322 +194,392 @@ public final class DoubleComplex implements Serializable {
      * Returns a DoubleDouble[] array with all imaginary values of the supplied
      * DoubleComplex array.
      *
-     * @param arr The DoubleComplex[] array to be converted to imaginary values.
-     * @return A DoubleDouble[] array with imaginary values from the input array.
+     @param arr The DoubleComplex[] array to be converted to imaginary values.
+     @return A DoubleDouble[] array with imaginary values from the input array.
      */
     public static DoubleDouble[] toImag(DoubleComplex[] arr) {
-<span class="nc" id="L156">        DoubleDouble[] arr_im = new DoubleDouble[arr.length];</span>
-<span class="nc bnc" id="L157" title="All 2 branches missed.">        for (int i=0; i&lt;arr.length; i++) {</span>
-<span class="nc" id="L158">            arr_im[i] = arr[i].im;</span>
+<span class="nc" id="L201">        DoubleDouble[] arr_im = new DoubleDouble[arr.length];</span>
+<span class="nc bnc" id="L202" title="All 2 branches missed.">        for (int i=0; i&lt;arr.length; i++) {</span>
+<span class="nc" id="L203">            arr_im[i] = arr[i].im;</span>
         }
-<span class="nc" id="L160">        return arr_im;</span>
+<span class="nc" id="L205">        return arr_im;</span>
     }
     
-    
-    
+    /**
+     *
+     @return
+     */
     public Complex complexValue() {
-<span class="nc" id="L166">        return new Complex(re.hi+re.lo, im.hi+im.lo);</span>
+<span class="nc" id="L213">        return new Complex(re.hi+re.lo, im.hi+im.lo);</span>
     }
 
-
-
+    /**
+     *
+     @return
+     */
     public boolean isZero() {
-<span class="nc bnc" id="L172" title="All 4 branches missed.">        return re.isZero() &amp;&amp; im.isZero();</span>
+<span class="nc bnc" id="L221" title="All 4 branches missed.">        return re.isZero() &amp;&amp; im.isZero();</span>
     }
 
-
-
+    /**
+     *
+     @return
+     */
     public boolean isOne() {
-<span class="nc bnc" id="L178" title="All 4 branches missed.">        return re.isOne() &amp;&amp; im.isZero();</span>
+<span class="nc bnc" id="L229" title="All 4 branches missed.">        return re.isOne() &amp;&amp; im.isZero();</span>
     }
 
-
-
+    /**
+     *
+     @param b
+     @param eps
+     @return
+     */
     public boolean isNear(DoubleComplex b, double eps) {
-<span class="fc" id="L184">        double a = abs1().doubleValue();</span>
-<span class="fc" id="L185">        double diff = sub(b).abs1().doubleValue();</span>
-<span class="pc bpc" id="L186" title="1 of 2 branches missed.">        return diff &lt; a*eps;</span>
+<span class="fc" id="L239">        double a = abs1().doubleValue();</span>
+<span class="fc" id="L240">        double diff = sub(b).abs1().doubleValue();</span>
+<span class="pc bpc" id="L241" title="1 of 2 branches missed.">        return diff &lt; a*eps;</span>
     }
 
-
-
+    /**
+     *
+     @param b
+     @param eps
+     @return
+     */
     public boolean isNear(DoubleDouble b, double eps) {
-<span class="nc" id="L192">        double a = abs1().doubleValue();</span>
-<span class="nc" id="L193">        double diff = sub(b).abs1().doubleValue();</span>
-<span class="nc bnc" id="L194" title="All 2 branches missed.">        return diff &lt; a*eps;</span>
+<span class="nc" id="L251">        double a = abs1().doubleValue();</span>
+<span class="nc" id="L252">        double diff = sub(b).abs1().doubleValue();</span>
+<span class="nc bnc" id="L253" title="All 2 branches missed.">        return diff &lt; a*eps;</span>
     }
 
-
-
+    /**
+     *
+     @param a
+     @return
+     */
     public DoubleComplex add(DoubleComplex a) {
-<span class="fc" id="L200">        return new DoubleComplex(re.add(a.re), im.add(a.im));</span>
+<span class="fc" id="L262">        return new DoubleComplex(re.add(a.re), im.add(a.im));</span>
     }
 
-    
-    
+    /**
+     *
+     @param a
+     @return
+     */
     public DoubleComplex add(DoubleDouble a) {
-<span class="fc" id="L206">        return new DoubleComplex(re.add(a), im);</span>
+<span class="fc" id="L271">        return new DoubleComplex(re.add(a), im);</span>
     }
 
-    
-    
+    /**
+     *
+     @return
+     */
     public DoubleComplex add1() {
-<span class="fc" id="L212">        return new DoubleComplex(re.add1(), im);</span>
+<span class="fc" id="L279">        return new DoubleComplex(re.add1(), im);</span>
     }
 
-    
-    
+    /**
+     *
+     @param a
+     @param b
+     @return
+     */
     public DoubleComplex add(DoubleDouble a, DoubleDouble b) {
-<span class="fc bfc" id="L218" title="All 2 branches covered.">        return new DoubleComplex(a == null ? re : re.add(a), </span>
-<span class="fc bfc" id="L219" title="All 2 branches covered.">                                 b == null ? im : im.add(b));</span>
+<span class="fc bfc" id="L289" title="All 2 branches covered.">        return new DoubleComplex(a == null ? re : re.add(a), </span>
+<span class="fc bfc" id="L290" title="All 2 branches covered.">                                 b == null ? im : im.add(b));</span>
     }
 
-
-
+    /**
+     *
+     @param a
+     @return
+     */
     public DoubleComplex sub(DoubleComplex a) {
-<span class="fc" id="L225">        return new DoubleComplex(re.sub(a.re), im.sub(a.im));</span>
+<span class="fc" id="L299">        return new DoubleComplex(re.sub(a.re), im.sub(a.im));</span>
     }
 
-    
-    
+    /**
+     *
+     @param a
+     @return
+     */
     public DoubleComplex sub(DoubleDouble a) {
-<span class="fc" id="L231">        return new DoubleComplex(re.sub(a), im);</span>
+<span class="fc" id="L308">        return new DoubleComplex(re.sub(a), im);</span>
     }
 
-    
-    
+    /**
+     *
+     @return
+     */
     public DoubleComplex sub1() {
-<span class="fc" id="L237">        return new DoubleComplex(re.sub1(), im);</span>
+<span class="fc" id="L316">        return new DoubleComplex(re.sub1(), im);</span>
     }
 
-    
-    
+    /**
+     *
+     @param a
+     @param b
+     @return
+     */
     public DoubleComplex sub(DoubleDouble a, DoubleDouble b) {
-<span class="fc bfc" id="L243" title="All 2 branches covered.">        return new DoubleComplex(a == null ? re : re.sub(a), </span>
-<span class="fc bfc" id="L244" title="All 2 branches covered.">                                 b == null ? im : im.sub(b));</span>
+<span class="fc bfc" id="L326" title="All 2 branches covered.">        return new DoubleComplex(a == null ? re : re.sub(a), </span>
+<span class="fc bfc" id="L327" title="All 2 branches covered.">                                 b == null ? im : im.sub(b));</span>
     }
     
-    
-    
+    /**
+     *
+     @param b
+     @return
+     */
     public DoubleComplex mul(DoubleComplex b) {
-<span class="fc" id="L250">        DoubleDouble r = re.mul(b.re).sub(im.mul(b.im));</span>
-<span class="fc" id="L251">        DoubleDouble i = re.mul(b.im).add(im.mul(b.re));</span>
-<span class="fc" id="L252">        return new DoubleComplex(r, i);</span>
+<span class="fc" id="L336">        DoubleDouble r = re.mul(b.re).sub(im.mul(b.im));</span>
+<span class="fc" id="L337">        DoubleDouble i = re.mul(b.im).add(im.mul(b.re));</span>
+<span class="fc" id="L338">        return new DoubleComplex(r, i);</span>
     }
     
-    
-    
+    /**
+     *
+     @param b
+     @return
+     */
     public DoubleComplex mul(DoubleDouble b) {
-<span class="fc" id="L258">        DoubleDouble r = re.mul(b);</span>
-<span class="fc" id="L259">        DoubleDouble i = im.mul(b);</span>
-<span class="fc" id="L260">        return new DoubleComplex(r, i);</span>
+<span class="fc" id="L347">        DoubleDouble r = re.mul(b);</span>
+<span class="fc" id="L348">        DoubleDouble i = im.mul(b);</span>
+<span class="fc" id="L349">        return new DoubleComplex(r, i);</span>
     }
     
-    
-    
+    /**
+     *
+     @param b
+     @return
+     */
     public DoubleComplex mul(double b) {
-<span class="fc" id="L266">        DoubleDouble r = re.mul(b);</span>
-<span class="fc" id="L267">        DoubleDouble i = im.mul(b);</span>
-<span class="fc" id="L268">        return new DoubleComplex(r, i);</span>
+<span class="fc" id="L358">        DoubleDouble r = re.mul(b);</span>
+<span class="fc" id="L359">        DoubleDouble i = im.mul(b);</span>
+<span class="fc" id="L360">        return new DoubleComplex(r, i);</span>
     }
     
-    
-    
+    /**
+     *
+     @param bre
+     @param bim
+     @return
+     */
     public DoubleComplex mul(DoubleDouble bre, DoubleDouble bim) {
-<span class="fc bfc" id="L274" title="All 2 branches covered.">        if (bre != null) {</span>
-<span class="fc bfc" id="L275" title="All 2 branches covered.">            if (bim != null) {</span>
-<span class="fc" id="L276">                DoubleDouble r = re.mul(bre).sub(im.mul(bim));</span>
-<span class="fc" id="L277">                DoubleDouble i = re.mul(bim).add(im.mul(bre));</span>
-<span class="fc" id="L278">                return new DoubleComplex(r, i);</span>
+<span class="fc bfc" id="L370" title="All 2 branches covered.">        if (bre != null) {</span>
+<span class="fc bfc" id="L371" title="All 2 branches covered.">            if (bim != null) {</span>
+<span class="fc" id="L372">                DoubleDouble r = re.mul(bre).sub(im.mul(bim));</span>
+<span class="fc" id="L373">                DoubleDouble i = re.mul(bim).add(im.mul(bre));</span>
+<span class="fc" id="L374">                return new DoubleComplex(r, i);</span>
             }
             else {
-<span class="fc" id="L281">                DoubleDouble r = re.mul(bre);</span>
-<span class="fc" id="L282">                DoubleDouble i = im.mul(bre);</span>
-<span class="fc" id="L283">                return new DoubleComplex(r, i);</span>
+<span class="fc" id="L377">                DoubleDouble r = re.mul(bre);</span>
+<span class="fc" id="L378">                DoubleDouble i = im.mul(bre);</span>
+<span class="fc" id="L379">                return new DoubleComplex(r, i);</span>
             }
         }
         else {
-<span class="pc bpc" id="L287" title="1 of 2 branches missed.">            if (bim != null) {</span>
-<span class="fc" id="L288">                DoubleDouble r = im.mul(bim).neg();</span>
-<span class="fc" id="L289">                DoubleDouble i = re.mul(bim);</span>
-<span class="fc" id="L290">                return new DoubleComplex(r, i);</span>
+<span class="pc bpc" id="L383" title="1 of 2 branches missed.">            if (bim != null) {</span>
+<span class="fc" id="L384">                DoubleDouble r = im.mul(bim).neg();</span>
+<span class="fc" id="L385">                DoubleDouble i = re.mul(bim);</span>
+<span class="fc" id="L386">                return new DoubleComplex(r, i);</span>
             }
             else {
-<span class="nc" id="L293">                return DoubleComplex.ZERO;</span>
+<span class="nc" id="L389">                return DoubleComplex.ZERO;</span>
             }
         }
     }
     
-    
-    
-    
-    
-    
+    /**
+     *
+     @param b
+     @return
+     */
     public DoubleComplex div(DoubleComplex b) {
-<span class="fc" id="L304">        DoubleDouble abre = b.re.abs();</span>
-<span class="fc" id="L305">        DoubleDouble abim = b.im.abs();</span>
-<span class="fc bfc" id="L306" title="All 2 branches covered.">        if (abre.compareTo(abim) &gt; 0) {</span>
-<span class="fc" id="L307">            DoubleDouble r = b.im.div(b.re);</span>
-<span class="fc" id="L308">            DoubleDouble den = b.re.add(r.mul(b.im));</span>
-<span class="fc" id="L309">            DoubleDouble cre = re.add(r.mul(im)).div(den);</span>
-<span class="fc" id="L310">            DoubleDouble cim = im.sub(r.mul(re)).div(den);</span>
-<span class="fc" id="L311">            return new DoubleComplex(cre, cim);</span>
+<span class="fc" id="L400">        DoubleDouble abre = b.re.abs();</span>
+<span class="fc" id="L401">        DoubleDouble abim = b.im.abs();</span>
+<span class="fc bfc" id="L402" title="All 2 branches covered.">        if (abre.compareTo(abim) &gt; 0) {</span>
+<span class="fc" id="L403">            DoubleDouble r = b.im.div(b.re);</span>
+<span class="fc" id="L404">            DoubleDouble den = b.re.add(r.mul(b.im));</span>
+<span class="fc" id="L405">            DoubleDouble cre = re.add(r.mul(im)).div(den);</span>
+<span class="fc" id="L406">            DoubleDouble cim = im.sub(r.mul(re)).div(den);</span>
+<span class="fc" id="L407">            return new DoubleComplex(cre, cim);</span>
         }
         else {
-<span class="fc" id="L314">            DoubleDouble r = b.re.div(b.im);</span>
-<span class="fc" id="L315">            DoubleDouble den = b.im.add(r.mul(b.re));</span>
-<span class="fc" id="L316">            DoubleDouble cre = re.mul(r).add(im).div(den);</span>
-<span class="fc" id="L317">            DoubleDouble cim = im.mul(r).sub(re).div(den);</span>
-<span class="fc" id="L318">            return new DoubleComplex(cre, cim);</span>
+<span class="fc" id="L410">            DoubleDouble r = b.re.div(b.im);</span>
+<span class="fc" id="L411">            DoubleDouble den = b.im.add(r.mul(b.re));</span>
+<span class="fc" id="L412">            DoubleDouble cre = re.mul(r).add(im).div(den);</span>
+<span class="fc" id="L413">            DoubleDouble cim = im.mul(r).sub(re).div(den);</span>
+<span class="fc" id="L414">            return new DoubleComplex(cre, cim);</span>
         }
     }
     
-    
-    
+    /**
+     *
+     @param b
+     @return
+     */
     public DoubleComplex div(DoubleDouble b) {
-<span class="fc" id="L325">        return new DoubleComplex(re.div(b), im.div(b));</span>
+<span class="fc" id="L424">        return new DoubleComplex(re.div(b), im.div(b));</span>
     }
     
-    
-    
+    /**
+     *
+     @param bre
+     @param bim
+     @return
+     */
     public DoubleComplex div(DoubleDouble bre, DoubleDouble bim) {
-<span class="fc bfc" id="L331" title="All 2 branches covered.">        if (bre != null) {</span>
-<span class="fc bfc" id="L332" title="All 2 branches covered.">            if (bim != null) {</span>
-<span class="fc" id="L333">                DoubleDouble abre = bre.abs();</span>
-<span class="fc" id="L334">                DoubleDouble abim = bim.abs();</span>
-<span class="fc bfc" id="L335" title="All 2 branches covered.">                if (abre.compareTo(abim) &gt; 0) {</span>
-<span class="fc" id="L336">                    DoubleDouble r = bim.div(bre);</span>
-<span class="fc" id="L337">                    DoubleDouble den = bre.add(r.mul(bim));</span>
-<span class="fc" id="L338">                    DoubleDouble cre = re.add(r.mul(im)).div(den);</span>
-<span class="fc" id="L339">                    DoubleDouble cim = im.sub(r.mul(re)).div(den);</span>
-<span class="fc" id="L340">                    return new DoubleComplex(cre, cim);</span>
+<span class="fc bfc" id="L434" title="All 2 branches covered.">        if (bre != null) {</span>
+<span class="fc bfc" id="L435" title="All 2 branches covered.">            if (bim != null) {</span>
+<span class="fc" id="L436">                DoubleDouble abre = bre.abs();</span>
+<span class="fc" id="L437">                DoubleDouble abim = bim.abs();</span>
+<span class="fc bfc" id="L438" title="All 2 branches covered.">                if (abre.compareTo(abim) &gt; 0) {</span>
+<span class="fc" id="L439">                    DoubleDouble r = bim.div(bre);</span>
+<span class="fc" id="L440">                    DoubleDouble den = bre.add(r.mul(bim));</span>
+<span class="fc" id="L441">                    DoubleDouble cre = re.add(r.mul(im)).div(den);</span>
+<span class="fc" id="L442">                    DoubleDouble cim = im.sub(r.mul(re)).div(den);</span>
+<span class="fc" id="L443">                    return new DoubleComplex(cre, cim);</span>
                 }
                 else {
-<span class="fc" id="L343">                    DoubleDouble r = bre.div(bim);</span>
-<span class="fc" id="L344">                    DoubleDouble den = bim.add(r.mul(bre));</span>
-<span class="fc" id="L345">                    DoubleDouble cre = re.mul(r).add(im).div(den);</span>
-<span class="fc" id="L346">                    DoubleDouble cim = im.mul(r).sub(re).div(den);</span>
-<span class="fc" id="L347">                    return new DoubleComplex(cre, cim);</span>
+<span class="fc" id="L446">                    DoubleDouble r = bre.div(bim);</span>
+<span class="fc" id="L447">                    DoubleDouble den = bim.add(r.mul(bre));</span>
+<span class="fc" id="L448">                    DoubleDouble cre = re.mul(r).add(im).div(den);</span>
+<span class="fc" id="L449">                    DoubleDouble cim = im.mul(r).sub(re).div(den);</span>
+<span class="fc" id="L450">                    return new DoubleComplex(cre, cim);</span>
                 }
             }
             else {
-<span class="fc" id="L351">                return new DoubleComplex(re.div(bre), im.div(bre));</span>
+<span class="fc" id="L454">                return new DoubleComplex(re.div(bre), im.div(bre));</span>
             }
         }
         else {
-<span class="pc bpc" id="L355" title="1 of 2 branches missed.">            if (bim != null) {</span>
-<span class="fc" id="L356">                return new DoubleComplex(im.div(bim), re.div(bim).neg());</span>
+<span class="pc bpc" id="L458" title="1 of 2 branches missed.">            if (bim != null) {</span>
+<span class="fc" id="L459">                return new DoubleComplex(im.div(bim), re.div(bim).neg());</span>
             }
             else {
                 // Throws exception!
-<span class="nc" id="L360">                return div(new DoubleDouble(0));</span>
+<span class="nc" id="L463">                return div(new DoubleDouble(0));</span>
             }
         }
     }
     
-    
-    
-    
-    
-    
+    /**
+     *
+     @return
+     */
     public DoubleComplex recip() {
-<span class="fc" id="L371">        DoubleDouble are = re.abs();</span>
-<span class="fc" id="L372">        DoubleDouble aim = im.abs();</span>
-<span class="fc bfc" id="L373" title="All 2 branches covered.">        if (are.compareTo(aim) &gt; 0) {</span>
-<span class="fc" id="L374">            DoubleDouble r = im.div(re);</span>
-<span class="fc" id="L375">            DoubleDouble den = re.add(r.mul(im));</span>
+<span class="fc" id="L473">        DoubleDouble are = re.abs();</span>
+<span class="fc" id="L474">        DoubleDouble aim = im.abs();</span>
+<span class="fc bfc" id="L475" title="All 2 branches covered.">        if (are.compareTo(aim) &gt; 0) {</span>
+<span class="fc" id="L476">            DoubleDouble r = im.div(re);</span>
+<span class="fc" id="L477">            DoubleDouble den = re.add(r.mul(im));</span>
             
-<span class="fc" id="L377">            DoubleDouble cre = den.recip();</span>
-<span class="fc" id="L378">            DoubleDouble cim = r.div(den).neg();</span>
-<span class="fc" id="L379">            return new DoubleComplex(cre, cim);</span>
+<span class="fc" id="L479">            DoubleDouble cre = den.recip();</span>
+<span class="fc" id="L480">            DoubleDouble cim = r.div(den).neg();</span>
+<span class="fc" id="L481">            return new DoubleComplex(cre, cim);</span>
         }
         else {
-<span class="fc" id="L382">            DoubleDouble r = re.div(im);</span>
-<span class="fc" id="L383">            DoubleDouble den = im.add(r.mul(re));</span>
-<span class="fc" id="L384">            DoubleDouble cre = r.div(den);</span>
-<span class="fc" id="L385">            DoubleDouble cim = den.recip().neg();</span>
-<span class="fc" id="L386">            return new DoubleComplex(cre, cim);</span>
+<span class="fc" id="L484">            DoubleDouble r = re.div(im);</span>
+<span class="fc" id="L485">            DoubleDouble den = im.add(r.mul(re));</span>
+<span class="fc" id="L486">            DoubleDouble cre = r.div(den);</span>
+<span class="fc" id="L487">            DoubleDouble cim = den.recip().neg();</span>
+<span class="fc" id="L488">            return new DoubleComplex(cre, cim);</span>
         }
     }
     
-
-
+    /**
+     *
+     @return
+     */
     public DoubleComplex neg() {
-<span class="fc" id="L393">        return new DoubleComplex(re.neg(), im.neg());</span>
+<span class="fc" id="L497">        return new DoubleComplex(re.neg(), im.neg());</span>
     }
     
-
-
+    /**
+     *
+     @return
+     */
     public DoubleComplex conj() {
-<span class="fc" id="L399">        return new DoubleComplex(re, im.neg());</span>
+<span class="fc" id="L505">        return new DoubleComplex(re, im.neg());</span>
     }
     
-    
-    
-    
+    /**
+     *
+     @return
+     */
     public DoubleDouble abs() {
-<span class="fc bfc" id="L406" title="All 2 branches covered.">        if (re.isZero()) {</span>
-<span class="fc" id="L407">            return im.abs();</span>
+<span class="fc bfc" id="L513" title="All 2 branches covered.">        if (re.isZero()) {</span>
+<span class="fc" id="L514">            return im.abs();</span>
         }
-<span class="fc bfc" id="L409" title="All 2 branches covered.">        if (im.isZero()) {</span>
-<span class="fc" id="L410">            return re.abs();</span>
+<span class="fc bfc" id="L516" title="All 2 branches covered.">        if (im.isZero()) {</span>
+<span class="fc" id="L517">            return re.abs();</span>
         }
         
-<span class="fc" id="L413">        DoubleDouble x = re.abs();</span>
-<span class="fc" id="L414">        DoubleDouble y = im.abs();</span>
+<span class="fc" id="L520">        DoubleDouble x = re.abs();</span>
+<span class="fc" id="L521">        DoubleDouble y = im.abs();</span>
         
-<span class="fc bfc" id="L416" title="All 2 branches covered.">        if (x.compareTo(y) &gt; 0) {</span>
-<span class="fc" id="L417">            DoubleDouble temp = y.div(x);</span>
-<span class="fc" id="L418">            return temp.sqr().add1().sqrt().mul(x);</span>
+<span class="fc bfc" id="L523" title="All 2 branches covered.">        if (x.compareTo(y) &gt; 0) {</span>
+<span class="fc" id="L524">            DoubleDouble temp = y.div(x);</span>
+<span class="fc" id="L525">            return temp.sqr().add1().sqrt().mul(x);</span>
         }
         else {
-<span class="fc" id="L421">            DoubleDouble temp = x.div(y);</span>
-<span class="fc" id="L422">            return temp.sqr().add1().sqrt().mul(y);</span>
+<span class="fc" id="L528">            DoubleDouble temp = x.div(y);</span>
+<span class="fc" id="L529">            return temp.sqr().add1().sqrt().mul(y);</span>
         }
     }
     
-    
-    
-    
+    /**
+     *
+     @return
+     */
     public DoubleDouble abs1() {
-<span class="fc" id="L430">        DoubleDouble x = re.abs();</span>
-<span class="fc" id="L431">        DoubleDouble y = im.abs();</span>
-<span class="fc" id="L432">        return x.add(y);</span>
+<span class="fc" id="L538">        DoubleDouble x = re.abs();</span>
+<span class="fc" id="L539">        DoubleDouble y = im.abs();</span>
+<span class="fc" id="L540">        return x.add(y);</span>
     }
     
-    
-    
-    
+    /**
+     *
+     @return
+     */
     public DoubleDouble absinf() {
-<span class="fc" id="L439">        DoubleDouble x = re.abs();</span>
-<span class="fc" id="L440">        DoubleDouble y = im.abs();</span>
-<span class="fc bfc" id="L441" title="All 2 branches covered.">        return x.compareTo(y) &gt; 0 ? x : y;</span>
+<span class="fc" id="L548">        DoubleDouble x = re.abs();</span>
+<span class="fc" id="L549">        DoubleDouble y = im.abs();</span>
+<span class="fc bfc" id="L550" title="All 2 branches covered.">        return x.compareTo(y) &gt; 0 ? x : y;</span>
     }
     
-    
-    
-    
+    /**
+     *
+     @return
+     */
     public DoubleDouble sqrabs() {
-<span class="fc" id="L448">        return re.sqr().add(im.sqr());</span>
+<span class="fc" id="L558">        return re.sqr().add(im.sqr());</span>
     }
     
-    
-    
+    /**
+     *
+     @return
+     */
     public DoubleDouble real() {
-<span class="fc" id="L454">        return re;</span>
+<span class="fc" id="L566">        return re;</span>
     }
     
-    
-    
+    /**
+     *
+     @return
+     */
     public DoubleDouble imag() {
-<span class="fc" id="L460">        return im;</span>
+<span class="fc" id="L574">        return im;</span>
     }
 
-    
-    
-    
+    /**
+     *
+     @return
+     */
     public Complex ComplexValue() {
-<span class="fc" id="L467">        return new Complex(re.doubleValue(), im.doubleValue());</span>
+<span class="fc" id="L582">        return new Complex(re.doubleValue(), im.doubleValue());</span>
     }
 
 
@@ -472,54 +587,58 @@ public final class DoubleComplex implements Serializable {
     
     @Override
     public String toString() {
-<span class="fc" id="L475">        return toString(10, 0, false);</span>
+<span class="fc" id="L590">        return toString(10, 0, false);</span>
     }
 
-
-
-    
+    /**
+     *
+     @param radix
+     @param maxPrecision
+     @param sci
+     @return
+     */
     public String toString(int radix, int maxPrecision, boolean sci) {
-<span class="fc bfc" id="L482" title="All 2 branches covered.">        if (im.isZero()) {</span>
-<span class="fc" id="L483">            return &quot;&quot; + re.toString(radix, maxPrecision, sci);</span>
+<span class="fc bfc" id="L601" title="All 2 branches covered.">        if (im.isZero()) {</span>
+<span class="fc" id="L602">            return &quot;&quot; + re.toString(radix, maxPrecision, sci);</span>
         }
-<span class="pc bpc" id="L485" title="1 of 2 branches missed.">        if (re.isZero()) {</span>
-<span class="nc bnc" id="L486" title="All 2 branches missed.">            if (im.isNegative()) {</span>
-<span class="nc" id="L487">                return &quot;-i*&quot; + im.neg().toString(radix, maxPrecision, sci);</span>
+<span class="pc bpc" id="L604" title="1 of 2 branches missed.">        if (re.isZero()) {</span>
+<span class="nc bnc" id="L605" title="All 2 branches missed.">            if (im.isNegative()) {</span>
+<span class="nc" id="L606">                return &quot;-i*&quot; + im.neg().toString(radix, maxPrecision, sci);</span>
             }
-<span class="nc" id="L489">            return &quot;i*&quot; + im.toString(radix, maxPrecision, sci);</span>
+<span class="nc" id="L608">            return &quot;i*&quot; + im.toString(radix, maxPrecision, sci);</span>
         }
         
-<span class="fc" id="L492">        DoubleDouble r = re;</span>
-<span class="fc bfc" id="L493" title="All 2 branches covered.">        if (r.isNegative()) {</span>
-<span class="fc" id="L494">            r = r.neg();</span>
+<span class="fc" id="L611">        DoubleDouble r = re;</span>
+<span class="fc bfc" id="L612" title="All 2 branches covered.">        if (r.isNegative()) {</span>
+<span class="fc" id="L613">            r = r.neg();</span>
         }
         
-<span class="fc" id="L497">        DoubleDouble i = im;</span>
-<span class="fc" id="L498">        boolean imIsNeg = false;</span>
-<span class="fc bfc" id="L499" title="All 2 branches covered.">        if (i.isNegative()) {</span>
-<span class="fc" id="L500">            i = i.neg();</span>
-<span class="fc" id="L501">            imIsNeg = true;</span>
+<span class="fc" id="L616">        DoubleDouble i = im;</span>
+<span class="fc" id="L617">        boolean imIsNeg = false;</span>
+<span class="fc bfc" id="L618" title="All 2 branches covered.">        if (i.isNegative()) {</span>
+<span class="fc" id="L619">            i = i.neg();</span>
+<span class="fc" id="L620">            imIsNeg = true;</span>
         }
         
-<span class="fc" id="L504">        double threshold = (double)(1l &lt;&lt; 52);</span>
-<span class="fc" id="L505">        threshold *= threshold;</span>
-<span class="fc bfc" id="L506" title="All 2 branches covered.">        if (maxPrecision &gt; 0) {</span>
-<span class="fc" id="L507">            double precthresh = Math.pow(radix, maxPrecision);</span>
-<span class="pc bpc" id="L508" title="1 of 2 branches missed.">            if (precthresh &lt; threshold) {</span>
-<span class="fc" id="L509">                threshold = precthresh;</span>
+<span class="fc" id="L623">        double threshold = (double)(1l &lt;&lt; 52);</span>
+<span class="fc" id="L624">        threshold *= threshold;</span>
+<span class="pc bpc" id="L625" title="1 of 2 branches missed.">        if (maxPrecision &gt; 0) {</span>
+<span class="nc" id="L626">            double precthresh = Math.pow(radix, maxPrecision);</span>
+<span class="nc bnc" id="L627" title="All 2 branches missed.">            if (precthresh &lt; threshold) {</span>
+<span class="nc" id="L628">                threshold = precthresh;</span>
             }
         }
         
         
-<span class="fc" id="L514">        DoubleDouble r_i = r.div(i);</span>
-<span class="fc bfc" id="L515" title="All 2 branches covered.">        if (r_i.gt(threshold)) {</span>
-<span class="fc" id="L516">            return &quot;&quot; + re.toString(radix, maxPrecision, sci);</span>
+<span class="fc" id="L633">        DoubleDouble r_i = r.div(i);</span>
+<span class="fc bfc" id="L634" title="All 2 branches covered.">        if (r_i.gt(threshold)) {</span>
+<span class="fc" id="L635">            return &quot;&quot; + re.toString(radix, maxPrecision, sci);</span>
         }
-<span class="fc bfc" id="L518" title="All 2 branches covered.">        if (r_i.lt(1.0/threshold)) {</span>
-<span class="fc bfc" id="L519" title="All 2 branches covered.">            return (imIsNeg ? &quot;i*&quot; : &quot;-i*&quot;) + i.toString(radix, maxPrecision, sci);</span>
+<span class="fc bfc" id="L637" title="All 2 branches covered.">        if (r_i.lt(1.0/threshold)) {</span>
+<span class="fc bfc" id="L638" title="All 2 branches covered.">            return (imIsNeg ? &quot;i*&quot; : &quot;-i*&quot;) + i.toString(radix, maxPrecision, sci);</span>
         }
         
-<span class="fc bfc" id="L522" title="All 2 branches covered.">        return &quot;&quot; + re.toString(radix, maxPrecision, sci) + (imIsNeg ? &quot; + i*&quot; : &quot; - i*&quot;) + i.toString(radix, maxPrecision, sci);</span>
+<span class="fc bfc" id="L641" title="All 2 branches covered.">        return &quot;&quot; + re.toString(radix, maxPrecision, sci) + (imIsNeg ? &quot; + i*&quot; : &quot; - i*&quot;) + i.toString(radix, maxPrecision, sci);</span>
     }
     
     

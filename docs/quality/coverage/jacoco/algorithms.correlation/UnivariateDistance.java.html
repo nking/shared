@@ -9,7 +9,7 @@ import java.util.Arrays;
 /**
  * calculates the square of the unbiased distance covariance and correlation 
    between univariate vectors x and y as
-   &quot;a weighted  distance between the joint characteristic function and 
+   a weighted  distance between the joint characteristic function and 
    the product of marginal distributions following algorithms in
    &lt;pre&gt;
       &quot;A fast algorithm for computing distance correlation&quot;
@@ -56,14 +56,14 @@ import java.util.Arrays;
      * Runtime is O(n * lg_2(n)) where n is the number of points in x which is
      * the same as the number in y.
      * 
-     * NOTE: redundant points are possible in the rankings as &quot;ties&quot; are handled
+     * NOTE: redundant points are possible in the rankings because &quot;ties&quot; are handled
      * in the algorithm.  This is one advantage over the similar
      * algorithm of Huo and Szekely (2016).
-     **
-     * @param x sample of univariate observations of a variable
-     * @param y second sample of univariate observations (can be of another variable).  the length of y must be the
-     *          same as the length of x.
-     * @return covariance of X and Y along with intermediate data.  
+     *
+     @param x sample of univariate observations of a variable
+     @param y second sample of univariate observations (can be of another variable).  the length of y must be the
+          same as the length of x.
+     @return covariance of X and Y along with intermediate data.  
      */
     public static DCov fastDCov(double[] x, double[] y) {
 
@@ -186,7 +186,7 @@ import java.util.Arrays;
 <span class="fc" id="L186">                    tempv[z][zz] = v[idx_r[z] - 1][zz];</span>
                 }
             }
-            //cumulative sum along columns: tempcs [1][nw]
+            //cumulative sum along columns: tempcs [n][nw]
 <span class="fc" id="L190">            tempcs = MiscMath0.cumulativeSumAlongColumns(tempv);</span>
             //csumv [n+1][nw];
 <span class="fc" id="L192">            Arrays.fill(csumv[0], 0);</span>
@@ -211,20 +211,22 @@ import java.util.Arrays;
 
             //for j = 1:gap:n;
 <span class="fc bfc" id="L213" title="All 2 branches covered.">            for (j = 1; j &lt;= n; j += gap) {</span>
-<span class="fc" id="L214">                st1 = j;</span>
-<span class="fc" id="L215">                e1 = Math.min(st1 + i - 1, n);</span>
-<span class="fc" id="L216">                st2 = j + i;</span>
-<span class="fc" id="L217">                e2 = Math.min(st2 + i - 1, n);</span>
+                // starts and ends of comparison intervals
+<span class="fc" id="L215">                st1 = j;</span>
+<span class="fc" id="L216">                e1 = Math.min(st1 + i - 1, n);</span>
+<span class="fc" id="L217">                st2 = j + i;</span>
+<span class="fc" id="L218">                e2 = Math.min(st2 + i - 1, n);</span>
 
                 /*
                 System.out.printf(&quot;\n**j=%d, st1=%d, e1=%d, st2=%d, e2=%d\n&quot;,
                         j, st1, e1, st2, e2);
                 */
 
-<span class="fc bfc" id="L224" title="All 4 branches covered.">                while ((st1 &lt;= e1) &amp;&amp; (st2 &lt;= e2)) {</span>
-<span class="fc" id="L225">                    k++;</span>
-<span class="fc" id="L226">                    idx1 = idx_r[st1 - 1];</span>
-<span class="fc" id="L227">                    idx2 = idx_r[st2 - 1];</span>
+<span class="fc bfc" id="L225" title="All 4 branches covered.">                while ((st1 &lt;= e1) &amp;&amp; (st2 &lt;= e2)) {</span>
+<span class="fc" id="L226">                    k++;</span>
+                    //starting indexes from latest sorted order
+<span class="fc" id="L228">                    idx1 = idx_r[st1 - 1];</span>
+<span class="fc" id="L229">                    idx2 = idx_r[st2 - 1];</span>
 
                     /*
                     System.out.printf(&quot;\n****k=%d, idx1=%d, idx2=%d, st1=%d, e1=%d, st2=%d, e2=%d\n&quot;,
@@ -238,18 +240,24 @@ import java.util.Arrays;
                     System.out.printf(&quot;    (y[%d] &gt;= y[%d]) = %b\n&quot;, idx1 - 1, idx2 - 1, (y[idx1 - 1] &gt;= y[idx2 - 1]));
                     */
 
-<span class="fc bfc" id="L241" title="All 2 branches covered.">                    if (y[idx1 - 1] &gt;= y[idx2 - 1]) {</span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">                    if (y[idx1 - 1] &gt;= y[idx2 - 1]) {</span>
                         //System.out.printf(&quot;    *idx[%d][%d] = %d\n&quot;, k - 1, idx_s - 1, idx1);
-<span class="fc" id="L243">                        idx[k - 1][idx_s - 1] = idx1;</span>
-<span class="fc" id="L244">                        st1++;</span>
+<span class="fc" id="L245">                        idx[k - 1][idx_s - 1] = idx1;</span>
+<span class="fc" id="L246">                        st1++;</span>
                     } else {
+
                         //System.out.printf(&quot;    *idx[%d][%d] =%d,  INCR iv1:iv4\n&quot;, k - 1, idx_s - 1, idx2);
-<span class="fc" id="L247">                        idx[k - 1][idx_s - 1] = idx2;</span>
-<span class="fc" id="L248">                        st2++;</span>
-<span class="fc" id="L249">                        iv1[idx2 - 1] += (e1 - st1 + 1);</span>
-<span class="fc" id="L250">                        iv2[idx2 - 1] += (csumv[e1 + 1 - 1][0] - csumv[st1 - 1][0]);</span>
-<span class="fc" id="L251">                        iv3[idx2 - 1] += (csumv[e1 + 1 - 1][1] - csumv[st1 - 1][1]);</span>
-<span class="fc" id="L252">                        iv4[idx2 - 1] += (csumv[e1 + 1 - 1][2] - csumv[st1 - 1][2]);</span>
+<span class="fc" id="L250">                        idx[k - 1][idx_s - 1] = idx2;</span>
+<span class="fc" id="L251">                        st2++;</span>
+
+                        // an inversion pair is y[idx1], y[idx2]
+                        //   which is (csumv[e1 + 1 - 1][1] - csumv[st1 - 1][1]), (csumv[e2 + 1 - 1][1] - csumv[st2 - 1][1])
+
+<span class="fc" id="L256">                        iv1[idx2 - 1] += (e1 - st1 + 1);</span>
+                        // use of csumv is similar to use of Summed Area Tables
+<span class="fc" id="L258">                        iv2[idx2 - 1] += (csumv[e1 + 1 - 1][0] - csumv[st1 - 1][0]);</span>
+<span class="fc" id="L259">                        iv3[idx2 - 1] += (csumv[e1 + 1 - 1][1] - csumv[st1 - 1][1]);</span>
+<span class="fc" id="L260">                        iv4[idx2 - 1] += (csumv[e1 + 1 - 1][2] - csumv[st1 - 1][2]);</span>
                     } // end if-else
 
                     //System.out.printf(&quot;    (st1 &lt;= e1) = %b, (st2 &lt;= e2) = %b\n&quot;,
@@ -257,76 +265,81 @@ import java.util.Arrays;
 
                 } // end while (( st1 &lt;= e1 ) &amp;&amp; ( st2 &lt;= e2 ) )
 
-<span class="fc bfc" id="L260" title="All 2 branches covered.">                if (st1 &lt;= e1) {</span>
-<span class="fc" id="L261">                    kf = k + e1 - st1 + 1;</span>
+<span class="fc bfc" id="L268" title="All 2 branches covered.">                if (st1 &lt;= e1) {</span>
+<span class="fc" id="L269">                    kf = k + e1 - st1 + 1;</span>
                     // note: idx is int[n][2];  idx_r is int[n]
                     //idx( (k+1):kf, s ) = idx_r( st1 : e1, : );
-<span class="fc" id="L264">                    int c = st1;</span>
-<span class="fc bfc" id="L265" title="All 2 branches covered.">                    for (z = (k + 1); z &lt;= kf; ++z) {</span>
-<span class="fc" id="L266">                        idx[z - 1][idx_s - 1] = idx_r[c - 1];</span>
-
+<span class="fc" id="L272">                    int c = st1;</span>
+<span class="fc bfc" id="L273" title="All 2 branches covered.">                    for (z = (k + 1); z &lt;= kf; ++z) {</span>
+<span class="fc" id="L274">                        idx[z - 1][idx_s - 1] = idx_r[c - 1];</span>
                         //System.out.printf(&quot;    *idx[%d][%d]=idx_r[%d] = %d, \n&quot;, z - 1, idx_s - 1, c - 1, idx_r[c - 1]);
-
-<span class="fc" id="L270">                        c++;</span>
+<span class="fc" id="L276">                        c++;</span>
                     }
-<span class="fc" id="L272">                    k = kf;</span>
-<span class="pc bpc" id="L273" title="1 of 2 branches missed.">                } else if (st2 &lt;= e2) {</span>
-<span class="fc" id="L274">                    kf = k + e2 - st2 + 1;</span>
+<span class="fc" id="L278">                    k = kf;</span>
+<span class="pc bpc" id="L279" title="1 of 2 branches missed.">                } else if (st2 &lt;= e2) {</span>
+<span class="fc" id="L280">                    kf = k + e2 - st2 + 1;</span>
                     //idx( ( k+1):kf, s ) = idx_r( st2 : e2, : );
-<span class="fc" id="L276">                    int c = st2;</span>
-<span class="fc bfc" id="L277" title="All 2 branches covered.">                    for (z = (k + 1); z &lt;= kf; ++z) {</span>
-<span class="fc" id="L278">                        idx[z - 1][idx_s - 1] = idx_r[c - 1];</span>
-
+<span class="fc" id="L282">                    int c = st2;</span>
+<span class="fc bfc" id="L283" title="All 2 branches covered.">                    for (z = (k + 1); z &lt;= kf; ++z) {</span>
+<span class="fc" id="L284">                        idx[z - 1][idx_s - 1] = idx_r[c - 1];</span>
                         //System.out.printf(&quot;    *idx[%d][%d]=idx_r[%d] = %d, \n&quot;, z - 1, idx_s - 1, c - 1, idx_r[c - 1]);
-
-<span class="fc" id="L282">                        c++;</span>
+<span class="fc" id="L286">                        c++;</span>
                     }
-<span class="fc" id="L284">                    k = kf;</span>
+<span class="fc" id="L288">                    k = kf;</span>
                 }
 
             } // end for j=
 
-<span class="fc" id="L289">            i = gap;</span>
-<span class="fc" id="L290">            r = 3 - r;</span>
-<span class="fc" id="L291">            idx_s = 3 - idx_s;</span>
+<span class="fc" id="L293">            i = gap;</span>
+<span class="fc" id="L294">            r = 3 - r;</span>
+<span class="fc" id="L295">            idx_s = 3 - idx_s;</span>
         }
 
         //% d is the Frobenius inner product of the distance matrices
         // The second term of Eqn (9):
         //covterm = n∗( x − mean(x) ) .’ ∗ ( y − mean(y) );
         //              [1][n] * [n][1] = [1][1]
-<span class="fc" id="L298">        double[] mx = MiscMath0.mean(x, 1);</span>
-<span class="pc bnc" id="L299" title="All 2 branches missed.">        assert (mx.length == 1);</span>
-<span class="fc" id="L300">        double[] my = MiscMath0.mean(y, 1);</span>
-<span class="pc bnc" id="L301" title="All 2 branches missed.">        assert (my.length == 1);</span>
-<span class="fc" id="L302">        double[] xz = Arrays.copyOf(x, x.length);</span>
-<span class="fc" id="L303">        double[] yz = Arrays.copyOf(y, y.length);</span>
-<span class="fc bfc" id="L304" title="All 2 branches covered.">        for (z = 0; z &lt; n; ++z) {</span>
-<span class="fc" id="L305">            xz[z] -= mx[0];</span>
-<span class="fc" id="L306">            yz[z] -= my[0];</span>
+<span class="fc" id="L302">        double[] mx = MiscMath0.mean(x, 1);</span>
+<span class="pc bnc" id="L303" title="All 2 branches missed.">        assert (mx.length == 1);</span>
+<span class="fc" id="L304">        double[] my = MiscMath0.mean(y, 1);</span>
+<span class="pc bnc" id="L305" title="All 2 branches missed.">        assert (my.length == 1);</span>
+<span class="fc" id="L306">        double[] xz = Arrays.copyOf(x, x.length);</span>
+<span class="fc" id="L307">        double[] yz = Arrays.copyOf(y, y.length);</span>
+<span class="fc bfc" id="L308" title="All 2 branches covered.">        for (z = 0; z &lt; n; ++z) {</span>
+<span class="fc" id="L309">            xz[z] -= mx[0];</span>
+<span class="fc" id="L310">            yz[z] -= my[0];</span>
         }
-<span class="fc" id="L308">        double covtermXY = n * MatrixUtil.innerProduct(xz, yz);</span>
+<span class="fc" id="L312">        double covtermXY = n * MatrixUtil.innerProduct(xz, yz);</span>
 
         //v is double[n][nw]; v = [ x y x.∗y ];
         //c1 = iv1 .’ ∗ v (:, 3 );
         //c2 = sum( iv4 );
         //c3 = iv2 .’ ∗ y;
         //c4 = iv3 .’ ∗ x;
-<span class="fc" id="L315">        double[] v3 = new double[n];</span>
-<span class="fc" id="L316">        double c2 = 0;</span>
-<span class="fc bfc" id="L317" title="All 2 branches covered.">        for (z = 0; z &lt; n; ++z) {</span>
-<span class="fc" id="L318">            v3[z] = v[z][2];</span>
-<span class="fc" id="L319">            c2 += iv4[z];</span>
+<span class="fc" id="L319">        double[] v3 = new double[n];</span>
+<span class="fc" id="L320">        double c2 = 0;</span>
+<span class="fc bfc" id="L321" title="All 2 branches covered.">        for (z = 0; z &lt; n; ++z) {</span>
+<span class="fc" id="L322">            v3[z] = v[z][2]; //x.*y</span>
+<span class="fc" id="L323">            c2 += iv4[z];    //sum(inversion pairs of x*y)</span>
         }
 
-<span class="fc" id="L322">        double c1 = MatrixUtil.innerProduct(iv1, v3);</span>
-<span class="fc" id="L323">        double c3 = MatrixUtil.innerProduct(iv2, y);</span>
-<span class="fc" id="L324">        double c4 = MatrixUtil.innerProduct(iv3, x);</span>
+<span class="fc" id="L326">        double c1 = MatrixUtil.innerProduct(iv1, v3); //sum(x.*y)</span>
+                                                      // c2 is sum(inversion pairs  x dot y)
+<span class="fc" id="L328">        double c3 = MatrixUtil.innerProduct(iv2, y);  //(sum(inversion pairs  x)) dot y</span>
+<span class="fc" id="L329">        double c4 = MatrixUtil.innerProduct(iv3, x);  //(sum(inversion pairs  y)) dot x</span>
 
         // d = 4∗( ( c1 + c2 ) − ( c3 + c4 ) ) − 2∗ covterm;
-<span class="fc" id="L327">        final double d = (4. * ((c1 + c2) - (c3 + c4))) - 2. * covtermXY;</span>
+<span class="fc" id="L332">        final double d = (4. * ((c1 + c2) - (c3 + c4))) - 2. * covtermXY;</span>
 
-<span class="fc" id="L329">        double[] b_y = _calcB(y, idx, n, r);</span>
+<span class="fc" id="L334">        double[] b_y = _calcB(y, idx, n, r);</span>
+
+        // extract the indexes for sorting y w.r.t. original indexes
+<span class="fc" id="L337">        int[] indexesToSortY = new int[n];</span>
+<span class="fc" id="L338">        int c = 0;</span>
+<span class="fc bfc" id="L339" title="All 2 branches covered.">        for (z = n; z &gt;= 1; z--) {</span>
+<span class="fc" id="L340">            indexesToSortY[c] = indexes[ idx[z - 1][r - 1] - 1 ];</span>
+<span class="fc" id="L341">            ++c;</span>
+        }
 
         //NOTE: minor edits to nsq, ncb, and nq to make the covariance
         // unbiased following equation 2.5 of
@@ -338,25 +351,25 @@ import java.util.Arrays;
         
         //%covsq equals V^2_n(x, y) the square of the distance covariance
         //%between x and y
-<span class="fc" id="L341">        double nsq = n * (n - 3.);//(double)(n*n);</span>
-<span class="fc" id="L342">        double ncb = nsq * (n - 2.);//nsq*(double)(n);</span>
-<span class="fc" id="L343">        double nq = ncb * (n - 1.);//ncb*(double)(n);</span>
+<span class="fc" id="L354">        double nsq = n * (n - 3.);//(double)(n*n);</span>
+<span class="fc" id="L355">        double ncb = nsq * (n - 2.);//nsq*(double)(n);</span>
+<span class="fc" id="L356">        double nq = ncb * (n - 1.);//ncb*(double)(n);</span>
         //Eqn (3):
         //term1 = d / nsq;
         //term2 = 2∗ ( a_x .’ ∗ b_y ) / ncb;
         //term3 = sum( a_x ) ∗ sum( b_y ) / nq;
         //covsq = ( term1 + term3 ) − term2;
-<span class="fc" id="L349">        double term1 = d / nsq;</span>
-<span class="fc" id="L350">        double term2 = (2. / ncb) * (MatrixUtil.innerProduct(a_x, b_y));</span>
-<span class="fc" id="L351">        double a_dot_dot = 0;</span>
-<span class="fc" id="L352">        double b_dot_dot = 0;</span>
-<span class="fc bfc" id="L353" title="All 2 branches covered.">        for (z = 0; z &lt; n; ++z) {</span>
-<span class="fc" id="L354">            a_dot_dot += a_x[z];</span>
-<span class="fc" id="L355">            b_dot_dot += b_y[z];</span>
+<span class="fc" id="L362">        double term1 = d / nsq;</span>
+<span class="fc" id="L363">        double term2 = (2. / ncb) * (MatrixUtil.innerProduct(a_x, b_y));</span>
+<span class="fc" id="L364">        double a_dot_dot = 0;</span>
+<span class="fc" id="L365">        double b_dot_dot = 0;</span>
+<span class="fc bfc" id="L366" title="All 2 branches covered.">        for (z = 0; z &lt; n; ++z) {</span>
+<span class="fc" id="L367">            a_dot_dot += a_x[z];</span>
+<span class="fc" id="L368">            b_dot_dot += b_y[z];</span>
         }
 
-<span class="fc" id="L358">        double term3 = (a_dot_dot * b_dot_dot) / nq;</span>
-<span class="fc" id="L359">        double covsq = (term1 + term3) - term2;</span>
+<span class="fc" id="L371">        double term3 = (a_dot_dot * b_dot_dot) / nq;</span>
+<span class="fc" id="L372">        double covsq = (term1 + term3) - term2;</span>
         
         /*       
         System.out.printf(&quot;iv1=%s\n&quot;, FormatArray.toString(iv1, &quot;%.3f&quot;));
@@ -378,22 +391,21 @@ import java.util.Arrays;
              e.g. alpha_s = 0.05        
         */
                     
-<span class="fc" id="L381">        DCov dcov = new DCov();</span>
-<span class="fc" id="L382">        dcov.covsq = covsq;</span>
-<span class="fc" id="L383">        dcov.d = d;</span>
-<span class="fc" id="L384">        dcov.indexes = indexes;</span>
-<span class="fc" id="L385">        dcov.sortedX = x;</span>
-<span class="fc" id="L386">        dcov.sortedY = y;</span>
-<span class="fc" id="L387">        dcov.aDotDot = a_dot_dot;</span>
-<span class="fc" id="L388">        dcov.bDotDot = b_dot_dot;</span>
-<span class="fc" id="L389">        dcov.ai = a_x;</span>
-<span class="fc" id="L390">        dcov.bi = b_y;</span>
-<span class="fc" id="L391">        dcov.iv1 = iv1;</span>
-<span class="fc" id="L392">        dcov.iv2 = iv2;</span>
-<span class="fc" id="L393">        dcov.iv3 = iv3;</span>
-<span class="fc" id="L394">        dcov.iv4 = iv4;</span>
+<span class="fc" id="L394">        DCov dcov = new DCov();</span>
+<span class="fc" id="L395">        dcov.covsq = covsq;</span>
+<span class="fc" id="L396">        dcov.d = d;</span>
+<span class="fc" id="L397">        dcov.indexesToSortX = indexes;</span>
+<span class="fc" id="L398">        dcov.indexesToSortY = indexesToSortY;</span>
+<span class="fc" id="L399">        dcov.aDotDot = a_dot_dot;</span>
+<span class="fc" id="L400">        dcov.bDotDot = b_dot_dot;</span>
+<span class="fc" id="L401">        dcov.ai = a_x;</span>
+<span class="fc" id="L402">        dcov.bi = b_y;</span>
+<span class="fc" id="L403">        dcov.iv1 = iv1;</span>
+<span class="fc" id="L404">        dcov.iv2 = iv2;</span>
+<span class="fc" id="L405">        dcov.iv3 = iv3;</span>
+<span class="fc" id="L406">        dcov.iv4 = iv4;</span>
 
-<span class="fc" id="L396">        return dcov;</span>
+<span class="fc" id="L408">        return dcov;</span>
     }
     
     /**
@@ -403,7 +415,7 @@ import java.util.Arrays;
      * 2019 Chaudhuri and Hu, Computational Statistics And Data Analysis,
      * Volume 135, July 2019, Pages 15-24.
      * &lt;/pre&gt;
-     * @param a an mxn matrix of data with a sample of a variable per row.
+     @param a an mxn matrix of data with a sample of a variable per row.
      * &lt;pre&gt;
      * e.g.  row 0 holds a sample of variable x, row 1 holds a sample of variable y, 
      * etc. so that the array format is [nVariables][nSample]
@@ -411,7 +423,7 @@ import java.util.Arrays;
      *      a[1] = new double[]{y_0, y_1, y_2, ... y_n}
      *      ...
      * &lt;/pre&gt;
-     * @return the covariance matrix as a double array of size [a.length][a.length]
+     @return the covariance matrix as a double array of size [a.length][a.length]
      */
     /*public static double[][] multivariateCovariance(double[][] a) {
     
@@ -490,41 +502,31 @@ import java.util.Arrays;
     /**
      * checks the descending sort algorithm for having ported the code from 1-based array indexes to 0-based indexes.
      * &quot;A fast algorithm for computing distance correlation&quot; by Chaudhuri and Hu, 2018
-     * @param x
-     * @param y
-     * @return 2 dimensional array of size double[2][x.length] holding the sorted x and y in each row, respectively
+     @param x
+     @param y
+     @return 2 dimensional array of size double[2][x.length] holding the sorted x and y in each row, respectively
      */
     static double[][] _sortCheck(double[] x, double[] y) {
         
-<span class="pc bpc" id="L499" title="1 of 2 branches missed.">        if (x.length != y.length) {</span>
-<span class="nc" id="L500">            throw new IllegalArgumentException(&quot;length of x must equal length of y&quot;);</span>
+<span class="pc bpc" id="L511" title="1 of 2 branches missed.">        if (x.length != y.length) {</span>
+<span class="nc" id="L512">            throw new IllegalArgumentException(&quot;length of x must equal length of y&quot;);</span>
         }
         
-<span class="fc" id="L503">        int n = x.length;</span>
+<span class="fc" id="L515">        int n = x.length;</span>
         
-<span class="fc" id="L505">        x = Arrays.copyOf(x, x.length);</span>
-<span class="fc" id="L506">        y = Arrays.copyOf(y, y.length);</span>
+<span class="fc" id="L517">        x = Arrays.copyOf(x, x.length);</span>
+<span class="fc" id="L518">        y = Arrays.copyOf(y, y.length);</span>
         
         // x and y sorted:
-<span class="fc" id="L509">        int[] indexes = MiscSorter.mergeBy1stArgThen2nd(x, y);</span>
-         
-<span class="fc" id="L511">        int nw = 3;</span>
-        
-<span class="fc" id="L513">        double[][] v = new double[n][nw];</span>
-<span class="fc" id="L514">        v[0] = Arrays.copyOf(x, n);</span>
-<span class="fc" id="L515">        v[1] = Arrays.copyOf(y, n);</span>
-<span class="fc" id="L516">        v[2] = Arrays.copyOf(x, n);</span>
-<span class="fc bfc" id="L517" title="All 2 branches covered.">        for (int row = 0; row &lt; n; ++row) {</span>
-<span class="fc" id="L518">            v[2][row] *= y[row];</span>
-        }
-        
+<span class="fc" id="L521">        int[] indexes = MiscSorter.mergeBy1stArgThen2nd(x, y);</span>
+
         //% The columns of idx are buffers to store sort indices and output buffer
         //%of merge-sort
-        //%we alternate between them and avoid uneccessary copying
-<span class="fc" id="L524">        int[][] idx = new int[n][2];</span>
-<span class="fc bfc" id="L525" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L526">            idx[i] = new int[2];</span>
-<span class="fc" id="L527">            idx[i][0] = i+1;</span>
+        //%we alternate between them and avoid unnecessary copying
+<span class="fc" id="L526">        int[][] idx = new int[n][2];</span>
+<span class="fc bfc" id="L527" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L528">            idx[i] = new int[2];</span>
+<span class="fc" id="L529">            idx[i][0] = i+1;</span>
         }
         
         //NOTE: in matlab, the .' is transpose without conjugation
@@ -532,71 +534,87 @@ import java.util.Arrays;
         //NOTE: in matlab, vector .' * vector is the outer product
         
         int i, j, k, kf, st1, st2, e1, e2, idx1, idx2, gap, z, zz;
-<span class="fc" id="L535">        int[] idx_r = new int[n];</span>
+<span class="fc" id="L537">        int[] idx_r = new int[n];</span>
                                 
         //% The merge sort loop .
-<span class="fc" id="L538">        i = 1;</span>
-<span class="fc" id="L539">        int r = 1; </span>
+<span class="fc" id="L540">        i = 1;</span>
+<span class="fc" id="L541">        int r = 1; </span>
         // s = 2 in matlab code, was repurposed use of var s which was an integer type due to integer array x's cumulative sum.
-<span class="fc" id="L541">        int idx_s = 2;</span>
-<span class="fc bfc" id="L542" title="All 2 branches covered.">        while (i &lt; n) {</span>
-<span class="fc" id="L543">           gap = 2*i; </span>
-<span class="fc" id="L544">           k = 0;</span>
+<span class="fc" id="L543">        int idx_s = 2;</span>
+<span class="fc bfc" id="L544" title="All 2 branches covered.">        while (i &lt; n) {</span>
+<span class="fc" id="L545">           gap = 2*i; </span>
+<span class="fc" id="L546">           k = 0;</span>
            
            //idx_r = idx(:, r);
-<span class="fc bfc" id="L547" title="All 2 branches covered.">           for (z = 0; z &lt; idx.length; ++z) {</span>
-<span class="fc" id="L548">               idx_r[z] = idx[z][r-1];</span>
+<span class="fc bfc" id="L549" title="All 2 branches covered.">           for (z = 0; z &lt; idx.length; ++z) {</span>
+<span class="fc" id="L550">               idx_r[z] = idx[z][r-1];</span>
            }
            
-<span class="fc bfc" id="L551" title="All 2 branches covered.">           for (j = 1; j &lt;= n; j+=gap) {</span>
-<span class="fc" id="L552">              st1 = j; </span>
-<span class="fc" id="L553">              e1 = Math.min(st1 + i - 1, n);</span>
-<span class="fc" id="L554">              st2 = j + i; </span>
-<span class="fc" id="L555">              e2 = Math.min(st2 + i - 1, n);</span>
-<span class="fc bfc" id="L556" title="All 4 branches covered.">              while (( st1 &lt;= e1 ) &amp;&amp; ( st2 &lt;= e2 ) ) {</span>
-<span class="fc" id="L557">                 k++;</span>
-<span class="fc" id="L558">                 idx1 = idx_r[st1-1];</span>
-<span class="fc" id="L559">                 idx2 = idx_r[st2-1];</span>
-<span class="fc bfc" id="L560" title="All 2 branches covered.">                 if (y[idx1-1] &gt;= y[idx2-1]) {                 </span>
-<span class="fc" id="L561">                    idx[k-1][idx_s-1] = idx1;</span>
-<span class="fc" id="L562">                    st1++;</span>
+<span class="fc bfc" id="L553" title="All 2 branches covered.">           for (j = 1; j &lt;= n; j+=gap) {</span>
+<span class="fc" id="L554">              st1 = j; </span>
+<span class="fc" id="L555">              e1 = Math.min(st1 + i - 1, n);</span>
+<span class="fc" id="L556">              st2 = j + i; </span>
+<span class="fc" id="L557">              e2 = Math.min(st2 + i - 1, n);</span>
+             // System.out.printf(&quot;i=%d, j=%d, gap=%d, st1=%d, st2=%d, e1=%d, e2=%d\n&quot;, i, j, gap, st1, st2, e1, e2);
+<span class="fc bfc" id="L559" title="All 4 branches covered.">              while (( st1 &lt;= e1 ) &amp;&amp; ( st2 &lt;= e2 ) ) {</span>
+<span class="fc" id="L560">                 k++;</span>
+<span class="fc" id="L561">                 idx1 = idx_r[st1-1];</span>
+<span class="fc" id="L562">                 idx2 = idx_r[st2-1];</span>
+                 //System.out.printf(&quot;k=%d, idx1=%d, idx2=%d, st1=%d, st2=%d, y[idx1-1]=%.3e, y[idx2-1]=%.3e\n&quot;,
+                 //        k, idx1, idx2, st1, st2, y[idx1-1], y[idx2-1]);
+                 //System.out.printf(&quot;compare y[%d] to y[%d]\n&quot;, idx1-1, idx2-1);
+<span class="fc bfc" id="L566" title="All 2 branches covered.">                 if (y[idx1-1] &gt;= y[idx2-1]) {                 </span>
+<span class="fc" id="L567">                    idx[k-1][idx_s-1] = idx1;</span>
+<span class="fc" id="L568">                    st1++;</span>
                  } else {
-<span class="fc" id="L564">                    idx[k-1][idx_s-1] = idx2;</span>
-<span class="fc" id="L565">                    st2++;</span>
+<span class="fc" id="L570">                    idx[k-1][idx_s-1] = idx2;</span>
+<span class="fc" id="L571">                    st2++;</span>
                  } // end if-else
               } // end while
-<span class="fc bfc" id="L568" title="All 2 branches covered.">              if (st1 &lt;= e1) {</span>
-<span class="fc" id="L569">                  kf = k + e1 - st1 + 1;</span>
+<span class="fc bfc" id="L574" title="All 2 branches covered.">              if (st1 &lt;= e1) {</span>
+<span class="fc" id="L575">                  kf = k + e1 - st1 + 1;</span>
                   // note: idx is int[n][2];  idx_r is int[n]
                   //idx( (k+1):kf, s ) = idx_r( st1 : e1, : );
-<span class="fc" id="L572">                  int c = st1;</span>
-<span class="fc bfc" id="L573" title="All 2 branches covered.">                  for (z = (k+1); z &lt;= kf; ++z) {</span>
-<span class="fc" id="L574">                      idx[z-1][idx_s-1] = idx_r[c-1];</span>
-<span class="fc" id="L575">                      c++;</span>
+<span class="fc" id="L578">                  int c = st1;</span>
+<span class="fc bfc" id="L579" title="All 2 branches covered.">                  for (z = (k+1); z &lt;= kf; ++z) {</span>
+<span class="fc" id="L580">                      idx[z-1][idx_s-1] = idx_r[c-1];</span>
+<span class="fc" id="L581">                      c++;</span>
                   }
-<span class="fc" id="L577">                  k = kf;</span>
-<span class="pc bpc" id="L578" title="1 of 2 branches missed.">              } else if (st2 &lt;= e2) {</span>
-<span class="fc" id="L579">                  kf = k + e2 - st2 + 1;</span>
+<span class="fc" id="L583">                  k = kf;</span>
+<span class="pc bpc" id="L584" title="1 of 2 branches missed.">              } else if (st2 &lt;= e2) {</span>
+<span class="fc" id="L585">                  kf = k + e2 - st2 + 1;</span>
                   //idx( ( k+1):kf, s ) = idx_r( st2 : e2, : );
-<span class="fc" id="L581">                  int c = st2;</span>
-<span class="fc bfc" id="L582" title="All 2 branches covered.">                  for (z = k+1; z &lt;= kf; ++z) {</span>
-<span class="fc" id="L583">                      idx[z-1][idx_s-1] = idx_r[c-1];</span>
-<span class="fc" id="L584">                      c++;</span>
+<span class="fc" id="L587">                  int c = st2;</span>
+<span class="fc bfc" id="L588" title="All 2 branches covered.">                  for (z = k+1; z &lt;= kf; ++z) {</span>
+<span class="fc" id="L589">                      idx[z-1][idx_s-1] = idx_r[c-1];</span>
+<span class="fc" id="L590">                      c++;</span>
                   }
-<span class="fc" id="L586">                  k = kf;</span>
+<span class="fc" id="L592">                  k = kf;</span>
               }
            } // end for j=
            
-<span class="fc" id="L590">           i = gap;</span>
-<span class="fc" id="L591">           r = 3 - r; </span>
-<span class="fc" id="L592">           idx_s = 3 - idx_s;  //2;  3-2=1 // 3-1=2</span>
+<span class="fc" id="L596">           i = gap;</span>
+<span class="fc" id="L597">           r = 3 - r; </span>
+<span class="fc" id="L598">           idx_s = 3 - idx_s;  //2;  3-2=1 // 3-1=2</span>
            
         }
-        
-<span class="fc" id="L596">        double[][] sorted = new double[2][x.length];</span>
-<span class="fc" id="L597">        sorted[0] = x;</span>
-<span class="fc" id="L598">        sorted[1] = y;</span>
-<span class="fc" id="L599">        return sorted;</span>
+
+       // System.out.printf(&quot;indexes=\n%s\n&quot;, Arrays.toString(indexes));
+       // System.out.printf(&quot;idx=\n%s\n&quot;, FormatArray.toString(idx, &quot;%d&quot;));
+       // System.out.printf(&quot;last col used in idx was %d\n&quot;, (idx_s == 2) ? /*1-1*/0 : /*2-1*/1);
+       // System.out.printf(&quot;i=%d, r=%d, idx_s=%d\n&quot;, i, r, idx_s);
+        //System.out.printf(&quot;idx_r=\n%s\n&quot;, FormatArray.toString(idx_r, &quot;%d&quot;));
+       // System.out.printf(&quot;after x=\n%s\n&quot;, FormatArray.toString(x, &quot;%.3e&quot;));
+       // System.out.printf(&quot;after y=\n%s\n&quot;, FormatArray.toString(y, &quot;%.3e&quot;));
+
+        // the indexes for the sorting of y after sorted by x:
+        // lastCol = (idx_s == 2) ? /*1-1*/0 : /*2-1*/1;
+        // idx[*][lastCol]
+
+<span class="fc" id="L614">        double[][] sorted = new double[2][x.length];</span>
+<span class="fc" id="L615">        sorted[0] = x;</span>
+<span class="fc" id="L616">        sorted[1] = y;</span>
+<span class="fc" id="L617">        return sorted;</span>
     }
 
     private static double[] _calcB(double[] y, int[][] idx, int n, int r) {
@@ -606,33 +624,33 @@ import java.util.Arrays;
         System.out.printf(&quot;idx[0]=%s\n&quot;, Arrays.toString(idx[0]));
         System.out.printf(&quot;idx[1]=%s\n&quot;, Arrays.toString(idx[1]));
         */
-                    
-<span class="fc" id="L610">        double[] ySorted = new double[n];</span>
+
+<span class="fc" id="L628">        double[] ySorted = new double[n];</span>
 
         //% b_y is the vector of row sums of distance matrix of y
         // ySorted = y ( idx( n : −1: 1, r ) );
-<span class="fc" id="L614">        int c = 0;</span>
+<span class="fc" id="L632">        int c = 0;</span>
         int z;
 
-<span class="fc bfc" id="L617" title="All 2 branches covered.">        for (z = n; z &gt;= 1; z--) {</span>
-<span class="fc" id="L618">            ySorted[c] = y[idx[z - 1][r - 1] - 1];</span>
+<span class="fc bfc" id="L635" title="All 2 branches covered.">        for (z = n; z &gt;= 1; z--) {</span>
+<span class="fc" id="L636">            ySorted[c] = y[idx[z - 1][r - 1] - 1];</span>
             //System.out.printf(&quot;ySorted[%d]=y[idx[%d][%d]-1]=y[%d]=%.3f\n&quot;,
             //        c, z - 1, r - 1, idx[z - 1][r - 1] - 1, y[idx[z - 1][r - 1] - 1]);
-<span class="fc" id="L621">            c++;</span>
+<span class="fc" id="L639">            c++;</span>
         }
 
         //si = cumsum( ySorted );
-<span class="fc" id="L625">        double[] si = MiscMath0.cumulativeSum(ySorted);</span>
-<span class="fc" id="L626">        double s = si[n - 1];</span>
+<span class="fc" id="L643">        double[] si = MiscMath0.cumulativeSum(ySorted);</span>
+<span class="fc" id="L644">        double s = si[n - 1];</span>
 
         //b_y = zeros( n , 1 );
-<span class="fc" id="L629">        double[] b_y = new double[n];</span>
+<span class="fc" id="L647">        double[] b_y = new double[n];</span>
 
         //b_y(idx(n : −1: 1, r)) = (−(n−2): 2: n) .’ .∗ ySorted + (s − 2∗ si);
-<span class="fc" id="L632">        c = 0;</span>
-<span class="fc" id="L633">        double cc = -(n - 2.);</span>
-<span class="fc bfc" id="L634" title="All 2 branches covered.">        for (z = n; z &gt;= 1; z--) {</span>
-<span class="fc" id="L635">            b_y[idx[z - 1][r - 1] - 1] = (cc * ySorted[c]) + (s - (2. * si[c]));</span>
+<span class="fc" id="L650">        c = 0;</span>
+<span class="fc" id="L651">        double cc = -(n - 2.);</span>
+<span class="fc bfc" id="L652" title="All 2 branches covered.">        for (z = n; z &gt;= 1; z--) {</span>
+<span class="fc" id="L653">            b_y[idx[z - 1][r - 1] - 1] = (cc * ySorted[c]) + (s - (2. * si[c]));</span>
 
             /*
             System.out.printf(&quot;(s - (2.*si[%d])) = (%.3f - (2. * %.3f)) = %.3f\n&quot;,
@@ -641,11 +659,11 @@ import java.util.Arrays;
                     z - 1, r - 1, idx[z - 1][r - 1] - 1, cc, c, c, (cc * ySorted[c]) + (s - (2. * si[c])));
             */
 
-<span class="fc" id="L644">            c++;</span>
-<span class="fc" id="L645">            cc += 2;</span>
+<span class="fc" id="L662">            c++;</span>
+<span class="fc" id="L663">            cc += 2;</span>
         }
 
-<span class="fc" id="L648">        return b_y;</span>
+<span class="fc" id="L666">        return b_y;</span>
     }
 
     /**
@@ -668,125 +686,121 @@ import java.util.Arrays;
      * and Szekely (2016).
      *
      * NOTE: that this method follows Algorithm 1 in the paper which stops at
-     * the intermediate steps to show the merge steps clearly. The complete
-     * algorithm is present as fastDcov.
+     * the intermediate steps to show the merge steps clearly.
+     * The complete algorithm is in the method fastDCov().
      *
-     * @param x
-     * @param y
-     * @return
+     @param x
+     @param y
+     @return
      */
-    public static DCov _univariateCovariance(double[] x, double[] y) {
+    static DCov _univariateCovariance(double[] x, double[] y) {
 
-<span class="pc bpc" id="L680" title="1 of 2 branches missed.">        if (x.length != y.length) {</span>
-<span class="nc" id="L681">            throw new IllegalArgumentException(&quot;length of x must equal length of y&quot;);</span>
+<span class="pc bpc" id="L698" title="1 of 2 branches missed.">        if (x.length != y.length) {</span>
+<span class="nc" id="L699">            throw new IllegalArgumentException(&quot;length of x must equal length of y&quot;);</span>
         }
 
-<span class="fc" id="L684">        int n = x.length;</span>
+<span class="fc" id="L702">        int n = x.length;</span>
 
-<span class="fc" id="L686">        x = Arrays.copyOf(x, x.length);</span>
-<span class="fc" id="L687">        y = Arrays.copyOf(y, y.length);</span>
+<span class="fc" id="L704">        x = Arrays.copyOf(x, x.length);</span>
+<span class="fc" id="L705">        y = Arrays.copyOf(y, y.length);</span>
 
-<span class="fc" id="L689">        int[][] idx = new int[2][n];</span>
-<span class="fc" id="L690">        idx[0] = new int[n];</span>
-<span class="fc" id="L691">        idx[1] = new int[n];</span>
-<span class="fc bfc" id="L692" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L693">            idx[0][i] = i + 1;</span>
+<span class="fc" id="L707">        int[][] idx = new int[2][n];</span>
+<span class="fc" id="L708">        idx[0] = new int[n];</span>
+<span class="fc" id="L709">        idx[1] = new int[n];</span>
+<span class="fc bfc" id="L710" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L711">            idx[0][i] = i + 1;</span>
         }
 
-<span class="fc" id="L696">        int[] idx_r = new int[n];</span>
+<span class="fc" id="L714">        int[] idx_r = new int[n];</span>
 
-<span class="fc" id="L698">        double[] csumT = new double[n + 1];</span>
-<span class="fc" id="L699">        double[] d = new double[n];</span>
+<span class="fc" id="L716">        double[] csumT = new double[n + 1];</span>
+<span class="fc" id="L717">        double[] d = new double[n];</span>
 
         //the merge sort is descending order
         int gap, k, kf, z, j, st1, e1, st2, e2, idx1, idx2;
-<span class="fc" id="L703">        int i = 1;</span>
-<span class="fc" id="L704">        int r = 1;</span>
-<span class="fc" id="L705">        int idx_s = 2;</span>
-<span class="fc bfc" id="L706" title="All 2 branches covered.">        while (i &lt; n) {</span>
-<span class="fc" id="L707">            gap = 2 * i;</span>
-<span class="fc" id="L708">            k = 0;</span>
+<span class="fc" id="L721">        int i = 1;</span>
+<span class="fc" id="L722">        int r = 1;</span>
+<span class="fc" id="L723">        int idx_s = 2;</span>
+<span class="fc bfc" id="L724" title="All 2 branches covered.">        while (i &lt; n) {</span>
+<span class="fc" id="L725">            gap = 2 * i;</span>
+<span class="fc" id="L726">            k = 0;</span>
 
-<span class="fc" id="L710">            System.arraycopy(idx[r - 1], 0, idx_r, 0, n);</span>
+<span class="fc" id="L728">            System.arraycopy(idx[r - 1], 0, idx_r, 0, n);</span>
 
-            //csumT = cusum(y[idx r]); 
+            //csumT = cusum(y[idx r]);
             //csumT = (0, csumT );
-<span class="fc" id="L714">            csumT[0] = 0;</span>
-<span class="fc bfc" id="L715" title="All 2 branches covered.">            for (z = 0; z &lt; n; ++z) {</span>
-<span class="fc" id="L716">                csumT[z + 1] = y[idx_r[z] - 1];</span>
+<span class="fc" id="L732">            csumT[0] = 0;</span>
+<span class="fc bfc" id="L733" title="All 2 branches covered.">            for (z = 0; z &lt; n; ++z) {</span>
+<span class="fc" id="L734">                csumT[z + 1] = y[idx_r[z] - 1];</span>
             }
-<span class="fc bfc" id="L718" title="All 2 branches covered.">            for (z = 2; z &lt;= n; ++z) {</span>
-<span class="fc" id="L719">                csumT[z] += csumT[z - 1];</span>
+<span class="fc bfc" id="L736" title="All 2 branches covered.">            for (z = 2; z &lt;= n; ++z) {</span>
+<span class="fc" id="L737">                csumT[z] += csumT[z - 1];</span>
             }
 
-<span class="fc" id="L722">            j = 1;</span>
+<span class="fc" id="L740">            j = 1;</span>
 
-<span class="fc bfc" id="L724" title="All 2 branches covered.">            while (j &lt; n) {</span>
+<span class="fc bfc" id="L742" title="All 2 branches covered.">            while (j &lt; n) {</span>
 
-<span class="fc" id="L726">                st1 = j;</span>
-<span class="fc" id="L727">                e1 = Math.min(st1 + i - 1, n);</span>
-<span class="fc" id="L728">                st2 = j + i;</span>
-<span class="fc" id="L729">                e2 = Math.min(st2 + i - 1, n);</span>
-<span class="fc bfc" id="L730" title="All 4 branches covered.">                while ((st1 &lt;= e1) &amp;&amp; (st2 &lt;= e2)) {</span>
-<span class="fc" id="L731">                    k++;</span>
-<span class="fc" id="L732">                    idx1 = idx_r[st1 - 1];</span>
-<span class="fc" id="L733">                    idx2 = idx_r[st2 - 1];</span>
-<span class="fc bfc" id="L734" title="All 2 branches covered.">                    if (x[idx1 - 1] &gt;= x[idx2 - 1]) {</span>
-<span class="fc" id="L735">                        idx[idx_s - 1][k - 1] = idx1;</span>
-<span class="fc" id="L736">                        st1++;</span>
+<span class="fc" id="L744">                st1 = j;</span>
+<span class="fc" id="L745">                e1 = Math.min(st1 + i - 1, n);</span>
+<span class="fc" id="L746">                st2 = j + i;</span>
+<span class="fc" id="L747">                e2 = Math.min(st2 + i - 1, n);</span>
+<span class="fc bfc" id="L748" title="All 4 branches covered.">                while ((st1 &lt;= e1) &amp;&amp; (st2 &lt;= e2)) {</span>
+<span class="fc" id="L749">                    k++;</span>
+<span class="fc" id="L750">                    idx1 = idx_r[st1 - 1];</span>
+<span class="fc" id="L751">                    idx2 = idx_r[st2 - 1];</span>
+                    //NOTE: we're comparing x here to compare to the paper's results in a unit test.
+                    // in fastDCov() we compare y because x is already sorted
+<span class="fc bfc" id="L754" title="All 2 branches covered.">                    if (x[idx1 - 1] &gt;= x[idx2 - 1]) {</span>
+<span class="fc" id="L755">                        idx[idx_s - 1][k - 1] = idx1;</span>
+<span class="fc" id="L756">                        st1++;</span>
                     } else {
-<span class="fc" id="L738">                        idx[idx_s - 1][k - 1] = idx2;</span>
-<span class="fc" id="L739">                        st2++;</span>
+<span class="fc" id="L758">                        idx[idx_s - 1][k - 1] = idx2;</span>
+<span class="fc" id="L759">                        st2++;</span>
                         // d[] here is similar to iv3 in method fastDCov
                         //   which is the paper's Appendix Matlab code.
                         // iv3(j) = summation_{i&lt;j,y_i&lt;y_j}( y_i )
-<span class="fc" id="L743">                        d[idx2 - 1] += (csumT[e1 + 1 - 1] - csumT[st1 - 1]);</span>
+<span class="fc" id="L763">                        d[idx2 - 1] += (csumT[e1 + 1 - 1] - csumT[st1 - 1]);</span>
                     } // end if-else
                 } // end while
-<span class="fc bfc" id="L746" title="All 2 branches covered.">                if (st1 &lt;= e1) {</span>
-<span class="fc" id="L747">                    kf = k + e1 - st1 + 1;</span>
-<span class="fc" id="L748">                    int c = st1;</span>
-<span class="fc bfc" id="L749" title="All 2 branches covered.">                    for (z = (k + 1); z &lt;= kf; ++z) {</span>
-<span class="fc" id="L750">                        idx[idx_s - 1][z - 1] = idx_r[c - 1];</span>
-<span class="fc" id="L751">                        c++;</span>
+<span class="fc bfc" id="L766" title="All 2 branches covered.">                if (st1 &lt;= e1) {</span>
+<span class="fc" id="L767">                    kf = k + e1 - st1 + 1;</span>
+<span class="fc" id="L768">                    int c = st1;</span>
+<span class="fc bfc" id="L769" title="All 2 branches covered.">                    for (z = (k + 1); z &lt;= kf; ++z) {</span>
+<span class="fc" id="L770">                        idx[idx_s - 1][z - 1] = idx_r[c - 1];</span>
+<span class="fc" id="L771">                        c++;</span>
                     }
-<span class="fc" id="L753">                    k = kf;</span>
-<span class="pc bpc" id="L754" title="1 of 2 branches missed.">                } else if (st2 &lt;= e2) {</span>
-<span class="fc" id="L755">                    kf = k + e2 - st2 + 1;</span>
-<span class="fc" id="L756">                    int c = st2;</span>
-<span class="fc bfc" id="L757" title="All 2 branches covered.">                    for (z = (k + 1); z &lt;= kf; ++z) {</span>
-<span class="fc" id="L758">                        idx[idx_s - 1][z - 1] = idx_r[c - 1];</span>
-<span class="fc" id="L759">                        c++;</span>
+<span class="fc" id="L773">                    k = kf;</span>
+<span class="pc bpc" id="L774" title="1 of 2 branches missed.">                } else if (st2 &lt;= e2) {</span>
+<span class="fc" id="L775">                    kf = k + e2 - st2 + 1;</span>
+<span class="fc" id="L776">                    int c = st2;</span>
+<span class="fc bfc" id="L777" title="All 2 branches covered.">                    for (z = (k + 1); z &lt;= kf; ++z) {</span>
+<span class="fc" id="L778">                        idx[idx_s - 1][z - 1] = idx_r[c - 1];</span>
+<span class="fc" id="L779">                        c++;</span>
                     }
-<span class="fc" id="L761">                    k = kf;</span>
+<span class="fc" id="L781">                    k = kf;</span>
                 }
-<span class="fc" id="L763">                j += gap;</span>
+<span class="fc" id="L783">                j += gap;</span>
 
             } // end while j
 
-<span class="fc" id="L767">            i = gap;</span>
-<span class="fc" id="L768">            r = 3 - r;</span>
-<span class="fc" id="L769">            idx_s = 3 - idx_s;</span>
+<span class="fc" id="L787">            i = gap;</span>
+<span class="fc" id="L788">            r = 3 - r;</span>
+<span class="fc" id="L789">            idx_s = 3 - idx_s;</span>
         } // end while i
 
-<span class="fc" id="L772">        double[] sortedX = new double[n];</span>
-<span class="fc" id="L773">        double[] sortedY = new double[n];</span>
-<span class="fc" id="L774">        int[] indexes = new int[n];</span>
-<span class="fc" id="L775">        double[] sortedD = new double[n];</span>
-<span class="fc bfc" id="L776" title="All 2 branches covered.">        for (z = 0; z &lt; n; ++z) {</span>
-<span class="fc" id="L777">            indexes[z] = idx[r - 1][z] - 1;</span>
-<span class="fc" id="L778">            sortedX[z] = x[indexes[z]];</span>
-<span class="fc" id="L779">            sortedY[z] = y[indexes[z]];</span>
-<span class="fc" id="L780">            sortedD[z] = d[indexes[z]];</span>
+<span class="fc" id="L792">        int[] indexes = new int[n];</span>
+<span class="fc" id="L793">        double[] sortedD = new double[n];</span>
+<span class="fc bfc" id="L794" title="All 2 branches covered.">        for (z = 0; z &lt; n; ++z) {</span>
+<span class="fc" id="L795">            indexes[z] = idx[r - 1][z] - 1;</span>
+<span class="fc" id="L796">            sortedD[z] = d[indexes[z]];</span>
         }
 
-<span class="fc" id="L783">        DCov dcov = new DCov();</span>
-<span class="fc" id="L784">        dcov.iv3 = sortedD;</span>
-<span class="fc" id="L785">        dcov.indexes = indexes;</span>
-<span class="fc" id="L786">        dcov.sortedX = sortedX;</span>
-<span class="fc" id="L787">        dcov.sortedY = sortedY;</span>
+<span class="fc" id="L799">        DCov dcov = new DCov();</span>
+<span class="fc" id="L800">        dcov.iv3 = sortedD;</span>
+<span class="fc" id="L801">        dcov.indexesToSortX = indexes;</span>
 
-<span class="fc" id="L789">        return dcov;</span>
+<span class="fc" id="L803">        return dcov;</span>
     }
 
     /**
@@ -811,43 +825,53 @@ import java.util.Arrays;
      * 
      * runtime is  O(n*log_2(n)).
      * 
-     * @param x sample of univariate observations of a variable
-     * @param y second sample of univariate observations (can be of another variable)
-     * @return the distance correlation of X and Y.  also returns intermediate data.
+     @param x sample of univariate observations of a variable
+     @param y second sample of univariate observations (can be of another variable)
+     @return the distance correlation of X and Y.  also returns intermediate data.
      * NOTE that the distance correlation is exactly zero if and only if two 
      * random variables are independent.
      */
     public static DCor fastDCor(double[] x, double[] y) {
-<span class="fc" id="L821">        DCor dcor = new DCor();</span>
-<span class="fc" id="L822">        double tol = 1e-15;</span>
-<span class="fc" id="L823">        dcor.covXXSq = fastDCov(x, x);</span>
-<span class="pc bpc" id="L824" title="1 of 2 branches missed.">        if (dcor.covXXSq.covsq &lt; tol) {</span>
-<span class="nc" id="L825">            dcor.corSq = 0;</span>
-<span class="nc" id="L826">            System.err.println(&quot;cov(XX) is 0, so correlation is 0&quot;);</span>
-<span class="nc" id="L827">            return dcor;</span>
+<span class="fc" id="L835">        DCor dcor = new DCor();</span>
+<span class="fc" id="L836">        double tol = 1e-15;</span>
+<span class="fc" id="L837">        dcor.covXXSq = fastDCov(x, x);</span>
+<span class="pc bpc" id="L838" title="1 of 2 branches missed.">        if (dcor.covXXSq.covsq &lt; tol) {</span>
+<span class="nc" id="L839">            dcor.corSq = 0;</span>
+<span class="nc" id="L840">            System.err.println(&quot;cov(XX) is 0, so correlation is 0&quot;);</span>
+<span class="nc" id="L841">            return dcor;</span>
         }
-<span class="fc" id="L829">        dcor.covYYSq = fastDCov(y, y);</span>
-<span class="pc bpc" id="L830" title="1 of 2 branches missed.">        if (dcor.covYYSq.covsq &lt; tol) {</span>
-<span class="nc" id="L831">            dcor.corSq = 0;</span>
-<span class="nc" id="L832">            System.err.println(&quot;cov(YY) is 0, so correlation is 0&quot;);</span>
-<span class="nc" id="L833">            return dcor;</span>
+<span class="fc" id="L843">        dcor.covYYSq = fastDCov(y, y);</span>
+<span class="pc bpc" id="L844" title="1 of 2 branches missed.">        if (dcor.covYYSq.covsq &lt; tol) {</span>
+<span class="nc" id="L845">            dcor.corSq = 0;</span>
+<span class="nc" id="L846">            System.err.println(&quot;cov(YY) is 0, so correlation is 0&quot;);</span>
+<span class="nc" id="L847">            return dcor;</span>
         }
-<span class="fc" id="L835">        dcor.covXYSq = fastDCov(x, y);</span>
-<span class="fc bfc" id="L836" title="All 2 branches covered.">        if (dcor.covXYSq.covsq &lt; tol) {</span>
-<span class="fc" id="L837">            dcor.corSq = 0;</span>
-<span class="fc" id="L838">            System.err.println(&quot;cov(XY) is 0, so correlation is 0&quot;);</span>
-<span class="fc" id="L839">            return dcor;</span>
+<span class="fc" id="L849">        dcor.covXYSq = fastDCov(x, y);</span>
+<span class="fc bfc" id="L850" title="All 2 branches covered.">        if (dcor.covXYSq.covsq &lt; tol) {</span>
+<span class="fc" id="L851">            dcor.corSq = 0;</span>
+<span class="fc" id="L852">            System.err.println(&quot;cov(XY) is 0, so correlation is 0&quot;);</span>
+<span class="fc" id="L853">            return dcor;</span>
         }
-<span class="fc" id="L841">        dcor.corSq = dcor.covXYSq.covsq/Math.sqrt(dcor.covXXSq.covsq * dcor.covYYSq.covsq);</span>
-<span class="fc" id="L842">        return dcor;</span>
+<span class="fc" id="L855">        dcor.corSq = dcor.covXYSq.covsq/Math.sqrt(dcor.covXXSq.covsq * dcor.covYYSq.covsq);</span>
+<span class="fc" id="L856">        return dcor;</span>
     }
   
+    /**
+     *
+     */
     public static class DCov {
+
+        /**
+         *
+         */
         public double covsq;
+
+        /**
+         *
+         */
         public double d;
-        int[] indexes;
-        double[] sortedX;
-        double[] sortedY;
+        int[] indexesToSortX;
+        int[] indexesToSortY;
         
         /**
          * this is a.. of eqn (2) of the paper.
@@ -915,14 +939,11 @@ import java.util.Arrays;
             StringBuilder sb = new StringBuilder();
             sb.append(&quot;d=&quot;).append(d).append(&quot;\n&quot;);
             sb.append(&quot;covsq=&quot;).append(covsq).append(&quot;\n&quot;);
-            if (indexes != null) {
-                sb.append(&quot;indexes=&quot;).append(Arrays.toString(indexes)).append(&quot;\n&quot;);
+            if (indexesToSortX != null) {
+                sb.append(&quot;indexesToSortX=&quot;).append(Arrays.toString(indexesToSortX)).append(&quot;\n&quot;);
             }
-            if (sortedX != null) {
-                sb.append(&quot;sortedX=&quot;).append(FormatArray.toString(sortedX, &quot;%.3f&quot;)).append(&quot;\n&quot;);
-            }
-            if (sortedY != null) {
-                sb.append(&quot;sortedY=&quot;).append(FormatArray.toString(sortedY, &quot;%.3f&quot;)).append(&quot;\n&quot;);
+            if (indexesToSortY != null) {
+                sb.append(&quot;indexesToSortY=&quot;).append(Arrays.toString(indexesToSortY)).append(&quot;\n&quot;);
             }
             if (ai != null) {
                 sb.append(&quot;ai=&quot;).append(FormatArray.toString(ai, &quot;%.3f&quot;)).append(&quot;\n&quot;);
@@ -948,6 +969,10 @@ import java.util.Arrays;
             return sb.toString();
         }
         
+        /**
+         *
+         @return
+         */
         public String toString2() {
             StringBuilder sb = new StringBuilder();
             sb.append(&quot;d=&quot;).append(d).append(&quot;\n&quot;);
@@ -963,10 +988,29 @@ import java.util.Arrays;
         }
     }
   
+    /**
+     *
+     */
     public static class DCor {
+
+        /**
+         *
+         */
         public DCov covXYSq;
+
+        /**
+         *
+         */
         public DCov covXXSq;
+
+        /**
+         *
+         */
         public DCov covYYSq;
+
+        /**
+         *
+         */
         public double corSq;
         @Override
         public String toString() {

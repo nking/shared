@@ -87,8 +87,8 @@
     private static final double SQRT2PI_E7 = 0.0022857491179850424; //sqrt(2*pi)/e**7
     /**
      * 
-     * @param x min allowed value is -1.719e2, max allowed value is 1.716e2
-     * @return 
+     @param x min allowed value is -1.719e2, max allowed value is 1.716e2
+     @return 
      */
     public static final double lanczosGamma9(double x) {
 <span class="pc bpc" id="L94" title="2 of 4 branches missed.">        if (x &lt; -1.719e2 || x &gt;1.716e2) {</span>
@@ -104,41 +104,66 @@
 <span class="fc" id="L104">        return (SQRT2PI_E7 * a) * Math.pow((x+7.5)/Math.E, x + .5);        </span>
     }
     
+    /**
+     *
+     @param x
+     @return
+     */
     public static final double lgamma(double x) {
-<span class="nc" id="L108">        x--;// NOTE:  this is to match python's math.gamma output</span>
-<span class="nc" id="L109">        return _lgamma(x);</span>
+<span class="nc" id="L113">        x--;// NOTE:  this is to match python's math.gamma output</span>
+<span class="nc" id="L114">        return _lgamma(x);</span>
     }
     
+    /**
+     *
+     @param x
+     @return
+     */
     public static final double lanczosLGamma9(double x) {
-<span class="fc" id="L113">        x--;// NOTE:  this is to match python's math.gamma output</span>
-<span class="fc" id="L114">        return _lanczosLGamma9(x);</span>
-    }
-    
-    public static final double lanczosLGamma15(double x) {
-<span class="nc" id="L118">        x--;// NOTE:  this is to match python's math.gamma output</span>
-<span class="nc" id="L119">        return _lanczosLGamma15(x);</span>
-    }
-    
-    public static final double stirlingGamma(double x) {
 <span class="fc" id="L123">        x--;// NOTE:  this is to match python's math.gamma output</span>
-<span class="fc" id="L124">        return _stirlingGamma(x);</span>
+<span class="fc" id="L124">        return _lanczosLGamma9(x);</span>
     }
     
+    /**
+     *
+     @param x
+     @return
+     */
+    public static final double lanczosLGamma15(double x) {
+<span class="nc" id="L133">        x--;// NOTE:  this is to match python's math.gamma output</span>
+<span class="nc" id="L134">        return _lanczosLGamma15(x);</span>
+    }
+    
+    /**
+     *
+     @param x
+     @return
+     */
+    public static final double stirlingGamma(double x) {
+<span class="fc" id="L143">        x--;// NOTE:  this is to match python's math.gamma output</span>
+<span class="fc" id="L144">        return _stirlingGamma(x);</span>
+    }
+    
+    /**
+     *
+     @param x
+     @return
+     */
     public static final double stirlingLGamma(double x) {
-<span class="fc" id="L128">        x--;// NOTE:  this is to match python's math.gamma output</span>
-<span class="fc" id="L129">        return _stirlingLGamma(x);</span>
+<span class="fc" id="L153">        x--;// NOTE:  this is to match python's math.gamma output</span>
+<span class="fc" id="L154">        return _stirlingLGamma(x);</span>
     }
     
     private static final double _lanczosLGamma9(double x) {
-<span class="pc bpc" id="L133" title="1 of 2 branches missed.">        if (x &lt;= -1) return Double.NaN;</span>
-<span class="fc" id="L134">        double a = L9[0];</span>
-<span class="fc bfc" id="L135" title="All 2 branches covered.">        for (int i = 1; i &lt; 9; ++i) {</span>
-<span class="fc" id="L136">            a+= L9[i]/(x+i);</span>
+<span class="pc bpc" id="L158" title="1 of 2 branches missed.">        if (x &lt;= -1) return Double.NaN;</span>
+<span class="fc" id="L159">        double a = L9[0];</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">        for (int i = 1; i &lt; 9; ++i) {</span>
+<span class="fc" id="L161">            a+= L9[i]/(x+i);</span>
         }
-<span class="fc" id="L138">        return (LN_SQRT2PI + Math.log(a) - 7.) + (x+.5)*Math.log((x+7.5)/Math.E);</span>
+<span class="fc" id="L163">        return (LN_SQRT2PI + Math.log(a) - 7.) + (x+.5)*Math.log((x+7.5)/Math.E);</span>
     }
 
-<span class="fc" id="L141">    private static final double[] L15 = {</span>
+<span class="fc" id="L166">    private static final double[] L15 = {</span>
         0.99999999999999709182,
         57.156235665862923517,
         -59.597960355475491248,
@@ -158,21 +183,21 @@
     private static final double G_PLUS_HALF = 607/128. + .5;
  
     private static final double _lanczosLGamma15(double x) {
-<span class="nc bnc" id="L161" title="All 2 branches missed.">        if (x &lt;= -1) return Double.NaN;</span>
-<span class="nc" id="L162">        double a = L15[0];</span>
-<span class="nc bnc" id="L163" title="All 2 branches missed.">        for (int i = 1; i &lt; 15; ++i) {</span>
-<span class="nc" id="L164">            a += L15[i]/(x+i);</span>
+<span class="nc bnc" id="L186" title="All 2 branches missed.">        if (x &lt;= -1) return Double.NaN;</span>
+<span class="nc" id="L187">        double a = L15[0];</span>
+<span class="nc bnc" id="L188" title="All 2 branches missed.">        for (int i = 1; i &lt; 15; ++i) {</span>
+<span class="nc" id="L189">            a += L15[i]/(x+i);</span>
         }
         
-<span class="nc" id="L167">        double tmp = x + G_PLUS_HALF;</span>
-<span class="nc" id="L168">        return (LN_SQRT2PI + Math.log(a)) + (x+.5)*Math.log(tmp) - tmp;</span>
+<span class="nc" id="L192">        double tmp = x + G_PLUS_HALF;</span>
+<span class="nc" id="L193">        return (LN_SQRT2PI + Math.log(a)) + (x+.5)*Math.log(tmp) - tmp;</span>
     }
 
     private static final double g(double x) {
-<span class="nc bnc" id="L172" title="All 2 branches missed.">        if (x &lt;= -1) return Double.NaN;        </span>
-<span class="nc" id="L173">        double tmp = x + 5.2421875;</span>
-<span class="nc" id="L174">        return 0.9189385332046727418 + </span>
-<span class="nc" id="L175">            Math.log(</span>
+<span class="nc bnc" id="L197" title="All 2 branches missed.">        if (x &lt;= -1) return Double.NaN;        </span>
+<span class="nc" id="L198">        double tmp = x + 5.2421875;</span>
+<span class="nc" id="L199">        return 0.9189385332046727418 + </span>
+<span class="nc" id="L200">            Math.log(</span>
                      0.99999999999999709182 +
                      57.156235665862923517/(x+1) +
                      -59.597960355475491248/(x+2) +
@@ -189,16 +214,16 @@
                      -.26190838401581408670e-4/(x+13) +
                      .36899182659531622704e-5/(x+14)
                      ) + 
-<span class="nc" id="L192">            (x+.5)*Math.log(tmp) </span>
+<span class="nc" id="L217">            (x+.5)*Math.log(tmp) </span>
             - tmp;
     }
     
     private static final double f(double x) {
-<span class="nc bnc" id="L197" title="All 2 branches missed.">        if (x &lt;= -1) return Double.NaN;        </span>
-<span class="nc" id="L198">        final double tmp = x + 5.2421875;</span>
+<span class="nc bnc" id="L222" title="All 2 branches missed.">        if (x &lt;= -1) return Double.NaN;        </span>
+<span class="nc" id="L223">        final double tmp = x + 5.2421875;</span>
         //final double saveX = x;
-<span class="nc" id="L200">        return 0.9189385332046727418 </span>
-<span class="nc" id="L201">            + Math.log(</span>
+<span class="nc" id="L225">        return 0.9189385332046727418 </span>
+<span class="nc" id="L226">            + Math.log(</span>
                        0.99999999999999709182 +
                        57.156235665862923517/++x +
                        -59.597960355475491248/++x +
@@ -215,7 +240,7 @@
                        -.26190838401581408670e-4/++x +
                        .36899182659531622704e-5/++x
                        )
-<span class="nc" id="L218">            + (tmp-4.7421875)*Math.log(tmp) - tmp</span>
+<span class="nc" id="L243">            + (tmp-4.7421875)*Math.log(tmp) - tmp</span>
             //+ (saveX + .5)*Math.log(tmp) + /*Math.sqrt(tmp)*/ - tmp
             ;
     }
@@ -230,37 +255,37 @@
         LC3 = 7.936507936507937E-4,
         LC4 = -5.952380952380953E-4;
     private static final double _stirlingGamma(double x) {
-<span class="fc bfc" id="L233" title="All 2 branches covered.">        if (!(x &gt; 0)) { //NOTE: added this to match python's math.gamma</span>
-<span class="pc bpc" id="L234" title="1 of 2 branches missed.">            if (x &lt; 0) {</span>
-<span class="nc" id="L235">                return Double.NaN;</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">        if (!(x &gt; 0)) { //NOTE: added this to match python's math.gamma</span>
+<span class="pc bpc" id="L259" title="1 of 2 branches missed.">            if (x &lt; 0) {</span>
+<span class="nc" id="L260">                return Double.NaN;</span>
             }
-<span class="fc" id="L237">            return 1;</span>
+<span class="fc" id="L262">            return 1;</span>
         }
         final double 
-<span class="fc" id="L240">            r1 = 1./x,</span>
-<span class="fc" id="L241">            r2 = r1*r1,</span>
-<span class="fc" id="L242">            r4 = r2*r2;</span>
+<span class="fc" id="L265">            r1 = 1./x,</span>
+<span class="fc" id="L266">            r2 = r1*r1,</span>
+<span class="fc" id="L267">            r4 = r2*r2;</span>
         
-<span class="fc" id="L244">        return SQRT2PI * Math.sqrt(x) * (1 + SC1*r1 + SC2*r2 + SC3*r1*r2 + SC4*r4) * Math.pow(x/Math.E, x);</span>
+<span class="fc" id="L269">        return SQRT2PI * Math.sqrt(x) * (1 + SC1*r1 + SC2*r2 + SC3*r1*r2 + SC4*r4) * Math.pow(x/Math.E, x);</span>
     }
 
     private static final double _stirlingLGamma(double x) {
-<span class="fc bfc" id="L248" title="All 2 branches covered.">        if (!(x &gt; 0)) { //NOTE: added this to match python's math.gamma</span>
-<span class="pc bpc" id="L249" title="1 of 2 branches missed.">            if (x &lt; 0) {</span>
-<span class="nc" id="L250">                return Double.NaN;</span>
+<span class="fc bfc" id="L273" title="All 2 branches covered.">        if (!(x &gt; 0)) { //NOTE: added this to match python's math.gamma</span>
+<span class="pc bpc" id="L274" title="1 of 2 branches missed.">            if (x &lt; 0) {</span>
+<span class="nc" id="L275">                return Double.NaN;</span>
             }
-<span class="fc" id="L252">            return 0;</span>
+<span class="fc" id="L277">            return 0;</span>
         }
         final double 
-<span class="fc" id="L255">            r1 = 1./x,</span>
-<span class="fc" id="L256">            r2 = r1*r1,</span>
-<span class="fc" id="L257">            r3 = r1*r2,</span>
-<span class="fc" id="L258">            r5 = r2*r3,</span>
-<span class="fc" id="L259">            r7 = r3*r3*r1;</span>
-<span class="fc" id="L260">        return (x+.5)*Math.log(x) -x + LN_SQRT2PI + LC1*r1 + LC2*r3 + LC3*r5 + LC4*r7;</span>
+<span class="fc" id="L280">            r1 = 1./x,</span>
+<span class="fc" id="L281">            r2 = r1*r1,</span>
+<span class="fc" id="L282">            r3 = r1*r2,</span>
+<span class="fc" id="L283">            r5 = r2*r3,</span>
+<span class="fc" id="L284">            r7 = r3*r3*r1;</span>
+<span class="fc" id="L285">        return (x+.5)*Math.log(x) -x + LN_SQRT2PI + LC1*r1 + LC2*r3 + LC3*r5 + LC4*r7;</span>
     }
 
-<span class="fc" id="L263">    static final double FACT[] = {</span>
+<span class="fc" id="L288">    static final double FACT[] = {</span>
         1.0,
         40320.0,
         2.0922789888E13,
@@ -285,27 +310,32 @@
         2.5260757449731984E302,
     };
 
+    /**
+     *
+     @param x
+     @return
+     */
     public static final double factorial(double x) {
-<span class="nc bnc" id="L289" title="All 2 branches missed.">        if (x &lt;= -1) {</span>
-<span class="nc" id="L290">            return Double.NaN;</span>
+<span class="nc bnc" id="L319" title="All 2 branches missed.">        if (x &lt;= -1) {</span>
+<span class="nc" id="L320">            return Double.NaN;</span>
         }
-<span class="nc bnc" id="L292" title="All 2 branches missed.">        if (x &lt;= 170) {</span>
-<span class="nc bnc" id="L293" title="All 2 branches missed.">            if (Math.floor(x) == x) {</span>
-<span class="nc" id="L294">                int n = (int)x;</span>
-<span class="nc" id="L295">                double extra = x;</span>
-<span class="nc bnc" id="L296" title="All 9 branches missed.">                switch (n &amp; 7) {</span>
-<span class="nc" id="L297">                case 7: extra *= --x;</span>
-<span class="nc" id="L298">                case 6: extra *= --x;</span>
-<span class="nc" id="L299">                case 5: extra *= --x;</span>
-<span class="nc" id="L300">                case 4: extra *= --x;</span>
-<span class="nc" id="L301">                case 3: extra *= --x;</span>
-<span class="nc" id="L302">                case 2: extra *= --x;</span>
-<span class="nc" id="L303">                case 1: return FACT[n &gt;&gt; 3] * extra;</span>
-<span class="nc" id="L304">                case 0: return FACT[n &gt;&gt; 3];</span>
+<span class="nc bnc" id="L322" title="All 2 branches missed.">        if (x &lt;= 170) {</span>
+<span class="nc bnc" id="L323" title="All 2 branches missed.">            if (Math.floor(x) == x) {</span>
+<span class="nc" id="L324">                int n = (int)x;</span>
+<span class="nc" id="L325">                double extra = x;</span>
+<span class="nc bnc" id="L326" title="All 9 branches missed.">                switch (n &amp; 7) {</span>
+<span class="nc" id="L327">                case 7: extra *= --x;</span>
+<span class="nc" id="L328">                case 6: extra *= --x;</span>
+<span class="nc" id="L329">                case 5: extra *= --x;</span>
+<span class="nc" id="L330">                case 4: extra *= --x;</span>
+<span class="nc" id="L331">                case 3: extra *= --x;</span>
+<span class="nc" id="L332">                case 2: extra *= --x;</span>
+<span class="nc" id="L333">                case 1: return FACT[n &gt;&gt; 3] * extra;</span>
+<span class="nc" id="L334">                case 0: return FACT[n &gt;&gt; 3];</span>
                 }
             }
         }
-<span class="nc" id="L308">        return Math.exp(lgamma(x+1));</span>
+<span class="nc" id="L338">        return Math.exp(lgamma(x+1));</span>
     }
 
     private static final double
@@ -375,81 +405,81 @@
         double t,y,z,p,p1,p2,p3,q,r,w;
         int i;
 
-<span class="nc" id="L378">        int hx = HI(x);</span>
-<span class="nc" id="L379">        int lx = LO(x);</span>
+<span class="nc" id="L408">        int hx = HI(x);</span>
+<span class="nc" id="L409">        int lx = LO(x);</span>
 
         /* purge off +-inf, NaN, +-0, and negative arguments */
-<span class="nc" id="L382">        int ix = hx&amp;0x7fffffff;</span>
-<span class="nc bnc" id="L383" title="All 2 branches missed.">        if (ix &gt;= 0x7ff00000) return Double.POSITIVE_INFINITY;</span>
-<span class="nc bnc" id="L384" title="All 4 branches missed.">        if ((ix|lx)==0 || hx &lt; 0) return Double.NaN;</span>
-<span class="nc bnc" id="L385" title="All 2 branches missed.">        if (ix&lt;0x3b900000) {	/* |x|&lt;2**-70, return -log(|x|) */</span>
-<span class="nc" id="L386">            return -Math.log(x);</span>
+<span class="nc" id="L412">        int ix = hx&amp;0x7fffffff;</span>
+<span class="nc bnc" id="L413" title="All 2 branches missed.">        if (ix &gt;= 0x7ff00000) return Double.POSITIVE_INFINITY;</span>
+<span class="nc bnc" id="L414" title="All 4 branches missed.">        if ((ix|lx)==0 || hx &lt; 0) return Double.NaN;</span>
+<span class="nc bnc" id="L415" title="All 2 branches missed.">        if (ix&lt;0x3b900000) {	/* |x|&lt;2**-70, return -log(|x|) */</span>
+<span class="nc" id="L416">            return -Math.log(x);</span>
         }
 
         /* purge off 1 and 2 */
-<span class="nc bnc" id="L390" title="All 4 branches missed.">        if((((ix-0x3ff00000)|lx)==0)||(((ix-0x40000000)|lx)==0)) r = 0;</span>
+<span class="nc bnc" id="L420" title="All 4 branches missed.">        if((((ix-0x3ff00000)|lx)==0)||(((ix-0x40000000)|lx)==0)) r = 0;</span>
         /* for x &lt; 2.0 */
-<span class="nc bnc" id="L392" title="All 2 branches missed.">        else if(ix&lt;0x40000000) {</span>
-<span class="nc bnc" id="L393" title="All 2 branches missed.">            if(ix&lt;=0x3feccccc) { 	/* lgamma(x) = lgamma(x+1)-log(x) */</span>
-<span class="nc" id="L394">                r = -Math.log(x);</span>
-<span class="nc bnc" id="L395" title="All 2 branches missed.">                if(ix&gt;=0x3FE76944) {y = one-x; i= 0;}</span>
-<span class="nc bnc" id="L396" title="All 2 branches missed.">                else if(ix&gt;=0x3FCDA661) {y= x-(tc-one); i=1;}</span>
-<span class="nc" id="L397">                else {y = x; i=2;}</span>
+<span class="nc bnc" id="L422" title="All 2 branches missed.">        else if(ix&lt;0x40000000) {</span>
+<span class="nc bnc" id="L423" title="All 2 branches missed.">            if(ix&lt;=0x3feccccc) { 	/* lgamma(x) = lgamma(x+1)-log(x) */</span>
+<span class="nc" id="L424">                r = -Math.log(x);</span>
+<span class="nc bnc" id="L425" title="All 2 branches missed.">                if(ix&gt;=0x3FE76944) {y = one-x; i= 0;}</span>
+<span class="nc bnc" id="L426" title="All 2 branches missed.">                else if(ix&gt;=0x3FCDA661) {y= x-(tc-one); i=1;}</span>
+<span class="nc" id="L427">                else {y = x; i=2;}</span>
             } else {
-<span class="nc" id="L399">                r = zero;</span>
-<span class="nc bnc" id="L400" title="All 2 branches missed.">                if(ix&gt;=0x3FFBB4C3) {y=2.0-x;i=0;} /* [1.7316,2] */</span>
-<span class="nc bnc" id="L401" title="All 2 branches missed.">                else if(ix&gt;=0x3FF3B4C4) {y=x-tc;i=1;} /* [1.23,1.73] */</span>
-<span class="nc" id="L402">                else {y=x-one;i=2;}</span>
+<span class="nc" id="L429">                r = zero;</span>
+<span class="nc bnc" id="L430" title="All 2 branches missed.">                if(ix&gt;=0x3FFBB4C3) {y=2.0-x;i=0;} /* [1.7316,2] */</span>
+<span class="nc bnc" id="L431" title="All 2 branches missed.">                else if(ix&gt;=0x3FF3B4C4) {y=x-tc;i=1;} /* [1.23,1.73] */</span>
+<span class="nc" id="L432">                else {y=x-one;i=2;}</span>
             }
             
-<span class="nc bnc" id="L405" title="All 4 branches missed.">            switch(i) {</span>
+<span class="nc bnc" id="L435" title="All 4 branches missed.">            switch(i) {</span>
             case 0:
-<span class="nc" id="L407">                z = y*y;</span>
-<span class="nc" id="L408">                p1 = a0+z*(a2+z*(a4+z*(a6+z*(a8+z*a10))));</span>
-<span class="nc" id="L409">                p2 = z*(a1+z*(a3+z*(a5+z*(a7+z*(a9+z*a11)))));</span>
-<span class="nc" id="L410">                p  = y*p1+p2;</span>
-<span class="nc" id="L411">                r  += (p-0.5*y); break;</span>
+<span class="nc" id="L437">                z = y*y;</span>
+<span class="nc" id="L438">                p1 = a0+z*(a2+z*(a4+z*(a6+z*(a8+z*a10))));</span>
+<span class="nc" id="L439">                p2 = z*(a1+z*(a3+z*(a5+z*(a7+z*(a9+z*a11)))));</span>
+<span class="nc" id="L440">                p  = y*p1+p2;</span>
+<span class="nc" id="L441">                r  += (p-0.5*y); break;</span>
             case 1:
-<span class="nc" id="L413">                z = y*y;</span>
-<span class="nc" id="L414">                w = z*y;</span>
-<span class="nc" id="L415">                p1 = t0+w*(t3+w*(t6+w*(t9 +w*t12)));	/* parallel comp */</span>
-<span class="nc" id="L416">                p2 = t1+w*(t4+w*(t7+w*(t10+w*t13)));</span>
-<span class="nc" id="L417">                p3 = t2+w*(t5+w*(t8+w*(t11+w*t14)));</span>
-<span class="nc" id="L418">                p  = z*p1-(tt-w*(p2+y*p3));</span>
-<span class="nc" id="L419">                r += (tf + p); break;</span>
+<span class="nc" id="L443">                z = y*y;</span>
+<span class="nc" id="L444">                w = z*y;</span>
+<span class="nc" id="L445">                p1 = t0+w*(t3+w*(t6+w*(t9 +w*t12)));	/* parallel comp */</span>
+<span class="nc" id="L446">                p2 = t1+w*(t4+w*(t7+w*(t10+w*t13)));</span>
+<span class="nc" id="L447">                p3 = t2+w*(t5+w*(t8+w*(t11+w*t14)));</span>
+<span class="nc" id="L448">                p  = z*p1-(tt-w*(p2+y*p3));</span>
+<span class="nc" id="L449">                r += (tf + p); break;</span>
             case 2:	
-<span class="nc" id="L421">                p1 = y*(u0+y*(u1+y*(u2+y*(u3+y*(u4+y*u5)))));</span>
-<span class="nc" id="L422">                p2 = one+y*(v1+y*(v2+y*(v3+y*(v4+y*v5))));</span>
-<span class="nc" id="L423">                r += (-0.5*y + p1/p2);</span>
+<span class="nc" id="L451">                p1 = y*(u0+y*(u1+y*(u2+y*(u3+y*(u4+y*u5)))));</span>
+<span class="nc" id="L452">                p2 = one+y*(v1+y*(v2+y*(v3+y*(v4+y*v5))));</span>
+<span class="nc" id="L453">                r += (-0.5*y + p1/p2);</span>
             }
         }
-<span class="nc bnc" id="L426" title="All 2 branches missed.">        else if(ix&lt;0x40200000) { 			/* x &lt; 8.0 */</span>
-<span class="nc" id="L427">            i = (int)x;</span>
-<span class="nc" id="L428">            t = zero;</span>
-<span class="nc" id="L429">            y = x-(double)i;</span>
-<span class="nc" id="L430">            p = y*(s0+y*(s1+y*(s2+y*(s3+y*(s4+y*(s5+y*s6))))));</span>
-<span class="nc" id="L431">            q = one+y*(r1+y*(r2+y*(r3+y*(r4+y*(r5+y*r6)))));</span>
-<span class="nc" id="L432">            r = half*y+p/q;</span>
-<span class="nc" id="L433">            z = one;	/* lgamma(1+s) = log(s) + lgamma(s) */</span>
-<span class="nc bnc" id="L434" title="All 6 branches missed.">            switch(i) {</span>
-<span class="nc" id="L435">            case 7: z *= (y+6.0);	/* FALLTHRU */</span>
-<span class="nc" id="L436">            case 6: z *= (y+5.0);	/* FALLTHRU */</span>
-<span class="nc" id="L437">            case 5: z *= (y+4.0);	/* FALLTHRU */</span>
-<span class="nc" id="L438">            case 4: z *= (y+3.0);	/* FALLTHRU */</span>
-<span class="nc" id="L439">            case 3: z *= (y+2.0);	/* FALLTHRU */</span>
-<span class="nc" id="L440">                r += Math.log(z); break;</span>
+<span class="nc bnc" id="L456" title="All 2 branches missed.">        else if(ix&lt;0x40200000) { 			/* x &lt; 8.0 */</span>
+<span class="nc" id="L457">            i = (int)x;</span>
+<span class="nc" id="L458">            t = zero;</span>
+<span class="nc" id="L459">            y = x-(double)i;</span>
+<span class="nc" id="L460">            p = y*(s0+y*(s1+y*(s2+y*(s3+y*(s4+y*(s5+y*s6))))));</span>
+<span class="nc" id="L461">            q = one+y*(r1+y*(r2+y*(r3+y*(r4+y*(r5+y*r6)))));</span>
+<span class="nc" id="L462">            r = half*y+p/q;</span>
+<span class="nc" id="L463">            z = one;	/* lgamma(1+s) = log(s) + lgamma(s) */</span>
+<span class="nc bnc" id="L464" title="All 6 branches missed.">            switch(i) {</span>
+<span class="nc" id="L465">            case 7: z *= (y+6.0);	/* FALLTHRU */</span>
+<span class="nc" id="L466">            case 6: z *= (y+5.0);	/* FALLTHRU */</span>
+<span class="nc" id="L467">            case 5: z *= (y+4.0);	/* FALLTHRU */</span>
+<span class="nc" id="L468">            case 4: z *= (y+3.0);	/* FALLTHRU */</span>
+<span class="nc" id="L469">            case 3: z *= (y+2.0);	/* FALLTHRU */</span>
+<span class="nc" id="L470">                r += Math.log(z); break;</span>
             }
             /* 8.0 &lt;= x &lt; 2**58 */
-<span class="nc bnc" id="L443" title="All 2 branches missed.">        } else if (ix &lt; 0x43900000) {</span>
-<span class="nc" id="L444">            t = Math.log(x);</span>
-<span class="nc" id="L445">            z = one/x;</span>
-<span class="nc" id="L446">            y = z*z;</span>
-<span class="nc" id="L447">            w = w0+z*(w1+y*(w2+y*(w3+y*(w4+y*(w5+y*w6)))));</span>
-<span class="nc" id="L448">            r = (x-half)*(t-one)+w;</span>
+<span class="nc bnc" id="L473" title="All 2 branches missed.">        } else if (ix &lt; 0x43900000) {</span>
+<span class="nc" id="L474">            t = Math.log(x);</span>
+<span class="nc" id="L475">            z = one/x;</span>
+<span class="nc" id="L476">            y = z*z;</span>
+<span class="nc" id="L477">            w = w0+z*(w1+y*(w2+y*(w3+y*(w4+y*(w5+y*w6)))));</span>
+<span class="nc" id="L478">            r = (x-half)*(t-one)+w;</span>
         } else 
             /* 2**58 &lt;= x &lt;= inf */
-<span class="nc" id="L451">            r =  x*(Math.log(x)-one);</span>
-<span class="nc" id="L452">        return r;</span>
+<span class="nc" id="L481">            r =  x*(Math.log(x)-one);</span>
+<span class="nc" id="L482">        return r;</span>
     }
     
     /**
@@ -465,17 +495,17 @@
         2) With a shape parameter α = k and an inverse scale parameter β = 1/θ, 
            called a rate parameter.
         3) With a shape parameter k and a mean parameter μ = kθ = α/β.
-     * following https://en.wikipedia.org/wiki/Gamma_distribution
-     * 
-     * @param x
-     * @param shape
-     * @param scale
-     * @return 
+       following https://en.wikipedia.org/wiki/Gamma_distribution
+       &lt;/pre&gt;
+     @param x
+     @param shape
+     @param scale
+     @return 
      */
     public static double gammaScaleDistributionPDF(double x, double shape, double scale) {
-<span class="nc" id="L476">        double numer = Math.pow(x, shape - 1.) * Math.exp(-x/scale);</span>
-<span class="nc" id="L477">        double denom = Math.pow(scale, shape) * Gamma.lanczosGamma9(shape);</span>
-<span class="nc" id="L478">        return numer/denom;</span>
+<span class="nc" id="L506">        double numer = Math.pow(x, shape - 1.) * Math.exp(-x/scale);</span>
+<span class="nc" id="L507">        double denom = Math.pow(scale, shape) * Gamma.lanczosGamma9(shape);</span>
+<span class="nc" id="L508">        return numer/denom;</span>
     }
     
     /**
@@ -492,16 +522,16 @@
            called a rate parameter.
         3) With a shape parameter k and a mean parameter μ = kθ = α/β.
      * following https://en.wikipedia.org/wiki/Gamma_distribution
-     * 
-     * @param x
-     * @param shape
-     * @param rate
-     * @return 
+       &lt;/pre&gt;
+     @param x
+     @param shape
+     @param rate
+     @return 
      */
     public static double gammaRateDistributionPDF(double x, double shape, double rate) {
-<span class="nc" id="L502">        double numer = Math.pow(rate, shape) * Math.pow(x, shape - 1.) * Math.exp(-x * rate);</span>
-<span class="nc" id="L503">        double denom = Gamma.lanczosGamma9(shape);</span>
-<span class="nc" id="L504">        return numer/denom;</span>
+<span class="nc" id="L532">        double numer = Math.pow(rate, shape) * Math.pow(x, shape - 1.) * Math.exp(-x * rate);</span>
+<span class="nc" id="L533">        double denom = Gamma.lanczosGamma9(shape);</span>
+<span class="nc" id="L534">        return numer/denom;</span>
     }
  
     /**

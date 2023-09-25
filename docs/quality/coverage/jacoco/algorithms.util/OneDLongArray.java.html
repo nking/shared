@@ -9,70 +9,39 @@ import java.util.Arrays;
  * @author nichole
  */
 public class OneDLongArray {
+
+    /**
+     *
+     */
     public long[] a;
-<span class="nc" id="L13">    public OneDLongArray(long[] t) {</span>
-<span class="nc" id="L14">        a = t;</span>
-<span class="nc" id="L15">    }</span>
+
+    /**
+     *
+     @param t
+     */
+<span class="nc" id="L22">    public OneDLongArray(long[] t) {</span>
+<span class="nc" id="L23">        a = t;</span>
+<span class="nc" id="L24">    }</span>
     
     @Override
     public boolean equals(Object obj) {
         
-<span class="nc bnc" id="L20" title="All 2 branches missed.">        if (!(obj instanceof OneDLongArray)) {</span>
-<span class="nc" id="L21">            return false;    </span>
+<span class="nc bnc" id="L29" title="All 2 branches missed.">        if (!(obj instanceof OneDLongArray)) {</span>
+<span class="nc" id="L30">            return false;    </span>
         }
-<span class="nc" id="L23">        OneDLongArray other = (OneDLongArray)obj;</span>
+<span class="nc" id="L32">        OneDLongArray other = (OneDLongArray)obj;</span>
         
-<span class="nc" id="L25">        return Arrays.equals(a, other.a);</span>
+<span class="nc" id="L34">        return Arrays.equals(a, other.a);</span>
     }
 
     @Override
     public int hashCode() {
-        
-<span class="nc" id="L31">        int hash = fnvHashCode();</span>
-
-<span class="nc" id="L33">        return hash;</span>
-    }
-
-    protected final static int fnv321aInit = 0x811c9dc5;
-    protected final static int fnv32Prime = 0x01000193;
-
-    protected int fnvHashCode() {
-
-        /*
-         * hash = offset_basis
-         * for each octet_of_data to be hashed
-         *     hash = hash xor octet_of_data
-         *     hash = hash * FNV_prime
-         * return hash
-         *
-         * Public domain:  http://www.isthe.com/chongo/src/fnv/hash_32a.c
-         */
-
-<span class="nc" id="L51">        int mask = (1 &lt;&lt; 31) - 1;</span>
-<span class="nc" id="L52">        int shift = 32;</span>
-<span class="nc" id="L53">        int sum = fnv321aInit;</span>
-        long b0, b1;
-        
-<span class="nc bnc" id="L56" title="All 2 branches missed.">        for (int i = 0; i &lt; a.length; ++i) {</span>
-
-<span class="nc" id="L58">            b0 = a[i] &amp; mask;</span>
-<span class="nc" id="L59">            b1 = (a[i] &gt;&gt; shift) &amp; mask;</span>
-            
-            // xor the bottom with the current octet.
-<span class="nc" id="L62">            sum ^= b0;</span>
-            // multiply by the 32 bit FNV magic prime mod 2^32
-<span class="nc" id="L64">            sum *= fnv32Prime;</span>
-            
-<span class="nc" id="L66">            sum ^= b1;</span>
-<span class="nc" id="L67">            sum *= fnv32Prime;</span>
-        }
-        
-<span class="nc" id="L70">        return sum;</span>
+<span class="nc" id="L39">        return FNVHash.hash64a(a);</span>
     }
 
     @Override
     public String toString() {
-<span class="nc" id="L75">        return Arrays.toString(a);</span>
+<span class="nc" id="L44">        return Arrays.toString(a);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

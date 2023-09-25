@@ -9,6 +9,9 @@ import java.util.Arrays;
  */
 <span class="nc" id="L10">public class Helper {</span>
    
+    /**
+     *
+     */
     public static class FunctionPoly implements IFunction {
 
         /**
@@ -20,6 +23,11 @@ import java.util.Arrays;
          */
         final double[] yp;
         
+        /**
+         *
+         @param xData
+         @param yData
+         */
         public FunctionPoly(double[] xData, double[] yData) {
             if (xData.length != yData.length) {
                 throw new IllegalArgumentException(
@@ -31,9 +39,9 @@ import java.util.Arrays;
         
         /**
          * 
-         * @param coeffs input and output array holding the polynomial coefficients
+         @param coeffs input and output array holding the polynomial coefficients
          * before and after this function.
-         * @return 
+         @return 
          */
         @Override
         public double f(double[] coeffs) {
@@ -167,12 +175,12 @@ import java.util.Arrays;
     }
 
     private static void printFormattedArray(double[] a) {
-<span class="nc" id="L170">        System.out.print(&quot;[&quot;);</span>
-<span class="nc bnc" id="L171" title="All 2 branches missed.">        for (double m : a) {</span>
-<span class="nc" id="L172">            System.out.format(&quot;%.3f, &quot;, (float)m);</span>
+<span class="nc" id="L178">        System.out.print(&quot;[&quot;);</span>
+<span class="nc bnc" id="L179" title="All 2 branches missed.">        for (double m : a) {</span>
+<span class="nc" id="L180">            System.out.format(&quot;%.3f, &quot;, (float)m);</span>
         }
-<span class="nc" id="L174">        System.out.println(&quot;]&quot;);</span>
-<span class="nc" id="L175">    }</span>
+<span class="nc" id="L182">        System.out.println(&quot;]&quot;);</span>
+<span class="nc" id="L183">    }</span>
     
     /**
      * adapted from dlib optimization.h Copyright (C) 2008 Davis E. King
@@ -184,10 +192,20 @@ import java.util.Arrays;
         private final IFunction f;
         private final double eps;
    
+        /**
+         *
+         @param f
+         */
         public CentralDifferences(IFunction f) {
             this.f = f;
             this.eps = 1.e-7;
         }
+
+        /**
+         *
+         @param f
+         @param eps
+         */
         public CentralDifferences(IFunction f, double eps) {
             this.f = f;
             this.eps = eps;
@@ -208,6 +226,8 @@ import java.util.Arrays;
         adapted from dlib optimization.h
         Copyright (C) 2008  Davis E. King (davis@dlib.net)
         License: Boost Software License   See LICENSE.txt for the full license.
+         @param coeffs
+         @return 
         */
         private double[] derivative(double[] coeffs) {
         

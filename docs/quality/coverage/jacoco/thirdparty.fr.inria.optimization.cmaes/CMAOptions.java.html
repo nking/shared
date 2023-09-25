@@ -138,7 +138,7 @@ import java.util.Properties;
 
         /** This is the only place where the reading of a new option needs to be declared 
          * 
-         * @param properties
+         @param properties
          */
         void setOptions(Properties properties) {
             String s;
@@ -172,36 +172,40 @@ import java.util.Properties;
 		 *  if the string is null or empty. This method should become generic with respect to the
 		 *  type of second argument.  
 		 *  @param s string where the first token is read from
-		 *  @param def double default value, in case the string is empty*/
+		 *  @param def double default value, in case the string is empty
+     @return */
 		public Double getFirstToken(String s, Double def) {
-<span class="pc bpc" id="L177" title="1 of 2 branches missed.">		    if (s == null)</span>
-<span class="nc" id="L178">		        return def;</span>
-<span class="fc" id="L179">		    String[] ar = s.split(&quot;\\s+&quot;);</span>
-<span class="pc bpc" id="L180" title="1 of 2 branches missed.">		    if (ar[0].equals(&quot;&quot;)) </span>
-<span class="nc" id="L181">		        return def;</span>
-<span class="fc" id="L182">		    return Double.valueOf(ar[0]);</span>
+<span class="pc bpc" id="L178" title="1 of 2 branches missed.">		    if (s == null)</span>
+<span class="nc" id="L179">		        return def;</span>
+<span class="fc" id="L180">		    String[] ar = s.split(&quot;\\s+&quot;);</span>
+<span class="pc bpc" id="L181" title="1 of 2 branches missed.">		    if (ar[0].equals(&quot;&quot;)) </span>
+<span class="nc" id="L182">		        return def;</span>
+<span class="fc" id="L183">		    return Double.valueOf(ar[0]);</span>
 		}
 
-		/** should become generic with type argument?  */
+		/** should become generic with type argument?
+     @param s
+     @return  */
 		public String getFirstToken(String s) {
-<span class="fc bfc" id="L187" title="All 2 branches covered.">		    if (s == null)</span>
-<span class="fc" id="L188">		        return &quot;&quot;; </span>
-<span class="fc" id="L189">		    String[] ar = s.split(new String(&quot;\\s+&quot;));</span>
-<span class="fc" id="L190">		    return ar[0];</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">		    if (s == null)</span>
+<span class="fc" id="L191">		        return &quot;&quot;; </span>
+<span class="fc" id="L192">		    String[] ar = s.split(new String(&quot;\\s+&quot;));</span>
+<span class="fc" id="L193">		    return ar[0];</span>
 		}
 
 		/** Returns the Integer value of the first token of a string s or the default, 
 		 *  if the string is null or empty. This method should become generic with respect to the
 		 *  type of second argument.  
 		 *  @param s string where the first token is read from
-		 *  @param def Integer default value, in case the string is empty*/
+		 *  @param def Integer default value, in case the string is empty
+     @return */
 		public Integer getFirstToken(String s, Integer def) {
-<span class="pc bpc" id="L199" title="1 of 2 branches missed.">		    if (s == null)</span>
-<span class="nc" id="L200">		        return def;</span>
-<span class="fc" id="L201">		    String[] ar = s.split(&quot;\\s+&quot;);</span>
-<span class="pc bpc" id="L202" title="1 of 2 branches missed.">		    if (ar[0].equals(&quot;&quot;)) </span>
-<span class="nc" id="L203">		        return def;</span>
-<span class="fc" id="L204">		    return Integer.valueOf(ar[0]);</span>
+<span class="pc bpc" id="L203" title="1 of 2 branches missed.">		    if (s == null)</span>
+<span class="nc" id="L204">		        return def;</span>
+<span class="fc" id="L205">		    String[] ar = s.split(&quot;\\s+&quot;);</span>
+<span class="pc bpc" id="L206" title="1 of 2 branches missed.">		    if (ar[0].equals(&quot;&quot;)) </span>
+<span class="nc" id="L207">		        return def;</span>
+<span class="fc" id="L208">		    return Integer.valueOf(ar[0]);</span>
 		}
 
 		//    public &lt;T&gt; T getFirstToken(String s, T def) {
@@ -216,42 +220,45 @@ import java.util.Properties;
 		    private String removeComments(String s) {
 		        int i;
 		        // remove trailing comments
-<span class="fc" id="L219">		        i = s.indexOf(&quot;#&quot;);</span>
-<span class="pc bpc" id="L220" title="1 of 2 branches missed.">		        if (i &gt;= 0)</span>
-<span class="fc" id="L221">		            s = s.substring(0,i);</span>
-<span class="fc" id="L222">		        i = s.indexOf(&quot;!&quot;);</span>
-<span class="pc bpc" id="L223" title="1 of 2 branches missed.">		        if (i &gt;= 0)</span>
-<span class="nc" id="L224">		            s = s.substring(0,i);</span>
-<span class="fc" id="L225">		        i = s.indexOf(&quot;%&quot;);</span>
-<span class="pc bpc" id="L226" title="1 of 2 branches missed.">		        if (i &gt;= 0)</span>
-<span class="nc" id="L227">		            s = s.substring(0,i);</span>
-<span class="fc" id="L228">		        i = s.indexOf(&quot;//&quot;);</span>
-<span class="pc bpc" id="L229" title="1 of 2 branches missed.">		        if (i &gt;= 0)</span>
-<span class="nc" id="L230">		            s = s.substring(0,i);</span>
-<span class="fc" id="L231">		        return s;</span>
+<span class="fc" id="L223">		        i = s.indexOf(&quot;#&quot;);</span>
+<span class="pc bpc" id="L224" title="1 of 2 branches missed.">		        if (i &gt;= 0)</span>
+<span class="fc" id="L225">		            s = s.substring(0,i);</span>
+<span class="fc" id="L226">		        i = s.indexOf(&quot;!&quot;);</span>
+<span class="pc bpc" id="L227" title="1 of 2 branches missed.">		        if (i &gt;= 0)</span>
+<span class="nc" id="L228">		            s = s.substring(0,i);</span>
+<span class="fc" id="L229">		        i = s.indexOf(&quot;%&quot;);</span>
+<span class="pc bpc" id="L230" title="1 of 2 branches missed.">		        if (i &gt;= 0)</span>
+<span class="nc" id="L231">		            s = s.substring(0,i);</span>
+<span class="fc" id="L232">		        i = s.indexOf(&quot;//&quot;);</span>
+<span class="pc bpc" id="L233" title="1 of 2 branches missed.">		        if (i &gt;= 0)</span>
+<span class="nc" id="L234">		            s = s.substring(0,i);</span>
+<span class="fc" id="L235">		        return s;</span>
 		    }
 
-		/** Returns def if s==null or empty, code dublicate, should become generic */
+		/** Returns def if s==null or empty, code dublicate, should become generic
+     @param s
+     @param def
+     @return  */
 		private Long getFirstToken(String s, Long def) {
-<span class="pc bpc" id="L236" title="1 of 2 branches missed.">		    if (s == null)</span>
-<span class="fc" id="L237">		        return def;</span>
-<span class="nc" id="L238">		    String[] ar = removeComments(s).split(&quot;\\s+&quot;);</span>
-<span class="nc bnc" id="L239" title="All 2 branches missed.">		    if (ar[0].equals(&quot;&quot;)) </span>
-<span class="nc" id="L240">		        return def;</span>
-<span class="nc" id="L241">		    return Long.valueOf(ar[0]);</span>
+<span class="pc bpc" id="L243" title="1 of 2 branches missed.">		    if (s == null)</span>
+<span class="fc" id="L244">		        return def;</span>
+<span class="nc" id="L245">		    String[] ar = removeComments(s).split(&quot;\\s+&quot;);</span>
+<span class="nc bnc" id="L246" title="All 2 branches missed.">		    if (ar[0].equals(&quot;&quot;)) </span>
+<span class="nc" id="L247">		        return def;</span>
+<span class="nc" id="L248">		    return Long.valueOf(ar[0]);</span>
 		}
 
 		String[] getAllToken(String s) {
 		    // split w.r.t. white spaces regexp \s+
-<span class="fc" id="L246">		    return removeComments(s).split(&quot;\\s+&quot;);</span>
+<span class="fc" id="L253">		    return removeComments(s).split(&quot;\\s+&quot;);</span>
 		}
 
 		double[] parseDouble(String[] ars) {
-<span class="fc" id="L250">		    double[] ard = new double[ars.length];</span>
-<span class="fc bfc" id="L251" title="All 2 branches covered.">		    for(int i = 0; i &lt; ars.length; ++i) {</span>
-<span class="fc" id="L252">		        ard[i] = Double.parseDouble(ars[i]);</span>
+<span class="fc" id="L257">		    double[] ard = new double[ars.length];</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">		    for(int i = 0; i &lt; ars.length; ++i) {</span>
+<span class="fc" id="L259">		        ard[i] = Double.parseDouble(ars[i]);</span>
 		    }
-<span class="fc" id="L254">		    return ard;</span>
+<span class="fc" id="L261">		    return ard;</span>
 		}
     }
 

@@ -65,7 +65,7 @@ public class Queue&lt;Item&gt; implements Iterable&lt;Item&gt; {
     /**
      * Returns true if this queue is empty.
      *
-     * @return &lt;tt&gt;true&lt;/tt&gt; if this queue is empty; &lt;tt&gt;false&lt;/tt&gt; otherwise
+     @return &lt;tt&gt;true&lt;/tt&gt; if this queue is empty; &lt;tt&gt;false&lt;/tt&gt; otherwise
      */
     public boolean isEmpty() {
 <span class="fc bfc" id="L71" title="All 2 branches covered.">        return first == null;</span>
@@ -74,7 +74,7 @@ public class Queue&lt;Item&gt; implements Iterable&lt;Item&gt; {
     /**
      * Returns the number of items in this queue.
      *
-     * @return the number of items in this queue
+     @return the number of items in this queue
      */
     public int size() {
 <span class="fc" id="L80">        return n;</span>
@@ -83,7 +83,7 @@ public class Queue&lt;Item&gt; implements Iterable&lt;Item&gt; {
     /**
      * Returns the item least recently added to this queue.
      *
-     * @return the item least recently added to this queue
+     @return the item least recently added to this queue
      * @throws NoSuchElementException if this queue is empty
      */
     public Item peek() {
@@ -94,7 +94,7 @@ public class Queue&lt;Item&gt; implements Iterable&lt;Item&gt; {
     /**
      * Adds the item to this queue.
      *
-     * @param  item the item to add
+     @param  item the item to add
      */
     public void enqueue(Item item) {
 <span class="fc" id="L100">        Node&lt;Item&gt; oldlast = last;</span>
@@ -109,7 +109,7 @@ public class Queue&lt;Item&gt; implements Iterable&lt;Item&gt; {
     /**
      * Removes and returns the item on this queue that was least recently added.
      *
-     * @return the item on this queue that was least recently added
+     @return the item on this queue that was least recently added
      * @throws NoSuchElementException if this queue is empty
      */
     public Item dequeue() {
@@ -124,7 +124,7 @@ public class Queue&lt;Item&gt; implements Iterable&lt;Item&gt; {
     /**
      * Returns a string representation of this queue.
      *
-     * @return the sequence of items in FIFO order, separated by spaces
+     @return the sequence of items in FIFO order, separated by spaces
      */
     public String toString() {
 <span class="nc" id="L130">        StringBuilder s = new StringBuilder();</span>
@@ -136,7 +136,7 @@ public class Queue&lt;Item&gt; implements Iterable&lt;Item&gt; {
     /**
      * Returns an iterator that iterates over the items in this queue in FIFO order.
      *
-     * @return an iterator that iterates over the items in this queue in FIFO order
+     @return an iterator that iterates over the items in this queue in FIFO order
      */
     public Iterator&lt;Item&gt; iterator()  {
 <span class="fc" id="L142">        return new ListIterator&lt;Item&gt;(first);  </span>
@@ -164,6 +164,7 @@ public class Queue&lt;Item&gt; implements Iterable&lt;Item&gt; {
 
     /**
      * Unit tests the &lt;tt&gt;Queue&lt;/tt&gt; data type.
+     @param args
      */
     public static void main(String[] args) {
         
@@ -177,6 +178,6 @@ public class Queue&lt;Item&gt; implements Iterable&lt;Item&gt; {
         }
         System.out.println(&quot;(&quot; + queue.size() + &quot; left on queue)&quot;);
         */
-<span class="nc" id="L180">    }</span>
+<span class="nc" id="L181">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -15,108 +15,133 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
 
 import java.util.Map;
 
-<span class="nc" id="L18">public class Laplacian {</span>
+/**
+ *
+ * @author nichole
+ */
+<span class="nc" id="L22">public class Laplacian {</span>
 
     //TODO: include normalizations and pre-weighted edges
 
     /**
-     * calculate L = D - A.
+     * calculate L = D - A where D is a diagonal matrix.
      * For L_i_j, D_i_i is the number of edges into node i and A_i_j is the adjacency of nodes i and j (== 1 if adjacent, else 0).
-     * @param g
-     * @return laplacian for D holding in-degrees.
+     @param g
+     @return laplacian for D holding in-degrees.
      */
     public static double[][] createInDegreeLaplacian(TIntObjectMap&lt;TIntSet&gt; g) {
         // to get edges into a vertex:
-<span class="nc" id="L30">        TIntObjectMap&lt;TIntSet&gt; rev = MatrixUtil.createReverseMap(g);</span>
-<span class="nc" id="L31">        return createOutDegreeLaplacian(rev);</span>
-    }
-
-    public static LinkedSparseMatrix createInDegreeLaplacianSparse(TIntObjectMap&lt;TIntSet&gt; g) {
-        // to get edges into a vertex:
-<span class="fc" id="L36">        TIntObjectMap&lt;TIntSet&gt; rev = MatrixUtil.createReverseMap(g);</span>
-<span class="fc" id="L37">        return createOutDegreeLaplacianSparse(rev);</span>
-    }
-
-    public static LinkedSparseMatrix createOutDegreeLaplacianSparse(TIntObjectMap&lt;TIntSet&gt; g) {
-
-<span class="fc" id="L42">        int[] minMax = GraphUtil.minAndMaxVertexNumbers(g);</span>
-<span class="fc" id="L43">        int n = minMax[1] + 1;</span>
-<span class="fc" id="L44">        LinkedSparseMatrix lS = new LinkedSparseMatrix(n, n);</span>
-
-        int u, v;
-        TIntSet vSet;
-<span class="fc" id="L48">        TIntObjectIterator&lt;TIntSet&gt; iter = g.iterator();</span>
-        TIntIterator iter2;
-<span class="fc bfc" id="L50" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
-<span class="fc" id="L51">            iter.advance();</span>
-<span class="fc" id="L52">            u = iter.key();</span>
-<span class="fc" id="L53">            iter2 = iter.value().iterator();</span>
-<span class="fc bfc" id="L54" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
-<span class="fc" id="L55">                v = iter2.next();</span>
-                // add to the in-degree of u
-<span class="fc" id="L57">                lS.add(u, u, 1);</span>
-                // OR lS.set(u, u, lS.get(u, u) + 1);
-                // set u to v -1
-<span class="fc" id="L60">                lS.set(u, v, -1);</span>
-            }
-        }
-
-<span class="fc" id="L64">        return lS;</span>
-    }
-
-    public static double[][] createOutDegreeLaplacian(TIntObjectMap&lt;TIntSet&gt; g) {
-
-<span class="nc" id="L69">        int[] minMax = GraphUtil.minAndMaxVertexNumbers(g);</span>
-<span class="nc" id="L70">        int n = minMax[1] + 1;</span>
-
-<span class="nc" id="L72">        double[][] lM = MatrixUtil.zeros(n, n);</span>
-        int u, v;
-        TIntSet vSet;
-<span class="nc" id="L75">        TIntObjectIterator&lt;TIntSet&gt; iter = g.iterator();</span>
-        TIntIterator iter2;
-<span class="nc bnc" id="L77" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
-<span class="nc" id="L78">            iter.advance();</span>
-<span class="nc" id="L79">            u = iter.key();</span>
-<span class="nc" id="L80">            iter2 = iter.value().iterator();</span>
-<span class="nc bnc" id="L81" title="All 2 branches missed.">            while (iter2.hasNext()) {</span>
-<span class="nc" id="L82">                v = iter2.next();</span>
-                // add to the in-degree of u
-<span class="nc" id="L84">                lM[u][u] += 1;</span>
-                // set u to v -1
-<span class="nc" id="L86">                lM[u][v] = -1;</span>
-            }
-        }
-<span class="nc" id="L89">        return lM;</span>
-    }
-
-    public static double[][] createInDegreeLaplacian(SimpleLinkedListNode[] g) {
-<span class="nc" id="L93">        TIntObjectMap&lt;TIntSet&gt; g2 = GraphUtil.convertGraph(g);</span>
-<span class="nc" id="L94">        return createInDegreeLaplacian(g2);</span>
+<span class="nc" id="L34">        TIntObjectMap&lt;TIntSet&gt; rev = MatrixUtil.createReverseMap(g);</span>
+<span class="nc" id="L35">        return createOutDegreeLaplacian(rev);</span>
     }
 
     /**
-     * calculate the 2nd smallest eigenvector of undirected graph g.  it approximates the smallest cut in the graph.
-     * @param g
-     * @return
+     *
+     @param g
+     @return
+     */
+    public static LinkedSparseMatrix createInDegreeLaplacianSparse(TIntObjectMap&lt;TIntSet&gt; g) {
+        // to get edges into a vertex:
+<span class="fc" id="L45">        TIntObjectMap&lt;TIntSet&gt; rev = MatrixUtil.createReverseMap(g);</span>
+<span class="fc" id="L46">        return createOutDegreeLaplacianSparse(rev);</span>
+    }
+
+    /**
+     *
+     @param g
+     @return
+     */
+    public static LinkedSparseMatrix createOutDegreeLaplacianSparse(TIntObjectMap&lt;TIntSet&gt; g) {
+
+<span class="fc" id="L56">        int[] minMax = GraphUtil.minAndMaxVertexNumbers(g);</span>
+<span class="fc" id="L57">        int n = minMax[1] + 1;</span>
+<span class="fc" id="L58">        LinkedSparseMatrix lS = new LinkedSparseMatrix(n, n);</span>
+
+        int u, v;
+        TIntSet vSet;
+<span class="fc" id="L62">        TIntObjectIterator&lt;TIntSet&gt; iter = g.iterator();</span>
+        TIntIterator iter2;
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L65">            iter.advance();</span>
+<span class="fc" id="L66">            u = iter.key();</span>
+<span class="fc" id="L67">            iter2 = iter.value().iterator();</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
+<span class="fc" id="L69">                v = iter2.next();</span>
+                // add to the in-degree of u
+<span class="fc" id="L71">                lS.add(u, u, 1);</span>
+                // OR lS.set(u, u, lS.get(u, u) + 1);
+                // set u to v -1
+<span class="fc" id="L74">                lS.set(u, v, -1);</span>
+            }
+        }
+
+<span class="fc" id="L78">        return lS;</span>
+    }
+
+    /**
+     *
+     @param g
+     @return
+     */
+    public static double[][] createOutDegreeLaplacian(TIntObjectMap&lt;TIntSet&gt; g) {
+
+<span class="nc" id="L88">        int[] minMax = GraphUtil.minAndMaxVertexNumbers(g);</span>
+<span class="nc" id="L89">        int n = minMax[1] + 1;</span>
+
+<span class="nc" id="L91">        double[][] lM = MatrixUtil.zeros(n, n);</span>
+        int u, v;
+        TIntSet vSet;
+<span class="nc" id="L94">        TIntObjectIterator&lt;TIntSet&gt; iter = g.iterator();</span>
+        TIntIterator iter2;
+<span class="nc bnc" id="L96" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
+<span class="nc" id="L97">            iter.advance();</span>
+<span class="nc" id="L98">            u = iter.key();</span>
+<span class="nc" id="L99">            iter2 = iter.value().iterator();</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">            while (iter2.hasNext()) {</span>
+<span class="nc" id="L101">                v = iter2.next();</span>
+                // add to the in-degree of u
+<span class="nc" id="L103">                lM[u][u] += 1;</span>
+                // set u to v -1
+<span class="nc" id="L105">                lM[u][v] = -1;</span>
+            }
+        }
+<span class="nc" id="L108">        return lM;</span>
+    }
+
+    /**
+     *
+     @param g
+     @return
+     */
+    public static double[][] createInDegreeLaplacian(SimpleLinkedListNode[] g) {
+<span class="nc" id="L117">        TIntObjectMap&lt;TIntSet&gt; g2 = GraphUtil.convertGraph(g);</span>
+<span class="nc" id="L118">        return createInDegreeLaplacian(g2);</span>
+    }
+
+    /**
+     * calculate the 2nd smallest eigenvector of the Laplacian of undirected graph g.
+     * it approximates the smallest cut in the graph.
+     @param g
+     @return
      */
     public static double[] calculateFieldlerVector(TIntObjectMap&lt;TIntSet&gt; g) {
-<span class="nc" id="L103">        LinkedSparseMatrix lS = Laplacian.createInDegreeLaplacianSparse(g);</span>
+<span class="nc" id="L128">        LinkedSparseMatrix lS = Laplacian.createInDegreeLaplacianSparse(g);</span>
         //System.out.printf(&quot;L=%s\n&quot;, lS.toString());
 
-<span class="nc" id="L106">        int nEig = 2;</span>
-<span class="nc" id="L107">        ArpackSym.Ritz ritz = ArpackSym.Ritz.SA;</span>
+<span class="nc" id="L131">        int nEig = 2;</span>
+<span class="nc" id="L132">        ArpackSym.Ritz ritz = ArpackSym.Ritz.SA;</span>
+        // calculate the 2 smallest eigenvectors of the laplacian
+<span class="nc" id="L134">        Map&lt;Double, DenseVectorSub&gt; eigenVectors = MatrixUtil.sparseEigen(lS, nEig, ritz);</span>
 
-<span class="nc" id="L109">        Map&lt;Double, DenseVectorSub&gt; eigenVectors = MatrixUtil.sparseEigen(lS, nEig, ritz);</span>
-
-<span class="nc" id="L111">        double maxEig = Double.NEGATIVE_INFINITY;</span>
-<span class="nc bnc" id="L112" title="All 2 branches missed.">        for (Map.Entry&lt;Double, DenseVectorSub&gt; eigen : eigenVectors.entrySet()) {</span>
-<span class="nc" id="L113">            double eig = eigen.getKey();</span>
-<span class="nc bnc" id="L114" title="All 2 branches missed.">            if (eig &gt; maxEig) {</span>
-<span class="nc" id="L115">                maxEig = eig;</span>
+<span class="nc" id="L136">        double maxEig = Double.NEGATIVE_INFINITY;</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">        for (Map.Entry&lt;Double, DenseVectorSub&gt; eigen : eigenVectors.entrySet()) {</span>
+<span class="nc" id="L138">            double eig = eigen.getKey();</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">            if (eig &gt; maxEig) {</span>
+<span class="nc" id="L140">                maxEig = eig;</span>
             }
-<span class="nc" id="L117">        }</span>
-<span class="nc" id="L118">        double[] eigenVector = Matrices.getArray(eigenVectors.get(maxEig));</span>
-<span class="nc" id="L119">        return eigenVector;</span>
+<span class="nc" id="L142">        }</span>
+<span class="nc" id="L143">        double[] eigenVector = Matrices.getArray(eigenVectors.get(maxEig));</span>
+<span class="nc" id="L144">        return eigenVector;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

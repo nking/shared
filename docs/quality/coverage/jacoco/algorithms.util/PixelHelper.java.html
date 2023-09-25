@@ -14,53 +14,90 @@ import java.util.HashSet;
  */
 <span class="fc" id="L15">public class PixelHelper {</span>
     
+    /**
+     *
+     @param p
+     @param width
+     @return
+     */
     public long toPixelIndex(PairInt p, int width) {
-<span class="fc" id="L18">        return ((long)width * p.getY()) + p.getX();</span>
+<span class="fc" id="L24">        return ((long)width * p.getY()) + p.getX();</span>
     }
     
+    /**
+     *
+     @param x
+     @param y
+     @param width
+     @return
+     */
     public long toPixelIndex(int x, int y, int width) {
-<span class="fc" id="L22">        return ((long)width * y) + x;</span>
+<span class="fc" id="L35">        return ((long)width * y) + x;</span>
     }
     
+    /**
+     *
+     @param pixIdx
+     @param width
+     @param outputXY
+     */
     public void toPixelCoords(long pixIdx, int width, 
         int[] outputXY) {
-<span class="fc" id="L27">        outputXY[1] = (int)(pixIdx/width);</span>
-<span class="fc" id="L28">        outputXY[0] = (int)(pixIdx - (outputXY[1] * width));</span>
-<span class="fc" id="L29">    }</span>
+<span class="fc" id="L46">        outputXY[1] = (int)(pixIdx/width);</span>
+<span class="fc" id="L47">        outputXY[0] = (int)(pixIdx - (outputXY[1] * width));</span>
+<span class="fc" id="L48">    }</span>
 
+    /**
+     *
+     @param points
+     @param width
+     @return
+     */
     public TLongSet convert(Set&lt;PairInt&gt; points, int width) {
-<span class="fc" id="L32">        TLongSet set = new TLongHashSet();</span>
-<span class="fc bfc" id="L33" title="All 2 branches covered.">        for (PairInt p : points) {</span>
-<span class="fc" id="L34">            long pixIdx = toPixelIndex(p, width);</span>
-<span class="fc" id="L35">            set.add(pixIdx);</span>
-<span class="fc" id="L36">        }</span>
-<span class="fc" id="L37">        return set;</span>
+<span class="fc" id="L57">        TLongSet set = new TLongHashSet();</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">        for (PairInt p : points) {</span>
+<span class="fc" id="L59">            long pixIdx = toPixelIndex(p, width);</span>
+<span class="fc" id="L60">            set.add(pixIdx);</span>
+<span class="fc" id="L61">        }</span>
+<span class="fc" id="L62">        return set;</span>
     }
 
+    /**
+     *
+     @param pixIdxs
+     @param width
+     @return
+     */
     @SuppressWarnings({&quot;unchecked&quot;})
     public Set&lt;PairInt&gt; convert(TIntSet pixIdxs, int width) {
-<span class="nc" id="L42">        HashSet&lt;PairInt&gt; set = new HashSet&lt;PairInt&gt;();</span>
-<span class="nc" id="L43">        TIntIterator iter = pixIdxs.iterator();</span>
-<span class="nc" id="L44">        int[] xy = new int[2];</span>
-<span class="nc bnc" id="L45" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
-<span class="nc" id="L46">            int pixIdx = iter.next();</span>
-<span class="nc" id="L47">            toPixelCoords(pixIdx, width, xy);</span>
-<span class="nc" id="L48">            set.add(new PairInt(xy[0], xy[1]));</span>
-<span class="nc" id="L49">        }</span>
-<span class="nc" id="L50">        return set;</span>
+<span class="nc" id="L73">        HashSet&lt;PairInt&gt; set = new HashSet&lt;PairInt&gt;();</span>
+<span class="nc" id="L74">        TIntIterator iter = pixIdxs.iterator();</span>
+<span class="nc" id="L75">        int[] xy = new int[2];</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
+<span class="nc" id="L77">            int pixIdx = iter.next();</span>
+<span class="nc" id="L78">            toPixelCoords(pixIdx, width, xy);</span>
+<span class="nc" id="L79">            set.add(new PairInt(xy[0], xy[1]));</span>
+<span class="nc" id="L80">        }</span>
+<span class="nc" id="L81">        return set;</span>
     }
     
+    /**
+     *
+     @param pixIdxs
+     @param width
+     @return
+     */
     @SuppressWarnings({&quot;unchecked&quot;})
     public Set&lt;PairInt&gt; convert(TLongSet pixIdxs, int width) {
-<span class="fc" id="L55">        HashSet&lt;PairInt&gt; set = new HashSet&lt;PairInt&gt;();</span>
-<span class="fc" id="L56">        TLongIterator iter = pixIdxs.iterator();</span>
-<span class="fc" id="L57">        int[] xy = new int[2];</span>
-<span class="fc bfc" id="L58" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
-<span class="fc" id="L59">            long pixIdx = iter.next();</span>
-<span class="fc" id="L60">            toPixelCoords(pixIdx, width, xy);</span>
-<span class="fc" id="L61">            set.add(new PairInt(xy[0], xy[1]));</span>
-<span class="fc" id="L62">        }</span>
-<span class="fc" id="L63">        return set;</span>
+<span class="fc" id="L92">        HashSet&lt;PairInt&gt; set = new HashSet&lt;PairInt&gt;();</span>
+<span class="fc" id="L93">        TLongIterator iter = pixIdxs.iterator();</span>
+<span class="fc" id="L94">        int[] xy = new int[2];</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L96">            long pixIdx = iter.next();</span>
+<span class="fc" id="L97">            toPixelCoords(pixIdx, width, xy);</span>
+<span class="fc" id="L98">            set.add(new PairInt(xy[0], xy[1]));</span>
+<span class="fc" id="L99">        }</span>
+<span class="fc" id="L100">        return set;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -25,75 +25,89 @@ import java.util.List;
  the value of the new interval, but the key range does not
  change.
   
- * @param &lt;T&gt; the data type used in the Intervals
- * @param &lt;Value&gt; the data type of the key associated with each
+ @param &lt;T&gt; the data type used in the Intervals
+ @param &lt;Value&gt; the data type of the key associated with each
  * tree interval.
  ******************************************************************************/
 <span class="fc" id="L32">public class IntervalRangeSearch&lt;T extends Comparable&lt;T&gt;, Value&gt; extends</span>
     RangeSearch&lt;Interval&lt;T&gt;, Value&gt; {
     
+    /**
+     *
+     @param interval
+     @return
+     */
     public Queue&lt;Interval&lt;T&gt;&gt; range0(Interval&lt;T&gt; interval) {
-<span class="fc" id="L36">        Queue&lt;Interval&lt;T&gt;&gt; list = new Queue&lt;Interval&lt;T&gt;&gt;();</span>
+<span class="fc" id="L41">        Queue&lt;Interval&lt;T&gt;&gt; list = new Queue&lt;Interval&lt;T&gt;&gt;();</span>
         //System.out.println(&quot;root=&quot; + root);
         //System.out.println(&quot;srch interval=&quot; + interval);
-<span class="fc" id="L39">        range0(root, interval, list);</span>
-<span class="fc" id="L40">        return list;</span>
+<span class="fc" id="L44">        range0(root, interval, list);</span>
+<span class="fc" id="L45">        return list;</span>
     }
     
+    /**
+     *
+     @return
+     */
     public List&lt;Interval&lt;T&gt;&gt; getAllIntervals() {
-<span class="nc" id="L44">        List&lt;Interval&lt;T&gt;&gt; list = new ArrayList&lt;Interval&lt;T&gt;&gt;();</span>
-<span class="nc" id="L45">        IntervalRangeSearch.this.getAllIntervals(root, list);</span>
-<span class="nc" id="L46">        return list;</span>
+<span class="nc" id="L53">        List&lt;Interval&lt;T&gt;&gt; list = new ArrayList&lt;Interval&lt;T&gt;&gt;();</span>
+<span class="nc" id="L54">        IntervalRangeSearch.this.getAllIntervals(root, list);</span>
+<span class="nc" id="L55">        return list;</span>
     }
     
+    /**
+     *
+     @param outputIntervals
+     @param outputValues
+     */
     public void getAllIntervals(List&lt;Interval&lt;T&gt;&gt; outputIntervals, 
         List&lt;Value&gt; outputValues) {
-<span class="nc" id="L51">        getAllIntervals(root, outputIntervals, outputValues);</span>
-<span class="nc" id="L52">    }</span>
+<span class="nc" id="L65">        getAllIntervals(root, outputIntervals, outputValues);</span>
+<span class="nc" id="L66">    }</span>
     
     private void getAllIntervals(RangeSearchNode&lt;Interval&lt;T&gt;, Value&gt; x, 
         List&lt;Interval&lt;T&gt;&gt; outputIntervals, List&lt;Value&gt; outputValues) {
         
-<span class="nc bnc" id="L57" title="All 2 branches missed.">        if (x == null) {</span>
-<span class="nc" id="L58">            return;</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">        if (x == null) {</span>
+<span class="nc" id="L72">            return;</span>
         }
-<span class="nc" id="L60">        outputIntervals.add(x.key);</span>
-<span class="nc" id="L61">        outputValues.add(x.val);</span>
+<span class="nc" id="L74">        outputIntervals.add(x.key);</span>
+<span class="nc" id="L75">        outputValues.add(x.val);</span>
             
-<span class="nc bnc" id="L63" title="All 2 branches missed.">        if (x.left != null) {</span>
-<span class="nc" id="L64">            getAllIntervals(x.left, outputIntervals, outputValues);</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">        if (x.left != null) {</span>
+<span class="nc" id="L78">            getAllIntervals(x.left, outputIntervals, outputValues);</span>
         }
         
-<span class="nc bnc" id="L67" title="All 2 branches missed.">        if (x.right != null) {</span>
-<span class="nc" id="L68">            getAllIntervals(x.right, outputIntervals, outputValues);</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">        if (x.right != null) {</span>
+<span class="nc" id="L82">            getAllIntervals(x.right, outputIntervals, outputValues);</span>
         }
-<span class="nc" id="L70">    }</span>
+<span class="nc" id="L84">    }</span>
     
     private void getAllIntervals(RangeSearchNode&lt;Interval&lt;T&gt;, Value&gt; x, 
         List&lt;Interval&lt;T&gt;&gt; list) {
         
-<span class="nc bnc" id="L75" title="All 2 branches missed.">        if (x == null) {</span>
-<span class="nc" id="L76">            return;</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">        if (x == null) {</span>
+<span class="nc" id="L90">            return;</span>
         }
-<span class="nc" id="L78">        list.add(x.key);</span>
+<span class="nc" id="L92">        list.add(x.key);</span>
             
-<span class="nc bnc" id="L80" title="All 2 branches missed.">        if (x.left != null) {</span>
-<span class="nc" id="L81">            getAllIntervals(x.left, list);</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">        if (x.left != null) {</span>
+<span class="nc" id="L95">            getAllIntervals(x.left, list);</span>
         }
         
-<span class="nc bnc" id="L84" title="All 2 branches missed.">        if (x.right != null) {</span>
-<span class="nc" id="L85">            getAllIntervals(x.right, list);</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">        if (x.right != null) {</span>
+<span class="nc" id="L99">            getAllIntervals(x.right, list);</span>
         }
-<span class="nc" id="L87">    }</span>
+<span class="nc" id="L101">    }</span>
     
     private void range0(RangeSearchNode&lt;Interval&lt;T&gt;, Value&gt; x, 
         Interval&lt;T&gt; interval, Queue&lt;Interval&lt;T&gt;&gt; list) {
        
-<span class="pc bpc" id="L92" title="1 of 2 branches missed.">        if (x == null) return;</span>
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">        if (x == null) return;</span>
        
-<span class="fc" id="L94">        boolean intersects = interval.intersects(x.key);</span>
-<span class="fc bfc" id="L95" title="All 2 branches covered.">        if (intersects) {</span>
-<span class="fc" id="L96">            list.enqueue(x.key);</span>
+<span class="fc" id="L108">        boolean intersects = interval.intersects(x.key);</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">        if (intersects) {</span>
+<span class="fc" id="L110">            list.enqueue(x.key);</span>
         }
         
         /*
@@ -117,16 +131,16 @@ import java.util.List;
         // if xmin &gt; interval.max
         //   search rgt
         
-<span class="pc bpc" id="L120" title="1 of 4 branches missed.">        if ((x.left != null) &amp;&amp; (intersects || </span>
-<span class="nc bnc" id="L121" title="All 2 branches missed.">            (x.key.max().compareTo(interval.min()) &lt; 1)) ) {</span>
-<span class="fc" id="L122">            range0(x.left, interval, list);</span>
+<span class="pc bpc" id="L134" title="1 of 4 branches missed.">        if ((x.left != null) &amp;&amp; (intersects || </span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">            (x.key.max().compareTo(interval.min()) &lt; 1)) ) {</span>
+<span class="fc" id="L136">            range0(x.left, interval, list);</span>
         }
         
-<span class="pc bpc" id="L125" title="1 of 4 branches missed.">        if ((x.right != null) &amp;&amp; (intersects || </span>
-<span class="nc bnc" id="L126" title="All 2 branches missed.">            (interval.max().compareTo(x.key.min()) &lt; 1))) {</span>
-<span class="fc" id="L127">            range0(x.right, interval, list);</span>
+<span class="pc bpc" id="L139" title="1 of 4 branches missed.">        if ((x.right != null) &amp;&amp; (intersects || </span>
+<span class="pc bpc" id="L140" title="1 of 2 branches missed.">            (interval.max().compareTo(x.key.min()) &lt; 1))) {</span>
+<span class="fc" id="L141">            range0(x.right, interval, list);</span>
         }
-<span class="fc" id="L129">    }</span>
+<span class="fc" id="L143">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

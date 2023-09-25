@@ -18,36 +18,53 @@ import java.util.Arrays;
  *&lt;/pre&gt;
  * 
  * @author nichole
- * @param &lt;T&gt; class type to be held and sorted by this class.  It must implement
+ @param &lt;T&gt; class type to be held and sorted by this class.  It must implement
  * Comparable.
  */
 @SuppressWarnings({&quot;unchecked&quot;})
 public class FixedSizeVector&lt;T&gt; {
 
-<span class="fc" id="L27">    protected T[] a = null;</span>
+    /**
+     *
+     */
+<span class="fc" id="L30">    protected T[] a = null;</span>
 
+    /**
+     *
+     */
     protected final int capacity;
 
+    /**
+     *
+     */
     protected int n;
 
+    /**
+     *
+     */
     protected int lastIdx;
 
-<span class="fc" id="L35">    public FixedSizeVector(int fixedCapacity, Class&lt;T&gt; classTypeToHold) {</span>
+    /**
+     *
+     @param fixedCapacity
+     @param classTypeToHold
+     */
+<span class="fc" id="L52">    public FixedSizeVector(int fixedCapacity, Class&lt;T&gt; classTypeToHold) {</span>
 
-<span class="pc bpc" id="L37" title="1 of 2 branches missed.">        if (fixedCapacity &lt; 1) {</span>
-<span class="nc" id="L38">            throw new IllegalArgumentException(</span>
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">        if (fixedCapacity &lt; 1) {</span>
+<span class="nc" id="L55">            throw new IllegalArgumentException(</span>
             &quot;fixedCapacity must be a positive non zero (arg was &quot;
             + fixedCapacity + &quot;)&quot;);
         }
 
-<span class="fc" id="L43">        capacity = fixedCapacity;</span>
+<span class="fc" id="L60">        capacity = fixedCapacity;</span>
 
-<span class="fc" id="L45">        n = 0;</span>
+<span class="fc" id="L62">        n = 0;</span>
 
-<span class="fc" id="L47">        lastIdx = -1;</span>
+<span class="fc" id="L64">        lastIdx = -1;</span>
        
-<span class="fc" id="L49">        a = (T[]) Array.newInstance(classTypeToHold, capacity);</span>
-<span class="fc" id="L50">    }</span>
+<span class="fc" id="L66">        a = (T[]) Array.newInstance(classTypeToHold, capacity);</span>
+<span class="fc" id="L67">    }</span>
 
     /**
      * add value to the fixed size sorted list using (T).compareTo to order
@@ -55,38 +72,43 @@ public class FixedSizeVector&lt;T&gt; {
      *
      * runtime complexity is O(log_2(capacity) + less than capacity).
      *
-     * @param value value to insert into vector
+     @param value value to insert into vector
      */
     public void add(T value) {
 
-<span class="pc bpc" id="L62" title="1 of 2 branches missed.">        if (value == null) {</span>
-<span class="nc" id="L63">            return;</span>
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">        if (value == null) {</span>
+<span class="nc" id="L80">            return;</span>
         }
 
-<span class="fc bfc" id="L66" title="All 2 branches covered.">        if (n &lt; capacity) {</span>
-<span class="fc" id="L67">            n++;</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">        if (n &lt; capacity) {</span>
+<span class="fc" id="L84">            n++;</span>
         }
         
-<span class="fc" id="L70">        lastIdx++;</span>
-<span class="fc bfc" id="L71" title="All 2 branches covered.">        if (lastIdx &gt;= capacity) {</span>
-<span class="fc" id="L72">            lastIdx = 0;</span>
+<span class="fc" id="L87">        lastIdx++;</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">        if (lastIdx &gt;= capacity) {</span>
+<span class="fc" id="L89">            lastIdx = 0;</span>
         }
-<span class="fc" id="L74">        a[lastIdx] = value;</span>
-<span class="fc" id="L75">    }</span>
+<span class="fc" id="L91">        a[lastIdx] = value;</span>
+<span class="fc" id="L92">    }</span>
     
+    /**
+     *
+     @param itemIndex
+     @return
+     */
     public T get(int itemIndex) {
         
-<span class="pc bpc" id="L79" title="2 of 4 branches missed.">        if (itemIndex &lt; 0 || itemIndex &gt;= capacity) {</span>
-<span class="nc" id="L80">            throw new IllegalArgumentException(&quot;itemIndex is out of bounds: &quot; +</span>
+<span class="pc bpc" id="L101" title="2 of 4 branches missed.">        if (itemIndex &lt; 0 || itemIndex &gt;= capacity) {</span>
+<span class="nc" id="L102">            throw new IllegalArgumentException(&quot;itemIndex is out of bounds: &quot; +</span>
                 &quot; capacity=&quot; + capacity + &quot; itemIndex=&quot; + itemIndex);
         }
-<span class="pc bpc" id="L83" title="1 of 2 branches missed.">        if (n &lt; capacity) {</span>
-<span class="nc bnc" id="L84" title="All 2 branches missed.">            if (itemIndex &gt; lastIdx) {</span>
-<span class="nc" id="L85">                throw new IllegalArgumentException(&quot;itemIndex is out of bounds: &quot; +</span>
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">        if (n &lt; capacity) {</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">            if (itemIndex &gt; lastIdx) {</span>
+<span class="nc" id="L107">                throw new IllegalArgumentException(&quot;itemIndex is out of bounds: &quot; +</span>
                 &quot; capacity=&quot; + capacity + &quot; and last set index=&quot; + lastIdx
                 + &quot; itemIndex=&quot; + itemIndex);
             }
-<span class="nc" id="L89">            return a[itemIndex];</span>
+<span class="nc" id="L111">            return a[itemIndex];</span>
         }
         
         /*
@@ -102,12 +124,12 @@ public class FixedSizeVector&lt;T&gt; {
         get i=1   idx=last-(c-i-1)   1-2=-1 to +c=3
         */
         
-<span class="fc" id="L105">        int idx = lastIdx - (capacity - itemIndex - 1);</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">        if (idx &lt; 0) {</span>
-<span class="fc" id="L107">            idx += capacity;</span>
+<span class="fc" id="L127">        int idx = lastIdx - (capacity - itemIndex - 1);</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">        if (idx &lt; 0) {</span>
+<span class="fc" id="L129">            idx += capacity;</span>
         }
         
-<span class="fc" id="L110">        return a[idx];</span>
+<span class="fc" id="L132">        return a[idx];</span>
     }
 
     /**
@@ -115,29 +137,29 @@ public class FixedSizeVector&lt;T&gt; {
      *
      * runtime complexity is O(N)
      *
-     * @return the internal array.  note that this is not a copy, intentionally.
+     @return the internal array.  note that this is not a copy, intentionally.
      */
     T[] getArray() {
 
-<span class="fc" id="L122">        return Arrays.copyOf(a, n);</span>
+<span class="fc" id="L144">        return Arrays.copyOf(a, n);</span>
     }
 
     /**
      * return the number of items in the internal array.  if the array is not
      * yet filled, the return will be less than the capacity, else will
      * be the same as the capacity.
-     * @return number of elements in vector
+     @return number of elements in vector
      */
     public int size() {
-<span class="fc" id="L132">        return n;</span>
+<span class="fc" id="L154">        return n;</span>
     }
     
     /**
      * get the maximum size of the vector, given at instantiation.
-     * @return capacity
+     @return capacity
      */
     public int getFixedCapacity() {
-<span class="nc" id="L140">        return capacity;</span>
+<span class="nc" id="L162">        return capacity;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

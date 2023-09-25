@@ -115,124 +115,140 @@
 <span class="fc" id="L115">    private final static int[] doubleSz = new int[]{8, 8, 8, 16};</span>
 
     /**
-     * @param nBoolean  the number of boolean primitives
+     @param nBoolean  the number of boolean primitives
      */
     public void setNBooleanFields(int nBoolean) {
 <span class="fc" id="L121">        this.nBoolean = nBoolean;</span>
 <span class="fc" id="L122">    }</span>
     
+    /**
+     *
+     @return
+     */
     public static long getWordSize() {
-<span class="pc bpc" id="L125" title="1 of 2 branches missed.">        if (is32Bit) {</span>
-<span class="nc" id="L126">            return 4;</span>
+<span class="pc bpc" id="L129" title="1 of 2 branches missed.">        if (is32Bit) {</span>
+<span class="nc" id="L130">            return 4;</span>
         } else {
-<span class="fc" id="L128">            return 8;</span>
+<span class="fc" id="L132">            return 8;</span>
         }
     }
     
+    /**
+     *
+     @return
+     */
     public static long getObjectOverhead() {
-<span class="pc bpc" id="L133" title="1 of 2 branches missed.">        if (is32Bit) {</span>
-<span class="nc" id="L134">            return 8;</span>
+<span class="pc bpc" id="L141" title="1 of 2 branches missed.">        if (is32Bit) {</span>
+<span class="nc" id="L142">            return 8;</span>
         } else {
-<span class="fc" id="L136">            return 16;</span>
+<span class="fc" id="L144">            return 16;</span>
         }
     }
 
+    /**
+     *
+     @return
+     */
     public static long getObjectReferenceSize() {
         int index;
         long overhead;
-<span class="nc bnc" id="L143" title="All 2 branches missed.">        if (is32Bit) {</span>
-<span class="nc" id="L144">            index = 0;</span>
-<span class="nc" id="L145">            overhead = 8;</span>
+<span class="nc bnc" id="L155" title="All 2 branches missed.">        if (is32Bit) {</span>
+<span class="nc" id="L156">            index = 0;</span>
+<span class="nc" id="L157">            overhead = 8;</span>
         } else {
-<span class="nc" id="L147">            index = 2;</span>
-<span class="nc" id="L148">            overhead = 16;</span>
+<span class="nc" id="L159">            index = 2;</span>
+<span class="nc" id="L160">            overhead = 16;</span>
         }
         
-<span class="nc" id="L151">        return refSz[index];</span>
+<span class="nc" id="L163">        return refSz[index];</span>
     }
     
+    /**
+     *
+     @return
+     */
     public static long getArrayReferenceSize() {
         int index;
         long overhead;
-<span class="pc bpc" id="L157" title="1 of 2 branches missed.">        if (is32Bit) {</span>
-<span class="nc" id="L158">            index = 0;</span>
-<span class="nc" id="L159">            overhead = 8;</span>
+<span class="pc bpc" id="L173" title="1 of 2 branches missed.">        if (is32Bit) {</span>
+<span class="nc" id="L174">            index = 0;</span>
+<span class="nc" id="L175">            overhead = 8;</span>
         } else {
-<span class="fc" id="L161">            index = 2;</span>
-<span class="fc" id="L162">            overhead = 16;</span>
+<span class="fc" id="L177">            index = 2;</span>
+<span class="fc" id="L178">            overhead = 16;</span>
         }
-<span class="fc" id="L164">        return arrayRefSz[index];</span>
+<span class="fc" id="L180">        return arrayRefSz[index];</span>
     }
     
     /**
-     * @param nByte  the number of byte primitives
+     @param nByte  the number of byte primitives
      */
     public void setNByteFields(int nByte) {
-<span class="fc" id="L171">        this.nByte = nByte;</span>
-<span class="fc" id="L172">    }</span>
+<span class="fc" id="L187">        this.nByte = nByte;</span>
+<span class="fc" id="L188">    }</span>
 
     /**
-     * @param nChar the number of char primitives to set
+     @param nChar the number of char primitives to set
      */
     public void setNCharFields(int nChar) {
-<span class="fc" id="L178">        this.nChar = nChar;</span>
-<span class="fc" id="L179">    }</span>
+<span class="fc" id="L194">        this.nChar = nChar;</span>
+<span class="fc" id="L195">    }</span>
 
     /**
-     * @param nShort  the number of short primitives
+     @param nShort  the number of short primitives
      */
     public void setNShortFields(int nShort) {
-<span class="fc" id="L185">        this.nShort = nShort;</span>
-<span class="fc" id="L186">    }</span>
+<span class="fc" id="L201">        this.nShort = nShort;</span>
+<span class="fc" id="L202">    }</span>
 
     /**
-     * @param nInt  the number of int primitives
+     @param nInt  the number of int primitives
      */
     public void setNIntFields(int nInt) {
-<span class="fc" id="L192">        this.nInt = nInt;</span>
-<span class="fc" id="L193">    }</span>
+<span class="fc" id="L208">        this.nInt = nInt;</span>
+<span class="fc" id="L209">    }</span>
 
     /**
-     * @param nFloat  the number of float primitives
+     @param nFloat  the number of float primitives
      */
     public void setNFloatFields(int nFloat) {
-<span class="fc" id="L199">        this.nFloat = nFloat;</span>
-<span class="fc" id="L200">    }</span>
+<span class="fc" id="L215">        this.nFloat = nFloat;</span>
+<span class="fc" id="L216">    }</span>
 
     /**
-     * @param nObjRefs  the number of object references
+     @param nObjRefs  the number of object references
      */
     public void setNObjRefsFields(int nObjRefs) {
-<span class="fc" id="L206">        this.nObjRefs = nObjRefs;</span>
-<span class="fc" id="L207">    }</span>
+<span class="fc" id="L222">        this.nObjRefs = nObjRefs;</span>
+<span class="fc" id="L223">    }</span>
 
     /**
-     * @param nArrayRefs  the number of array references to set
+     @param nArrayRefs  the number of array references to set
      */
     public void setNArrayRefsFields(int nArrayRefs) {
-<span class="fc" id="L213">        this.nArrayRefs = nArrayRefs;</span>
-<span class="fc" id="L214">    }</span>
+<span class="fc" id="L229">        this.nArrayRefs = nArrayRefs;</span>
+<span class="fc" id="L230">    }</span>
 
     /**
-     * @param nLong  the number of long primitives
+     @param nLong  the number of long primitives
      */
     public void setNLongFields(int nLong) {
-<span class="fc" id="L220">        this.nLong = nLong;</span>
-<span class="fc" id="L221">    }</span>
+<span class="fc" id="L236">        this.nLong = nLong;</span>
+<span class="fc" id="L237">    }</span>
 
     /**
-     * @param nDouble the number of double primitives
+     @param nDouble the number of double primitives
      */
     public void setNDoubleFields(int nDouble) {
-<span class="fc" id="L227">        this.nDouble = nDouble;</span>
-<span class="fc" id="L228">    }</span>
+<span class="fc" id="L243">        this.nDouble = nDouble;</span>
+<span class="fc" id="L244">    }</span>
 
     /**
-     * @param nReturnAddress the nReturnAddress to set
+     @param nReturnAddress the nReturnAddress to set
      */
     public void setNReturnAddress(int nReturnAddress) {
-<span class="nc" id="L234">        this.nReturnAddress = nReturnAddress;</span>
-<span class="nc" id="L235">    }</span>
+<span class="nc" id="L250">        this.nReturnAddress = nReturnAddress;</span>
+<span class="nc" id="L251">    }</span>
     
     /**
      * NOTE: since strings are interned and only one instance exists for same
@@ -241,39 +257,39 @@
      * If only one string estimate is needed, consider using 
      * estimateAStringSize()
      * 
-     * @param numberOfStrings
-     * @param maximumNumberOfLetters 
+     @param numberOfStrings
+     @param maximumNumberOfLetters 
      */
     public void setNStrings(int numberOfStrings, int maximumNumberOfLetters) {
-<span class="nc" id="L248">        nStrings = numberOfStrings;</span>
-<span class="nc" id="L249">        maxStringLength = maximumNumberOfLetters;</span>
-<span class="nc" id="L250">    }</span>
+<span class="nc" id="L264">        nStrings = numberOfStrings;</span>
+<span class="nc" id="L265">        maxStringLength = maximumNumberOfLetters;</span>
+<span class="nc" id="L266">    }</span>
     
     /**
      * A rough estimate of an instance of ArrayList without objects in it.
      * 
-     * @return 
+     @return 
      */
     public static long estimateArrayList() {
         
         int index;
         long overhead;
-<span class="pc bpc" id="L261" title="1 of 2 branches missed.">        if (is32Bit) {</span>
-<span class="nc" id="L262">            index = 0;</span>
-<span class="nc" id="L263">            overhead = 8;</span>
+<span class="pc bpc" id="L277" title="1 of 2 branches missed.">        if (is32Bit) {</span>
+<span class="nc" id="L278">            index = 0;</span>
+<span class="nc" id="L279">            overhead = 8;</span>
         } else {
-<span class="fc" id="L265">            index = 2;</span>
-<span class="fc" id="L266">            overhead = 16;</span>
+<span class="fc" id="L281">            index = 2;</span>
+<span class="fc" id="L282">            overhead = 16;</span>
         }
-<span class="fc" id="L268">        long pad = getWordSize();</span>
+<span class="fc" id="L284">        long pad = getWordSize();</span>
         
-<span class="fc" id="L270">        long total = overhead;</span>
+<span class="fc" id="L286">        long total = overhead;</span>
         
-<span class="fc" id="L272">        total += longSz[index];</span>
-<span class="fc" id="L273">        total += 5 * intSz[index];</span>
-<span class="fc" id="L274">        total += 3*arrayRefSz[index];</span>
+<span class="fc" id="L288">        total += longSz[index];</span>
+<span class="fc" id="L289">        total += 5 * intSz[index];</span>
+<span class="fc" id="L290">        total += 3*arrayRefSz[index];</span>
         
-<span class="fc" id="L276">        return total;</span>
+<span class="fc" id="L292">        return total;</span>
         
         /*
         final int nLists = 10000;
@@ -332,29 +348,29 @@
      * a rough estimate of an instance of TLongLongHashMap without objects
      * in it.
      * 
-     * @return 
+     @return 
      */
     public static long estimateTLongLongHashMap() {
         
         int index;
         long overhead;
-<span class="pc bpc" id="L341" title="1 of 2 branches missed.">        if (is32Bit) {</span>
-<span class="nc" id="L342">            index = 0;</span>
-<span class="nc" id="L343">            overhead = 8;</span>
+<span class="pc bpc" id="L357" title="1 of 2 branches missed.">        if (is32Bit) {</span>
+<span class="nc" id="L358">            index = 0;</span>
+<span class="nc" id="L359">            overhead = 8;</span>
         } else {
-<span class="fc" id="L345">            index = 2;</span>
-<span class="fc" id="L346">            overhead = 16;</span>
+<span class="fc" id="L361">            index = 2;</span>
+<span class="fc" id="L362">            overhead = 16;</span>
         }
-<span class="fc" id="L348">        long pad = getWordSize();</span>
+<span class="fc" id="L364">        long pad = getWordSize();</span>
         
-<span class="fc" id="L350">        long total = overhead;</span>
+<span class="fc" id="L366">        long total = overhead;</span>
         
-<span class="fc" id="L352">        total += 4 * longSz[index];</span>
-<span class="fc" id="L353">        total += booleanSz[index];</span>
-<span class="fc" id="L354">        total += refSz[index];</span>
-<span class="fc" id="L355">        total += 2*arrayRefSz[index];</span>
+<span class="fc" id="L368">        total += 4 * longSz[index];</span>
+<span class="fc" id="L369">        total += booleanSz[index];</span>
+<span class="fc" id="L370">        total += refSz[index];</span>
+<span class="fc" id="L371">        total += 2*arrayRefSz[index];</span>
         
-<span class="fc" id="L357">        return total;</span>
+<span class="fc" id="L373">        return total;</span>
         
     }
     
@@ -362,28 +378,28 @@
      * a rough estimate of an instance of TLongObjectHashMap without objects
      * in it.
     
-     * @return 
+     @return 
      */
     public static long estimateTLongObjectHashMap() {
         int index;
         long overhead;
-<span class="pc bpc" id="L370" title="1 of 2 branches missed.">        if (is32Bit) {</span>
-<span class="nc" id="L371">            index = 0;</span>
-<span class="nc" id="L372">            overhead = 8;</span>
+<span class="pc bpc" id="L386" title="1 of 2 branches missed.">        if (is32Bit) {</span>
+<span class="nc" id="L387">            index = 0;</span>
+<span class="nc" id="L388">            overhead = 8;</span>
         } else {
-<span class="fc" id="L374">            index = 2;</span>
-<span class="fc" id="L375">            overhead = 16;</span>
+<span class="fc" id="L390">            index = 2;</span>
+<span class="fc" id="L391">            overhead = 16;</span>
         }
-<span class="fc" id="L377">        long pad = getWordSize();</span>
+<span class="fc" id="L393">        long pad = getWordSize();</span>
         
-<span class="fc" id="L379">        long total = overhead;</span>
+<span class="fc" id="L395">        long total = overhead;</span>
         
-<span class="fc" id="L381">        total += 4 * longSz[index];</span>
-<span class="fc" id="L382">        total += booleanSz[index];</span>
-<span class="fc" id="L383">        total += refSz[index];</span>
-<span class="fc" id="L384">        total += 2*arrayRefSz[index];</span>
+<span class="fc" id="L397">        total += 4 * longSz[index];</span>
+<span class="fc" id="L398">        total += booleanSz[index];</span>
+<span class="fc" id="L399">        total += refSz[index];</span>
+<span class="fc" id="L400">        total += 2*arrayRefSz[index];</span>
         
-<span class="fc" id="L386">        return total;</span>
+<span class="fc" id="L402">        return total;</span>
         
         /*
         final int nMaps = 10000;
@@ -446,10 +462,10 @@
      * Note that the string estimates are the maximum size in memory they could 
      * occupy and do not include consideration for pooling.
      * 
-     * @return total size in bytes for the object placed on the heap.
+     @return total size in bytes for the object placed on the heap.
      */
     public long estimateSizeOnHeap() {
-<span class="fc" id="L452">        return estimateSize(true);</span>
+<span class="fc" id="L468">        return estimateSize(true);</span>
     }
     
     /**
@@ -460,104 +476,117 @@
      * Note that the string estimates will not be in the stack estimate as they
      * are purely heap objects.
      * 
-     * @return total size in bytes for the object places on the stack.
+     @return total size in bytes for the object places on the stack.
      */
     public long estimateSizeOnStack() {
-<span class="nc" id="L466">        return estimateSize(false);</span>
+<span class="nc" id="L482">        return estimateSize(false);</span>
     }
     
     private long estimateSize(boolean calcForHeap) {
         
         int index;
         long overhead;
-<span class="pc bpc" id="L473" title="1 of 2 branches missed.">        if (is32Bit) {</span>
-<span class="nc bnc" id="L474" title="All 2 branches missed.">            if (calcForHeap) {</span>
-<span class="nc" id="L475">                index = 0;</span>
+<span class="pc bpc" id="L489" title="1 of 2 branches missed.">        if (is32Bit) {</span>
+<span class="nc bnc" id="L490" title="All 2 branches missed.">            if (calcForHeap) {</span>
+<span class="nc" id="L491">                index = 0;</span>
             } else {
-<span class="nc" id="L477">                index = 1;</span>
+<span class="nc" id="L493">                index = 1;</span>
             }
-<span class="nc" id="L479">            overhead = 8;</span>
+<span class="nc" id="L495">            overhead = 8;</span>
         } else {
-<span class="pc bpc" id="L481" title="1 of 2 branches missed.">            if (calcForHeap) {</span>
-<span class="fc" id="L482">                index = 2;</span>
+<span class="pc bpc" id="L497" title="1 of 2 branches missed.">            if (calcForHeap) {</span>
+<span class="fc" id="L498">                index = 2;</span>
             } else {
-<span class="nc" id="L484">                index = 3;</span>
+<span class="nc" id="L500">                index = 3;</span>
             }
-<span class="fc" id="L486">            overhead = 16;</span>
+<span class="fc" id="L502">            overhead = 16;</span>
         }
-<span class="fc" id="L488">        long pad = getWordSize();</span>
+<span class="fc" id="L504">        long pad = getWordSize();</span>
         
-<span class="fc" id="L490">        long total = 0;</span>
+<span class="fc" id="L506">        long total = 0;</span>
 
         // add fields
-<span class="fc" id="L493">        total += nBoolean * booleanSz[index];</span>
-<span class="fc" id="L494">        total += nByte * byteSz[index];</span>
-<span class="fc" id="L495">        total += nChar * charSz[index];</span>
-<span class="fc" id="L496">        total += nShort * shortSz[index];</span>
-<span class="fc" id="L497">        total += nInt * intSz[index];</span>
-<span class="fc" id="L498">        total += nFloat * floatSz[index];</span>
-<span class="fc" id="L499">        total += nObjRefs * refSz[index];</span>
-<span class="fc" id="L500">        total += nArrayRefs * arrayRefSz[index];</span>
-<span class="fc" id="L501">        total += nLong * longSz[index];</span>
-<span class="fc" id="L502">        total += nDouble * doubleSz[index];</span>
-<span class="fc" id="L503">        total += nReturnAddress * returnAddressSz[index];</span>
+<span class="fc" id="L509">        total += nBoolean * booleanSz[index];</span>
+<span class="fc" id="L510">        total += nByte * byteSz[index];</span>
+<span class="fc" id="L511">        total += nChar * charSz[index];</span>
+<span class="fc" id="L512">        total += nShort * shortSz[index];</span>
+<span class="fc" id="L513">        total += nInt * intSz[index];</span>
+<span class="fc" id="L514">        total += nFloat * floatSz[index];</span>
+<span class="fc" id="L515">        total += nObjRefs * refSz[index];</span>
+<span class="fc" id="L516">        total += nArrayRefs * arrayRefSz[index];</span>
+<span class="fc" id="L517">        total += nLong * longSz[index];</span>
+<span class="fc" id="L518">        total += nDouble * doubleSz[index];</span>
+<span class="fc" id="L519">        total += nReturnAddress * returnAddressSz[index];</span>
         
-<span class="pc bpc" id="L505" title="1 of 2 branches missed.">        if (calcForHeap) {</span>
-<span class="fc" id="L506">            total += nStrings * estimateAStringSize(maxStringLength);</span>
+<span class="pc bpc" id="L521" title="1 of 2 branches missed.">        if (calcForHeap) {</span>
+<span class="fc" id="L522">            total += nStrings * estimateAStringSize(maxStringLength);</span>
         }
         
         // add object overhead
-<span class="fc" id="L510">        total += overhead;</span>
+<span class="fc" id="L526">        total += overhead;</span>
 
         // pad up to 8 byte boundary
-<span class="fc" id="L513">        long padding = total % pad;</span>
-<span class="fc" id="L514">        total += padding;</span>
+<span class="fc" id="L529">        long padding = total % pad;</span>
+<span class="fc" id="L530">        total += padding;</span>
         
-<span class="fc" id="L516">        return total;</span>
+<span class="fc" id="L532">        return total;</span>
     }
    
+    /**
+     *
+     @return
+     */
     public static long estimateLongSize() {
         
         int idx;
-<span class="pc bpc" id="L522" title="1 of 2 branches missed.">        if (is32Bit) {</span>
-<span class="nc" id="L523">            idx = 0;</span>
+<span class="pc bpc" id="L542" title="1 of 2 branches missed.">        if (is32Bit) {</span>
+<span class="nc" id="L543">            idx = 0;</span>
         } else {
-<span class="fc" id="L525">            idx = 2;</span>
+<span class="fc" id="L545">            idx = 2;</span>
         }
         
-<span class="fc" id="L528">        return longSz[idx];</span>
+<span class="fc" id="L548">        return longSz[idx];</span>
     }
     
+    /**
+     *
+     @return
+     */
     public static long estimateIntSize() {
         
         int idx;
-<span class="pc bpc" id="L534" title="1 of 2 branches missed.">        if (is32Bit) {</span>
-<span class="nc" id="L535">            idx = 0;</span>
+<span class="pc bpc" id="L558" title="1 of 2 branches missed.">        if (is32Bit) {</span>
+<span class="nc" id="L559">            idx = 0;</span>
         } else {
-<span class="fc" id="L537">            idx = 2;</span>
+<span class="fc" id="L561">            idx = 2;</span>
         }
         
-<span class="fc" id="L540">        return intSz[idx];</span>
+<span class="fc" id="L564">        return intSz[idx];</span>
     }
 
+    /**
+     *
+     @param maxNumberOfLetters
+     @return
+     */
     public static long estimateAStringSize(int maxNumberOfLetters) {
         
         // strings are always on the heap
         int idx;
-<span class="pc bpc" id="L547" title="1 of 2 branches missed.">        if (is32Bit) {</span>
-<span class="nc" id="L548">            idx = 0;</span>
+<span class="pc bpc" id="L576" title="1 of 2 branches missed.">        if (is32Bit) {</span>
+<span class="nc" id="L577">            idx = 0;</span>
         } else {
-<span class="fc" id="L550">            idx = 2;</span>
+<span class="fc" id="L579">            idx = 2;</span>
         }
         
-<span class="fc" id="L553">        long total = arrayRefSz[idx];</span>
-<span class="fc" id="L554">        total += maxNumberOfLetters * charSz[idx];</span>
+<span class="fc" id="L582">        long total = arrayRefSz[idx];</span>
+<span class="fc" id="L583">        total += maxNumberOfLetters * charSz[idx];</span>
         
-<span class="fc" id="L556">        long pad = total % getWordSize();</span>
+<span class="fc" id="L585">        long pad = total % getWordSize();</span>
         
-<span class="fc" id="L558">        total += pad;</span>
+<span class="fc" id="L587">        total += pad;</span>
         
-<span class="fc" id="L560">        return total;</span>
+<span class="fc" id="L589">        return total;</span>
     }
     
 }

@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TSPDynamic.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.optimization.tsp</a> &gt; <span class="el_source">TSPDynamic.java</span></div><h1>TSPDynamic.java</h1><pre class="source lang-java linenums">package algorithms.optimization.tsp;
+
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
+import java.util.Stack;
+
+/**
+ &lt;pre&gt;
+ A completely dynamic solution requires a large amount of memory (see statement below).
+ Here is an outline of one, based upon what I learned from making the hybrid
+ dynamic and brute force class:
+ 
+ example for k=3, though will use k=2 in implementation:
+ 
+ subset chooser for n, k w/ k=3
+   permutations for k!
+   store each k=3 permutation in memo
+ subset chooser for n, k w/ k=6
+   permutations for k!
+   path should be composed of complete subparts + a connecting edge:
+       p = p3_0 + p3_1 + edge where p3_0 and p3_1 are in memo from k=3 permutations
+   store each k=6 permutation in memo
+ subset chooser for n, k w/ k=12
+   permutations for k!
+   path should be composed of complete subparts + a connecting edge:
+       p = p6_0 + p6_1 + edge where p6_0 and p6_1 are in memo from k=6 permutations
+   store each k=12 permutation in memo
+...
+need (n-1) .gt. k for each stage.
+
+  so consider (n-1) .gt. k_prev and (n-1) .leq. k_next, cannot complete the next full
+     permutation, so will finish the end of the paths using subsequences of size 3
+     and without storing the partial results as they would mostly not be re-usable
+     for the decreasing path lengths.  this separate section of iteration is
+     like the brute-force section of TSPHybridDynamicBruteForce.java
+
+  e.g.  consider (n-1) .gt. 12 and (n-1) .leq. 24
+                  n .gt. 13 and n .leq. 25
+  the permutations in between k=13 and k=25 can be handled in blocks of descending k.
+
+  then use iterations over k-=3 of subsets and permutations, w/ a stack to
+     finish complete paths and compare the completed path to minCost.
+     
+For the dynamic approach just outlined in the (n-1) .gt. k section where k=3:
+    n    c             compare to n!
+    8    210           40320
+   14    1.24e6        8.7e10
+   29    1.46e16       8.8e31
+   49    3.3e20 
+   50    3.9e38
+  731    5.58e538      7.7e1778
+ where n is the number of nodes (=dist.length),
+ and c is the number of elements one needs to store in a memo datastructure.
+
+ For  (n-1) .gt. k  where k=2:
+    n    c             
+    8    42           
+   14    1.7e4       
+   29    1.3e12       
+   49    4.7e27 
+   50    3.9e38
+  731    6.6e711       
+&lt;/pre&gt;
+
+see AbstractTSP for details about the keys used for memo.
+
+ * @author nichole
+ */
+<span class="fc" id="L69">public class TSPDynamic extends AbstractTSP {</span>
+    
+    /**
+     * 
+     @param dist the distance matrix of a graph which obeys the triangle inequality.
+     */
+    public TSPDynamic(double[][] dist) {
+<span class="fc" id="L76">        super(dist);</span>
+<span class="fc" id="L77">    }</span>
+    
+    /**
+     *
+     * @throws InterruptedException
+     */
+    public void solve() throws InterruptedException {
+
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">        if (minCost != sentinel) {</span>
+<span class="nc" id="L86">            reset();</span>
+        }
+<span class="fc" id="L88">        int k0 = 2;</span>
+<span class="fc" id="L89">        int k = k0;</span>
+<span class="fc" id="L90">        int n = dist.length;</span>
+        
+<span class="fc" id="L92">        int nNodesSet = k;</span>
+
+        // handle initialization of memo
+<span class="fc bfc" id="L95" title="All 2 branches covered.">        if ((dist.length &lt;= (2*k + 1))) {</span>
+<span class="fc" id="L96">            initNodePaths();</span>
+<span class="fc" id="L97">            nNodesSet = dist.length - 1;</span>
+        } else {
+            //dist.length &gt; (k+1)
+            //if (k == 2) {
+                // if k=2, init the k=4 paths in memo
+<span class="fc" id="L102">                init4NodePaths();</span>
+<span class="fc" id="L103">                nNodesSet = 4;</span>
+            //}
+            /*else {
+                // k == 3, init the k=3 paths in memo
+                init3NodePaths();
+                nNodesSet = 3;
+            }*/
+        }
+
+<span class="fc" id="L112">        int nNodesRemaining = (n - 1) - nNodesSet;</span>
+        
+        // for the k increasing paths
+<span class="fc" id="L115">        Stack&lt;StackP&gt; stack = new Stack&lt;StackP&gt;();</span>
+        
+        // for the k too large paths
+<span class="fc" id="L118">        Stack&lt;StackP&gt; stackDecr = new Stack&lt;StackP&gt;();</span>
+        
+        // visit the initial path nodes in memo
+<span class="fc" id="L121">        long[] memoKeys = memo.keys();</span>
+        long bitstring, bitstring2;
+        double sum, sum2;
+        int nNodesRemaining2, k2;
+        StackP currentStackP;
+        
+<span class="fc" id="L127">        boolean storeInMemo = true;</span>
+                
+<span class="fc bfc" id="L129" title="All 2 branches covered.">        for (int i = 0; i &lt; memoKeys.length; ++i) {</span>
+<span class="fc" id="L130">            bitstring = memoKeys[i];</span>
+<span class="fc" id="L131">            sum = memo.get(bitstring);</span>
+
+<span class="pc bnc" id="L133" title="All 2 branches missed.">            assert (stack.isEmpty());</span>
+
+<span class="fc" id="L135">            stack.add(new StackP(bitstring, sum, nNodesRemaining));</span>
+
+<span class="fc bfc" id="L137" title="All 2 branches covered.">            while (!stack.isEmpty()) {</span>
+
+<span class="fc" id="L139">                currentStackP = stack.pop();</span>
+<span class="fc" id="L140">                bitstring2 = currentStackP.bitstring;</span>
+<span class="fc" id="L141">                sum2 = currentStackP.sum;</span>
+<span class="fc" id="L142">                nNodesRemaining2 = currentStackP.nNodesRemaining;</span>
+                
+<span class="fc bfc" id="L144" title="All 2 branches covered.">                if (nNodesRemaining2 == 0) {</span>
+<span class="fc" id="L145">                    compareToMin(bitstring2, sum2);</span>
+<span class="fc" id="L146">                    continue;</span>
+                }
+                
+<span class="fc" id="L149">                TIntList remaining = new TIntArrayList();</span>
+<span class="fc" id="L150">                findUnsetBitsBase10(bitstring2, remaining);</span>
+<span class="pc bnc" id="L151" title="All 2 branches missed.">                assert (nNodesRemaining2 == remaining.size());</span>
+<span class="fc" id="L152">                int nNodesSet2 = (dist.length - 1) - nNodesRemaining2;</span>
+                
+<span class="fc" id="L154">                k2 = nNodesSet2;// number of bits in path bitstring2</span>
+<span class="pc bnc" id="L155" title="All 2 branches missed.">                assert(k2 == this.numberOfSetNodes(bitstring2));</span>
+                             
+<span class="pc bpc" id="L157" title="1 of 2 branches missed.">                if (nNodesRemaining2 &lt;= k2) {</span>
+<span class="fc" id="L158">                    stackDecr.add(new StackP(bitstring2, sum2, nNodesRemaining2));                 </span>
+<span class="fc" id="L159">                    continue;</span>
+                }
+                
+<span class="nc" id="L162">               createAndStackSubsetPermutations(bitstring2, sum2, </span>
+                   nNodesSet2, k2, stack, storeInMemo);
+<span class="nc" id="L164">            }</span>
+        }
+        
+<span class="fc" id="L167">        storeInMemo = false;</span>
+
+        // for decreasing k, the path composition is still dynamic,
+        //    but there is no need to store the results in memo as they 
+        //    mostly won't be usable by other unfinished paths.
+<span class="fc bfc" id="L172" title="All 2 branches covered.">        while (!stackDecr.isEmpty()) {</span>
+
+<span class="fc" id="L174">            currentStackP = stackDecr.pop();</span>
+<span class="fc" id="L175">            bitstring2 = currentStackP.bitstring;</span>
+<span class="fc" id="L176">            sum2 = currentStackP.sum;</span>
+<span class="fc" id="L177">            nNodesRemaining2 = currentStackP.nNodesRemaining;</span>
+            
+<span class="fc bfc" id="L179" title="All 2 branches covered.">            if (nNodesRemaining2 == 0) {</span>
+<span class="fc" id="L180">                compareToMin(bitstring2, sum2);</span>
+<span class="fc" id="L181">                continue;</span>
+            }
+
+<span class="fc" id="L184">            TIntList remaining = new TIntArrayList();</span>
+<span class="fc" id="L185">            findUnsetBitsBase10(bitstring2, remaining);</span>
+<span class="pc bnc" id="L186" title="All 2 branches missed.">            assert (nNodesRemaining2 == remaining.size());</span>
+<span class="fc" id="L187">            int nNodesSet2 = (dist.length - 1) - nNodesRemaining2;</span>
+            
+<span class="fc" id="L189">            k2 = nNodesSet2;// number of bits in path bitstring2</span>
+<span class="pc bnc" id="L190" title="All 2 branches missed.">            assert(k2 == this.numberOfSetNodes(bitstring2));</span>
+            
+            // find the largest subset multiple of k0 for the number of unset bits
+<span class="pc bpc" id="L193" title="1 of 4 branches missed.">            while ((k2 &gt; k0) &amp;&amp; (k2 &gt;= nNodesRemaining)) {</span>
+<span class="fc" id="L194">                k2 /= k0;</span>
+            }
+            
+<span class="pc bpc" id="L197" title="1 of 2 branches missed.">            if (k2 &lt;= k0) {</span>
+<span class="fc" id="L198">                createAndStackPermutations(bitstring2, sum2, nNodesSet2, </span>
+                    remaining, stackDecr, storeInMemo);
+<span class="fc" id="L200">                continue;</span>
+            }
+            
+<span class="nc" id="L203">            createAndStackSubsetPermutations(bitstring2, sum2, nNodesSet2, k2, </span>
+                stackDecr, storeInMemo);
+<span class="nc" id="L205">        }</span>
+
+<span class="fc" id="L207">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

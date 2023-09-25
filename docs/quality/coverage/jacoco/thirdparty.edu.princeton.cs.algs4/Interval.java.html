@@ -10,6 +10,7 @@
  * http://algs4.cs.princeton.edu/92search/QuadTree.java.html
  * copyright for authors Robert Sedgewick and Kevin Wayne
  * is GPLV3, http://algs4.cs.princeton.edu/faq/
+ @param &lt;T&gt;
  */
 public class Interval&lt;T extends Comparable&lt;T&gt;&gt; implements 
     Comparable&lt;Interval&lt;T&gt;&gt; {
@@ -17,94 +18,132 @@ public class Interval&lt;T extends Comparable&lt;T&gt;&gt; implements
     private final T min;    // min endpoint
     private final T max;    // max endpoint
 
-<span class="fc" id="L20">    public Interval(T min, T max) {</span>
-<span class="pc bpc" id="L21" title="1 of 2 branches missed.">        if (less(max, min)) {</span>
-<span class="nc" id="L22">            throw new RuntimeException(</span>
+    /**
+     *
+     @param min
+     @param max
+     */
+<span class="fc" id="L26">    public Interval(T min, T max) {</span>
+<span class="pc bpc" id="L27" title="1 of 2 branches missed.">        if (less(max, min)) {</span>
+<span class="nc" id="L28">            throw new RuntimeException(</span>
             &quot;Illegal argument: max=&quot; + max + &quot; min=&quot; + min);
         }
-<span class="fc" id="L25">        this.min = min;</span>
-<span class="fc" id="L26">        this.max = max;</span>
-<span class="fc" id="L27">    }</span>
+<span class="fc" id="L31">        this.min = min;</span>
+<span class="fc" id="L32">        this.max = max;</span>
+<span class="fc" id="L33">    }</span>
 
     // return min endpoint
+
+    /**
+     *
+     @return
+     */
     public T min() {
-<span class="fc" id="L31">        return min;</span>
+<span class="fc" id="L42">        return min;</span>
     }
 
     // return max endpoint
+
+    /**
+     *
+     @return
+     */
     public T max() {
-<span class="fc" id="L36">        return max;</span>
+<span class="fc" id="L52">        return max;</span>
     }
 
     // is x between min and max
+
+    /**
+     *
+     @param x
+     @return
+     */
     public boolean contains(T x) {
-<span class="nc bnc" id="L41" title="All 4 branches missed.">        return !less(x, min) &amp;&amp; !less(max, x);</span>
+<span class="nc bnc" id="L63" title="All 4 branches missed.">        return !less(x, min) &amp;&amp; !less(max, x);</span>
     }
 
     // does this interval a intersect interval b?
+
+    /**
+     *
+     @param b
+     @return
+     */
     public boolean intersects(Interval&lt;T&gt; b) {
-<span class="fc" id="L46">        Interval&lt;T&gt; a  = this;</span>
-<span class="fc bfc" id="L47" title="All 2 branches covered.">        if (less(a.max, b.min)) return false;</span>
-<span class="pc bpc" id="L48" title="1 of 2 branches missed.">        if (less(b.max, a.min)) return false;</span>
-<span class="fc" id="L49">        return true;</span>
+<span class="fc" id="L74">        Interval&lt;T&gt; a  = this;</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">        if (less(a.max, b.min)) return false;</span>
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">        if (less(b.max, a.min)) return false;</span>
+<span class="fc" id="L77">        return true;</span>
     }
 
     // does this interval a equal interval b?
+
+    /**
+     *
+     @param b
+     @return
+     */
     public boolean equals(Interval&lt;T&gt; b) {
-<span class="nc" id="L54">        Interval&lt;T&gt; a  = this;</span>
-<span class="nc bnc" id="L55" title="All 4 branches missed.">        return a.min.equals(b.min) &amp;&amp; a.max.equals(b.max);</span>
+<span class="nc" id="L88">        Interval&lt;T&gt; a  = this;</span>
+<span class="nc bnc" id="L89" title="All 4 branches missed.">        return a.min.equals(b.min) &amp;&amp; a.max.equals(b.max);</span>
     }
 
 
     // comparison helper functions
     private boolean less(T x, T y) {
-<span class="fc bfc" id="L61" title="All 2 branches covered.">        return x.compareTo(y) &lt; 0;</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">        return x.compareTo(y) &lt; 0;</span>
     }
 
     @Override
     public int compareTo(Interval&lt;T&gt; other) {
         
         //other.max   min  max
-<span class="fc" id="L68">        int c1 = min().compareTo(other.max());</span>
-<span class="fc bfc" id="L69" title="All 2 branches covered.">        if (c1 &gt; 0) {</span>
-<span class="fc" id="L70">            return -c1;</span>
+<span class="fc" id="L102">        int c1 = min().compareTo(other.max());</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">        if (c1 &gt; 0) {</span>
+<span class="fc" id="L104">            return -c1;</span>
         }
         //    max  other.min
-<span class="fc" id="L73">        c1 = max().compareTo(other.min());</span>
-<span class="fc bfc" id="L74" title="All 2 branches covered.">        if (c1 &lt; 0) {</span>
-<span class="fc" id="L75">            return -c1;</span>
+<span class="fc" id="L107">        c1 = max().compareTo(other.min());</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">        if (c1 &lt; 0) {</span>
+<span class="fc" id="L109">            return -c1;</span>
         }
         
-<span class="fc" id="L78">        return 0;</span>
+<span class="fc" id="L112">        return 0;</span>
     }
     
     // return string representation
     public String toString() {
-<span class="fc" id="L83">        return &quot;[&quot; + min + &quot;, &quot; + max + &quot;]&quot;;</span>
+<span class="fc" id="L117">        return &quot;[&quot; + min + &quot;, &quot; + max + &quot;]&quot;;</span>
     }
 
     // test client
-    public static void main(String[] args) {
-<span class="nc" id="L88">        int n = Integer.parseInt(args[0]);</span>
 
-<span class="nc" id="L90">        Interval&lt;Integer&gt; a = new Interval&lt;Integer&gt;(5, 17);</span>
-<span class="nc" id="L91">        Interval&lt;Integer&gt; b = new Interval&lt;Integer&gt;(5, 17);</span>
-<span class="nc" id="L92">        Interval&lt;Integer&gt; c = new Interval&lt;Integer&gt;(5, 18);</span>
-<span class="nc" id="L93">        System.out.println(a.equals(b));</span>
-<span class="nc bnc" id="L94" title="All 2 branches missed.">        System.out.println(!a.equals(c));</span>
-<span class="nc bnc" id="L95" title="All 2 branches missed.">        System.out.println(!b.equals(c));</span>
+    /**
+     *
+     @param args
+     */
+    public static void main(String[] args) {
+<span class="nc" id="L127">        int n = Integer.parseInt(args[0]);</span>
+
+<span class="nc" id="L129">        Interval&lt;Integer&gt; a = new Interval&lt;Integer&gt;(5, 17);</span>
+<span class="nc" id="L130">        Interval&lt;Integer&gt; b = new Interval&lt;Integer&gt;(5, 17);</span>
+<span class="nc" id="L131">        Interval&lt;Integer&gt; c = new Interval&lt;Integer&gt;(5, 18);</span>
+<span class="nc" id="L132">        System.out.println(a.equals(b));</span>
+<span class="nc bnc" id="L133" title="All 2 branches missed.">        System.out.println(!a.equals(c));</span>
+<span class="nc bnc" id="L134" title="All 2 branches missed.">        System.out.println(!b.equals(c));</span>
 
 
         // generate n random points in [-1, 2] and compute
         // fraction that lies in [0, 1]
-<span class="nc" id="L100">        Interval&lt;Double&gt; interval = new Interval&lt;Double&gt;(0.0, 1.0);</span>
-<span class="nc" id="L101">        int count = 0;</span>
-<span class="nc bnc" id="L102" title="All 2 branches missed.">        for (int i = 0; i &lt; n; i++) {</span>
-<span class="nc" id="L103">            double x = 3 * Math.random() - 1.0;</span>
-<span class="nc bnc" id="L104" title="All 2 branches missed.">            if (interval.contains(x)) count++;</span>
+<span class="nc" id="L139">        Interval&lt;Double&gt; interval = new Interval&lt;Double&gt;(0.0, 1.0);</span>
+<span class="nc" id="L140">        int count = 0;</span>
+<span class="nc bnc" id="L141" title="All 2 branches missed.">        for (int i = 0; i &lt; n; i++) {</span>
+<span class="nc" id="L142">            double x = 3 * Math.random() - 1.0;</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">            if (interval.contains(x)) count++;</span>
         }
-<span class="nc" id="L106">        System.out.println(&quot;fraction = &quot; + (1.0 * count / n));</span>
-<span class="nc" id="L107">    }</span>
+<span class="nc" id="L145">        System.out.println(&quot;fraction = &quot; + (1.0 * count / n));</span>
+<span class="nc" id="L146">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

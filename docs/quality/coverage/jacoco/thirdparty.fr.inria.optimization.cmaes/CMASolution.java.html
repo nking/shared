@@ -14,49 +14,68 @@ public class CMASolution implements ISolutionPoint, java.io.Serializable {
 	 */
 	private static final long serialVersionUID = 6257830429350615236L;
 
-<span class="nc" id="L17">	public CMASolution() {</span>
-<span class="nc" id="L18">	}</span>
+    /**
+     *
+     */
+<span class="nc" id="L20">    public CMASolution() {</span>
+<span class="nc" id="L21">	}</span>
 
-<span class="fc" id="L20">	public CMASolution(double[] x, double fitnessValue, long evaluation) {</span>
+    /**
+     *
+     @param x
+     @param fitnessValue
+     @param evaluation
+     */
+<span class="fc" id="L29">    public CMASolution(double[] x, double fitnessValue, long evaluation) {</span>
         // super(); // cave: default values for fields overwrite super()
-<span class="fc" id="L22">        this.functionValue = fitnessValue;</span>
-<span class="fc" id="L23">        this.x = x.clone(); // deep copy, see http://java.sun.com/docs/books/jls/third_edition/html/arrays.html 10.7</span>
-<span class="fc" id="L24">        this.evaluation = evaluation;</span>
-<span class="fc" id="L25">    }</span>
+<span class="fc" id="L31">        this.functionValue = fitnessValue;</span>
+<span class="fc" id="L32">        this.x = x.clone(); // deep copy, see http://java.sun.com/docs/books/jls/third_edition/html/arrays.html 10.7</span>
+<span class="fc" id="L33">        this.evaluation = evaluation;</span>
+<span class="fc" id="L34">    }</span>
 	
 	/* * as I do not know how to inherit clone in a decent way
 	 * and clone even might produce shallow copies
 	 */
+
+    /**
+     *
+     @return
+     */
+
 	public CMASolution deepCopy() {
-<span class="nc" id="L31">		return new CMASolution(x, functionValue, evaluation); </span>
+<span class="nc" id="L46">		return new CMASolution(x, functionValue, evaluation); </span>
 	}
 
-<span class="nc" id="L34">    public CMASolution(double[] x) {</span>
-<span class="nc" id="L35">	    this.x = x;</span>
-<span class="nc" id="L36">	}</span>
+    /**
+     *
+     @param x
+     */
+<span class="nc" id="L53">    public CMASolution(double[] x) {</span>
+<span class="nc" id="L54">	    this.x = x;</span>
+<span class="nc" id="L55">	}</span>
     // getter functions
-<span class="nc" id="L38">    public double getFitness() { return functionValue; }</span>
-<span class="nc" id="L39">    public long getEvaluationNumber() { return evaluation; }</span>
-<span class="fc" id="L40">    public double[] getX() { return x.clone(); }</span>
+<span class="nc" id="L57">    public double getFitness() { return functionValue; }</span>
+<span class="nc" id="L58">    public long getEvaluationNumber() { return evaluation; }</span>
+<span class="fc" id="L59">    public double[] getX() { return x.clone(); }</span>
     
     // setter functions
-<span class="nc" id="L43">    public void setFitness(double f) { functionValue = f; }</span>
-<span class="nc" id="L44">    public void setEvaluationNumber(long e) { evaluation = e; }</span>
+<span class="nc" id="L62">    public void setFitness(double f) { functionValue = f; }</span>
+<span class="nc" id="L63">    public void setEvaluationNumber(long e) { evaluation = e; }</span>
     public void setX(double[] x_in) 
     { 
-<span class="nc" id="L47">    	x = new double[x_in.length];</span>
-<span class="nc bnc" id="L48" title="All 2 branches missed.">    	for (int i = 0; i &lt; x.length; ++i)</span>
-<span class="nc" id="L49">    		x[i] = x_in[i];</span>
-<span class="nc" id="L50">    }</span>
+<span class="nc" id="L66">    	x = new double[x_in.length];</span>
+<span class="nc bnc" id="L67" title="All 2 branches missed.">    	for (int i = 0; i &lt; x.length; ++i)</span>
+<span class="nc" id="L68">    		x[i] = x_in[i];</span>
+<span class="nc" id="L69">    }</span>
 
     /** objective function value of x */ 
-<span class="pc" id="L53">    private double functionValue = Double.NaN; </span>
+<span class="pc" id="L72">    private double functionValue = Double.NaN; </span>
 
     /** argument to objective function to be optimized */ 
     private double[] x; 
 
     /** count when the solution was evaluated */
-<span class="pc" id="L59">	private long evaluation = 0;</span>
+<span class="pc" id="L78">	private long evaluation = 0;</span>
 }
 
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

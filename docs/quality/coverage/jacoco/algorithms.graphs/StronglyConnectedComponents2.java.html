@@ -26,8 +26,8 @@ import java.util.Arrays;
      * 
      * RT complexity for worse case is O(|V| + |E|).
      * 
-     * @param connected adjacency of connected components
-     * @return an array of component numbers that correspond to the indexes of 
+     @param connected adjacency of connected components
+     @return an array of component numbers that correspond to the indexes of 
      * connected.
      * e.g. [0,1,1,0,2] says that vertexes 0 and 3 are strongly connected, 
      * and vertexes 1 and 2 are strongly connected...
@@ -89,7 +89,7 @@ import java.util.Arrays;
         //                            leading up to the value node.
         //                           and select is extractMin which is O(log_2(w)) + O(w-l).
         // so if use a data size of 16 bits:
-        //     for n&lt;20 use a list, else use a yfastrie
+        //     for n&lt;20 use a list, else use a yfasttrie
         // if use a data size of 32 bits:
         //     for n&lt;32 use a list, else use a yfasttrie
         
@@ -145,7 +145,7 @@ import java.util.Arrays;
         
 <span class="fc bfc" id="L146" title="All 2 branches covered.">        for (int v = 0; v &lt; connected.length; v++) {</span>
 <span class="fc" id="L147">            SimpleLinkedListNode uNode = connected[v];</span>
-<span class="pc bpc" id="L148" title="1 of 4 branches missed.">            while (uNode != null &amp;&amp; uNode.getNumberOfKeys() &gt; 0) {</span>
+<span class="fc bfc" id="L148" title="All 4 branches covered.">            while (uNode != null &amp;&amp; uNode.getNumberOfKeys() &gt; 0) {</span>
 <span class="fc" id="L149">                int u = uNode.getKey();</span>
 <span class="fc" id="L150">                reversed[u].insert(v);</span>
 <span class="fc" id="L151">                uNode = uNode.getNext();</span>

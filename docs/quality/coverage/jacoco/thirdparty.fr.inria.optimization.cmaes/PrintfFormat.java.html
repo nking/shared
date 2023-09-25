@@ -451,7 +451,7 @@ public class PrintfFormat {
    * unpaired percent signs.  A pair of successive
    * percent signs designates a single percent sign in
    * the format.
-   * @param fmtArg  Control string.
+   @param fmtArg  Control string.
    * @exception IllegalArgumentException if the control
    * string is null, zero length, or otherwise
    * malformed.
@@ -467,259 +467,260 @@ public class PrintfFormat {
    * unpaired percent signs.  A pair of successive
    * percent signs designates a single percent sign in
    * the format.
-   * @param fmtArg  Control string.
+     @param locale
+   @param fmtArg  Control string.
    * @exception IllegalArgumentException if the control
    * string is null, zero length, or otherwise
    * malformed.
    */
   public PrintfFormat(Locale locale,String fmtArg)
-<span class="fc" id="L476">      throws IllegalArgumentException {</span>
-<span class="fc" id="L477">    dfs = new DecimalFormatSymbols(locale);</span>
-<span class="fc" id="L478">    int ePos=0;</span>
-<span class="fc" id="L479">    ConversionSpecification sFmt=null;</span>
-<span class="fc" id="L480">    String unCS = this.nonControl(fmtArg,0);</span>
-<span class="pc bpc" id="L481" title="1 of 2 branches missed.">    if (unCS!=null) {</span>
-<span class="fc" id="L482">      sFmt = new ConversionSpecification();</span>
-<span class="fc" id="L483">      sFmt.setLiteral(unCS);</span>
-<span class="fc" id="L484">      vFmt.addElement(sFmt);</span>
+<span class="fc" id="L477">      throws IllegalArgumentException {</span>
+<span class="fc" id="L478">    dfs = new DecimalFormatSymbols(locale);</span>
+<span class="fc" id="L479">    int ePos=0;</span>
+<span class="fc" id="L480">    ConversionSpecification sFmt=null;</span>
+<span class="fc" id="L481">    String unCS = this.nonControl(fmtArg,0);</span>
+<span class="pc bpc" id="L482" title="1 of 2 branches missed.">    if (unCS!=null) {</span>
+<span class="fc" id="L483">      sFmt = new ConversionSpecification();</span>
+<span class="fc" id="L484">      sFmt.setLiteral(unCS);</span>
+<span class="fc" id="L485">      vFmt.addElement(sFmt);</span>
     }
-<span class="pc bpc" id="L486" title="1 of 4 branches missed.">    while(cPos!=-1 &amp;&amp; cPos&lt;fmtArg.length()) {</span>
-<span class="pc bpc" id="L487" title="1 of 2 branches missed.">      for (ePos=cPos+1; ePos&lt;fmtArg.length();</span>
-<span class="fc" id="L488">                    ePos++) {</span>
-<span class="fc" id="L489">        char c=0;</span>
-<span class="fc" id="L490">        c = fmtArg.charAt(ePos);</span>
-<span class="pc bpc" id="L491" title="1 of 2 branches missed.">        if (c == 'i') break;</span>
-<span class="fc bfc" id="L492" title="All 2 branches covered.">        if (c == 'd') break;</span>
-<span class="fc bfc" id="L493" title="All 2 branches covered.">        if (c == 'f') break;</span>
-<span class="pc bpc" id="L494" title="1 of 2 branches missed.">        if (c == 'g') break;</span>
-<span class="pc bpc" id="L495" title="1 of 2 branches missed.">        if (c == 'G') break;</span>
-<span class="pc bpc" id="L496" title="1 of 2 branches missed.">        if (c == 'o') break;</span>
-<span class="pc bpc" id="L497" title="1 of 2 branches missed.">        if (c == 'x') break;</span>
-<span class="pc bpc" id="L498" title="1 of 2 branches missed.">        if (c == 'X') break;</span>
-<span class="fc bfc" id="L499" title="All 2 branches covered.">        if (c == 'e') break;</span>
-<span class="pc bpc" id="L500" title="1 of 2 branches missed.">        if (c == 'E') break;</span>
-<span class="pc bpc" id="L501" title="1 of 2 branches missed.">        if (c == 'c') break;</span>
-<span class="pc bpc" id="L502" title="1 of 2 branches missed.">        if (c == 's') break;</span>
-<span class="pc bpc" id="L503" title="1 of 2 branches missed.">        if (c == '%') break;</span>
+<span class="pc bpc" id="L487" title="1 of 4 branches missed.">    while(cPos!=-1 &amp;&amp; cPos&lt;fmtArg.length()) {</span>
+<span class="pc bpc" id="L488" title="1 of 2 branches missed.">      for (ePos=cPos+1; ePos&lt;fmtArg.length();</span>
+<span class="fc" id="L489">                    ePos++) {</span>
+<span class="fc" id="L490">        char c=0;</span>
+<span class="fc" id="L491">        c = fmtArg.charAt(ePos);</span>
+<span class="pc bpc" id="L492" title="1 of 2 branches missed.">        if (c == 'i') break;</span>
+<span class="fc bfc" id="L493" title="All 2 branches covered.">        if (c == 'd') break;</span>
+<span class="fc bfc" id="L494" title="All 2 branches covered.">        if (c == 'f') break;</span>
+<span class="pc bpc" id="L495" title="1 of 2 branches missed.">        if (c == 'g') break;</span>
+<span class="pc bpc" id="L496" title="1 of 2 branches missed.">        if (c == 'G') break;</span>
+<span class="pc bpc" id="L497" title="1 of 2 branches missed.">        if (c == 'o') break;</span>
+<span class="pc bpc" id="L498" title="1 of 2 branches missed.">        if (c == 'x') break;</span>
+<span class="pc bpc" id="L499" title="1 of 2 branches missed.">        if (c == 'X') break;</span>
+<span class="fc bfc" id="L500" title="All 2 branches covered.">        if (c == 'e') break;</span>
+<span class="pc bpc" id="L501" title="1 of 2 branches missed.">        if (c == 'E') break;</span>
+<span class="pc bpc" id="L502" title="1 of 2 branches missed.">        if (c == 'c') break;</span>
+<span class="pc bpc" id="L503" title="1 of 2 branches missed.">        if (c == 's') break;</span>
+<span class="pc bpc" id="L504" title="1 of 2 branches missed.">        if (c == '%') break;</span>
       }
-<span class="fc" id="L505">      ePos=Math.min(ePos+1,fmtArg.length());</span>
-<span class="fc" id="L506">      sFmt = new ConversionSpecification(</span>
-<span class="fc" id="L507">        fmtArg.substring(cPos,ePos));</span>
-<span class="fc" id="L508">      vFmt.addElement(sFmt);</span>
-<span class="fc" id="L509">      unCS = this.nonControl(fmtArg,ePos);</span>
-<span class="pc bpc" id="L510" title="1 of 2 branches missed.">      if (unCS!=null) {</span>
-<span class="fc" id="L511">        sFmt = new ConversionSpecification();</span>
-<span class="fc" id="L512">        sFmt.setLiteral(unCS);</span>
-<span class="fc" id="L513">        vFmt.addElement(sFmt);</span>
+<span class="fc" id="L506">      ePos=Math.min(ePos+1,fmtArg.length());</span>
+<span class="fc" id="L507">      sFmt = new ConversionSpecification(</span>
+<span class="fc" id="L508">        fmtArg.substring(cPos,ePos));</span>
+<span class="fc" id="L509">      vFmt.addElement(sFmt);</span>
+<span class="fc" id="L510">      unCS = this.nonControl(fmtArg,ePos);</span>
+<span class="pc bpc" id="L511" title="1 of 2 branches missed.">      if (unCS!=null) {</span>
+<span class="fc" id="L512">        sFmt = new ConversionSpecification();</span>
+<span class="fc" id="L513">        sFmt.setLiteral(unCS);</span>
+<span class="fc" id="L514">        vFmt.addElement(sFmt);</span>
       }
     }
-<span class="fc" id="L516">  }</span>
+<span class="fc" id="L517">  }</span>
   /**
    * Return a substring starting at
    * &lt;code&gt;start&lt;/code&gt; and ending at either the end
    * of the String &lt;code&gt;s&lt;/code&gt;, the next unpaired
    * percent sign, or at the end of the String if the
    * last character is a percent sign.
-   * @param s  Control string.
-   * @param start Position in the string
+   @param s  Control string.
+   @param start Position in the string
    *     &lt;code&gt;s&lt;/code&gt; to begin looking for the start
    *     of a control string.
-   * @return the substring from the start position
+   @return the substring from the start position
    *     to the beginning of the control string.
    */
   private String nonControl(String s,int start) {
-<span class="fc" id="L531">    String ret=&quot;&quot;;</span>
-<span class="fc" id="L532">    cPos=s.indexOf(&quot;%&quot;,start);</span>
-<span class="fc bfc" id="L533" title="All 2 branches covered.">    if (cPos==-1) cPos=s.length();</span>
-<span class="fc" id="L534">    return s.substring(start,cPos);</span>
+<span class="fc" id="L532">    String ret=&quot;&quot;;</span>
+<span class="fc" id="L533">    cPos=s.indexOf(&quot;%&quot;,start);</span>
+<span class="fc bfc" id="L534" title="All 2 branches covered.">    if (cPos==-1) cPos=s.length();</span>
+<span class="fc" id="L535">    return s.substring(start,cPos);</span>
   }
   /**
    * Format an array of objects.  Byte, Short,
    * Integer, Long, Float, Double, and Character
    * arguments are treated as wrappers for primitive
    * types.
-   * @param o The array of objects to format.
-   * @return  The formatted String.
+   @param o The array of objects to format.
+   @return  The formatted String.
    */
   public String sprintf(Object[] o) {
-<span class="nc" id="L545">    Enumeration e = vFmt.elements();</span>
-<span class="nc" id="L546">    ConversionSpecification cs = null;</span>
-<span class="nc" id="L547">    char c = 0;</span>
-<span class="nc" id="L548">    int i=0;</span>
-<span class="nc" id="L549">    StringBuffer sb=new StringBuffer();</span>
-<span class="nc bnc" id="L550" title="All 2 branches missed.">    while (e.hasMoreElements()) {</span>
-<span class="nc" id="L551">      cs = (ConversionSpecification)</span>
-<span class="nc" id="L552">        e.nextElement();</span>
-<span class="nc" id="L553">      c = cs.getConversionCharacter();</span>
-<span class="nc bnc" id="L554" title="All 2 branches missed.">      if (c=='\0') sb.append(cs.getLiteral());</span>
-<span class="nc bnc" id="L555" title="All 2 branches missed.">      else if (c=='%') sb.append(&quot;%&quot;);</span>
+<span class="nc" id="L546">    Enumeration e = vFmt.elements();</span>
+<span class="nc" id="L547">    ConversionSpecification cs = null;</span>
+<span class="nc" id="L548">    char c = 0;</span>
+<span class="nc" id="L549">    int i=0;</span>
+<span class="nc" id="L550">    StringBuffer sb=new StringBuffer();</span>
+<span class="nc bnc" id="L551" title="All 2 branches missed.">    while (e.hasMoreElements()) {</span>
+<span class="nc" id="L552">      cs = (ConversionSpecification)</span>
+<span class="nc" id="L553">        e.nextElement();</span>
+<span class="nc" id="L554">      c = cs.getConversionCharacter();</span>
+<span class="nc bnc" id="L555" title="All 2 branches missed.">      if (c=='\0') sb.append(cs.getLiteral());</span>
+<span class="nc bnc" id="L556" title="All 2 branches missed.">      else if (c=='%') sb.append(&quot;%&quot;);</span>
       else {
-<span class="nc bnc" id="L557" title="All 2 branches missed.">        if (cs.isPositionalSpecification()) {</span>
-<span class="nc" id="L558">          i=cs.getArgumentPosition()-1;</span>
-<span class="nc bnc" id="L559" title="All 2 branches missed.">          if (cs.isPositionalFieldWidth()) {</span>
-<span class="nc" id="L560">            int ifw=cs.getArgumentPositionForFieldWidth()-1;</span>
-<span class="nc" id="L561">            cs.setFieldWidthWithArg(((Integer)o[ifw]).intValue());</span>
+<span class="nc bnc" id="L558" title="All 2 branches missed.">        if (cs.isPositionalSpecification()) {</span>
+<span class="nc" id="L559">          i=cs.getArgumentPosition()-1;</span>
+<span class="nc bnc" id="L560" title="All 2 branches missed.">          if (cs.isPositionalFieldWidth()) {</span>
+<span class="nc" id="L561">            int ifw=cs.getArgumentPositionForFieldWidth()-1;</span>
+<span class="nc" id="L562">            cs.setFieldWidthWithArg(((Integer)o[ifw]).intValue());</span>
           }
-<span class="nc bnc" id="L563" title="All 2 branches missed.">          if (cs.isPositionalPrecision()) {</span>
-<span class="nc" id="L564">            int ipr=cs.getArgumentPositionForPrecision()-1;</span>
-<span class="nc" id="L565">            cs.setPrecisionWithArg(((Integer)o[ipr]).intValue());</span>
-<span class="nc" id="L566">          }</span>
+<span class="nc bnc" id="L564" title="All 2 branches missed.">          if (cs.isPositionalPrecision()) {</span>
+<span class="nc" id="L565">            int ipr=cs.getArgumentPositionForPrecision()-1;</span>
+<span class="nc" id="L566">            cs.setPrecisionWithArg(((Integer)o[ipr]).intValue());</span>
+<span class="nc" id="L567">          }</span>
         }
         else {
-<span class="nc bnc" id="L569" title="All 2 branches missed.">          if (cs.isVariableFieldWidth()) {</span>
-<span class="nc" id="L570">            cs.setFieldWidthWithArg(((Integer)o[i]).intValue());</span>
-<span class="nc" id="L571">            i++;</span>
+<span class="nc bnc" id="L570" title="All 2 branches missed.">          if (cs.isVariableFieldWidth()) {</span>
+<span class="nc" id="L571">            cs.setFieldWidthWithArg(((Integer)o[i]).intValue());</span>
+<span class="nc" id="L572">            i++;</span>
           }
-<span class="nc bnc" id="L573" title="All 2 branches missed.">          if (cs.isVariablePrecision()) {</span>
-<span class="nc" id="L574">            cs.setPrecisionWithArg(((Integer)o[i]).intValue());</span>
-<span class="nc" id="L575">            i++;</span>
+<span class="nc bnc" id="L574" title="All 2 branches missed.">          if (cs.isVariablePrecision()) {</span>
+<span class="nc" id="L575">            cs.setPrecisionWithArg(((Integer)o[i]).intValue());</span>
+<span class="nc" id="L576">            i++;</span>
           }
         }
-<span class="nc bnc" id="L578" title="All 2 branches missed.">        if (o[i] instanceof Byte)</span>
-<span class="nc" id="L579">          sb.append(cs.internalsprintf(</span>
-<span class="nc" id="L580">          ((Byte)o[i]).byteValue()));</span>
-<span class="nc bnc" id="L581" title="All 2 branches missed.">        else if (o[i] instanceof Short)</span>
-<span class="nc" id="L582">          sb.append(cs.internalsprintf(</span>
-<span class="nc" id="L583">          ((Short)o[i]).shortValue()));</span>
-<span class="nc bnc" id="L584" title="All 2 branches missed.">        else if (o[i] instanceof Integer)</span>
-<span class="nc" id="L585">          sb.append(cs.internalsprintf(</span>
-<span class="nc" id="L586">          ((Integer)o[i]).intValue()));</span>
-<span class="nc bnc" id="L587" title="All 2 branches missed.">        else if (o[i] instanceof Long)</span>
-<span class="nc" id="L588">          sb.append(cs.internalsprintf(</span>
-<span class="nc" id="L589">          ((Long)o[i]).longValue()));</span>
-<span class="nc bnc" id="L590" title="All 2 branches missed.">        else if (o[i] instanceof Float)</span>
-<span class="nc" id="L591">          sb.append(cs.internalsprintf(</span>
-<span class="nc" id="L592">          ((Float)o[i]).floatValue()));</span>
-<span class="nc bnc" id="L593" title="All 2 branches missed.">        else if (o[i] instanceof Double)</span>
-<span class="nc" id="L594">          sb.append(cs.internalsprintf(</span>
-<span class="nc" id="L595">          ((Double)o[i]).doubleValue()));</span>
-<span class="nc bnc" id="L596" title="All 2 branches missed.">        else if (o[i] instanceof Character)</span>
-<span class="nc" id="L597">          sb.append(cs.internalsprintf(</span>
-<span class="nc" id="L598">          ((Character)o[i]).charValue()));</span>
-<span class="nc bnc" id="L599" title="All 2 branches missed.">        else if (o[i] instanceof String)</span>
-<span class="nc" id="L600">          sb.append(cs.internalsprintf(</span>
+<span class="nc bnc" id="L579" title="All 2 branches missed.">        if (o[i] instanceof Byte)</span>
+<span class="nc" id="L580">          sb.append(cs.internalsprintf(</span>
+<span class="nc" id="L581">          ((Byte)o[i]).byteValue()));</span>
+<span class="nc bnc" id="L582" title="All 2 branches missed.">        else if (o[i] instanceof Short)</span>
+<span class="nc" id="L583">          sb.append(cs.internalsprintf(</span>
+<span class="nc" id="L584">          ((Short)o[i]).shortValue()));</span>
+<span class="nc bnc" id="L585" title="All 2 branches missed.">        else if (o[i] instanceof Integer)</span>
+<span class="nc" id="L586">          sb.append(cs.internalsprintf(</span>
+<span class="nc" id="L587">          ((Integer)o[i]).intValue()));</span>
+<span class="nc bnc" id="L588" title="All 2 branches missed.">        else if (o[i] instanceof Long)</span>
+<span class="nc" id="L589">          sb.append(cs.internalsprintf(</span>
+<span class="nc" id="L590">          ((Long)o[i]).longValue()));</span>
+<span class="nc bnc" id="L591" title="All 2 branches missed.">        else if (o[i] instanceof Float)</span>
+<span class="nc" id="L592">          sb.append(cs.internalsprintf(</span>
+<span class="nc" id="L593">          ((Float)o[i]).floatValue()));</span>
+<span class="nc bnc" id="L594" title="All 2 branches missed.">        else if (o[i] instanceof Double)</span>
+<span class="nc" id="L595">          sb.append(cs.internalsprintf(</span>
+<span class="nc" id="L596">          ((Double)o[i]).doubleValue()));</span>
+<span class="nc bnc" id="L597" title="All 2 branches missed.">        else if (o[i] instanceof Character)</span>
+<span class="nc" id="L598">          sb.append(cs.internalsprintf(</span>
+<span class="nc" id="L599">          ((Character)o[i]).charValue()));</span>
+<span class="nc bnc" id="L600" title="All 2 branches missed.">        else if (o[i] instanceof String)</span>
+<span class="nc" id="L601">          sb.append(cs.internalsprintf(</span>
           (String)o[i]));
         else
-<span class="nc" id="L603">          sb.append(cs.internalsprintf(</span>
+<span class="nc" id="L604">          sb.append(cs.internalsprintf(</span>
           o[i]));
-<span class="nc bnc" id="L605" title="All 2 branches missed.">        if (!cs.isPositionalSpecification())</span>
-<span class="nc" id="L606">          i++;</span>
+<span class="nc bnc" id="L606" title="All 2 branches missed.">        if (!cs.isPositionalSpecification())</span>
+<span class="nc" id="L607">          i++;</span>
       }
     }
-<span class="nc" id="L609">    return sb.toString();</span>
+<span class="nc" id="L610">    return sb.toString();</span>
   }
   /**
    * Format nothing.  Just use the control string.
-   * @return  the formatted String.
+   @return  the formatted String.
    */
   public String sprintf() {
-<span class="nc" id="L616">    Enumeration e = vFmt.elements();</span>
-<span class="nc" id="L617">    ConversionSpecification cs = null;</span>
-<span class="nc" id="L618">    char c = 0;</span>
-<span class="nc" id="L619">    StringBuffer sb=new StringBuffer();</span>
-<span class="nc bnc" id="L620" title="All 2 branches missed.">    while (e.hasMoreElements()) {</span>
-<span class="nc" id="L621">      cs = (ConversionSpecification)</span>
-<span class="nc" id="L622">        e.nextElement();</span>
-<span class="nc" id="L623">      c = cs.getConversionCharacter();</span>
-<span class="nc bnc" id="L624" title="All 2 branches missed.">      if (c=='\0') sb.append(cs.getLiteral());</span>
-<span class="nc bnc" id="L625" title="All 2 branches missed.">      else if (c=='%') sb.append(&quot;%&quot;);</span>
+<span class="nc" id="L617">    Enumeration e = vFmt.elements();</span>
+<span class="nc" id="L618">    ConversionSpecification cs = null;</span>
+<span class="nc" id="L619">    char c = 0;</span>
+<span class="nc" id="L620">    StringBuffer sb=new StringBuffer();</span>
+<span class="nc bnc" id="L621" title="All 2 branches missed.">    while (e.hasMoreElements()) {</span>
+<span class="nc" id="L622">      cs = (ConversionSpecification)</span>
+<span class="nc" id="L623">        e.nextElement();</span>
+<span class="nc" id="L624">      c = cs.getConversionCharacter();</span>
+<span class="nc bnc" id="L625" title="All 2 branches missed.">      if (c=='\0') sb.append(cs.getLiteral());</span>
+<span class="nc bnc" id="L626" title="All 2 branches missed.">      else if (c=='%') sb.append(&quot;%&quot;);</span>
     }
-<span class="nc" id="L627">    return sb.toString();</span>
+<span class="nc" id="L628">    return sb.toString();</span>
   }
   /**
    * Format an int.
-   * @param x The int to format.
-   * @return  The formatted String.
+   @param x The int to format.
+   @return  The formatted String.
    * @exception IllegalArgumentException if the
    *     conversion character is f, e, E, g, G, s,
    *     or S.
    */
   public String sprintf(int x)
       throws IllegalArgumentException {
-<span class="fc" id="L639">    Enumeration e = vFmt.elements();</span>
-<span class="fc" id="L640">    ConversionSpecification cs = null;</span>
-<span class="fc" id="L641">    char c = 0;</span>
-<span class="fc" id="L642">    StringBuffer sb=new StringBuffer();</span>
-<span class="fc bfc" id="L643" title="All 2 branches covered.">    while (e.hasMoreElements()) {</span>
-<span class="fc" id="L644">      cs = (ConversionSpecification)</span>
-<span class="fc" id="L645">        e.nextElement();</span>
-<span class="fc" id="L646">      c = cs.getConversionCharacter();</span>
-<span class="fc bfc" id="L647" title="All 2 branches covered.">      if (c=='\0') sb.append(cs.getLiteral());</span>
-<span class="pc bpc" id="L648" title="1 of 2 branches missed.">      else if (c=='%') sb.append(&quot;%&quot;);</span>
-<span class="fc" id="L649">      else sb.append(cs.internalsprintf(x));</span>
+<span class="fc" id="L640">    Enumeration e = vFmt.elements();</span>
+<span class="fc" id="L641">    ConversionSpecification cs = null;</span>
+<span class="fc" id="L642">    char c = 0;</span>
+<span class="fc" id="L643">    StringBuffer sb=new StringBuffer();</span>
+<span class="fc bfc" id="L644" title="All 2 branches covered.">    while (e.hasMoreElements()) {</span>
+<span class="fc" id="L645">      cs = (ConversionSpecification)</span>
+<span class="fc" id="L646">        e.nextElement();</span>
+<span class="fc" id="L647">      c = cs.getConversionCharacter();</span>
+<span class="fc bfc" id="L648" title="All 2 branches covered.">      if (c=='\0') sb.append(cs.getLiteral());</span>
+<span class="pc bpc" id="L649" title="1 of 2 branches missed.">      else if (c=='%') sb.append(&quot;%&quot;);</span>
+<span class="fc" id="L650">      else sb.append(cs.internalsprintf(x));</span>
     }
-<span class="fc" id="L651">    return sb.toString();</span>
+<span class="fc" id="L652">    return sb.toString();</span>
   }
   /**
    * Format an long.
-   * @param x The long to format.
-   * @return  The formatted String.
+   @param x The long to format.
+   @return  The formatted String.
    * @exception IllegalArgumentException if the
    *     conversion character is f, e, E, g, G, s,
    *     or S.
    */
   public String sprintf(long x)
       throws IllegalArgumentException {
-<span class="fc" id="L663">    Enumeration e = vFmt.elements();</span>
-<span class="fc" id="L664">    ConversionSpecification cs = null;</span>
-<span class="fc" id="L665">    char c = 0;</span>
-<span class="fc" id="L666">    StringBuffer sb=new StringBuffer();</span>
-<span class="fc bfc" id="L667" title="All 2 branches covered.">    while (e.hasMoreElements()) {</span>
-<span class="fc" id="L668">      cs = (ConversionSpecification)</span>
-<span class="fc" id="L669">        e.nextElement();</span>
-<span class="fc" id="L670">      c = cs.getConversionCharacter();</span>
-<span class="fc bfc" id="L671" title="All 2 branches covered.">      if (c=='\0') sb.append(cs.getLiteral());</span>
-<span class="pc bpc" id="L672" title="1 of 2 branches missed.">      else if (c=='%') sb.append(&quot;%&quot;);</span>
-<span class="fc" id="L673">      else sb.append(cs.internalsprintf(x));</span>
+<span class="fc" id="L664">    Enumeration e = vFmt.elements();</span>
+<span class="fc" id="L665">    ConversionSpecification cs = null;</span>
+<span class="fc" id="L666">    char c = 0;</span>
+<span class="fc" id="L667">    StringBuffer sb=new StringBuffer();</span>
+<span class="fc bfc" id="L668" title="All 2 branches covered.">    while (e.hasMoreElements()) {</span>
+<span class="fc" id="L669">      cs = (ConversionSpecification)</span>
+<span class="fc" id="L670">        e.nextElement();</span>
+<span class="fc" id="L671">      c = cs.getConversionCharacter();</span>
+<span class="fc bfc" id="L672" title="All 2 branches covered.">      if (c=='\0') sb.append(cs.getLiteral());</span>
+<span class="pc bpc" id="L673" title="1 of 2 branches missed.">      else if (c=='%') sb.append(&quot;%&quot;);</span>
+<span class="fc" id="L674">      else sb.append(cs.internalsprintf(x));</span>
     }
-<span class="fc" id="L675">    return sb.toString();</span>
+<span class="fc" id="L676">    return sb.toString();</span>
   }
   /**
    * Format a double.
-   * @param x The double to format.
-   * @return  The formatted String.
+   @param x The double to format.
+   @return  The formatted String.
    * @exception IllegalArgumentException if the
    *     conversion character is c, C, s, S,
    *     d, d, x, X, or o.
    */
   public String sprintf(double x)
       throws IllegalArgumentException {
-<span class="fc" id="L687">    Enumeration e = vFmt.elements();</span>
-<span class="fc" id="L688">    ConversionSpecification cs = null;</span>
-<span class="fc" id="L689">    char c = 0;</span>
-<span class="fc" id="L690">    StringBuffer sb=new StringBuffer();</span>
-<span class="fc bfc" id="L691" title="All 2 branches covered.">    while (e.hasMoreElements()) {</span>
-<span class="fc" id="L692">      cs = (ConversionSpecification)</span>
-<span class="fc" id="L693">        e.nextElement();</span>
-<span class="fc" id="L694">      c = cs.getConversionCharacter();</span>
-<span class="fc bfc" id="L695" title="All 2 branches covered.">      if (c=='\0') sb.append(cs.getLiteral());</span>
-<span class="pc bpc" id="L696" title="1 of 2 branches missed.">      else if (c=='%') sb.append(&quot;%&quot;);</span>
-<span class="fc" id="L697">      else sb.append(cs.internalsprintf(x));</span>
+<span class="fc" id="L688">    Enumeration e = vFmt.elements();</span>
+<span class="fc" id="L689">    ConversionSpecification cs = null;</span>
+<span class="fc" id="L690">    char c = 0;</span>
+<span class="fc" id="L691">    StringBuffer sb=new StringBuffer();</span>
+<span class="fc bfc" id="L692" title="All 2 branches covered.">    while (e.hasMoreElements()) {</span>
+<span class="fc" id="L693">      cs = (ConversionSpecification)</span>
+<span class="fc" id="L694">        e.nextElement();</span>
+<span class="fc" id="L695">      c = cs.getConversionCharacter();</span>
+<span class="fc bfc" id="L696" title="All 2 branches covered.">      if (c=='\0') sb.append(cs.getLiteral());</span>
+<span class="pc bpc" id="L697" title="1 of 2 branches missed.">      else if (c=='%') sb.append(&quot;%&quot;);</span>
+<span class="fc" id="L698">      else sb.append(cs.internalsprintf(x));</span>
     }
-<span class="fc" id="L699">    return sb.toString();</span>
+<span class="fc" id="L700">    return sb.toString();</span>
   }
   /**
    * Format a String.
-   * @param x The String to format.
-   * @return  The formatted String.
+   @param x The String to format.
+   @return  The formatted String.
    * @exception IllegalArgumentException if the
    *   conversion character is neither s nor S.
    */
   public String sprintf(String x)
       throws IllegalArgumentException {
-<span class="nc" id="L710">    Enumeration e = vFmt.elements();</span>
-<span class="nc" id="L711">    ConversionSpecification cs = null;</span>
-<span class="nc" id="L712">    char c = 0;</span>
-<span class="nc" id="L713">    StringBuffer sb=new StringBuffer();</span>
-<span class="nc bnc" id="L714" title="All 2 branches missed.">    while (e.hasMoreElements()) {</span>
-<span class="nc" id="L715">      cs = (ConversionSpecification)</span>
-<span class="nc" id="L716">        e.nextElement();</span>
-<span class="nc" id="L717">      c = cs.getConversionCharacter();</span>
-<span class="nc bnc" id="L718" title="All 2 branches missed.">      if (c=='\0') sb.append(cs.getLiteral());</span>
-<span class="nc bnc" id="L719" title="All 2 branches missed.">      else if (c=='%') sb.append(&quot;%&quot;);</span>
-<span class="nc" id="L720">      else sb.append(cs.internalsprintf(x));</span>
+<span class="nc" id="L711">    Enumeration e = vFmt.elements();</span>
+<span class="nc" id="L712">    ConversionSpecification cs = null;</span>
+<span class="nc" id="L713">    char c = 0;</span>
+<span class="nc" id="L714">    StringBuffer sb=new StringBuffer();</span>
+<span class="nc bnc" id="L715" title="All 2 branches missed.">    while (e.hasMoreElements()) {</span>
+<span class="nc" id="L716">      cs = (ConversionSpecification)</span>
+<span class="nc" id="L717">        e.nextElement();</span>
+<span class="nc" id="L718">      c = cs.getConversionCharacter();</span>
+<span class="nc bnc" id="L719" title="All 2 branches missed.">      if (c=='\0') sb.append(cs.getLiteral());</span>
+<span class="nc bnc" id="L720" title="All 2 branches missed.">      else if (c=='%') sb.append(&quot;%&quot;);</span>
+<span class="nc" id="L721">      else sb.append(cs.internalsprintf(x));</span>
     }
-<span class="nc" id="L722">    return sb.toString();</span>
+<span class="nc" id="L723">    return sb.toString();</span>
   }
   /**
    * Format an Object.  Convert wrapper types to
@@ -728,54 +729,54 @@ public class PrintfFormat {
    * Strings using an internal formatting method for
    * Strings. Otherwise use the default formatter
    * (use toString).
-   * @param x the Object to format.
-   * @return  the formatted String.
+   @param x the Object to format.
+   @return  the formatted String.
    * @exception IllegalArgumentException if the
    *    conversion character is inappropriate for
    *    formatting an unwrapped value.
    */
   public String sprintf(Object x)
       throws IllegalArgumentException {
-<span class="nc" id="L739">    Enumeration e = vFmt.elements();</span>
-<span class="nc" id="L740">    ConversionSpecification cs = null;</span>
-<span class="nc" id="L741">    char c = 0;</span>
-<span class="nc" id="L742">    StringBuffer sb=new StringBuffer();</span>
-<span class="nc bnc" id="L743" title="All 2 branches missed.">    while (e.hasMoreElements()) {</span>
-<span class="nc" id="L744">      cs = (ConversionSpecification)</span>
-<span class="nc" id="L745">        e.nextElement();</span>
-<span class="nc" id="L746">      c = cs.getConversionCharacter();</span>
-<span class="nc bnc" id="L747" title="All 2 branches missed.">      if (c=='\0') sb.append(cs.getLiteral());</span>
-<span class="nc bnc" id="L748" title="All 2 branches missed.">      else if (c=='%') sb.append(&quot;%&quot;);</span>
+<span class="nc" id="L740">    Enumeration e = vFmt.elements();</span>
+<span class="nc" id="L741">    ConversionSpecification cs = null;</span>
+<span class="nc" id="L742">    char c = 0;</span>
+<span class="nc" id="L743">    StringBuffer sb=new StringBuffer();</span>
+<span class="nc bnc" id="L744" title="All 2 branches missed.">    while (e.hasMoreElements()) {</span>
+<span class="nc" id="L745">      cs = (ConversionSpecification)</span>
+<span class="nc" id="L746">        e.nextElement();</span>
+<span class="nc" id="L747">      c = cs.getConversionCharacter();</span>
+<span class="nc bnc" id="L748" title="All 2 branches missed.">      if (c=='\0') sb.append(cs.getLiteral());</span>
+<span class="nc bnc" id="L749" title="All 2 branches missed.">      else if (c=='%') sb.append(&quot;%&quot;);</span>
       else {
-<span class="nc bnc" id="L750" title="All 2 branches missed.">        if (x instanceof Byte)</span>
-<span class="nc" id="L751">          sb.append(cs.internalsprintf(</span>
-<span class="nc" id="L752">          ((Byte)x).byteValue()));</span>
-<span class="nc bnc" id="L753" title="All 2 branches missed.">        else if (x instanceof Short)</span>
-<span class="nc" id="L754">          sb.append(cs.internalsprintf(</span>
-<span class="nc" id="L755">          ((Short)x).shortValue()));</span>
-<span class="nc bnc" id="L756" title="All 2 branches missed.">        else if (x instanceof Integer)</span>
-<span class="nc" id="L757">          sb.append(cs.internalsprintf(</span>
-<span class="nc" id="L758">          ((Integer)x).intValue()));</span>
-<span class="nc bnc" id="L759" title="All 2 branches missed.">        else if (x instanceof Long)</span>
-<span class="nc" id="L760">          sb.append(cs.internalsprintf(</span>
-<span class="nc" id="L761">          ((Long)x).longValue()));</span>
-<span class="nc bnc" id="L762" title="All 2 branches missed.">        else if (x instanceof Float)</span>
-<span class="nc" id="L763">          sb.append(cs.internalsprintf(</span>
-<span class="nc" id="L764">          ((Float)x).floatValue()));</span>
-<span class="nc bnc" id="L765" title="All 2 branches missed.">        else if (x instanceof Double)</span>
-<span class="nc" id="L766">          sb.append(cs.internalsprintf(</span>
-<span class="nc" id="L767">          ((Double)x).doubleValue()));</span>
-<span class="nc bnc" id="L768" title="All 2 branches missed.">        else if (x instanceof Character)</span>
-<span class="nc" id="L769">          sb.append(cs.internalsprintf(</span>
-<span class="nc" id="L770">          ((Character)x).charValue()));</span>
-<span class="nc bnc" id="L771" title="All 2 branches missed.">        else if (x instanceof String)</span>
-<span class="nc" id="L772">          sb.append(cs.internalsprintf(</span>
+<span class="nc bnc" id="L751" title="All 2 branches missed.">        if (x instanceof Byte)</span>
+<span class="nc" id="L752">          sb.append(cs.internalsprintf(</span>
+<span class="nc" id="L753">          ((Byte)x).byteValue()));</span>
+<span class="nc bnc" id="L754" title="All 2 branches missed.">        else if (x instanceof Short)</span>
+<span class="nc" id="L755">          sb.append(cs.internalsprintf(</span>
+<span class="nc" id="L756">          ((Short)x).shortValue()));</span>
+<span class="nc bnc" id="L757" title="All 2 branches missed.">        else if (x instanceof Integer)</span>
+<span class="nc" id="L758">          sb.append(cs.internalsprintf(</span>
+<span class="nc" id="L759">          ((Integer)x).intValue()));</span>
+<span class="nc bnc" id="L760" title="All 2 branches missed.">        else if (x instanceof Long)</span>
+<span class="nc" id="L761">          sb.append(cs.internalsprintf(</span>
+<span class="nc" id="L762">          ((Long)x).longValue()));</span>
+<span class="nc bnc" id="L763" title="All 2 branches missed.">        else if (x instanceof Float)</span>
+<span class="nc" id="L764">          sb.append(cs.internalsprintf(</span>
+<span class="nc" id="L765">          ((Float)x).floatValue()));</span>
+<span class="nc bnc" id="L766" title="All 2 branches missed.">        else if (x instanceof Double)</span>
+<span class="nc" id="L767">          sb.append(cs.internalsprintf(</span>
+<span class="nc" id="L768">          ((Double)x).doubleValue()));</span>
+<span class="nc bnc" id="L769" title="All 2 branches missed.">        else if (x instanceof Character)</span>
+<span class="nc" id="L770">          sb.append(cs.internalsprintf(</span>
+<span class="nc" id="L771">          ((Character)x).charValue()));</span>
+<span class="nc bnc" id="L772" title="All 2 branches missed.">        else if (x instanceof String)</span>
+<span class="nc" id="L773">          sb.append(cs.internalsprintf(</span>
           (String)x));
         else
-<span class="nc" id="L775">          sb.append(cs.internalsprintf(x));</span>
+<span class="nc" id="L776">          sb.append(cs.internalsprintf(x));</span>
       }
     }
-<span class="nc" id="L778">    return sb.toString();</span>
+<span class="nc" id="L779">    return sb.toString();</span>
   }
   /**
    *&lt;p&gt;
@@ -821,7 +822,7 @@ public class PrintfFormat {
      * The argument must begin with a % and end
      * with the conversion character for the
      * conversion specification.
-      * @param fmtArg  String specifying the
+      @param fmtArg  String specifying the
      *     conversion specification.
       * @exception IllegalArgumentException if the
      *     input string is null, zero length, or
@@ -873,7 +874,7 @@ public class PrintfFormat {
     }
     /**
      * Set the String for this instance.
-     * @param s the String to store.
+     @param s the String to store.
      */
     void setLiteral(String s) {
       fmt = s;
@@ -882,7 +883,7 @@ public class PrintfFormat {
      * Get the String for this instance.  Translate
      * any escape sequences.
      *
-     * @return s the stored String.
+     @return s the stored String.
      */
     String getLiteral() {
       StringBuffer sb=new StringBuffer();
@@ -932,7 +933,7 @@ public class PrintfFormat {
      * Get the conversion character that tells what
      * type of control character this instance has.
      *
-     * @return the conversion character.
+     @return the conversion character.
      */
     char getConversionCharacter() {
       return conversionCharacter;
@@ -941,7 +942,7 @@ public class PrintfFormat {
      * Check whether the specifier has a variable
      * field width that is going to be set by an
      * argument.
-     * @return &lt;code&gt;true&lt;/code&gt; if the conversion
+     @return &lt;code&gt;true&lt;/code&gt; if the conversion
      *   uses an * field width; otherwise
      *   &lt;code&gt;false&lt;/code&gt;.
      */
@@ -952,7 +953,7 @@ public class PrintfFormat {
      * Set the field width with an argument.  A
      * negative field width is taken as a - flag
      * followed by a positive field width.
-     * @param fw the field width.
+     @param fw the field width.
      */
     void setFieldWidthWithArg(int fw) {
       if (fw&lt;0) leftJustify = true;
@@ -963,7 +964,7 @@ public class PrintfFormat {
      * Check whether the specifier has a variable
      * precision that is going to be set by an
      * argument.
-     * @return &lt;code&gt;true&lt;/code&gt; if the conversion
+     @return &lt;code&gt;true&lt;/code&gt; if the conversion
      *   uses an * precision; otherwise
      *   &lt;code&gt;false&lt;/code&gt;.
      */
@@ -973,7 +974,7 @@ public class PrintfFormat {
     /**
      * Set the precision with an argument.  A
      * negative precision will be changed to zero.
-     * @param pr the precision.
+     @param pr the precision.
      */
     void setPrecisionWithArg(int pr) {
       precisionSet = true;
@@ -982,8 +983,8 @@ public class PrintfFormat {
     /**
      * Format an int argument using this conversion
       * specification.
-     * @param s the int to format.
-     * @return the formatted String.
+     @param s the int to format.
+     @return the formatted String.
      * @exception IllegalArgumentException if the
      *     conversion character is f, e, E, g, or G.
      */
@@ -1032,8 +1033,8 @@ public class PrintfFormat {
     /**
      * Format a long argument using this conversion
      * specification.
-     * @param s the long to format.
-     * @return the formatted String.
+     @param s the long to format.
+     @return the formatted String.
      * @exception IllegalArgumentException if the
      *     conversion character is f, e, E, g, or G.
      */
@@ -1081,8 +1082,8 @@ public class PrintfFormat {
     /**
      * Format a double argument using this conversion
      * specification.
-     * @param s the double to format.
-     * @return the formatted String.
+     @param s the double to format.
+     @return the formatted String.
      * @exception IllegalArgumentException if the
      *     conversion character is c, C, s, S, i, d,
      *     x, X, or o.
@@ -1112,8 +1113,8 @@ public class PrintfFormat {
     /**
      * Format a String argument using this conversion
      * specification.
-     * @param s the String to format.
-     * @return the formatted String.
+     @param s the String to format.
+     @return the formatted String.
      * @exception IllegalArgumentException if the
      *   conversion character is neither s nor S.
      */
@@ -1132,8 +1133,8 @@ public class PrintfFormat {
     /**
      * Format an Object argument using this conversion
      * specification.
-     * @param s the Object to format.
-     * @return the formatted String.
+     @param s the Object to format.
+     @return the formatted String.
      * @exception IllegalArgumentException if the
      *     conversion character is neither s nor S.
      */
@@ -1170,6 +1171,8 @@ public class PrintfFormat {
      * The precision, if set, is the number of digits
      * to appear after the radix character.  Padding is
      * with trailing 0s.
+       @param x
+       @return 
      */
     private char[] fFormatDigits(double x) {
       // int defaultDigits=6;
@@ -1360,8 +1363,8 @@ public class PrintfFormat {
 	 * the input double value is an infinity,
 	 * not-a-number, or a finite double and formats
 	 * each type of input appropriately.
-	 * @param x the double value to be formatted.
-	 * @return the converted double value.
+	 @param x the double value to be formatted.
+	 @return the converted double value.
 	 */
     private String fFormatString(double x) {
       boolean noDigits=false;
@@ -1418,6 +1421,9 @@ public class PrintfFormat {
      * e, E, g, or G conversion character. The optional
      * L does not imply conversion to a long long
      * double.
+       @param x
+       @param eChar
+       @return 
      */
     private char[] eFormatDigits(double x,char eChar) {
       char[] ca1,ca2,ca3;
@@ -1652,10 +1658,10 @@ public class PrintfFormat {
      * Check to see if the digits that are going to
      * be truncated because of the precision should
      * force a round in the preceding digits.
-     * @param ca1 the array of digits
-     * @param icarry the index of the first digit that
+     @param ca1 the array of digits
+     @param icarry the index of the first digit that
      *     is to be truncated from the print
-     * @return &lt;code&gt;true&lt;/code&gt; if the truncation forces
+     @return &lt;code&gt;true&lt;/code&gt; if the truncation forces
      *     a round that will change the print
      */
     private boolean checkForCarry(char[] ca1,int icarry) {
@@ -1682,11 +1688,12 @@ public class PrintfFormat {
      * is not quite finished because the symbolic
      * carry may change the length of the string and
      * change the exponent (in e format).
-     * @param cLast index of the last digit changed
+       @param ca
+     @param cLast index of the last digit changed
      *     by the round
-     * @param cFirst index of the first digit allowed
+     @param cFirst index of the first digit allowed
      *     to be changed by this phase of the round
-     * @return &lt;code&gt;true&lt;/code&gt; if the carry forces
+     @return &lt;code&gt;true&lt;/code&gt; if the carry forces
      *     a round that will change the print still
      *     more
      */
@@ -1716,10 +1723,10 @@ public class PrintfFormat {
 	 * the input double value is an infinity,
 	 * not-a-number, or a finite double and formats
 	 * each type of input appropriately.
-	 * @param x the double value to be formatted.
-	 * @param eChar an 'e' or 'E' to use in the
+	 @param x the double value to be formatted.
+	 @param eChar an 'e' or 'E' to use in the
 	 *     converted double value.
-	 * @return the converted double value.
+	 @return the converted double value.
 	 */
     private String eFormatString(double x,char eChar) {
       boolean noDigits=false;
@@ -1749,10 +1756,10 @@ public class PrintfFormat {
     }
     /**
      * Apply zero or blank, left or right padding.
-     * @param ca4 array of characters before padding is
+     @param ca4 array of characters before padding is
      *     finished
-     * @param noDigits NaN or signed Inf
-     * @return a padded array of characters
+     @param noDigits NaN or signed Inf
+     @return a padded array of characters
      */
     private char[] applyFloatPadding(
           char[] ca4,boolean noDigits) {
@@ -1796,8 +1803,8 @@ public class PrintfFormat {
     }
     /**
      * Format method for the f conversion character.
-     * @param x the double to format.
-     * @return the formatted String.
+     @param x the double to format.
+     @return the formatted String.
      */
     private String printFFormat(double x) {
       return fFormatString(x);
@@ -1805,8 +1812,8 @@ public class PrintfFormat {
     /**
      * Format method for the e or E conversion
      * character.
-     * @param x the double to format.
-     * @return the formatted String.
+     @param x the double to format.
+     @return the formatted String.
      */
     private String printEFormat(double x) {
       if (conversionCharacter=='e')
@@ -1837,8 +1844,8 @@ public class PrintfFormat {
      * The precision, if set, is the minimum number of
      * digits to appear after the radix character.
      * Padding is with trailing 0s.
-     * @param x the double to format.
-     * @return the formatted String.
+     @param x the double to format.
+     @return the formatted String.
      */
     private String printGFormat(double x) {
       String sx,sy,sz,ret;
@@ -1951,8 +1958,8 @@ public class PrintfFormat {
      *
      * The precision, if set, is the minimum number of
      * digits to appear.  Padding is with leading 0s.
-     * @param x the short to format.
-     * @return the formatted String.
+     @param x the short to format.
+     @return the formatted String.
      */
     private String printDFormat(short x) {
       return printDFormat(Short.toString(x));
@@ -1980,8 +1987,8 @@ public class PrintfFormat {
      *
      * The precision, if set, is the minimum number of
      * digits to appear.  Padding is with leading 0s.
-     * @param x the long to format.
-     * @return the formatted String.
+     @param x the long to format.
+     @return the formatted String.
      */
     private String printDFormat(long x) {
       return printDFormat(Long.toString(x));
@@ -2009,8 +2016,8 @@ public class PrintfFormat {
      *
      * The precision, if set, is the minimum number of
      * digits to appear.  Padding is with leading 0s.
-     * @param x the int to format.
-     * @return the formatted String.
+     @param x the int to format.
+     @return the formatted String.
      */
     private String printDFormat(int x) {
       return printDFormat(Integer.toString(x));
@@ -2018,10 +2025,10 @@ public class PrintfFormat {
     /**
      * Utility method for formatting using the d
      * conversion character.
-     * @param sx the String to format, the result of
+     @param sx the String to format, the result of
      *     converting a short, int, or long to a
      *     String.
-     * @return the formatted String.
+     @return the formatted String.
      */
     private String printDFormat(String sx) {
       int nLeadingZeros=0;
@@ -2105,8 +2112,8 @@ public class PrintfFormat {
      *
      * The precision, if set, is the minimum number of
      * digits to appear.  Padding is with leading 0s.
-     * @param x the short to format.
-     * @return the formatted String.
+     @param x the short to format.
+     @return the formatted String.
      */
     private String printXFormat(short x) {
       String sx=null;
@@ -2180,8 +2187,8 @@ public class PrintfFormat {
      *
      * The precision, if set, is the minimum number of
      * digits to appear.  Padding is with leading 0s.
-     * @param x the long to format.
-     * @return the formatted String.
+     @param x the long to format.
+     @return the formatted String.
      */
     private String printXFormat(long x) {
       String sx=null;
@@ -2284,8 +2291,8 @@ public class PrintfFormat {
      *
      * The precision, if set, is the minimum number of
      * digits to appear.  Padding is with leading 0s.
-     * @param x the int to format.
-     * @return the formatted String.
+     @param x the int to format.
+     @return the formatted String.
      */
     private String printXFormat(int x) {
       String sx=null;
@@ -2350,10 +2357,10 @@ public class PrintfFormat {
     /**
      * Utility method for formatting using the x
      * conversion character.
-     * @param sx the String to format, the result of
+     @param sx the String to format, the result of
      *     converting a short, int, or long to a
      *     String.
-     * @return the formatted String.
+     @return the formatted String.
      */
     private String printXFormat(String sx) {
       int nLeadingZeros = 0;
@@ -2426,8 +2433,8 @@ public class PrintfFormat {
      *
      * The precision, if set, is the minimum number of
      * digits to appear.  Padding is with leading 0s.
-     * @param x the short to format.
-     * @return the formatted String.
+     @param x the short to format.
+     @return the formatted String.
      */
     private String printOFormat(short x) {
       String sx=null;
@@ -2476,8 +2483,8 @@ public class PrintfFormat {
      *
      * The precision, if set, is the minimum number of
      * digits to appear.  Padding is with leading 0s.
-     * @param x the long to format.
-     * @return the formatted String.
+     @param x the long to format.
+     @return the formatted String.
      */
     private String printOFormat(long x) {
       String sx=null;
@@ -2574,8 +2581,8 @@ public class PrintfFormat {
      *
      * The precision, if set, is the minimum number of
      * digits to appear.  Padding is with leading 0s.
-     * @param x the int to format.
-     * @return the formatted String.
+     @param x the int to format.
+     @return the formatted String.
      */
     private String printOFormat(int x) {
       String sx=null;
@@ -2627,10 +2634,10 @@ public class PrintfFormat {
     /**
      * Utility method for formatting using the o
      * conversion character.
-     * @param sx the String to format, the result of
+     @param sx the String to format, the result of
      *     converting a short, int, or long to a
      *     String.
-     * @return the formatted String.
+     @return the formatted String.
      */
     private String printOFormat(String sx) {
       int nLeadingZeros = 0;
@@ -2681,8 +2688,8 @@ public class PrintfFormat {
      * blanks by default.  The default width is 1.
      *
      * The precision, if set, is ignored.
-     * @param x the char to format.
-     * @return the formatted String.
+     @param x the char to format.
+     @return the formatted String.
      */
     private String printCFormat(char x) {
       int nPrint = 1;
@@ -2720,8 +2727,8 @@ public class PrintfFormat {
      * string.  A null digit string is treated
      * as a 0.  The default is not to set a maximum
      * number of characters to be printed.
-     * @param x the String to format.
-     * @return the formatted String.
+     @param x the String to format.
+     @return the formatted String.
      */
     private String printSFormat(String x) {
       int nPrint = x.length();
@@ -2767,8 +2774,8 @@ public class PrintfFormat {
     /**
      * Check for a conversion character.  If it is
      * there, store it.
-     * @param x the String to format.
-     * @return &lt;code&gt;true&lt;/code&gt; if the conversion
+     @param x the String to format.
+     @return &lt;code&gt;true&lt;/code&gt; if the conversion
      *     character is there, and
      *     &lt;code&gt;false&lt;/code&gt; otherwise.
      */
@@ -2887,6 +2894,7 @@ public class PrintfFormat {
     }
     /**
      * Store the digits &lt;code&gt;n&lt;/code&gt; in *n$ forms.
+       @return 
      */
     private boolean setFieldWidthArgPosition() {
       boolean ret=false;
@@ -2908,6 +2916,7 @@ public class PrintfFormat {
     }
     /**
      * Store the digits &lt;code&gt;n&lt;/code&gt; in *n$ forms.
+       @return 
      */
     private boolean setPrecisionArgPosition() {
       boolean ret=false;
@@ -3087,10 +3096,10 @@ public class PrintfFormat {
     private String fmt;
   }
   /** Vector of control strings and format literals. */
-<span class="fc" id="L3090">  private Vector vFmt = new Vector();</span>
+<span class="fc" id="L3099">  private Vector vFmt = new Vector();</span>
   /** Character position.  Used by the constructor. */
-<span class="fc" id="L3092">  private int cPos=0;</span>
+<span class="fc" id="L3101">  private int cPos=0;</span>
   /** Character position.  Used by the constructor. */
-<span class="fc" id="L3094">  private DecimalFormatSymbols dfs=null;</span>
+<span class="fc" id="L3103">  private DecimalFormatSymbols dfs=null;</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
