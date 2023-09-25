@@ -659,6 +659,9 @@ public final class VeryLongBitString {
         if (nthBit > nBits) {
             throw new IllegalArgumentException("bit must be < " + nBits);
         }
+        if (nthBit < 0) {
+            throw new IllegalArgumentException("bit must be >= 0");
+        }
         
         int idx = getRowNumber(nthBit);
         
