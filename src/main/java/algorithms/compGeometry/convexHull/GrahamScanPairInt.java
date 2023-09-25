@@ -42,8 +42,6 @@ first implemented in project
  */
 public class GrahamScanPairInt<T extends PairInt> {
 
-    //TODO: improve class, similar to changes in GrahamScah.java
-
     protected Stack<T> points = null;
 
     protected List<T> hull = null;

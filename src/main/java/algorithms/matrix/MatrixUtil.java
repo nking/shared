@@ -2447,6 +2447,28 @@ public class MatrixUtil {
         return m;
     }
 
+    public static float[] copyLongToFloat(long[] a) {
+
+        float[] m = new float[a.length];
+
+        for (int i = 0; i < a.length; ++i) {
+            m[i] = (float)a[i];
+        }
+
+        return m;
+    }
+
+    public static double[] copyLongToDouble(long[] a) {
+
+        double[] m = new double[a.length];
+
+        for (int i = 0; i < a.length; ++i) {
+            m[i] = (float)a[i];
+        }
+
+        return m;
+    }
+
     /**
      *
      @param source

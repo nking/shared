@@ -2,10 +2,17 @@ package algorithms.compGeometry;
 
 import algorithms.compGeometry.convexHull.GrahamScan;
 import algorithms.compGeometry.convexHull.GrahamScan.CHL;
+import algorithms.compGeometry.convexHull.GrahamScanPairInt;
 import algorithms.compGeometry.convexHull.GrahamScanTooFewPointsException;
-import algorithms.misc.MiscMath0;
+import algorithms.matrix.MatrixUtil;
 import algorithms.util.PairInt;
+import gnu.trove.list.TDoubleList;
+import gnu.trove.list.array.TDoubleArrayList;
+import gnu.trove.set.TDoubleSet;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -62,7 +69,8 @@ public class LargestDistancePair {
 
     /**
      * find the largest distance between the given pairs of points.
-     * The runtime complexity is <em>max(O(N), O(n_h^2))</em>.
+     * The runtime complexity is <em>max(O(N), O(n_h^2))</em> if useLinear is true,
+     * else is O(N*log_2(N)) if useLinear is false.
      *
      * @param x input array of x coordinates.  note that this method modifies the order of x
      *          upon CCW sorting of x and y, so copy the arrays in if need to kep the
@@ -70,117 +78,69 @@ public class LargestDistancePair {
      * @param y x input array of x coordinates.  note that this method modifies the order of x
      *          upon CCW sorting of x and y, so copy the arrays in if need to kep the
      *          original order.
-     * @return an array of the pair of points furthest from one another.  the
-     * format in the return array is [xa, ya, xb, yb].
-     * If there are more than one points with same maximum distance,
-     * only one is returned, and that one is the latest point in roughly the 1st half of the
-     * convex hull and it last pairing in terms of CCW ordering of the hull points.
+     * @param useLinear if true, uses a O(n) runtime algorithm to compute the convex hull.  if false, uses
+     *                  a O(n*log_2(n)) algorithm to compute the convex hull.
+     *                  The linear algorithm is usually correct.   random input testing shows that
+     *                  for 3 out of 100 tests, the largest separation pair is wrong, shorter than the true value
+     *                  by less than 10 percent.
+     *                  TODO: test more to improve the possible error stats empirically, and consider the geometry for
+     *                  theoretical limits to error.
+     * @return the convex hull and the indexes for the pairs of points on the hull which are furthest from each other.
+     *
      * @throws algorithms.compGeometry.convexHull.GrahamScanTooFewPointsException if the unique polar angles w.r.t. the smallest y point in the arrays
      *                                                                            are fewer than 3 in number.
      */
-    public static long[] find(long[] x, long[] y) throws GrahamScanTooFewPointsException {
+    public static PairAndHull find(long[] x, long[] y, boolean useLinear) throws GrahamScanTooFewPointsException {
 
         // x and y
-        CHL ch = GrahamScan.computeHull(x, y, true);
+        CHL ch = GrahamScan.computeHull(x, y, useLinear);
 
         int n = ch.getXH().length;
 
-        double meanX = MiscMath0.getAvgAndStDev(ch.getXH(), n)[0];
-        double meanY = MiscMath0.getAvgAndStDev(ch.getYH(), n)[0];
+        long maxDistSq = Long.MIN_VALUE;
+        int maxI = -1;
+        int maxJ = -1;
+        long maxDistSqJ;
+        int maxJ2 = -1;
 
-        long maxDist = Long.MIN_VALUE;
-        int iMaxDist = 0;
         long distSq;
         long xd;
         long yd;
 
-        int iRef = getPointFurthestFromMean(meanX, meanY, ch.getXH(), ch.getYH());
-        long xRef = ch.getXH()[iRef];
-        long yRef = ch.getYH()[iRef];
+        long xRef;
+        long yRef;
 
-        //TODO: simplify.  this still has the debugging code in it.
-
-        // find furthest point from the reference point.  that will be the scan range;
-        int i = iRef + 1;
-        int iter = 0;
-        // scan to the 2nd to last point because the last point in the hull is the same as the first point
-        while (iter < (n - 1)) {
-            if (i > (n - 2)) {
-                i = 0;
-            }
-            xd = ch.getXH()[i] - xRef;
-            yd = ch.getYH()[i] - yRef;
-            distSq = xd * xd + yd * yd;
-
-            if (distSq >= maxDist) {
-                maxDist = distSq;
-                iMaxDist = i;
-            } else {
-                // because the hull points are sorted in CCW order, the max dist
-                // will increase or stay the same and then decrease.
-                break;
-            }
-            ++iter;
-            ++i;
-        }
-
-        // using a larger scan range than iter is also necessary
-        int nScan = n - 1;//iter;
-
-        //System.out.printf("nScan = %d, n-1=%d\n", iter, n - 1);
-
-        //System.out.printf("i0=%d, i1=%d, distSq=%d\n", iRef, iMaxDist, maxDist);
-
-        int j;
-
-        long maxDistJ;
-        int jMaxDist = 0;
+        int nScan = n - 1;
 
         // this O(n_hull^2) section is necessary
 
-        // try pairs i0: [2, nScan) to see if an i1 pairing has dist > maxDist
-        i = iRef + 1;
-        iter = 0;
-        int iterJ;
-        while (iter <= nScan) {
-            if (i > (n - 2)) {
-                i = 0;
-            }
+        int j;
+        int i;
+        for (i = 0; i < nScan; ++i) {
             xRef = ch.getXH()[i];
             yRef = ch.getYH()[i];
             //System.out.printf("%d)\n", i);
+            maxDistSqJ = Long.MIN_VALUE;
 
-            iterJ = 0;
-            j = i + 1;
-
-            maxDistJ = Long.MIN_VALUE;
-            while (iterJ <= nScan) {
-                if (j > (n - 2)) {
-                    j = 0;
-                }
+            for (j = i+1; j < nScan; ++j) {
                 xd = ch.getXH()[j] - xRef;
                 yd = ch.getYH()[j] - yRef;
                 distSq = xd * xd + yd * yd;
-                //System.out.printf("   %10d  %20d", j, distSq);
-                if (distSq >= maxDistJ) {
-                    maxDistJ = distSq;
-                    jMaxDist = j;
+                if (distSq >= maxDistSqJ) {
+                    maxDistSqJ = distSq;
+                    maxJ2 = j;
                     //System.out.printf("*\n");
                 } else {
                     //System.out.printf("\n");
                     break;
                 }
-                ++iterJ;
-                ++j;
             } // end loop over j
-            if (maxDistJ > maxDist) {
-                iRef = i;
-                iMaxDist = jMaxDist;
-                maxDist = maxDistJ;
+            if (maxDistSqJ > maxDistSq) {
+                maxI = i;
+                maxJ = maxJ2;
+                maxDistSq = maxDistSqJ;
                 //System.out.printf("    j: i0=%d, i1=%d, distSq=%d\n", iRef, iMaxDist, maxDist);
             }
-            ++iter;
-            ++i;
         } //end loop over i
         
         /*System.out.printf("MAXDISTSQ=%d  (x[%d]=%d, y[%d]=%d), (x[%d]=%d, y[%d]=%d)\n", 
@@ -190,48 +150,129 @@ public class LargestDistancePair {
             iMaxDist, ch.getXH()[iMaxDist],
             iMaxDist, ch.getYH()[iMaxDist]);*/
 
-        long[] result = new long[]{ch.getXH()[iRef], ch.getYH()[iRef], ch.getXH()[iMaxDist], ch.getYH()[iMaxDist]};
+        PairAndHull ph = new PairAndHull(maxI, maxJ, maxDistSq, ch);
 
-        assert (maxDist > Long.MIN_VALUE);
-        assert (maxDist == ((result[0] - result[2]) * (result[0] - result[2]) +
-                (result[1] - result[3]) * (result[1] - result[3])));
-
-        //TODO: edit to return the entire hull and the furthest pair indexes
-
-        return result;
+        return ph;
     }
 
-    protected static int getPointFurthestFromMean(double meanX, double meanY,
-                                                  long[] xh, long[] yh) {
+    public static class PairAndHull {
+        public final int i0;
+        public final int i1;
+        public final double[] xHull;
+        public final double[] yHull;
+        public final double distSq;
+        public PairAndHull(int i0, int i1, long distSq, CHL hull) {
+            this.i0 = i0;
+            this.i1 = i1;
+            this.distSq = distSq;
+            this.xHull = MatrixUtil.copyLongToDouble(hull.getXH());
+            this.yHull = MatrixUtil.copyLongToDouble(hull.getYH());
+        }
+        public PairAndHull(int i0, int i1, double distSq, GrahamScan.CHD hull) {
+            this.i0 = i0;
+            this.i1 = i1;
+            this.distSq = distSq;
+            int n = hull.getXH().length;
+            this.xHull = Arrays.copyOf(hull.getXH(), n);
+            this.yHull = Arrays.copyOf(hull.getYH(), n);
+        }
+        public double[] getXY0() {
+            return new double[]{xHull[i0], yHull[i0]};
+        }
+        public double[] getXY1() {
+            return new double[]{xHull[i1], yHull[i1]};
+        }
 
-        int i;
-        double xd;
-        double yd;
-        double distSq;
-        double maxDist = Double.NEGATIVE_INFINITY;
-        int iMaxDist = -1;
-        for (i = 0; i < xh.length; ++i) {
-            xd = xh[i] - meanX;
-            yd = yh[i] - meanY;
-            distSq = xd * xd + yd * yd;
-            if (distSq > maxDist) {
-                maxDist = distSq;
-                iMaxDist = i;
+        /**
+         *
+         * @param coordStringFormat format for String.format to use in printing each coordinate of the hull.  e.g. "%.2f"
+         * @return
+         */
+        public String toString(String coordStringFormat) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(String.format("furthest pair indexes = %d, %d\nhull:\n", i0, i1));
+            String cFmt = String.format("(%s, %s)\n", coordStringFormat, coordStringFormat);
+            for (int i = 0; i < xHull.length; ++i) {
+                sb.append(String.format(cFmt, xHull[i], yHull[i]));
             }
+            return sb.toString();
         }
-        return iMaxDist;
     }
 
-    public static long[] find(Set<PairInt> points) throws GrahamScanTooFewPointsException {
-        long[] x = new long[points.size()];
-        long[] y = new long[points.size()];
-        int i = 0;
-        for (PairInt p : points) {
-            x[i] = p.getX();
-            y[i] = p.getY();
-            ++i;
-        }
-        return find(x, y);
+    /**
+     * find the pair of points with the largest separation.  The runtime complexity is O(N*log_2(N)).
+     * Note this method can be modified for a linear runtime option upon need.
+     * @param points
+     * @return
+     * @throws GrahamScanTooFewPointsException
+     */
+    public static <T extends PairInt> T[] find(T[] points) throws GrahamScanTooFewPointsException {
+
+        GrahamScanPairInt<T> scan = new GrahamScanPairInt<T>();
+        scan.computeHull(points);
+
+        List<T> hull = scan.getHull();
+
+        int n = hull.size();
+
+        long maxDistSq = Long.MIN_VALUE;
+        int maxI = -1;
+        int maxJ = -1;
+        long maxDistSqJ;
+        int maxJ2 = -1;
+
+        long distSq;
+        long xd;
+        long yd;
+
+        long xRef;
+        long yRef;
+
+        int nScan = n - 1;
+
+        // this O(n_hull^2) section is necessary
+
+        int j;
+        int i;
+        for (i = 0; i < nScan; ++i) {
+            xRef = hull.get(i).getX();
+            yRef = hull.get(i).getY();
+            //System.out.printf("%d)\n", i);
+            maxDistSqJ = Long.MIN_VALUE;
+
+            for (j = i+1; j < nScan; ++j) {
+                xd = hull.get(j).getX() - xRef;
+                yd = hull.get(j).getY() - yRef;
+                distSq = xd * xd + yd * yd;
+                if (distSq >= maxDistSqJ) {
+                    maxDistSqJ = distSq;
+                    maxJ2 = j;
+                    //System.out.printf("*\n");
+                } else {
+                    //System.out.printf("\n");
+                    break;
+                }
+            } // end loop over j
+            if (maxDistSqJ > maxDistSq) {
+                maxI = i;
+                maxJ = maxJ2;
+                maxDistSq = maxDistSqJ;
+                //System.out.printf("    j: i0=%d, i1=%d, distSq=%d\n", iRef, iMaxDist, maxDist);
+            }
+        } //end loop over i
+
+        /*System.out.printf("MAXDISTSQ=%d  (x[%d]=%d, y[%d]=%d), (x[%d]=%d, y[%d]=%d)\n",
+            maxDist,
+            iRef, ch.getXH()[iRef],
+            iRef, ch.getYH()[iRef],
+            iMaxDist, ch.getXH()[iMaxDist],
+            iMaxDist, ch.getYH()[iMaxDist]);*/
+
+        // or specifiy type of class in method arugments
+        T[] pairs = (T[]) Array.newInstance(PairInt.class, 2);
+        pairs[0] = hull.get(maxI);
+        pairs[1] = hull.get(maxJ);
+        return pairs;
     }
 
 }
