@@ -459,8 +459,8 @@ public class PolygonAndPointPlotter {
             dataSB.append("var data_polygon_").append(plotNumber).append(" = [\n");
             dataSB.append("    [");
             for (int ii = 0; ii < xPolygon.length; ii++) {
-                String xStr = String.format("%.7f", xPolygon[ii]);
-                String yStr = String.format("%.7f", yPolygon[ii]);
+                String xStr = xPolygon[ii].toString();
+                String yStr = yPolygon[ii].toString();
                 if (ii > 0) {
                     dataSB.append(", ");
                 }
