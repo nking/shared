@@ -1,6 +1,8 @@
 algorithms
 algorithms.alignment
 algorithms.bipartite
+algorithms.compGeometry
+algorithms.compGeometry.convexHull
 algorithms.connected
 algorithms.correlation
 algorithms.dimensionReduction
@@ -14,11 +16,11 @@ algorithms.maxFlow
 algorithms.misc
 algorithms.msts
 algorithms.optimization
+algorithms.optimization.tsp
 algorithms.scheduling
 algorithms.search
 algorithms.shortestPaths
 algorithms.signalProcessing
 algorithms.sort
 algorithms.statistics
-algorithms.tsp
 algorithms.util
