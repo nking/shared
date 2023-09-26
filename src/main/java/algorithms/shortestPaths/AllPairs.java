@@ -37,9 +37,8 @@ public class AllPairs {
      * 0 *                 *
      *   0  1  2  3  4  5  6
      * for undirected graph:  hull is 28 points, left and bottom half only is 14 points.
-     *          dense grid: no caching, we have  all srcs=49, all destinations=49.
-     *              all src to all dest is approx (49^2)/2 ~ 1200 dks runs.
-     *          dense grid: all combinations of hull start to end for half of hull ~ (14^2)/2 ~ 98 dks runs.
+     *          dense grid: no caching, we have  all srcs=49, all src to all dest is approx (49)/2 ~ 25 dks runs.
+     *          dense grid: all combinations of hull start to end for half of hull ~ 14/2 ~ 7 dks runs.
      *              cache all partial paths.  assume that the convex hull of src to dest covers
      *              most of the vertexes that are not a geometric equivalent of courts, culdesacs and dead ends, etc.
      *              then the subsequent iteration over all src and dest will use mostly cached values
