@@ -31,6 +31,8 @@
       ALT, ContractionHierarchyPrecomputation, dijkstra's many-to-many
       but not reach + shortcuts + landmarks 
       nor dynamic highway-node routing
+   - nice article on broader subject:
+       http://theory.stanford.edu/~amitp/GameProgramming/index.html
        
 -- more ML libraries to explore:
    https://anywhere.epam.com/business/c-plus-plus-ml-libraries
