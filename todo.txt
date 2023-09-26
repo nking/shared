@@ -23,6 +23,15 @@
       https://netlib.org/blas/faq.html
       e.g. https://www.intel.com/content/www/us/en/develop/documentation/advisor-user-guide/top/reference/recommendation-reference/vectorization-recommendations-for-c.html
 
+-- efficient shortest paths:
+   - https://www.cs.princeton.edu/courses/archive/spr06/cos423/Handouts/EPP%20shortest%20path%20algorithms.pdf
+   - http://algo2.iti.kit.edu/schultes/hwy/schultes_diss.pdf
+   - https://www.cs.princeton.edu/courses/archive/spr09/cos423/Lectures/reach-mit.pdf
+   - jgraphT has several algorithms:
+      ALT, ContractionHierarchyPrecomputation, dijkstra's many-to-many
+      but not reach + shortcuts + landmarks 
+      nor dynamic highway-node routing
+       
 -- more ML libraries to explore:
    https://anywhere.epam.com/business/c-plus-plus-ml-libraries
 
