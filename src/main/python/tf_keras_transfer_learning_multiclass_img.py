@@ -26,8 +26,11 @@ NUM_EPOCHS = 25
 BATCH_SZ = 32 # keep between 2 and 32, inclusive
 IMG_HEIGHT = 32
 IMG_WIDTH = 32
-L2_REG = 1E-3
+L2_REG = 1E-3 # 1E-3 to 0.1
+DO_PROB = 0.5 # 0 to 1.  drop out probability.
 seed = 1234
+
+#TODO: consider ensembling
 
 N_DATALOAD_WORKERS = 0 # defaults to using main thread. uses less memory in total says docs
 
@@ -62,8 +65,8 @@ if run_small_dataset:
     data_dir_small = tf_dataset_util.copy_subset_to_TMP(data_dir=data_dir, n_train=120, n_test=120, fraction_val=0.8, seed=seed, verbose=1)
     data_dir = data_dir_small
 
-def load_dataset_run_model(plot_title: str ='', useRegularization: bool = False, useDropout: bool = False,
-                           add_dense_layers: bool = False, unfreeze_model: bool = False) :
+def load_dataset_run_model(plot_title: str ='', use_regularization: bool = False, use_dropout: bool = False,
+                           n_unfreeze:int=0, unfreeze_all:bool=False, add_dense_layers:bool=False) :
 
     train_ds, val_ds = tf.keras.utils.image_dataset_from_directory(
         data_dir + '/train', labels="inferred",
@@ -90,17 +93,30 @@ def load_dataset_run_model(plot_title: str ='', useRegularization: bool = False,
     #plot_util.plot_first_tf(train_ds, train_ds.class_names)
     plot_util.print_ds_shape_tf(train_ds)
 
-    # run the model
+    # build, compile, run the model
+
+    # include_Top = False does not add the last layer to the model
+    #     last layer would have been
+    #     x = layers.Dense(classes, activation=classifier_activation, name="predictions")(x)
+    # we supply that below, tailored to train_ds
     base_model = keras.applications.ResNet50(
             weights='imagenet',  # Load weights pre-trained on ImageNet.
             input_shape=(IMG_WIDTH, IMG_HEIGHT, 3),
             include_top=False, pooling='avg')
-    #TODO: consider 'unfreezing' only the last couple of layers
+            # if include_top=True, add , classifier_activation='softmax'
+
     #TODO: consider ensembling
-    if unfreeze_model:
+
+    base_model.trainable = False
+    if unfreeze_all:
         base_model.trainable = True
     else:
-        base_model.trainable = False
+        print(f'base model {base_model.name} has {len(base_model.layers)} layers')
+        # base model has 176 layers
+        if n_unfreeze > len(base_model.layers):
+            raise ValueError(f"model has {len(base_model.layers)}.  too large n_unfreeze={n_unfreeze}")
+        for i in range(n_unfreeze):
+            base_model.layers[-(i+1)].trainable = True
 
     if add_data_augmentation:
         data_augmentation = keras.Sequential(
@@ -113,22 +129,28 @@ def load_dataset_run_model(plot_title: str ='', useRegularization: bool = False,
     inputs = keras.applications.resnet50.preprocess_input(inputs)
     if add_data_augmentation:
         inputs = data_augmentation(inputs)
-    x = base_model(inputs, training=False)
+    x = base_model(inputs)
     # base_model last layer is 512
+
     if add_dense_layers:
         # this does not change results much for small subset.  shows should probably unfreeze the pre-trained model
-        outputs = layers.Dropout(0.5)(x)
+        outputs = layers.Dropout(DO_PROB)(x)
         outputs = layers.Dense(256, activation='elu')(x)
-        outputs = layers.Dropout(0.5)(x)
+        outputs = layers.Dropout(DO_PROB)(x)
         outputs = layers.Dense(128, activation='elu')(x)
-        #outputs = layers.Dropout(0.5)(x)
-        #outputs = layers.Dense(64, activation='elu')(x)
-    elif useDropout:
-        outputs = keras.layers.Dropout(0.5)(x)
-    if useRegularization:
-        outputs = keras.layers.Dense(num_classes, activation='softmax', kernel_regularizer = keras.regularizers.l2(L2_REG))(x)
+        outputs = layers.Dropout(DO_PROB)(x)
+        outputs = layers.Dense(64, activation='elu')(x)
+        outputs = layers.Dropout(DO_PROB)(x)
+        outputs = layers.Dense(DO_PROB, activation='elu')(x)
+    elif use_dropout:
+        outputs = keras.layers.Dropout(DO_PROB)(x)
+
+    if use_regularization:
+        outputs = keras.layers.Dense(num_classes, activation='softmax',
+                                     kernel_regularizer = keras.regularizers.l2(L2_REG), name='predictions')(x)
     else:
-        outputs = keras.layers.Dense(num_classes, activation='softmax')(x)
+        outputs = keras.layers.Dense(num_classes, activation='softmax', name='predictions')(x)
+
     model = keras.Model(inputs, outputs)
 
     model.compile(optimizer='adam',
@@ -137,23 +159,22 @@ def load_dataset_run_model(plot_title: str ='', useRegularization: bool = False,
 
     history_train = model.fit(train_ds, validation_data=val_ds,epochs=NUM_EPOCHS)
 
-    plot_util.plot_loss_acc_tf(plot_title+' cifar10', history=history_train)
-
-    loss, acc = model.evaluate(test_ds, verbose=2)
+    loss, acc = model.evaluate(test_ds, verbose=0)
     print(f'{plot_title} cifar10 test: loss={loss:5.2f} accuracy={acc:5.2f}')
 
-if run_small_dataset:
-    #load_dataset_run_model("small subset", useRegularization=False)
-    #print(f'That was an example of over-fitting')
+    plot_util.plot_loss_acc_tf(plot_title+' cifar10', history=history_train, test_acc=acc, test_loss=loss)
 
-    #TODO: reduce the over-fitting of the small dataset
+
+if False and run_small_dataset:
+    load_dataset_run_model("small subset (over-fitting)", use_regularization=False)
+    print(f'That was an example of over-fitting')
+
     add_data_augmentation = True
-    load_dataset_run_model("small subset", useRegularization=True, useDropout=True, add_dense_layers=True,
-                           unfreeze_model=True)
-    # unfreeze, w/ L2 reg, + dropout is 14 sec/epoch
-    #    same + dense layers is
+    # retrain all layers runtime is 20-40 sec/epoch
+    load_dataset_run_model(f"small (n_unfreeze=0, DO={DO_PROB}, DA={add_data_augmentation})", n_unfreeze=0, use_dropout=True)
+    load_dataset_run_model(f"small (n_unfreeze=50, DO={DO_PROB}, DA={add_data_augmentation})", n_unfreeze=50, use_dropout=True)
+    load_dataset_run_model(f"small (unfreeze all, DO={DO_PROB}, DA={add_data_augmentation})", unfreeze_all=True, use_dropout=True)
 
 data_dir = data_dir_0
 add_data_augmentation = True
-load_dataset_run_model("full dataset")
-
+load_dataset_run_model("full (n_unfreeze=0, DO={DO_PROB}, DA={add_data_augmentation})", use_dropout=True, n_unfreeze=0)

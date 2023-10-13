@@ -209,11 +209,20 @@ def get_subset_train_val_datasets_0(image_size: tuple, num_channels: int, crop_t
     return [train_dataset, val_dataset, class_names]
 
 def get_subset_test_list_0(data_dir: str, n_test: int, seed: int, verbose:int = 0):
+    '''
+    Args:
+        data_dir - top level directory of project.  e.g. ./cifar10
+        n_test - number of test files.  if None, all tests are used
+    '''
     _ = set(glob.glob(data_dir + '/test/**/*'))
 
     class_names = {p.split('/')[-1]: i for i, p in enumerate(sorted(glob.glob(data_dir + '/test/**')))}
 
-    test_files = random.sample(sorted(_), n_test)
+    if n_test is None:
+        n_test = len(_)
+        test_files = _
+    else:
+        test_files = random.sample(sorted(_), n_test)
 
     if verbose > 0:
         print(f'n_class_names = {len(class_names)}')
@@ -248,6 +257,7 @@ def copy_subset_to_TMP(data_dir: str, n_train: int, n_test: int, fraction_val: f
     all train filepaths and selects n_train from them randomly.
     From the remaining file_paths, the code selects the validation
     list randomly.
+    if n_test is None, uses all test files.
 
     random samples all files to copy n_train and n_train*fraction_val to a new temporary
     directory to be loaded using keras methods
@@ -255,9 +265,6 @@ def copy_subset_to_TMP(data_dir: str, n_train: int, n_test: int, fraction_val: f
 
     train_files, train_labels, val_files, val_labels, class_names = get_subset_train_val_lists_0(
         data_dir, n_train, fraction_val, seed, verbose)
-
-    if n_test is None:
-        n_test = n_train
 
     test_files, test_labels, test_class_names = get_subset_test_list_0(data_dir, n_test, seed, verbose)
 
