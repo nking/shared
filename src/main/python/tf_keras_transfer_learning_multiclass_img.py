@@ -30,7 +30,8 @@ L2_REG = 1E-3 # 1E-3 to 0.1
 DO_PROB = 0.5 # 0 to 1.  drop out probability.
 seed = 1234
 
-#TODO: consider ensembling
+#TODO: consider ensembling when accuracy is high enough that a few percent increase matters
+
 
 N_DATALOAD_WORKERS = 0 # defaults to using main thread. uses less memory in total says docs
 
@@ -171,10 +172,18 @@ if False and run_small_dataset:
 
     add_data_augmentation = True
     # retrain all layers runtime is 20-40 sec/epoch
-    load_dataset_run_model(f"small (n_unfreeze=0, DO={DO_PROB}, DA={add_data_augmentation})", n_unfreeze=0, use_dropout=True)
-    load_dataset_run_model(f"small (n_unfreeze=50, DO={DO_PROB}, DA={add_data_augmentation})", n_unfreeze=50, use_dropout=True)
-    load_dataset_run_model(f"small (unfreeze all, DO={DO_PROB}, DA={add_data_augmentation})", unfreeze_all=True, use_dropout=True)
+    load_dataset_run_model(f'small (n_unfreeze=0, DO={DO_PROB}, DA={add_data_augmentation})', n_unfreeze=0, use_dropout=True)
+    load_dataset_run_model(f'small (n_unfreeze=50, DO={DO_PROB}, DA={add_data_augmentation})', n_unfreeze=50, use_dropout=True)
+    load_dataset_run_model(f'small (unfreeze all, DO={DO_PROB}, DA={add_data_augmentation})', unfreeze_all=True, use_dropout=True)
 
 data_dir = data_dir_0
 add_data_augmentation = True
-load_dataset_run_model("full (n_unfreeze=0, DO={DO_PROB}, DA={add_data_augmentation})", use_dropout=True, n_unfreeze=0)
+#load_dataset_run_model(f'full (n_unfreeze=0, DO={DO_PROB}, DA={add_data_augmentation})', use_dropout=True, n_unfreeze=0)
+
+NUM_EPOCHS = 5
+L2_REG = 1E-2
+load_dataset_run_model(f'full (n_unfreeze=0, DO={DO_PROB}, L2_REG={L2_REG:.1e}, DA={add_data_augmentation})',
+                       use_dropout=True, n_unfreeze=0, use_regularization=True)
+L2_REG = 1E-1
+load_dataset_run_model(f'full (n_unfreeze=0, DO={DO_PROB}, L2_REG={L2_REG:.1e}, DA={add_data_augmentation})',
+                       use_dropout=True, n_unfreeze=0, use_regularization=True)
