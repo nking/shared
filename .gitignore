@@ -1,6 +1,12 @@
 .DS_Store
 *~
 *.swp
+*.swm
+*.swn
+*.swo
+venv
+_*
+._*
 *.class
 build.log
 log
