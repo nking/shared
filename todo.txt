@@ -41,6 +41,33 @@
 
 -- amazon sage and google's kaggle
 
+-- non-linear state space modeling with factor graphs
+   given a series of states up to time s, and wanting to 
+   determine the state at time t.
+
+   s = t is filtering
+   s < t is prediction, forecasting
+   s > t is smoothing
+
+   filtering: determine current state given past states.
+      particle filtering (a.k.a. seqeuntial monte carlo models, SMC)
+      and extended kalman filtering.
+      particle filtering performs approximate probabilistic inference.
+         - propose distribution of particles using transition probabilities, 
+           weight the particles, resample from the distribution
+         - nice tutorial and python code
+           https://github.com/jelfring/particle-filter-tutorial.git
+         -  Stanford AI CS 221 
+            https://stanford-cs221.github.io/summer2023/modules/#tags=week7
+   smoothing: determine a state given all states up to a later state.
+      calculates a posterior probability distribution over past states
+      given current and past observations (evidence).
+      useful in ML learning.  Laplace smoothing helpful to avoid over-fitting.
+         -  Doucet, A.; Johansen, 2008 
+            "A Tutorial on Particle Filtering and Smoothing: Fifteen years later"
+            https://www.stats.ox.ac.uk/~doucet/doucet_johansen_tutorialPF2011.pdf
+            two-filter smoothing formula and Forward-Backward Recursions
+
 -- browse https://github.com/GPflow/GPflow
 
 -- explore best practices with use of java Streams, including parallel
