@@ -39,6 +39,8 @@ add_data_augmentation = True
 
 run_small_dataset = True
 
+##TODO: replace / with os.path.sep
+
 if True:
     # desktop environment:
     data_dir = os.environ["ML_DATASETS_HOME"] + '/cifar10png'
@@ -184,6 +186,9 @@ NUM_EPOCHS = 5
 L2_REG = 1E-2
 load_dataset_run_model(f'full (n_unfreeze=0, DO={DO_PROB}, L2_REG={L2_REG:.1e}, DA={add_data_augmentation})',
                        use_dropout=True, n_unfreeze=0, use_regularization=True)
+
 L2_REG = 1E-1
 load_dataset_run_model(f'full (n_unfreeze=0, DO={DO_PROB}, L2_REG={L2_REG:.1e}, DA={add_data_augmentation})',
                        use_dropout=True, n_unfreeze=0, use_regularization=True)
+
+print(f'a model that is not over-fitting was just plotted')

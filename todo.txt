@@ -33,6 +33,8 @@
       nor dynamic highway-node routing
    - nice article on broader subject:
        http://theory.stanford.edu/~amitp/GameProgramming/index.html
+   - an article relevant to ALT:
+       Campbell 2016, "Using Quadrilaterals to Compute the Shortest Path"
        
 -- more ML libraries to explore:
    https://anywhere.epam.com/business/c-plus-plus-ml-libraries

@@ -29,7 +29,9 @@ def print_ds_shape_tf(ds: tf.data.Dataset,):
         print(f'labels_batch.shape = {labels_batch.shape}')
         break
 
-def plot_loss_acc_tf(plot_ylabel_prefix : str, history : tf.keras.callbacks.History, test_acc:float=None, test_loss:float=None) :
+def plot_loss_acc_tf(plot_ylabel_prefix : str, history : tf.keras.callbacks.History,
+                     test_acc:float=None, test_loss:float=None, plot_super_title:str=None) :
+
     print(history.history.keys())
     n_keys = len(history.history.keys())
     '''
@@ -37,18 +39,19 @@ def plot_loss_acc_tf(plot_ylabel_prefix : str, history : tf.keras.callbacks.Hist
     '''
     if 'acc' in history.history and n_keys == 4:
         plot_loss_acc(plot_ylabel_prefix, history.history['loss'], history.history['acc'],
-                      history.history['val_loss'], history.history['val_acc'], test_acc, test_loss)
+                      history.history['val_loss'], history.history['val_acc'], test_acc, test_loss, plot_super_title)
     elif 'acc' in history.history and n_keys == 2:
-        plot_loss_acc(plot_ylabel_prefix, history.history['loss'], history.history['acc'], test_acc, test_loss)
+        plot_loss_acc(plot_ylabel_prefix, history.history['loss'], history.history['acc'], test_acc, test_loss, plot_super_title)
     elif 'accuracy' in history.history and n_keys == 4:
         plot_loss_acc(plot_ylabel_prefix, history.history['loss'], history.history['accuracy'],
-                      history.history['val_loss'], history.history['val_accuracy'], test_acc, test_loss)
+                      history.history['val_loss'], history.history['val_accuracy'], test_acc, test_loss, plot_super_title)
     elif 'accuracy' in history.history and n_keys == 2:
-        plot_loss_acc(plot_ylabel_prefix, history.history['loss'], history.history['accuracy'], test_acc, test_loss)
+        plot_loss_acc(plot_ylabel_prefix, history.history['loss'], history.history['accuracy'], test_acc, test_loss, plot_super_title)
     else:
         raise Exception("edit this method for the history keys")
 
-def plot_loss_acc(plot_prefix: str, loss : list, acc : list, val_loss = None, val_acc = None, test_acc:float=None, test_loss:float=None) :
+def plot_loss_acc(plot_prefix: str, loss : list, acc : list, val_loss = None, val_acc = None,
+                  test_acc:float=None, test_loss:float=None, plot_super_title:str=None) :
     '''
     plot train acc and loss and overplot val acc and loss if present.
     '''
@@ -57,7 +60,9 @@ def plot_loss_acc(plot_prefix: str, loss : list, acc : list, val_loss = None, va
 
     hasVal = True if (val_loss is not None and val_acc is not None) else False
 
-    plt.figure(figsize=(6, 6))
+    fig = plt.figure(figsize=(6, 6))
+    if plot_super_title is not None:
+        fig.suptitle(plot_super_title)
 
     j = 1
     # nrows, ncols, index where index starts at 1 in the upper left corner and increases to the right

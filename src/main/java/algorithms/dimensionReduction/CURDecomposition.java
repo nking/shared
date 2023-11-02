@@ -11,7 +11,6 @@ import gnu.trove.map.TIntIntMap;
 import java.util.Arrays;
 import java.util.Random;
 import no.uib.cipr.matrix.DenseMatrix;
-import no.uib.cipr.matrix.Matrices;
 import no.uib.cipr.matrix.NotConvergedException;
 import no.uib.cipr.matrix.SVD;
 
@@ -92,9 +91,9 @@ public class CURDecomposition {
 
         CDFs cdfs = _calculateCDFs(a, k);
        
-        SelectedFromA r = _calculateR(a, cdfs.rowsSelected, cdfs.pdfs.rowPDF);
+        SelectedFromA r = _calculateR(a, cdfs.rowsSelected, cdfs.pmfs.rowPMF);
         
-        SelectedFromA c = _calculateR(MatrixUtil.transpose(a), cdfs.colsSelected, cdfs.pdfs.colPDF);
+        SelectedFromA c = _calculateR(MatrixUtil.transpose(a), cdfs.colsSelected, cdfs.pmfs.colPMF);
         c.r = MatrixUtil.transpose(c.r);
         
         double[][] u = _calculateU(a, r.indexesUnique, c.indexesUnique);
@@ -113,13 +112,13 @@ public class CURDecomposition {
     
     static CDFs _calculateCDFs(double[][] a, int k) {
      
-        PDFs pdfs = _calculatePDFs(a);
+        PMFs pmfs = _calculatePMFs(a);
         
         // randomly select k columns and k rows
         
-        double[] rowCDF = MiscMath0.cumulativeSum(pdfs.rowPDF);
+        double[] rowCDF = MiscMath0.cumulativeSum(pmfs.rowPMF);
         
-        double[] colCDF = MiscMath0.cumulativeSum(pdfs.colPDF);
+        double[] colCDF = MiscMath0.cumulativeSum(pmfs.colPMF);
         
         // normalize so that the last bin is "1".
         double norm = rowCDF[rowCDF.length - 1];
@@ -172,7 +171,7 @@ public class CURDecomposition {
         cds.colsSelected = k1;
         cds.rowCDF = rowCDF;
         cds.colCDF = colCDF;
-        cds.pdfs = pdfs;
+        cds.pmfs = pmfs;
 
         return cds;
     }
@@ -184,16 +183,16 @@ public class CURDecomposition {
      * NOTE: the Frobenius norm is the square root of the sum of the squares of 
      * all elements of a matrix (2.2-4 of Golub and van Loan).
      @param a an mxn matrix.
-     @return  the column and row PDFs of matrix a where a row PDF is the
+     @return  the column and row PMFs of matrix a where a row PMF is the
      * Frobenius norm of the column divided by the Frobenius norm of the
-     * matrix, and the row PDF is similar but calculated for rows instead of
+     * matrix, and the row PMF is similar but calculated for rows instead of
      * columns.
      */
-    static PDFs _calculatePDFs(double[][] a) {
+    static PMFs _calculatePMFs(double[][] a) {
      
         // copy a, square each item, create a summed area table from that.
-        // create column sums as a vector and normalize it (= discrete pdf for col)
-        // create row sums as a vector and normalize it (= discrete pdf for row)
+        // create column sums as a vector and normalize it (= discrete pmf for col)
+        // create row sums as a vector and normalize it (= discrete pmf for row)
         
         a = MatrixUtil.copy(a);
         int i, j;
@@ -246,33 +245,33 @@ public class CURDecomposition {
             c[j] = sumAndN[0]/fN;
         }
         
-        PDFs pdfs = new PDFs();
-        pdfs.colPDF = c;
-        pdfs.rowPDF = r;
+        PMFs pmfs = new PMFs();
+        pmfs.colPMF = c;
+        pmfs.rowPMF = r;
 
-        return pdfs;        
+        return pmfs;
     }
 
     /**
       calculate R: 
       R is an k x n matrix composed of a randomly chosen set of k rows of M.
-      each row of R gets normalized by sqrt( k * rowPDF_{selected_row}).
+      each row of R gets normalized by sqrt( k * rowPMF_{selected_row}).
       if a row of A is present more than once in the selection, it is 
       included only the first time and that included column is then multiplied
       by the square root of the number of duplicates.
       @param a the m x n matrix, of m samples of n variates or parameters.
       @param selectedRowIdxs a vector of indexes of rows of matrix a, which have
       been randomly selected from the row marginal probabilities.
-      @param rowPDF the row marginal probabilities.
+      @param rowPMF the row marginal probabilities.
       @return matrix of selected rows from A normalized and an array of the
       unique selected indexes (corrections for duplicated indexes are performed
       in this method).
      */
     static SelectedFromA _calculateR(double[][] a, int[] selectedRowIdxs, 
-        double[] rowPDF) {
+        double[] rowPMF) {
         
-        if (a.length != rowPDF.length) {
-            throw new IllegalArgumentException("a.length must equal rowPDF.length");
+        if (a.length != rowPMF.length) {
+            throw new IllegalArgumentException("a.length must equal rowPMF.length");
         }
         
         // make frequency map of selected indexes and remove the key after a
@@ -304,7 +303,7 @@ public class CURDecomposition {
             
             d = freq.get(j);
             
-            factor = 1./Math.sqrt(k * rowPDF[j]);
+            factor = 1./Math.sqrt(k * rowPMF[j]);
             
             if (d > 1) {
                 factor *= Math.sqrt(d);
@@ -500,9 +499,9 @@ public class CURDecomposition {
     /**
      *
      */
-    public static class PDFs {
-        double[] colPDF;
-        double[] rowPDF;
+    public static class PMFs {
+        double[] colPMF;
+        double[] rowPMF;
     }
     
     /**
@@ -511,7 +510,7 @@ public class CURDecomposition {
     public static class CDFs {
         int[] colsSelected;
         int[] rowsSelected;
-        PDFs pdfs;
+        PMFs pmfs;
         double[] colCDF;
         double[] rowCDF;
     }

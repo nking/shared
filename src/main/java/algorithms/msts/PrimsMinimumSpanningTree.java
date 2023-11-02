@@ -93,10 +93,10 @@ public class PrimsMinimumSpanningTree<T> {
          * Q = V[G]
          * while (Q != 0)
          *     do u = extractMin(Q)
-         *         for each v in Adj[u]
-         *             do if v is in Q and w(u,v) < d[v]
-         *                 then prev[v] = u
-         *                     d[v] = w(u,v)
+         *     for each v in Adj[u]
+         *         do if v is in Q and w(u,v) < d[v]
+         *             prev[v] = u
+         *             d[v] = w(u,v)
          */
         
         //max(weights) is needed to estimate maximum number of bits needed by trie

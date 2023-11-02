@@ -80,24 +80,28 @@ public class StanfordMilesReader {
         }
 
         // make the reverse entries
-        Iterator<Map.Entry<Integer, Map<Integer, Integer>>> iter = distMap.entrySet().iterator();
-        while (iter.hasNext()) {
-            Map.Entry<Integer, Map<Integer, Integer>> entry = iter.next();
+        Map<Integer, Map<Integer, Integer>> revMap = new HashMap<>();
+        Iterator<Map.Entry<Integer, Map<Integer, Integer>>> distMapIter = distMap.entrySet().iterator();
+        while (distMapIter.hasNext()) {
+            Map.Entry<Integer, Map<Integer, Integer>> entry = distMapIter.next();
             Integer key1 = entry.getKey();
-            Map<Integer, Integer> map = entry.getValue();
-            Iterator<Map.Entry<Integer, Integer>> iter2 = map.entrySet().iterator();
+            Map<Integer, Integer> map1 = entry.getValue();
+            Iterator<Map.Entry<Integer, Integer>> iter2 = map1.entrySet().iterator();
             while (iter2.hasNext()) {
                 Map.Entry<Integer, Integer> entry2 = iter2.next();
                 Integer key2 = entry2.getKey();
                 Integer dist = entry2.getValue();
-                Map<Integer, Integer> map2 = distMap.get(key2);
+
+                // make entry for key2, map2  and add key1 to map2
+                Map<Integer, Integer> map2 = revMap.get(key2);
                 if (map2 == null) {
                     map2 = new HashMap<Integer, Integer>();
-                    distMap.put(key2, map2);
+                    revMap.put(key2, map2);
                 }
                 map2.put(key1, dist);
             }
         }
+        distMap.putAll(revMap);
     }
 
     public void fillWithCoordinates(long[] outLat, long[] outLng) {

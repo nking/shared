@@ -4,6 +4,8 @@
 *.swm
 *.swn
 *.swo
+.idea
+.ipynb_*
 venv
 _*
 ._*

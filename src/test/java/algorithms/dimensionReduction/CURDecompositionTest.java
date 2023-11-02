@@ -1,7 +1,6 @@
 package algorithms.dimensionReduction;
 
 import algorithms.dimensionReduction.CURDecomposition.CUR;
-import algorithms.dimensionReduction.CURDecomposition.PDFs;
 import algorithms.dimensionReduction.CURDecomposition.SelectedFromA;
 import algorithms.matrix.MatrixUtil;
 import algorithms.matrix.MatrixUtil.SVDProducts;
@@ -16,7 +15,6 @@ import no.uib.cipr.matrix.DenseVectorSub;
 import no.uib.cipr.matrix.EVD;
 import no.uib.cipr.matrix.NotConvergedException;
 import no.uib.cipr.matrix.SVD;
-import no.uib.cipr.matrix.sparse.ArpackSym;
 
 /**
  *
@@ -45,20 +43,20 @@ public class CURDecompositionTest extends TestCase {
         
         int k = 2;
         
-        double[] expectedRPDF = new double[]{0.012, 0.111, 0.198, 0.309, 0.132, 0.206, 0.033};
-        double[] expectedCPDF = new double[]{0.21, 0.21, 0.21, 0.185, 0.185};
+        double[] expectedRPMF = new double[]{0.012, 0.111, 0.198, 0.309, 0.132, 0.206, 0.033};
+        double[] expectedCPMF = new double[]{0.21, 0.21, 0.21, 0.185, 0.185};
         
-        PDFs pdfs = CURDecomposition._calculatePDFs(a);
+        CURDecomposition.PMFs pmfs = CURDecomposition._calculatePMFs(a);
         
         double tol= 0.01;
         double diff;
         for (int i = 0; i < a.length; ++i) {
-            diff = expectedRPDF[i] - pdfs.rowPDF[i];
+            diff = expectedRPMF[i] - pmfs.rowPMF[i];
             assertTrue(Math.abs(diff) < tol);
         }
         
         for (int i = 0; i < a[0].length; ++i) {
-            diff = expectedCPDF[i] - pdfs.colPDF[i];
+            diff = expectedCPMF[i] - pmfs.colPMF[i];
             assertTrue(Math.abs(diff) < tol);
         }
         
@@ -85,9 +83,9 @@ public class CURDecompositionTest extends TestCase {
         expectedR[1] = new double[]{6.36, 6.36, 6.36, 0, 0};
         
         System.out.printf("cdfs.rowsSelected=%s\n", Arrays.toString(cdfs.rowsSelected));
-        System.out.printf("cdfs.pdfs.rowPDF=%s\n", FormatArray.toString(cdfs.pdfs.rowPDF, "%.4e"));
+        System.out.printf("cdfs.pmfs.rowPMF=%s\n", FormatArray.toString(cdfs.pmfs.rowPMF, "%.4e"));
         
-        SelectedFromA r = CURDecomposition._calculateR(a, cdfs.rowsSelected, cdfs.pdfs.rowPDF);
+        SelectedFromA r = CURDecomposition._calculateR(a, cdfs.rowsSelected, cdfs.pmfs.rowPMF);
         assertEquals(expectedR.length, r.r.length);
         assertEquals(expectedR[0].length, r.r[0].length);
         for (int i = 0; i < r.r.length; ++i) {
@@ -98,7 +96,7 @@ public class CURDecompositionTest extends TestCase {
         }
         
         SelectedFromA c = CURDecomposition._calculateR(MatrixUtil.transpose(a), 
-            cdfs.colsSelected, cdfs.pdfs.colPDF);
+            cdfs.colsSelected, cdfs.pmfs.colPMF);
         c.r = MatrixUtil.transpose(c.r);
         assertEquals(expectedC.length, c.r.length);
         assertEquals(expectedC[0].length, c.r[0].length);
