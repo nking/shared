@@ -278,7 +278,7 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
 <span class="pc bpc" id="L278" title="1 of 2 branches missed.">        if (isEmpty()) throw new NoSuchElementException(&quot;BST underflow&quot;);</span>
 
         // if both children of root are black, set root to red
-<span class="pc bpc" id="L281" title="1 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
+<span class="pc bpc" id="L281" title="2 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
 <span class="fc" id="L282">            root.color = RED;</span>
 
 <span class="fc" id="L284">        root = deleteMin(root);</span>
@@ -307,7 +307,7 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
 <span class="pc bpc" id="L307" title="1 of 2 branches missed.">        if (isEmpty()) throw new NoSuchElementException(&quot;BST underflow&quot;);</span>
 
         // if both children of root are black, set root to red
-<span class="pc bpc" id="L310" title="1 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
+<span class="pc bpc" id="L310" title="2 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
 <span class="fc" id="L311">            root.color = RED;</span>
 
 <span class="fc" id="L313">        root = deleteMax(root);</span>

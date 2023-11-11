@@ -11,7 +11,6 @@ import gnu.trove.map.TIntIntMap;
 import java.util.Arrays;
 import java.util.Random;
 import no.uib.cipr.matrix.DenseMatrix;
-import no.uib.cipr.matrix.Matrices;
 import no.uib.cipr.matrix.NotConvergedException;
 import no.uib.cipr.matrix.SVD;
 
@@ -59,7 +58,7 @@ import no.uib.cipr.matrix.SVD;
    * 
  * @author nichole
  */
-<span class="pc" id="L62">public class CURDecomposition {</span>
+<span class="pc" id="L61">public class CURDecomposition {</span>
     
     /**
      * a CUR-Decomposition is an approximation to the SVD, but the result is that 
@@ -90,51 +89,51 @@ import no.uib.cipr.matrix.SVD;
      */
     public static CUR calculateDecomposition(double[][] a, int k) throws NotConvergedException {
 
-<span class="fc" id="L93">        CDFs cdfs = _calculateCDFs(a, k);</span>
+<span class="fc" id="L92">        CDFs cdfs = _calculateCDFs(a, k);</span>
        
-<span class="fc" id="L95">        SelectedFromA r = _calculateR(a, cdfs.rowsSelected, cdfs.pdfs.rowPDF);</span>
+<span class="fc" id="L94">        SelectedFromA r = _calculateR(a, cdfs.rowsSelected, cdfs.pmfs.rowPMF);</span>
         
-<span class="fc" id="L97">        SelectedFromA c = _calculateR(MatrixUtil.transpose(a), cdfs.colsSelected, cdfs.pdfs.colPDF);</span>
-<span class="fc" id="L98">        c.r = MatrixUtil.transpose(c.r);</span>
+<span class="fc" id="L96">        SelectedFromA c = _calculateR(MatrixUtil.transpose(a), cdfs.colsSelected, cdfs.pmfs.colPMF);</span>
+<span class="fc" id="L97">        c.r = MatrixUtil.transpose(c.r);</span>
         
-<span class="fc" id="L100">        double[][] u = _calculateU(a, r.indexesUnique, c.indexesUnique);</span>
+<span class="fc" id="L99">        double[][] u = _calculateU(a, r.indexesUnique, c.indexesUnique);</span>
         
-<span class="fc" id="L102">        CUR cur = new CUR();</span>
-<span class="fc" id="L103">        cur._rowsSelected = r.indexesUnique;</span>
-<span class="fc" id="L104">        cur._colsSelected = c.indexesUnique;</span>
-<span class="fc" id="L105">        cur.c = c.r;</span>
-<span class="fc" id="L106">        cur.r = r.r;</span>
-<span class="fc" id="L107">        cur.u = u;</span>
-<span class="fc" id="L108">        cur.result = MatrixUtil.multiply(cur.getC(), cur.getU());</span>
-<span class="fc" id="L109">        cur.result = MatrixUtil.multiply(cur.getResult(), cur.getR());</span>
+<span class="fc" id="L101">        CUR cur = new CUR();</span>
+<span class="fc" id="L102">        cur._rowsSelected = r.indexesUnique;</span>
+<span class="fc" id="L103">        cur._colsSelected = c.indexesUnique;</span>
+<span class="fc" id="L104">        cur.c = c.r;</span>
+<span class="fc" id="L105">        cur.r = r.r;</span>
+<span class="fc" id="L106">        cur.u = u;</span>
+<span class="fc" id="L107">        cur.result = MatrixUtil.multiply(cur.getC(), cur.getU());</span>
+<span class="fc" id="L108">        cur.result = MatrixUtil.multiply(cur.getResult(), cur.getR());</span>
         
-<span class="fc" id="L111">        return cur;        </span>
+<span class="fc" id="L110">        return cur;        </span>
     }
     
     static CDFs _calculateCDFs(double[][] a, int k) {
      
-<span class="fc" id="L116">        PDFs pdfs = _calculatePDFs(a);</span>
+<span class="fc" id="L115">        PMFs pmfs = _calculatePMFs(a);</span>
         
         // randomly select k columns and k rows
         
-<span class="fc" id="L120">        double[] rowCDF = MiscMath0.cumulativeSum(pdfs.rowPDF);</span>
+<span class="fc" id="L119">        double[] rowCDF = MiscMath0.cumulativeSum(pmfs.rowPMF);</span>
         
-<span class="fc" id="L122">        double[] colCDF = MiscMath0.cumulativeSum(pdfs.colPDF);</span>
+<span class="fc" id="L121">        double[] colCDF = MiscMath0.cumulativeSum(pmfs.colPMF);</span>
         
         // normalize so that the last bin is &quot;1&quot;.
-<span class="fc" id="L125">        double norm = rowCDF[rowCDF.length - 1];</span>
-<span class="fc bfc" id="L126" title="All 2 branches covered.">        for (int i = 0; i &lt; rowCDF.length; ++i) {</span>
-<span class="fc" id="L127">            rowCDF[i] /= norm;</span>
+<span class="fc" id="L124">        double norm = rowCDF[rowCDF.length - 1];</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">        for (int i = 0; i &lt; rowCDF.length; ++i) {</span>
+<span class="fc" id="L126">            rowCDF[i] /= norm;</span>
         }
         
-<span class="fc" id="L130">        norm = colCDF[colCDF.length - 1];</span>
-<span class="fc bfc" id="L131" title="All 2 branches covered.">        for (int i = 0; i &lt; colCDF.length; ++i) {</span>
-<span class="fc" id="L132">            colCDF[i] /= norm;</span>
+<span class="fc" id="L129">        norm = colCDF[colCDF.length - 1];</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">        for (int i = 0; i &lt; colCDF.length; ++i) {</span>
+<span class="fc" id="L131">            colCDF[i] /= norm;</span>
         }
                         
         int[] k0, k1;
         
-<span class="fc" id="L137">        boolean useBinarySearch = true;</span>
+<span class="fc" id="L136">        boolean useBinarySearch = true;</span>
         
         /*
         In the future, may implement more methods than binary search in
@@ -152,29 +151,29 @@ import no.uib.cipr.matrix.SVD;
             O(k *lg(k) / eps^2 )
         */
         
-<span class="fc" id="L155">        Random rand = Misc0.getSecureRandom();</span>
-<span class="fc" id="L156">        long seed = System.nanoTime();</span>
-<span class="fc" id="L157">        System.out.println(&quot;seed=&quot; + seed);</span>
-<span class="fc" id="L158">        System.out.flush();</span>
-<span class="fc" id="L159">        rand.setSeed(seed);</span>
+<span class="fc" id="L154">        Random rand = Misc0.getSecureRandom();</span>
+<span class="fc" id="L155">        long seed = System.nanoTime();</span>
+<span class="fc" id="L156">        System.out.println(&quot;seed=&quot; + seed);</span>
+<span class="fc" id="L157">        System.out.flush();</span>
+<span class="fc" id="L158">        rand.setSeed(seed);</span>
 
         //if (useBinarySearch) {
-<span class="fc" id="L162">            k0 = CDFRandomSelect.chooseKFromBinarySearch(rowCDF, k, rand);</span>
-<span class="fc" id="L163">            k1 = CDFRandomSelect.chooseKFromBinarySearch(colCDF, k, rand);</span>
+<span class="fc" id="L161">            k0 = CDFRandomSelect.chooseKFromBinarySearch(rowCDF, k, rand);</span>
+<span class="fc" id="L162">            k1 = CDFRandomSelect.chooseKFromBinarySearch(colCDF, k, rand);</span>
         /*} else {
             // transform CDFs to integers
             k0 = CDFRandomSelect.chooseKFromIntegerTransformAndTrie(rowCDF, k, rand);
             k1 = CDFRandomSelect.chooseKFromIntegerTransformAndTrie(colCDF, k, rand);
         }*/
 
-<span class="fc" id="L170">        CDFs cds = new CDFs();</span>
-<span class="fc" id="L171">        cds.rowsSelected = k0;</span>
-<span class="fc" id="L172">        cds.colsSelected = k1;</span>
-<span class="fc" id="L173">        cds.rowCDF = rowCDF;</span>
-<span class="fc" id="L174">        cds.colCDF = colCDF;</span>
-<span class="fc" id="L175">        cds.pdfs = pdfs;</span>
+<span class="fc" id="L169">        CDFs cds = new CDFs();</span>
+<span class="fc" id="L170">        cds.rowsSelected = k0;</span>
+<span class="fc" id="L171">        cds.colsSelected = k1;</span>
+<span class="fc" id="L172">        cds.rowCDF = rowCDF;</span>
+<span class="fc" id="L173">        cds.colCDF = colCDF;</span>
+<span class="fc" id="L174">        cds.pmfs = pmfs;</span>
 
-<span class="fc" id="L177">        return cds;</span>
+<span class="fc" id="L176">        return cds;</span>
     }
     
     /**
@@ -184,32 +183,32 @@ import no.uib.cipr.matrix.SVD;
      * NOTE: the Frobenius norm is the square root of the sum of the squares of 
      * all elements of a matrix (2.2-4 of Golub and van Loan).
      @param a an mxn matrix.
-     @return  the column and row PDFs of matrix a where a row PDF is the
+     @return  the column and row PMFs of matrix a where a row PMF is the
      * Frobenius norm of the column divided by the Frobenius norm of the
-     * matrix, and the row PDF is similar but calculated for rows instead of
+     * matrix, and the row PMF is similar but calculated for rows instead of
      * columns.
      */
-    static PDFs _calculatePDFs(double[][] a) {
+    static PMFs _calculatePMFs(double[][] a) {
      
         // copy a, square each item, create a summed area table from that.
-        // create column sums as a vector and normalize it (= discrete pdf for col)
-        // create row sums as a vector and normalize it (= discrete pdf for row)
+        // create column sums as a vector and normalize it (= discrete pmf for col)
+        // create row sums as a vector and normalize it (= discrete pmf for row)
         
-<span class="fc" id="L198">        a = MatrixUtil.copy(a);</span>
+<span class="fc" id="L197">        a = MatrixUtil.copy(a);</span>
         int i, j;
-<span class="fc bfc" id="L200" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc bfc" id="L201" title="All 2 branches covered.">            for (j = 0; j &lt; a[i].length; ++j) {</span>
-<span class="fc" id="L202">                a[i][j] *= a[i][j];</span>
+<span class="fc bfc" id="L199" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">            for (j = 0; j &lt; a[i].length; ++j) {</span>
+<span class="fc" id="L201">                a[i][j] *= a[i][j];</span>
             }
         }
         
-<span class="fc" id="L206">        SummedAreaTable0 sat0 = new SummedAreaTable0();</span>
-<span class="fc" id="L207">        double[][] s = sat0.createAbsoluteSummedAreaTable(a);</span>
+<span class="fc" id="L205">        SummedAreaTable0 sat0 = new SummedAreaTable0();</span>
+<span class="fc" id="L206">        double[][] s = sat0.createAbsoluteSummedAreaTable(a);</span>
         
-<span class="fc" id="L209">        double fN = s[s.length-1][s[0].length-1];</span>
+<span class="fc" id="L208">        double fN = s[s.length-1][s[0].length-1];</span>
         
-<span class="fc" id="L211">        double[] r = new double[s.length];</span>
-<span class="fc" id="L212">        double[] c = new double[s[0].length];</span>
+<span class="fc" id="L210">        double[] r = new double[s.length];</span>
+<span class="fc" id="L211">        double[] c = new double[s[0].length];</span>
         
         /*
         imgS 
@@ -221,157 +220,157 @@ import no.uib.cipr.matrix.SVD;
              will be returned and the number of pixels in the window. 
              double[]{sum, nPixels}
         */
-<span class="fc" id="L224">        double[] sumAndN = new double[2];</span>
+<span class="fc" id="L223">        double[] sumAndN = new double[2];</span>
         
-<span class="fc" id="L226">        int startCol = 0;</span>
-<span class="fc" id="L227">        int stopCol = s[0].length - 1;</span>
+<span class="fc" id="L225">        int startCol = 0;</span>
+<span class="fc" id="L226">        int stopCol = s[0].length - 1;</span>
         // create row vectors:
-<span class="fc bfc" id="L229" title="All 2 branches covered.">        for (i = 0; i &lt; s.length; ++i) {</span>
+<span class="fc bfc" id="L228" title="All 2 branches covered.">        for (i = 0; i &lt; s.length; ++i) {</span>
             
             // s[x:x][y:y]
-<span class="fc" id="L232">            sat0.extractWindowFromSummedAreaTable(s, i, i, startCol, stopCol,</span>
+<span class="fc" id="L231">            sat0.extractWindowFromSummedAreaTable(s, i, i, startCol, stopCol,</span>
                 sumAndN);
             
-<span class="fc" id="L235">            r[i] = sumAndN[0]/fN;</span>
+<span class="fc" id="L234">            r[i] = sumAndN[0]/fN;</span>
         }
         
-<span class="fc" id="L238">        int startRow = 0;</span>
-<span class="fc" id="L239">        int stopRow = s.length - 1;</span>
+<span class="fc" id="L237">        int startRow = 0;</span>
+<span class="fc" id="L238">        int stopRow = s.length - 1;</span>
         // create col vectors:
-<span class="fc bfc" id="L241" title="All 2 branches covered.">        for (j = 0; j &lt; s[0].length; ++j) {</span>
+<span class="fc bfc" id="L240" title="All 2 branches covered.">        for (j = 0; j &lt; s[0].length; ++j) {</span>
             
-<span class="fc" id="L243">            sat0.extractWindowFromSummedAreaTable(s, startRow, stopRow, j, j, </span>
+<span class="fc" id="L242">            sat0.extractWindowFromSummedAreaTable(s, startRow, stopRow, j, j, </span>
                 sumAndN);
             
-<span class="fc" id="L246">            c[j] = sumAndN[0]/fN;</span>
+<span class="fc" id="L245">            c[j] = sumAndN[0]/fN;</span>
         }
         
-<span class="fc" id="L249">        PDFs pdfs = new PDFs();</span>
-<span class="fc" id="L250">        pdfs.colPDF = c;</span>
-<span class="fc" id="L251">        pdfs.rowPDF = r;</span>
+<span class="fc" id="L248">        PMFs pmfs = new PMFs();</span>
+<span class="fc" id="L249">        pmfs.colPMF = c;</span>
+<span class="fc" id="L250">        pmfs.rowPMF = r;</span>
 
-<span class="fc" id="L253">        return pdfs;        </span>
+<span class="fc" id="L252">        return pmfs;</span>
     }
 
     /**
       calculate R: 
       R is an k x n matrix composed of a randomly chosen set of k rows of M.
-      each row of R gets normalized by sqrt( k * rowPDF_{selected_row}).
+      each row of R gets normalized by sqrt( k * rowPMF_{selected_row}).
       if a row of A is present more than once in the selection, it is 
       included only the first time and that included column is then multiplied
       by the square root of the number of duplicates.
       @param a the m x n matrix, of m samples of n variates or parameters.
       @param selectedRowIdxs a vector of indexes of rows of matrix a, which have
       been randomly selected from the row marginal probabilities.
-      @param rowPDF the row marginal probabilities.
+      @param rowPMF the row marginal probabilities.
       @return matrix of selected rows from A normalized and an array of the
       unique selected indexes (corrections for duplicated indexes are performed
       in this method).
      */
     static SelectedFromA _calculateR(double[][] a, int[] selectedRowIdxs, 
-        double[] rowPDF) {
+        double[] rowPMF) {
         
-<span class="pc bpc" id="L274" title="1 of 2 branches missed.">        if (a.length != rowPDF.length) {</span>
-<span class="nc" id="L275">            throw new IllegalArgumentException(&quot;a.length must equal rowPDF.length&quot;);</span>
+<span class="pc bpc" id="L273" title="1 of 2 branches missed.">        if (a.length != rowPMF.length) {</span>
+<span class="nc" id="L274">            throw new IllegalArgumentException(&quot;a.length must equal rowPMF.length&quot;);</span>
         }
         
         // make frequency map of selected indexes and remove the key after a
         //   column is visited (to help correct for multiplicity).
-<span class="fc" id="L280">        TIntIntMap freq = MiscMath0.makeFrequencyMap(selectedRowIdxs);</span>
+<span class="fc" id="L279">        TIntIntMap freq = MiscMath0.makeFrequencyMap(selectedRowIdxs);</span>
         
-<span class="fc" id="L282">        int kCorr = freq.size();</span>
+<span class="fc" id="L281">        int kCorr = freq.size();</span>
         
-<span class="fc" id="L284">        int k = selectedRowIdxs.length;</span>
-<span class="fc" id="L285">        int m = a.length;</span>
-<span class="fc" id="L286">        int n = a[0].length;</span>
+<span class="fc" id="L283">        int k = selectedRowIdxs.length;</span>
+<span class="fc" id="L284">        int m = a.length;</span>
+<span class="fc" id="L285">        int n = a[0].length;</span>
         
         int i, j, d, ii;
-<span class="fc" id="L289">        int rIdx = 0;</span>
+<span class="fc" id="L288">        int rIdx = 0;</span>
         double factor;
         
-<span class="fc" id="L292">        SelectedFromA sa = new SelectedFromA();</span>
-<span class="fc" id="L293">        sa.r = new double[kCorr][n];</span>
-<span class="fc" id="L294">        sa.indexesUnique = new int[kCorr];</span>
+<span class="fc" id="L291">        SelectedFromA sa = new SelectedFromA();</span>
+<span class="fc" id="L292">        sa.r = new double[kCorr][n];</span>
+<span class="fc" id="L293">        sa.indexesUnique = new int[kCorr];</span>
         
-<span class="fc bfc" id="L296" title="All 2 branches covered.">        for (i = 0; i &lt; selectedRowIdxs.length; ++i) {</span>
+<span class="fc bfc" id="L295" title="All 2 branches covered.">        for (i = 0; i &lt; selectedRowIdxs.length; ++i) {</span>
             
-<span class="fc" id="L298">            j = selectedRowIdxs[i];</span>
-<span class="pc bnc" id="L299" title="All 4 branches missed.">            assert(j &gt;= 0 &amp;&amp; j &lt; m);</span>
+<span class="fc" id="L297">            j = selectedRowIdxs[i];</span>
+<span class="pc bnc" id="L298" title="All 4 branches missed.">            assert(j &gt;= 0 &amp;&amp; j &lt; m);</span>
             
-<span class="pc bpc" id="L301" title="1 of 2 branches missed.">            if (!freq.containsKey(j)) {</span>
-<span class="nc" id="L302">                continue;</span>
+<span class="fc bfc" id="L300" title="All 2 branches covered.">            if (!freq.containsKey(j)) {</span>
+<span class="fc" id="L301">                continue;</span>
             }
             
-<span class="fc" id="L305">            d = freq.get(j);</span>
+<span class="fc" id="L304">            d = freq.get(j);</span>
             
-<span class="fc" id="L307">            factor = 1./Math.sqrt(k * rowPDF[j]);</span>
+<span class="fc" id="L306">            factor = 1./Math.sqrt(k * rowPMF[j]);</span>
             
-<span class="pc bpc" id="L309" title="1 of 2 branches missed.">            if (d &gt; 1) {</span>
-<span class="nc" id="L310">                factor *= Math.sqrt(d);</span>
+<span class="fc bfc" id="L308" title="All 2 branches covered.">            if (d &gt; 1) {</span>
+<span class="fc" id="L309">                factor *= Math.sqrt(d);</span>
             }
             
             //extract row j from a and multiply each item by factor
             //and store it as c[cIdx][*];
-<span class="fc" id="L315">            sa.r[rIdx] = Arrays.copyOf(a[j], a[j].length);</span>
-<span class="fc bfc" id="L316" title="All 2 branches covered.">            for (ii = 0; ii &lt; sa.r[rIdx].length; ++ii) {</span>
-<span class="fc" id="L317">                sa.r[rIdx][ii] *= factor;</span>
+<span class="fc" id="L314">            sa.r[rIdx] = Arrays.copyOf(a[j], a[j].length);</span>
+<span class="fc bfc" id="L315" title="All 2 branches covered.">            for (ii = 0; ii &lt; sa.r[rIdx].length; ++ii) {</span>
+<span class="fc" id="L316">                sa.r[rIdx][ii] *= factor;</span>
             }
             
-<span class="fc" id="L320">            sa.indexesUnique[rIdx] = j;</span>
+<span class="fc" id="L319">            sa.indexesUnique[rIdx] = j;</span>
             
-<span class="fc" id="L322">            freq.remove(j);</span>
+<span class="fc" id="L321">            freq.remove(j);</span>
                     
-<span class="fc" id="L324">            rIdx++;</span>
+<span class="fc" id="L323">            rIdx++;</span>
         }
         
-<span class="fc" id="L327">        return sa;</span>
+<span class="fc" id="L326">        return sa;</span>
     }
 
     static double[][] _calculateU(double[][] a, int[] selectedRIdxs, 
         int[] selectedCIdxs) throws NotConvergedException {
         
-<span class="fc" id="L333">        int nr = selectedRIdxs.length;</span>
-<span class="fc" id="L334">        int nc = selectedCIdxs.length;</span>
+<span class="fc" id="L332">        int nr = selectedRIdxs.length;</span>
+<span class="fc" id="L333">        int nc = selectedCIdxs.length;</span>
         
         int i, j, ar, ac;
-<span class="fc" id="L337">        double[][] w = new double[nr][nc];</span>
-<span class="fc bfc" id="L338" title="All 2 branches covered.">        for (i = 0; i &lt; nr; ++i) {</span>
-<span class="fc" id="L339">            w[i] = new double[nc];</span>
-<span class="fc" id="L340">            ar = selectedRIdxs[i];</span>
-<span class="fc bfc" id="L341" title="All 2 branches covered.">            for (j = 0; j &lt; nc; ++j) {</span>
-<span class="fc" id="L342">                ac = selectedCIdxs[j];</span>
-<span class="fc" id="L343">                w[i][j] = a[ar][ac];</span>
+<span class="fc" id="L336">        double[][] w = new double[nr][nc];</span>
+<span class="fc bfc" id="L337" title="All 2 branches covered.">        for (i = 0; i &lt; nr; ++i) {</span>
+<span class="fc" id="L338">            w[i] = new double[nc];</span>
+<span class="fc" id="L339">            ar = selectedRIdxs[i];</span>
+<span class="fc bfc" id="L340" title="All 2 branches covered.">            for (j = 0; j &lt; nc; ++j) {</span>
+<span class="fc" id="L341">                ac = selectedCIdxs[j];</span>
+<span class="fc" id="L342">                w[i][j] = a[ar][ac];</span>
             }
         }
         
-<span class="fc" id="L347">        SVD svd = SVD.factorize(new DenseMatrix(w));</span>
-<span class="fc" id="L348">        DenseMatrix X = svd.getU();</span>
-<span class="fc" id="L349">        DenseMatrix YT = svd.getVt();</span>
-<span class="fc" id="L350">        double[] s = svd.getS();</span>
+<span class="fc" id="L346">        SVD svd = SVD.factorize(new DenseMatrix(w));</span>
+<span class="fc" id="L347">        DenseMatrix X = svd.getU();</span>
+<span class="fc" id="L348">        DenseMatrix YT = svd.getVt();</span>
+<span class="fc" id="L349">        double[] s = svd.getS();</span>
         
-<span class="fc" id="L352">        double eps = 1.e-15;</span>
+<span class="fc" id="L351">        double eps = 1.e-15;</span>
         
-<span class="fc" id="L354">        int rank = 0;</span>
-<span class="fc bfc" id="L355" title="All 2 branches covered.">        for (i = 0; i &lt; s.length; ++i) {</span>
-<span class="fc bfc" id="L356" title="All 2 branches covered.">            if (Math.abs(s[i]) &gt; eps) {</span>
-<span class="fc" id="L357">                rank++;</span>
+<span class="fc" id="L353">        int rank = 0;</span>
+<span class="fc bfc" id="L354" title="All 2 branches covered.">        for (i = 0; i &lt; s.length; ++i) {</span>
+<span class="pc bpc" id="L355" title="1 of 2 branches missed.">            if (Math.abs(s[i]) &gt; eps) {</span>
+<span class="fc" id="L356">                rank++;</span>
             }
         }
         
-<span class="pc bpc" id="L361" title="1 of 2 branches missed.">        if (rank == 0) {</span>
-<span class="nc" id="L362">            throw new IllegalArgumentException(&quot;factorization cannot continue as&quot;</span>
+<span class="pc bpc" id="L360" title="1 of 2 branches missed.">        if (rank == 0) {</span>
+<span class="nc" id="L361">            throw new IllegalArgumentException(&quot;factorization cannot continue as&quot;</span>
             + &quot; the number of selected indexes is too small&quot;);
         }
         
         // this will be transposed
-<span class="fc" id="L367">        double[][] sInvSq = MatrixUtil.zeros(nr, nc);</span>
-<span class="fc" id="L368">        int len = Math.min(nr, nc);</span>
-<span class="fc bfc" id="L369" title="All 2 branches covered.">        for (i = 0; i &lt; len; ++i) {</span>
-<span class="fc bfc" id="L370" title="All 2 branches covered.">            if (s[i] &gt; eps) {</span>
-<span class="fc" id="L371">                sInvSq[i][i] = 1./(s[i]*s[i]);</span>
+<span class="fc" id="L366">        double[][] sInvSq = MatrixUtil.zeros(nr, nc);</span>
+<span class="fc" id="L367">        int len = Math.min(nr, nc);</span>
+<span class="fc bfc" id="L368" title="All 2 branches covered.">        for (i = 0; i &lt; len; ++i) {</span>
+<span class="pc bpc" id="L369" title="1 of 2 branches missed.">            if (s[i] &gt; eps) {</span>
+<span class="fc" id="L370">                sInvSq[i][i] = 1./(s[i]*s[i]);</span>
             }
         }
-<span class="fc" id="L374">        sInvSq = MatrixUtil.transpose(sInvSq);</span>
+<span class="fc" id="L373">        sInvSq = MatrixUtil.transpose(sInvSq);</span>
         
         // X is nr x nr
         // S is nr x nc ==&gt; (Σ+)^2 = nc x nr
@@ -381,14 +380,14 @@ import no.uib.cipr.matrix.SVD;
         //    [  nc x nr ] * [nr x nr] 
         //  = [nc][nr]
                 
-<span class="fc" id="L384">        double[][] y = MatrixUtil.convertToRowMajor(YT);</span>
-<span class="fc" id="L385">        y = MatrixUtil.transpose(y);</span>
-<span class="fc" id="L386">        double[][] xt = MatrixUtil.convertToRowMajor(X);</span>
-<span class="fc" id="L387">        xt = MatrixUtil.transpose(xt);</span>
-<span class="fc" id="L388">        double[][] u = MatrixUtil.multiply(y, sInvSq);</span>
-<span class="fc" id="L389">        u = MatrixUtil.multiply(u, xt);</span>
+<span class="fc" id="L383">        double[][] y = MatrixUtil.convertToRowMajor(YT);</span>
+<span class="fc" id="L384">        y = MatrixUtil.transpose(y);</span>
+<span class="fc" id="L385">        double[][] xt = MatrixUtil.convertToRowMajor(X);</span>
+<span class="fc" id="L386">        xt = MatrixUtil.transpose(xt);</span>
+<span class="fc" id="L387">        double[][] u = MatrixUtil.multiply(y, sInvSq);</span>
+<span class="fc" id="L388">        u = MatrixUtil.multiply(u, xt);</span>
         
-<span class="fc" id="L391">       return u;</span>
+<span class="fc" id="L390">       return u;</span>
     }
     
     /**
@@ -500,9 +499,9 @@ import no.uib.cipr.matrix.SVD;
     /**
      *
      */
-    public static class PDFs {
-        double[] colPDF;
-        double[] rowPDF;
+    public static class PMFs {
+        double[] colPMF;
+        double[] rowPMF;
     }
     
     /**
@@ -511,7 +510,7 @@ import no.uib.cipr.matrix.SVD;
     public static class CDFs {
         int[] colsSelected;
         int[] rowsSelected;
-        PDFs pdfs;
+        PMFs pmfs;
         double[] colCDF;
         double[] rowCDF;
     }

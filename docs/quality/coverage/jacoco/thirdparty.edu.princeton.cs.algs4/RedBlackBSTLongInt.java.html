@@ -431,8 +431,8 @@ key, left or right field.
             }
 <span class="fc" id="L432">            h.left = delete(h.left, key);</span>
         } else {
-<span class="fc bfc" id="L434" title="All 2 branches covered.">            if (isRed(h.left)) {</span>
-<span class="fc" id="L435">                h = rotateRight(h);</span>
+<span class="pc bpc" id="L434" title="1 of 2 branches missed.">            if (isRed(h.left)) {</span>
+<span class="nc" id="L435">                h = rotateRight(h);</span>
             }
 <span class="fc bfc" id="L437" title="All 4 branches covered.">            if (key == h.key &amp;&amp; (h.right == null)) {</span>
 <span class="fc" id="L438">                return null;</span>
