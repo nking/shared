@@ -62,11 +62,12 @@ def plot_loss_acc(plot_prefix: str, loss : list, acc : list, val_loss = None, va
 
     fig = plt.figure(figsize=(6, 6))
     if plot_super_title is not None:
-        fig.suptitle(plot_super_title)
+        fig.subtitle(plot_super_title)
 
     j = 1
     # nrows, ncols, index where index starts at 1 in the upper left corner and increases to the right
     ax = plt.subplot(1, 2, j)
+    ax.set_title(plot_prefix, wrap=True)
 
     metric_values = loss
     x_axis = [_ for _ in range(len(metric_values))]
@@ -80,7 +81,6 @@ def plot_loss_acc(plot_prefix: str, loss : list, acc : list, val_loss = None, va
         plt.plot(x_axis[int(len(x_axis)/2)], test_loss, label='test', color='red', marker='*', markersize=6)
     plt.ylabel('loss')
     plt.xlabel("epoch")
-    plt.title(plot_prefix)
     plt.legend()
     j += 1
 
