@@ -50,15 +50,15 @@
    s > t is smoothing
 
    filtering: determine current state given past states.
-      particle filtering (a.k.a. seqeuntial monte carlo models, SMC)
+      particle filtering (a.k.a. sequential monte carlo models, SMC)
       and extended kalman filtering.
       particle filtering performs approximate probabilistic inference.
          - propose distribution of particles using transition probabilities, 
            weight the particles, resample from the distribution
          - nice tutorial and python code
            https://github.com/jelfring/particle-filter-tutorial.git
-         -  Stanford AI CS 221 
-            https://stanford-cs221.github.io/summer2023/modules/#tags=week7
+         - Stanford AI CS 221 
+           https://stanford-cs221.github.io/summer2023/modules/#tags=week7
    smoothing: determine a state given all states up to a later state.
       calculates a posterior probability distribution over past states
       given current and past observations (evidence).
