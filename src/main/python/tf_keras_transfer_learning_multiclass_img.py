@@ -19,6 +19,7 @@ from tensorflow import keras
 import plot_util
 import tf_dataset_util
 from keras import layers
+from tensorflow.math import confusion_matrix
 
 print(f'tf version={tf.__version__}')
 
@@ -37,7 +38,7 @@ N_DATALOAD_WORKERS = 0 # defaults to using main thread. uses less memory in tota
 
 add_data_augmentation = True
 
-run_small_dataset = True
+run_small_dataset = False
 
 ##TODO: replace / with os.path.sep
 
@@ -71,6 +72,7 @@ if run_small_dataset:
 def load_dataset_run_model(plot_title: str ='', use_regularization: bool = False, use_dropout: bool = False,
                            n_unfreeze:int=0, unfreeze_all:bool=False, add_dense_layers:bool=False) :
 
+    # type tf.data.Dataset
     train_ds, val_ds = tf.keras.utils.image_dataset_from_directory(
         data_dir + '/train', labels="inferred",
         label_mode="int", class_names=None,
@@ -167,6 +169,46 @@ def load_dataset_run_model(plot_title: str ='', use_regularization: bool = False
 
     plot_util.plot_loss_acc_tf(plot_title+' cifar10', history=history_train, test_acc=acc, test_loss=loss)
 
+    # ===== calc precision, recall, and F1  ======
+    predictions = model.predict(test_ds)
+    #print(f'predictions.shape={predictions.shape}')
+    # shape is nData x nClasses
+    n_test_data = predictions.shape[0]
+    l0 = np.zeros((n_test_data), dtype="int32")
+    p0 = np.zeros((n_test_data), dtype="int32")
+    j = 0
+    for image_batch, labels_batch in test_ds:
+        for i in range(image_batch.shape[0]):
+            l0[j] = labels_batch[i]
+            p0[j] = np.argmax(predictions[j])
+            j += 1
+    # The confusion matrix columns represent the prediction labels and the rows represent the
+    #    real labels.
+    cm = confusion_matrix(l0, p0)
+
+    # https://dev.to/overrideveloper/understanding-the-confusion-matrix-264i
+    rowsums = np.sum(cm, axis=0)
+    colsums = np.sum(cm, axis=1)
+    cmsum = sum(rowsums)
+    diagsum = np.trace(cm) # scalar
+    # tp[i] = cm[i][i]
+    # tn[i] = cmsum - rowsums[i] - solsums[i]
+    # fp[i] = colsums[i] - cm[i][i]
+    # fn[i] = rowsums[i] - cm[i][i]
+
+    # accuracy = diagsum / cmsum
+    # precision[i] = tp[i]/(tp[i] + fp[i]) = np.trace(cm) / colsums
+    # recall[i] = tp[i]/(tp[i] + fn[i])    = np.trace(cm) / rowsums
+    # f1[i] = 2./( (1./precision[i]) + (1./recall[i])) = ...
+    # macro_precision = sum(precision) / (len(precision))
+    # macro_recall = sum(recall) / (len(recall))
+
+    micro_precision = diagsum / sum(colsums)
+    micro_recall = diagsum / sum(rowsums)
+    micro_f1 = 2./((1./micro_precision) + (1./micro_recall))
+    accuracy2 = diagsum/cmsum
+    # ideally, prec and rec > 0.8 and F1 close to 1
+    print(f'accuracy2={accuracy2:.3f}, precision={micro_precision:.3f}, recall={micro_recall:.3f}, f1={micro_f1:.3f}')
 
 if False and run_small_dataset:
     load_dataset_run_model("small subset (over-fitting)", use_regularization=False)
@@ -174,21 +216,23 @@ if False and run_small_dataset:
 
     add_data_augmentation = True
     # retrain all layers runtime is 20-40 sec/epoch
-    load_dataset_run_model(f'small (n_unfreeze=0, DO={DO_PROB}, DA={add_data_augmentation})', n_unfreeze=0, use_dropout=True)
-    load_dataset_run_model(f'small (n_unfreeze=50, DO={DO_PROB}, DA={add_data_augmentation})', n_unfreeze=50, use_dropout=True)
-    load_dataset_run_model(f'small (unfreeze all, DO={DO_PROB}, DA={add_data_augmentation})', unfreeze_all=True, use_dropout=True)
+    load_dataset_run_model(f'small (n_unfreeze=0, DropOutP={DO_PROB}, DataAug={add_data_augmentation})', n_unfreeze=0, use_dropout=True)
+    load_dataset_run_model(f'small (n_unfreeze=50, DropOutP={DO_PROB}, DataAug={add_data_augmentation})', n_unfreeze=50, use_dropout=True)
+    load_dataset_run_model(f'small (unfreeze all, DropOutP={DO_PROB}, DataAug={add_data_augmentation})', unfreeze_all=True, use_dropout=True)
 
-data_dir = data_dir_0
-add_data_augmentation = True
-#load_dataset_run_model(f'full (n_unfreeze=0, DO={DO_PROB}, DA={add_data_augmentation})', use_dropout=True, n_unfreeze=0)
+if not run_small_dataset:
+    data_dir = data_dir_0
+    add_data_augmentation = True
+    dlabel = "full"
+    load_dataset_run_model(f'{dlabel} (n_unfreeze=0, DropOutP={DO_PROB}, DataAug={add_data_augmentation})', use_dropout=True, n_unfreeze=0)
+    print(f'a model that is not over-fitting was just plotted')
+else:
+    dlabel = "small"
+    NUM_EPOCHS = 5
+    L2_REG = 1E-2
+    load_dataset_run_model(f'{dlabel} (n_unfreeze=0, DropOutP={DO_PROB}, L2_REG={L2_REG:.1e}, DataAug={add_data_augmentation})',
+                           use_dropout=True, n_unfreeze=0, use_regularization=True)
+    L2_REG = 1E-1
+    load_dataset_run_model(f'{dlabel} (n_unfreeze=0, DropOutP={DO_PROB}, L2_REG={L2_REG:.1e}, DataAug={add_data_augmentation})',
+                           use_dropout=True, n_unfreeze=0, use_regularization=True)
 
-NUM_EPOCHS = 5
-L2_REG = 1E-2
-load_dataset_run_model(f'full (n_unfreeze=0, DO={DO_PROB}, L2_REG={L2_REG:.1e}, DA={add_data_augmentation})',
-                       use_dropout=True, n_unfreeze=0, use_regularization=True)
-
-L2_REG = 1E-1
-load_dataset_run_model(f'full (n_unfreeze=0, DO={DO_PROB}, L2_REG={L2_REG:.1e}, DA={add_data_augmentation})',
-                       use_dropout=True, n_unfreeze=0, use_regularization=True)
-
-print(f'a model that is not over-fitting was just plotted')
