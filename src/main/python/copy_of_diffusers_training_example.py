@@ -74,9 +74,7 @@ using the gradients of the loss.
 They call the process "de-noising" because they optimize a loss objective that resembles
 de-noising score matching over multiple score scales indexed by t.
 
-   A tangent to explore why the model doesn't work well as a noise-filter in image restoration
-   (I should probably say 'probably does not work well' because one could create a training
-   set that includes every possible image for the 2D shape constraints):
+   A tangent to explore why the model doesn't work well as a noise-filter in image restoration:
    The noise model is composed of an aggregate of noise added to batches of images.
 When the reverse process sees what it recognizes as noise in the input image,
 it does not try to remove it, but instead, tries to restore the noise pixels to a state it
@@ -87,6 +85,16 @@ individual starting input image is not pure noise.
 follows what the model has seen before essentially and generates an interesting image
 from the implicit forward posterior distribution and UNet + noise scheduler model of the noise
 in a decoding phase. see Sect 4.4 of paper.
+   To explore the concept more, we could restrict the images to being binary, k = 2,
+and having n_pixels = 8*4.  The number of possible images to create is k^n_pixels = 4294967296.
+The training and denoising both have a cyclic complication.
+It would be difficult to tell when to stop the restoration because each image - noise
+would be another true image from the training dataset.  So one would want the training
+set to be some subset of the 4294967296 which have properties like shapes being more than
+1 adjacent pixel... could perform dilation on all 4294967296 images and keep only the unique subset,
+and consider other properties like discard images of mostly all 0s or all 1s... Then the
+universe of train and test images would be feasible to create... haven't thought this 
+through thoroughly... would need to greatly reduce num_train_timesteps...
 
    The paper equations are here for convenience:
 
