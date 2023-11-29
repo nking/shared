@@ -206,7 +206,7 @@ For example, `num_epochs` can be increased to 100 for better visual quality.
 run_small_inspect = True
 
 if run_small_inspect:
-    print(f'WARNING: run_small_inspect=True, (train uses small #epochs and sample uses small #iterations')
+    print(f'WARNING: run_small_inspect=True, (uses small subset of data, small # train epochs small # sample iterations')
 
 display_train_sample = False
 
@@ -811,7 +811,7 @@ filter_noise()
 generate_sample()
 
 if run_small_inspect:
-    print(f'WARNING REMINDER: run_small_inspect=True, (train uses small #epochs and sample uses small #iterations')
+    print(f'WARNING REMINDER: run_small_inspect=True, (uses small subset of data, small # train epochs small # sample iterations')
 
 """Not bad! There's room for improvement of course, so feel free to play with the hyperparameters, model definition and image augmentations 🤗
 
