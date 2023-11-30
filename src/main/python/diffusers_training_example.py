@@ -27,66 +27,72 @@ The DDPM paper reference is
 Ho, J., Jain, A. and Abbeel, P., 2020. Denoising diffusion probabilistic models.
 Advances in Neural Information Processing Systems, 33, pp.6840-6851.
 
-> * This tutorial's choice of training images is a set of well curated images of butterflies.
-One can also find a pretrained model from a set of cat images too "google/ddpm-cat-256".
-The training uses many images that are carefully prepared to represent samples from the same distribution.
+
+This tutorial's choice of training images is a set of well curated images of butterflies.
+One can also find a pretrained model from a set of cat images "google/ddpm-cat-256".
+The butterfly training uses many images that are carefully prepared to represent samples from the same distribution.
 The DDPM paper authors (Ho, Jain, Abbeel 2020) however, use images that are busy, uncentered,
-and do not have background removed.
+and do not have background removed, but are all of same distribution category (e.g. castles, bedrooms, etc).
 This distribution is part of the encoding for the latent space.
 
 B.T.W. The white background of the training images makes it easier to see effects of
-applying the reverse process to the images (non-generative use case).
+applying the reverse process to the images (for filter_noise()).
 
-Some details on noise removal algorithms:
+**Some details on noise removal algorithms:**
 
 The form of "grouping and collaborative filtering" to learn noise and remove it can be seen in
 the BM3D algorithm.
-Others are wavelet transforms, Wiener, median, shrinkage-thresholding, linear and non-linear 
+Other noise-removal algorithms are wavelet transforms, Wiener, median, shrinkage-thresholding, linear and non-linear
 smoothing, statistical methods...
 
-a simple form of deconvolution is (https://en.m.wikipedia.org/wiki/Deconvolution):
-    f * g = h
-       where f is source signal to recover,
-       g is distortion function or filter,
-       h is the observed signal
-       * is the convolution symbol
+A simple form of deconvolution is (https://en.m.wikipedia.org/wiki/Deconvolution):
 
-    (f * g) + eps = h
-       where eps is added noise
 
-    if eps is small (or removed), we can recover f using fourier transforms
-    followed by inverse fourier transform
-       H = FFT(h); G = FFT(g)
+```
+f * g = h
+    where f is source signal to recover,
+    g is distortion function or filter,
+    h is the observed signal
+    * is the convolution symbol
 
-    When modelling the noise to remove it, a common technique is to use a Weiner filter
-    which assumes white noise, that is, a random signal with equal intensities at different frequencies
-    (== constant power spectral density).
+(f * g) + eps = h
+    where eps is added noise
 
-    DDPM uses a random signal and a random sampling of frequencies from a 
-    bounded frequency domain in its estimation of noise to add to images.  
-    This is part of the 'forward' process of DDPM 
-    and is a cumulated product with re-parameterized parameters.
+if eps is small (or removed), we can recover f using fourier transforms
+followed by inverse fourier transform
+    H = FFT(h); G = FFT(g)
+```
 
-Ho, J., Jain, A. and Abbeel, P., 2020. Denoising diffusion probabilistic models.
-Advances in Neural Information Processing Systems, 33, pp.6840-6851.
-   The forward process of training takes an image and continuously adds gaussian noise to it.
+When modelling the noise to remove it, a common technique is to use a Weiner filter
+which assumes white noise, that is, a random signal with equal intensities at different frequencies
+(== constant power spectral density).
+
+DDPM uses a random signal and a random sampling of frequencies from a
+bounded frequency domain in its estimation of noise to add to images.
+This is part of the 'forward' process of DDPM
+and is a cumulated product with re-parameterized parameters.
+
+
+The forward process of training takes an image and continuously adds gaussian noise to it.
 (remember that any underlying noise distribution will resemble a gaussian distribution
 as n increases, where n is the number of draws).
-   The model learns the residual noise between the latest image and the latest image before
+
+The model learns the residual noise between the latest image and the latest image before
 this round of adding noise.  The loss is calculated and the model parameters are updated
-using the gradients of the loss. 
-   The trained model can be used to "reverse" the process of adding noise to an image.
+using the gradients of the loss.
+
+The trained model can be used to "reverse" the process of adding noise to an image.
 They call the process "de-noising" because they optimize a loss objective that resembles
 de-noising score matching over multiple score scales indexed by t.
 
-   A tangent to explore why the model doesn't work well as a noise-filter in image restoration:
-   The noise model is composed of an aggregate of noise added to batches of images.
+A tangent to explore why the model doesn't work well as a noise-filter in image restoration:
+The noise model is composed of an aggregate of noise added to batches of images.
 When the reverse process sees what it recognizes as noise in the input image,
 it does not try to remove it, but instead, tries to restore the noise pixels to a state it
 believes is before the noise was added.  The representation of the previous state for those
 pixels may be very different than an individual image's pixels' nearest neighbors when the
 individual starting input image is not pure noise.
-   When the individual starting input image is pure noise, the restoration of pixels 
+When the individual starting input image is pure noise, the restoration of pixels
 follows what the model has seen before essentially and generates an interesting image
 from the implicit forward posterior distribution and UNet + noise scheduler model of the noise
 in a decoding phase. see Sect 4.4 of paper.
@@ -98,8 +104,8 @@ would be another true image from the training dataset.  So one would want the tr
 set to be some subset of the 4294967296 which have properties like shapes being more than
 1 adjacent pixel... could perform dilation on all 4294967296 images and keep only the unique subset,
 and consider other properties like discard images of mostly all 0s or all 1s... Then the
-universe of train and test images would be feasible to create... haven't thought this 
-through thoroughly... would need to greatly reduce num_train_timesteps...
+universe of train and test images would be feasible to create... haven't thought this
+through thoroughly... would need to greatly reduce num_train_timesteps and adapt UNet for very small input shape...
 
    The paper equations are here for convenience:
 
@@ -112,7 +118,7 @@ through thoroughly... would need to greatly reduce num_train_timesteps...
 
      training performed using ELBO:
        eqn (3)
-       L = E_{q}[-log(p(x_{T})) 
+       L = E_{q}[-log(p(x_{T}))
                  - sum over t >=1 to T (log(p_{theta}(x_{t-1}|x_{t}) / q(x_{t}|x_{t-1})))]
 
        alpha_{t} = 1 - beta_{t}
@@ -122,7 +128,7 @@ through thoroughly... would need to greatly reduce num_train_timesteps...
        eqn (4)
        q(x_{t}|x_{0}) = N(x_{t}; sqrt(alpha_mean{t}) * x_{0}, (1 - alpha_mean{t}) * I)
 
-     rewritten using Kullbach-Leibler Divergence, and grouping of terms in 3 segments:
+     rewritten using Kullback-Leibler Divergence, and grouping of terms in 3 segments:
        eqn (5)
        L = E_{q}[ DKL(q(x_{T}|x_{0}) || p(x_{T})) <--L_{T}
                   + sum over t >=1 to T (
@@ -130,19 +136,19 @@ through thoroughly... would need to greatly reduce num_train_timesteps...
                     )
                   - log(p_{theta}(x_{0}|x_{1}))   <-- L_{0}
                 ]
-      
+
        eqn (6)
        q(x_{t-1}|x_{t},x_{0} = N( x_{t-1}; mu_est_{t}(x_{t}|x_{0}), beta_est_{t}*I )
        eqn (7)
-          where 
-            mu_est_{t}(x_{t}|x_{0}) = 
+          where
+            mu_est_{t}(x_{t}|x_{0}) =
               (sqrt(1-alpha_mean_{t-1})*beta_{t} * x_{0}/(1-alpha_mean_{t})
               + sqrt(alpha_t)*(1-alpha_mean_{t}) * x_{t}/(1-alpha_mean_{t})
           where
             beta_est_{t} = (1-alpha_mean_{t-1}) * beta_{t} / (1-alpha_mean_{t})
 
        the DKLs can be calculated with closed form expressions in Rao-Blackwellized fashion.
-              
+
        the authors fix beta_{t} of forward process, making L_{T} const during training (ignorable).
        The L_{t-1} term is simplified to eqn (12) in Sec 3.2
            L_{t-1} = E_x0_eps[((beta_{t}^2)/(2 * sigma_{t}^2 * alpha_{t}*(1-alpha_mean_{t-1})))
@@ -156,16 +162,15 @@ through thoroughly... would need to greatly reduce num_train_timesteps...
        ** but for other uses, could set (sigma_{t})^2 = beta_est_{t}
 
        in Sect 3.2 last paragraph, the authors state that they train the reverse process
-       mean function approximator mu_theta to predict the noise, eps. 
+       mean function approximator mu_theta to predict the noise, eps.
        (they add that one can predict x_{0}, but found it led to worse sample quality).
 
-       UNet model, specifically, is used for the mean function approximator mu_theta (which is
-       configured to predict the noisy image).
-       DDPMScheduler holds the alphas indexed by t.
-       The training loss (empirical risk) is calculated as square of difference between noisey
-       image created in reverse process and the noise predicted by UNet model.
-       The gradient of the loss is performed by the optimizer, which updates the model parameters
-       (where parameters are the weights and biases in the Model network layers).
+UNet model, specifically, is used for the mean function approximator mu_theta (which is configured to predict the noisy image).
+DDPMScheduler holds the alphas indexed by t.
+The training loss (empirical risk) is calculated as square of difference between noisey
+image created in reverse process and the noise predicted by UNet model.
+The gradient of the loss is performed by the optimizer, which updates the model parameters
+(where parameters are the weights and biases in the Model network layers).
 
 #######
 To run the code all the way though to check arguments for libraries you have installed,
@@ -277,11 +282,11 @@ class TrainingConfig:
 config = TrainingConfig()
 
 if run_small_inspect:
+    # for faster first run through code, decrease num_train_timesteps and num_epochs
     config.num_epochs = 5
     config.train_batch_size = 4
-    config.train_batch_size = 4
     config.eval_batch_size = 4
-    config.num_train_timesteps = 100
+    config.num_train_timesteps = 100 #with timesteps=100 and num_epochs=5, completed within half hour
 
 """## Loading the dataset
 
@@ -450,7 +455,7 @@ model = UNet2DModel(
     in_channels=3,  # the number of input channels, 3 for RGB images
     out_channels=3,  # the number of output channels
     layers_per_block=2,  # how many ResNet layers to use per UNet block
-    block_out_channels=(128, 128, 256, 256, 512, 512),  # the number of output channes for each UNet block
+    block_out_channels=(128, 128, 256, 256, 512, 512),  # the number of output channels for each UNet block
     down_block_types=(
         "DownBlock2D",  # a regular ResNet downsampling block
         "DownBlock2D",
@@ -525,6 +530,8 @@ import torch.nn.functional as F
 noise_pred = model(noisy_image, timesteps)["sample"]
 loss = F.mse_loss(noise_pred, noise)
 
+#TODO: subtract them and plot: noisy_image - noise_pred
+
 """## Setting up training
 
 We have all we need to be able to train our model! Let's use a standard AdamW optimizer:
@@ -574,6 +581,7 @@ def evaluate(config, epoch, pipeline):
     print(f'evaluate {epoch}')
     # default num_inference_steps=1000
 
+    # the pipeline runs with torch.no_grad(), so is not training, just predicting
     result = pipeline(
         batch_size = config.eval_batch_size,
         generator=torch.manual_seed(config.seed),
@@ -673,8 +681,9 @@ def train_loop_with_accelerator(config, model, noise_scheduler, optimizer, train
         if accelerator.is_main_process:
             pipeline = DDPMPipeline(unet=accelerator.unwrap_model(model), scheduler=noise_scheduler)
 
-            if (epoch + 1) % config.save_image_epochs == 0 or epoch == config.num_epochs - 1:
-                evaluate(config, epoch, pipeline)
+            #moved to after training
+            #if (epoch + 1) % config.save_image_epochs == 0 or epoch == config.num_epochs - 1:
+            #    evaluate(config, epoch, pipeline)
 
             if (epoch + 1) % config.save_model_epochs == 0 or epoch == config.num_epochs - 1:
                 #if config.push_to_hub:
@@ -751,6 +760,19 @@ def train_loop_no_accelerator(config, model, noise_scheduler, optimizer, train_d
 Let's launch the training (including multi-GPU training) from the notebook using Accelerate's `notebook_launcher` function:
 """
 
+def add_noise_to_images(image_batch, n_noise: int) :
+    min_value = torch.min(image_batch)
+    max_value = torch.max(image_batch)
+    s0 = image_batch.shape[0]
+    s2 = image_batch.shape[2]
+    for i in range(n_noise):
+        # Get a random index for each image in the batch
+        random_indices = torch.randint(0, s2, (s0,))
+        random_gen = torch.randn(len(random_indices))
+        # Select a random pixel from each image in the batch
+        #random_pixels = image_batch[torch.arange(s0), random_indices, torch.randint(0, s2, (s0,))]
+        image_batch[torch.arange(s0), random_indices, torch.randint(0, s2, (s0,))] = random_gen
+
 # to reload from pretrained model, use False here:
 if True:
     if use_accelerator:
@@ -773,6 +795,30 @@ else:
 
 import glob
 
+def add_noise_to_images(image_batch, n_noise: int) :
+    # checking: these are in range [-1,1]
+    #min_value = torch.min(image_batch)
+    #max_value = torch.max(image_batch)
+    s0 = image_batch.shape[0] #batch_size
+    s2 = image_batch.shape[2] #rows
+    s3 = image_batch.shape[3] #cols
+    #TODO: rewrite this in more efficient way
+    # image_batch shape is (4,3,128,128)
+    for i in range(n_noise):
+        # Get a random index for each image in the batch
+        random_row_indices = torch.randint(0, s2, (s0,))
+        random_col_indices = torch.randint(0, s3, (s0,))
+        # generate random r,g,b values for those pixels. noise will be 10% of these
+        random_r = 0.1*torch.randn(s0)
+        random_g = 0.1*torch.randn(s0)
+        random_b = 0.1*torch.randn(s0)
+        for j in range(s0):
+            image_batch[j][0][random_row_indices[j]][random_col_indices[j]] += random_r[j]
+            image_batch[j][1][random_row_indices[j]][random_col_indices[j]] += random_g[j]
+            image_batch[j][2][random_row_indices[j]][random_col_indices[j]] += random_b[j]
+    image_batch.clamp_(-1, 1)
+
+
 def generate_sample() :
     '''
     apply the trained U-Net model, UNet2DModel, and alpha coefficients to images of 
@@ -781,12 +827,17 @@ def generate_sample() :
     '''
     print('evaluate generative pipeline')
     pipeline = DDPMPipeline(unet=model, scheduler=noise_scheduler)
+
+    samples_dir = os.path.join(config.output_dir, "samples")
+
+    #if (not os.path.exists(samples_dir)) or (len(os.listdir(samples_dir))== 0):
     evaluate(config, config.num_epochs, pipeline)
-    sample_images = sorted(glob.glob(f"{config.output_dir}/samples/*.png"))
+
+    sample_images = sorted(glob.glob(f"{samples_dir}/*.png"))
     Image.open(sample_images[-1])
     print('done with display sample generated images')
 
-def filter_noise():
+def filter_noise(add_noise=False):
     import math
     '''
     apply the trained U-Net model, UNet2DModel, and alpha coefficients to the original images
@@ -805,13 +856,27 @@ def filter_noise():
 
     timesteps = torch.from_numpy(np.arange(0, noise_scheduler.config.num_train_timesteps)[::-1].copy())
 
+    if add_noise:
+       os.makedirs(f"{config.output_dir}/noisy-images/", exist_ok=True)
+
     for step, batch in enumerate(test_dataloader):
         image_batch = batch['images']  # (16,3,128,128)
 
+        if add_noise:
+            image_batch = image_batch.clone()
+            add_noise_to_images(image_batch, int(10 * noise_scheduler.config.num_train_timesteps))
+            # save noisy image to file to compare afterwards
+            img = (image_batch / 2 + 0.5).clamp(0, 1)
+            img = img.cpu().permute(0, 2, 3, 1).detach().numpy()
+            img = diffusers.pipelines.pipeline_utils.numpy_to_pil(img)
+            image_grid = make_grid(img, rows=4, cols=4)
+            image_grid.save(f"{config.output_dir}/noisy-images/{step:04d}.png")
+
         ## diffusers.pipelines.pipeline_utils.DiffusionPipeline.progress_bar
         for t in tqdm(timesteps):
-            # 1. predict noise model_output
-            model_output = model(image_batch, t).sample
+            with torch.no_grad():
+                # 1. predict noise model_output
+                model_output = model(image_batch, t).sample
 
             # 2. compute previous image: x_t -> x_t-1 by reversing the stochastic differential equation.
             # This function propagates the diffusion process from the learned model outputs
@@ -835,7 +900,7 @@ def filter_noise():
         image_grid = make_grid(image_batch, rows=4, cols=4)
 
         # Save the images
-        print('save noise-filtered images {step} to disk')
+        print(f'save noise-filtered images {step} to disk')
         image_grid.save(f"{img_dir}/{step:04d}.png")
         print(f"wrote to {img_dir}/{step:04d}.png")
 
@@ -857,11 +922,11 @@ def filter_noise():
     print('done with display noise-filtered images')
 
 # these are 2 separate use-cases for the trained model
-filter_noise()
+filter_noise(add_noise = True)
 generate_sample()
 
 if run_small_inspect:
-    print(f'WARNING REMINDER: run_small_inspect=True, (uses small subset of data, small # train epochs small # sample iterations')
+    print(f'REMINDER: run_small_inspect=True, (uses small subset of data, small # train epochs small # sample iterations')
 
 """Not bad! There's room for improvement of course, so feel free to play with the hyperparameters, model definition and image augmentations 🤗
 
