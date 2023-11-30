@@ -42,7 +42,7 @@ applying the reverse process to the images (for filter_noise()).
 
 The form of "grouping and collaborative filtering" to learn noise and remove it can be seen in
 the BM3D algorithm.
-Other noise-removal algorithms are wavelet transforms, Wiener, median, shrinkage-thresholding, linear and non-linear
+Other noise-removal algorithms use wavelet transforms, Wiener, median, shrinkage-thresholding, linear and non-linear
 smoothing, statistical methods...
 
 A simple form of deconvolution is (https://en.m.wikipedia.org/wiki/Deconvolution):
@@ -544,7 +544,6 @@ optimizer = torch.optim.AdamW(model.parameters(), lr=config.learning_rate)
 from diffusers.optimization import get_cosine_schedule_with_warmup
 
 if run_small_inspect:
-    # I change train loop to change lr step only once per epoch
     lr_scheduler = get_cosine_schedule_with_warmup(
         optimizer=optimizer,
         num_warmup_steps=config.lr_warmup_steps,
@@ -765,14 +764,15 @@ if True:
     if use_accelerator:
         from accelerate import notebook_launcher
         args = (config, model, noise_scheduler, optimizer, train_dataloader, lr_scheduler)
+        ## launch the training (including multi-GPU training) from the notebook using Accelerate's `notebook_launcher` function:
         notebook_launcher(train_loop_with_accelerator, args, num_processes=1)
-        # to use without notebook_launcher:
-        #train_loop_with_accelerator(config, model, noise_scheduler, optimizer, train_dataloader, lr_scheduler)
+        ## to use without notebook_launcher:
+        # train_loop_with_accelerator(config, model, noise_scheduler, optimizer, train_dataloader, lr_scheduler)
     else:
         train_loop_no_accelerator(config, model, noise_scheduler, optimizer, train_dataloader, lr_scheduler)
     print('done training')
 else:
-    #load pretrained model
+    #load pretrained pipeline
     print(f'load pretrained pipeline from {config.output_dir}')
     try:
         pipeline = DDPMPipeline.from_pretrained(config.output_dir)
@@ -810,7 +810,6 @@ def add_noise_to_images(image_batch, n_noise: int) :
             image_batch[j][1][random_row_indices[j]][random_col_indices[j]] += random_g[j]
             image_batch[j][2][random_row_indices[j]][random_col_indices[j]] += random_b[j]
     image_batch.clamp_(-1, 1)
-
 
 def generate_sample() :
     '''
@@ -937,7 +936,7 @@ def filter_noise(add_noise:bool=False, noise_type:str=None):
     print('done with display noise-filtered images')
 
 # these are 2 separate use-cases for the trained model
-filter_noise(add_noise = True, noise_type = 'ddpm')
+filter_noise(add_noise = True)
 generate_sample()
 
 if run_small_inspect:
