@@ -248,7 +248,7 @@ from dataclasses import dataclass
 @dataclass
 class TrainingConfig:
     image_size = 128  # the generated image resolution
-    # have reduced the batch sizes to reduce use of RAM
+    # have reduced the batch sizes to reduce use of memory (RAM + disk)
     train_batch_size = 4#16
     eval_batch_size = 4#16  # how many images to sample during evaluation
     num_epochs = 50
@@ -270,11 +270,11 @@ class TrainingConfig:
 config = TrainingConfig()
 
 if run_small_inspect:
-    config.num_epochs = 5
+    config.num_epochs = 50 #5
     config.train_batch_size = 4
     config.train_batch_size = 4
     config.eval_batch_size = 4
-    config.num_train_timesteps = 10
+    config.num_train_timesteps = 1000#10
 
 """## Loading the dataset
 
@@ -726,8 +726,18 @@ from accelerate import notebook_launcher
 args = (config, model, noise_scheduler, optimizer, train_dataloader, lr_scheduler)
 
 #notebook_launcher(train_loop, args, num_processes=1)
-train_loop_no_accelerator(config, model, noise_scheduler, optimizer, train_dataloader, lr_scheduler)
-print('done training')
+
+# to reload from pretrained model, use False here:
+if True:
+    train_loop_no_accelerator(config, model, noise_scheduler, optimizer, train_dataloader, lr_scheduler)
+    print('done training')
+else:
+    print(f'load pretrained model from {config.output_dir}')
+    pipeline = DDPMPipeline.from_pretrained(config.output_dir)
+    model = UNet2DModel.from_pretrained(config.output_dir, subfolder='unet')
+    noise_scheduler = DDPMScheduler.from_pretrained(config.output_dir, subfolder='scheduler')
+    # running out of memory (RAM + disk) in filter_noise, so set this lower
+    # noise_scheduler.config.num_train_timesteps = 4
 
 import glob
 
