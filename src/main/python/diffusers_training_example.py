@@ -286,7 +286,7 @@ if run_small_inspect:
     config.num_epochs = 5
     config.train_batch_size = 4
     config.eval_batch_size = 4
-    config.num_train_timesteps = 100 #with timesteps=100 and num_epochs=5, completed within half hour
+    config.num_train_timesteps = 10 #with timesteps=100 and num_epochs=5, completed within half hour
 
 """## Loading the dataset
 
