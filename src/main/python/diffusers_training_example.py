@@ -864,7 +864,7 @@ def filter_noise(add_noise=False):
 
         if add_noise:
             image_batch = image_batch.clone()
-            add_noise_to_images(image_batch, int(10 * noise_scheduler.config.num_train_timesteps))
+            add_noise_to_images(image_batch, int(100 * noise_scheduler.config.num_train_timesteps))
             # save noisy image to file to compare afterwards
             img = (image_batch / 2 + 0.5).clamp(0, 1)
             img = img.cpu().permute(0, 2, 3, 1).detach().numpy()
