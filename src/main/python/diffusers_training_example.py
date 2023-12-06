@@ -6,9 +6,8 @@ Original file is located at
 
 NLK:
 * have edited to run a very small subset all the way through to edit for updated
-arguments and data directories.  Have temporarily removed the cloud options, but
-will enable them again when putting this back into a colab notebook.  Will make
-a SageMaker notebook too if have time.
+arguments and data directories.  The cloud version is in the Jupyter notebook file 
+with same title.
 * have added some math details to tie into background with noise filtering algorithms 
 * have added a method for noise-filtering (non generative), that is, image restoration,
 to explore whether the algorithm can remove noise from the image (like BM3D, etc.).
