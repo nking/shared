@@ -206,7 +206,7 @@ public class ConnectedValuesGroupFinder implements IConnectedValuesGroupFinder {
         pixNodes.put(vReprNode.getMember().longValue(), mergedNode);
     }
 
-    private List<TLongSet> prune() {
+    protected List<TLongSet> prune() {
 
         // key = repr node index, value = set of pixels w/ repr
         TLongObjectMap<TLongSet> map = new TLongObjectHashMap<TLongSet>();
