@@ -2365,6 +2365,11 @@ public class MatrixUtil {
 
         int nRows = xy.length;
 
+        if (nRows == 0) {
+            System.err.println("xy.length must be > 0");
+            return new double[2][0];
+        }
+
         double cen0 = 0;
         double cen1 = 0;
         for (int i = 0; i < nRows; ++i) {
