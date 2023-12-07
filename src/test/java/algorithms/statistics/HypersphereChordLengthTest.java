@@ -186,12 +186,14 @@ public class HypersphereChordLengthTest extends TestCase {
         for (i = 50; i < 100; i+=10) {
             ns.add(i);
         }
+        /* NOTE: uncomment when not running in runTests
         for (i = 100; i <= 1000; i+=100) {
             ns.add(i);
         }
         for (i = 1000; i <= 5000; i+=500) {
             ns.add(i);
         }
+         */
         
         // array to hold the chord lengths where alpha~0.95 in CDF
         TDoubleList da = new TDoubleArrayList();
