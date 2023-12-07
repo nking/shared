@@ -25,10 +25,10 @@ import java.util.logging.Logger;
  */
 public class ConnectedValuesGroupFinder implements IConnectedValuesGroupFinder {
 
-    private final DisjointSet2Helper disjointSetHelper = new DisjointSet2Helper();
+    protected final DisjointSet2Helper disjointSetHelper = new DisjointSet2Helper();
 
     // key = pixIdx, value = disjoint set node with key pixIdx
-    private TLongObjectMap<DisjointSet2Node<Long>> pixNodes = null;
+    protected TLongObjectMap<DisjointSet2Node<Long>> pixNodes = null;
 
     /**
      * uses the 4 neighbor region if true, else the 8-neighbor region
