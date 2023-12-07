@@ -3,6 +3,7 @@ package algorithms.dimensionReduction;
 import algorithms.imageProcessing.SummedAreaTable0;
 import algorithms.matrix.MatrixUtil;
 import algorithms.matrix.MatrixUtil.SVDProducts;
+import algorithms.sort.MiscSorter;
 import algorithms.statistics.CDFRandomSelect;
 import algorithms.misc.Misc0;
 import algorithms.misc.MiscMath0;
@@ -479,6 +480,26 @@ public class CURDecomposition {
             svd2.s = new double[sn];
             for (int i = 0; i < sn; ++i) {
                 svd2.s[i] = svd2.sigma[i][i];// sigma is [m X n]
+            }
+
+            // sort svd2.s and apply the sort order to u and vT and set sigma to null
+            svd2.sigma = null;
+            int[] indexes = MiscSorter.mergeSortDecreasing(svd2.s);
+            // order the columns of U
+            double[][] u = MatrixUtil.copy(svd2.u);
+            for (int i = 0; i < indexes.length; ++i) {
+                int oIdx = indexes[i]; // column index to write from
+                for (int row = 0; row < u.length; ++row) {
+                    svd2.u[row][i] = u[row][oIdx];
+                }
+            }
+            // order the rows of vT
+            double[][] vT = MatrixUtil.copy(svd2.vT);
+            for (int i = 0; i < indexes.length; ++i) {
+                int oIdx = indexes[i]; // row index to write from
+                for (int col = 0; col < vT[0].length; ++col) {
+                    svd2.vT[i][col] = vT[oIdx][col];
+                }
             }
             
             svd = svd2;
