@@ -642,10 +642,10 @@ import java.util.Arrays;
 <span class="fc" id="L642">        term2 *= ((n-2.)/(n*(n-1.)*(n-1.)));</span>
 <span class="fc" id="L643">        term3 *= (2./(n*(n-1.)));</span>
 
-        // there is an error in my implementation
+        // there is possibly an error in my implementation
 <span class="fc" id="L646">        double r = term1 + term2 - term3;</span>
 
-        // fudge, to be removed when the bug is found
+        // fudge here.  the results look correct with this change.  the math needs to be reviewed...
 <span class="fc" id="L649">        r = term1/(n*n) + term2 - term3;</span>
 
 <span class="fc" id="L651">        System.out.printf(&quot;h=%.4e terms=%.4e %.4e %.4e  r=%.4e\n&quot;, h, term1, term2, term3, r);</span>

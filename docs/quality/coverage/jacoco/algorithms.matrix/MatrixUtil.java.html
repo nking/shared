@@ -2365,34 +2365,39 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
 
 <span class="nc" id="L2366">        int nRows = xy.length;</span>
 
-<span class="nc" id="L2368">        double cen0 = 0;</span>
-<span class="nc" id="L2369">        double cen1 = 0;</span>
-<span class="nc bnc" id="L2370" title="All 2 branches missed.">        for (int i = 0; i &lt; nRows; ++i) {</span>
-<span class="nc" id="L2371">            cen0 += xy[i][0];</span>
-<span class="nc" id="L2372">            cen1 += xy[i][1];</span>
+<span class="nc bnc" id="L2368" title="All 2 branches missed.">        if (nRows == 0) {</span>
+<span class="nc" id="L2369">            System.err.println(&quot;xy.length must be &gt; 0&quot;);</span>
+<span class="nc" id="L2370">            return new double[2][0];</span>
         }
-<span class="nc" id="L2374">        cen0 /= (double)nRows;</span>
-<span class="nc" id="L2375">        cen1 /= (double)nRows;</span>
 
-<span class="nc" id="L2377">        double mean = 0;</span>
-<span class="nc bnc" id="L2378" title="All 2 branches missed.">        for (int i = 0; i &lt; nRows; ++i) {</span>
-<span class="nc" id="L2379">            double diffX = xy[i][0] - cen0;</span>
-<span class="nc" id="L2380">            double diffY = xy[i][1] - cen1;</span>
-<span class="nc" id="L2381">            double dist = Math.sqrt((diffX * diffX) + (diffY * diffY));</span>
-<span class="nc" id="L2382">            mean += dist;</span>
+<span class="nc" id="L2373">        double cen0 = 0;</span>
+<span class="nc" id="L2374">        double cen1 = 0;</span>
+<span class="nc bnc" id="L2375" title="All 2 branches missed.">        for (int i = 0; i &lt; nRows; ++i) {</span>
+<span class="nc" id="L2376">            cen0 += xy[i][0];</span>
+<span class="nc" id="L2377">            cen1 += xy[i][1];</span>
         }
-<span class="nc" id="L2384">        mean /= (double)nRows;</span>
+<span class="nc" id="L2379">        cen0 /= (double)nRows;</span>
+<span class="nc" id="L2380">        cen1 /= (double)nRows;</span>
+
+<span class="nc" id="L2382">        double mean = 0;</span>
+<span class="nc bnc" id="L2383" title="All 2 branches missed.">        for (int i = 0; i &lt; nRows; ++i) {</span>
+<span class="nc" id="L2384">            double diffX = xy[i][0] - cen0;</span>
+<span class="nc" id="L2385">            double diffY = xy[i][1] - cen1;</span>
+<span class="nc" id="L2386">            double dist = Math.sqrt((diffX * diffX) + (diffY * diffY));</span>
+<span class="nc" id="L2387">            mean += dist;</span>
+        }
+<span class="nc" id="L2389">        mean /= (double)nRows;</span>
 
         /*
         mean * factor = sqrt(2)
         */
-<span class="nc" id="L2389">        double scale = Math.sqrt(2)/mean;</span>
+<span class="nc" id="L2394">        double scale = Math.sqrt(2)/mean;</span>
 
-<span class="nc" id="L2391">        double[][] t = new double[2][];</span>
-<span class="nc" id="L2392">        t[0] = new double[]{scale,       0,     -cen0*scale};</span>
-<span class="nc" id="L2393">        t[1] = new double[]{0,           scale, -cen1*scale};</span>
+<span class="nc" id="L2396">        double[][] t = new double[2][];</span>
+<span class="nc" id="L2397">        t[0] = new double[]{scale,       0,     -cen0*scale};</span>
+<span class="nc" id="L2398">        t[1] = new double[]{0,           scale, -cen1*scale};</span>
 
-<span class="nc" id="L2395">        return t;</span>
+<span class="nc" id="L2400">        return t;</span>
     }
 
     /**
@@ -2402,14 +2407,14 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      */
     public static float[][] copy(float[][] a) {
 
-<span class="nc" id="L2405">        float[][] c = new float[a.length][a[0].length];</span>
+<span class="nc" id="L2410">        float[][] c = new float[a.length][a[0].length];</span>
 
-<span class="nc bnc" id="L2407" title="All 2 branches missed.">        for (int i = 0; i &lt; a.length; ++i) {</span>
-<span class="nc" id="L2408">            c[i] = new float[a[0].length];</span>
-<span class="nc" id="L2409">            System.arraycopy(a[i], 0, c[i], 0, a[0].length);</span>
+<span class="nc bnc" id="L2412" title="All 2 branches missed.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="nc" id="L2413">            c[i] = new float[a[0].length];</span>
+<span class="nc" id="L2414">            System.arraycopy(a[i], 0, c[i], 0, a[0].length);</span>
         }
 
-<span class="nc" id="L2412">        return c;</span>
+<span class="nc" id="L2417">        return c;</span>
     }
 
     /**
@@ -2419,15 +2424,15 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      */
     public static double[][] copy(double[][] a) {
 
-<span class="fc" id="L2422">        double[][] m = new double[a.length][];</span>
+<span class="fc" id="L2427">        double[][] m = new double[a.length][];</span>
 
-<span class="fc bfc" id="L2424" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L2425">            int n0 = a[i].length;</span>
-<span class="fc" id="L2426">            m[i] = new double[n0];</span>
-<span class="fc" id="L2427">            System.arraycopy(a[i], 0, m[i], 0, n0);</span>
+<span class="fc bfc" id="L2429" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L2430">            int n0 = a[i].length;</span>
+<span class="fc" id="L2431">            m[i] = new double[n0];</span>
+<span class="fc" id="L2432">            System.arraycopy(a[i], 0, m[i], 0, n0);</span>
         }
 
-<span class="fc" id="L2430">        return m;</span>
+<span class="fc" id="L2435">        return m;</span>
     }
 
 
@@ -2438,35 +2443,35 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      */
     public static float[] copy(double[] a) {
 
-<span class="fc" id="L2441">        float[] m = new float[a.length];</span>
+<span class="fc" id="L2446">        float[] m = new float[a.length];</span>
 
-<span class="fc bfc" id="L2443" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L2444">            m[i] = (float)a[i];</span>
+<span class="fc bfc" id="L2448" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L2449">            m[i] = (float)a[i];</span>
         }
 
-<span class="fc" id="L2447">        return m;</span>
+<span class="fc" id="L2452">        return m;</span>
     }
 
     public static float[] copyLongToFloat(long[] a) {
 
-<span class="nc" id="L2452">        float[] m = new float[a.length];</span>
+<span class="nc" id="L2457">        float[] m = new float[a.length];</span>
 
-<span class="nc bnc" id="L2454" title="All 2 branches missed.">        for (int i = 0; i &lt; a.length; ++i) {</span>
-<span class="nc" id="L2455">            m[i] = (float)a[i];</span>
+<span class="nc bnc" id="L2459" title="All 2 branches missed.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="nc" id="L2460">            m[i] = (float)a[i];</span>
         }
 
-<span class="nc" id="L2458">        return m;</span>
+<span class="nc" id="L2463">        return m;</span>
     }
 
     public static double[] copyLongToDouble(long[] a) {
 
-<span class="fc" id="L2463">        double[] m = new double[a.length];</span>
+<span class="fc" id="L2468">        double[] m = new double[a.length];</span>
 
-<span class="fc bfc" id="L2465" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L2466">            m[i] = (float)a[i];</span>
+<span class="fc bfc" id="L2470" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L2471">            m[i] = (float)a[i];</span>
         }
 
-<span class="fc" id="L2469">        return m;</span>
+<span class="fc" id="L2474">        return m;</span>
     }
 
     /**
@@ -2476,20 +2481,20 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      */
     public static void copy(double[][] source, double[][] destination) {
 
-<span class="fc" id="L2479">        int m = source.length;</span>
-<span class="fc" id="L2480">        int n = source[0].length;</span>
+<span class="fc" id="L2484">        int m = source.length;</span>
+<span class="fc" id="L2485">        int n = source[0].length;</span>
 
-<span class="pc bpc" id="L2482" title="1 of 2 branches missed.">        if (destination.length != m) {</span>
-<span class="nc" id="L2483">            throw new IllegalArgumentException(&quot;destination.length must equal source.length&quot;);</span>
+<span class="pc bpc" id="L2487" title="1 of 2 branches missed.">        if (destination.length != m) {</span>
+<span class="nc" id="L2488">            throw new IllegalArgumentException(&quot;destination.length must equal source.length&quot;);</span>
         }
-<span class="pc bpc" id="L2485" title="1 of 2 branches missed.">        if (destination[0].length != n) {</span>
-<span class="nc" id="L2486">            throw new IllegalArgumentException(&quot;destination[0].length must equal source[0].length&quot;);</span>
+<span class="pc bpc" id="L2490" title="1 of 2 branches missed.">        if (destination[0].length != n) {</span>
+<span class="nc" id="L2491">            throw new IllegalArgumentException(&quot;destination[0].length must equal source[0].length&quot;);</span>
         }
 
-<span class="fc bfc" id="L2489" title="All 2 branches covered.">        for (int i = 0; i &lt; source.length; ++i) {</span>
-<span class="fc" id="L2490">            System.arraycopy(source[i], 0, destination[i], 0, n);</span>
+<span class="fc bfc" id="L2494" title="All 2 branches covered.">        for (int i = 0; i &lt; source.length; ++i) {</span>
+<span class="fc" id="L2495">            System.arraycopy(source[i], 0, destination[i], 0, n);</span>
         }
-<span class="fc" id="L2492">    }</span>
+<span class="fc" id="L2497">    }</span>
 
     /**
      *
@@ -2502,17 +2507,17 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      */
     public static double[][] copySubMatrix(double[][] a, int row0, int row1, int col0, int col1) {
 
-<span class="fc" id="L2505">        int nr2 = row1 - row0 + 1;</span>
-<span class="fc" id="L2506">        int nc2 = col1 - col0 + 1;</span>
+<span class="fc" id="L2510">        int nr2 = row1 - row0 + 1;</span>
+<span class="fc" id="L2511">        int nc2 = col1 - col0 + 1;</span>
 
-<span class="fc" id="L2508">        double[][] m = new double[nr2][];</span>
+<span class="fc" id="L2513">        double[][] m = new double[nr2][];</span>
         int i, j;
-<span class="fc bfc" id="L2510" title="All 2 branches covered.">        for (i = 0; i &lt; nr2; ++i) {</span>
-<span class="fc" id="L2511">            m[i] = new double[nc2];</span>
-<span class="fc" id="L2512">            System.arraycopy(a[row0 + i], col0, m[i], 0, nc2);</span>
+<span class="fc bfc" id="L2515" title="All 2 branches covered.">        for (i = 0; i &lt; nr2; ++i) {</span>
+<span class="fc" id="L2516">            m[i] = new double[nc2];</span>
+<span class="fc" id="L2517">            System.arraycopy(a[row0 + i], col0, m[i], 0, nc2);</span>
         }
 
-<span class="fc" id="L2515">        return m;</span>
+<span class="fc" id="L2520">        return m;</span>
     }
 
     /**
@@ -2529,19 +2534,19 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
     public static void copySubMatrix(double[][] a, int row0, int row1,
         int col0, int col1, double[][] out) {
 
-<span class="fc" id="L2532">        int nr2 = row1 - row0 + 1;</span>
-<span class="fc" id="L2533">        int nc2 = col1 - col0 + 1;</span>
+<span class="fc" id="L2537">        int nr2 = row1 - row0 + 1;</span>
+<span class="fc" id="L2538">        int nc2 = col1 - col0 + 1;</span>
 
-<span class="pc bpc" id="L2535" title="2 of 4 branches missed.">        if (out.length != nr2 || out[0].length != nc2) {</span>
-<span class="nc" id="L2536">            throw new IllegalArgumentException(&quot;out dimensions must be &quot;</span>
+<span class="pc bpc" id="L2540" title="2 of 4 branches missed.">        if (out.length != nr2 || out[0].length != nc2) {</span>
+<span class="nc" id="L2541">            throw new IllegalArgumentException(&quot;out dimensions must be &quot;</span>
                     + &quot; row1 - row0 + 1 X col1 - col0 + 1&quot;);
         }
 
         int i, j;
-<span class="fc bfc" id="L2541" title="All 2 branches covered.">        for (i = 0; i &lt; nr2; ++i) {</span>
-<span class="fc" id="L2542">            System.arraycopy(a[row0 + i], col0, out[i], 0, nc2);</span>
+<span class="fc bfc" id="L2546" title="All 2 branches covered.">        for (i = 0; i &lt; nr2; ++i) {</span>
+<span class="fc" id="L2547">            System.arraycopy(a[row0 + i], col0, out[i], 0, nc2);</span>
         }
-<span class="fc" id="L2544">    }</span>
+<span class="fc" id="L2549">    }</span>
 
     /**
      *
@@ -2551,9 +2556,9 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      */
     public static double[] extractColumn(double[][] a, int col) {
 
-<span class="fc" id="L2554">        double[] m = new double[a.length];</span>
-<span class="fc" id="L2555">        extractColumn(a, col, m);</span>
-<span class="fc" id="L2556">        return m;</span>
+<span class="fc" id="L2559">        double[] m = new double[a.length];</span>
+<span class="fc" id="L2560">        extractColumn(a, col, m);</span>
+<span class="fc" id="L2561">        return m;</span>
     }
 
     /**
@@ -2564,15 +2569,15 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      */
     public static void  extractColumn(double[][] a, int col, double[] out) {
 
-<span class="pc bpc" id="L2567" title="1 of 2 branches missed.">        if (out.length != a.length) {</span>
-<span class="nc" id="L2568">            throw new IllegalArgumentException(&quot;out.length must equal a.length&quot;);</span>
+<span class="pc bpc" id="L2572" title="1 of 2 branches missed.">        if (out.length != a.length) {</span>
+<span class="nc" id="L2573">            throw new IllegalArgumentException(&quot;out.length must equal a.length&quot;);</span>
         }
 
         int i;
-<span class="fc bfc" id="L2572" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L2573">            out[i] = a[i][col];</span>
+<span class="fc bfc" id="L2577" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L2578">            out[i] = a[i][col];</span>
         }
-<span class="fc" id="L2575">    }</span>
+<span class="fc" id="L2580">    }</span>
 
       /**
      * using cofactors and minors of the matrix, return the determinant.
@@ -2593,9 +2598,9 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      */
     public static double determinant(Matrix a) {
 
-<span class="fc" id="L2596">        double[][] ma = no.uib.cipr.matrix.Matrices.getArray(a);</span>
+<span class="fc" id="L2601">        double[][] ma = no.uib.cipr.matrix.Matrices.getArray(a);</span>
 
-<span class="fc" id="L2598">        return determinant(ma);</span>
+<span class="fc" id="L2603">        return determinant(ma);</span>
     }
 
     /**
@@ -2616,33 +2621,33 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      */
     public static double determinant(double[][] a) {
 
-<span class="pc bpc" id="L2619" title="2 of 4 branches missed.">        if (a == null || a.length == 0) {</span>
-<span class="nc" id="L2620">            throw new IllegalArgumentException(&quot;matrix a cannot be null or empty&quot;);</span>
+<span class="pc bpc" id="L2624" title="2 of 4 branches missed.">        if (a == null || a.length == 0) {</span>
+<span class="nc" id="L2625">            throw new IllegalArgumentException(&quot;matrix a cannot be null or empty&quot;);</span>
         }
-<span class="pc bpc" id="L2622" title="1 of 2 branches missed.">        if (a.length != a[0].length) {</span>
-<span class="nc" id="L2623">            throw new IllegalArgumentException(&quot;matrix a must be square&quot;);</span>
+<span class="pc bpc" id="L2627" title="1 of 2 branches missed.">        if (a.length != a[0].length) {</span>
+<span class="nc" id="L2628">            throw new IllegalArgumentException(&quot;matrix a must be square&quot;);</span>
         }
-<span class="fc bfc" id="L2625" title="All 2 branches covered.">        if (a.length == 1) {</span>
-<span class="fc" id="L2626">            return a[0][0];</span>
-<span class="fc bfc" id="L2627" title="All 2 branches covered.">        } else if (a.length == 2) {</span>
-<span class="fc" id="L2628">            double s = ( a[0][0]*a[1][1] ) - ( a[0][1]*a[1][0] );</span>
-<span class="fc" id="L2629">            return s;</span>
+<span class="fc bfc" id="L2630" title="All 2 branches covered.">        if (a.length == 1) {</span>
+<span class="fc" id="L2631">            return a[0][0];</span>
+<span class="fc bfc" id="L2632" title="All 2 branches covered.">        } else if (a.length == 2) {</span>
+<span class="fc" id="L2633">            double s = ( a[0][0]*a[1][1] ) - ( a[0][1]*a[1][0] );</span>
+<span class="fc" id="L2634">            return s;</span>
         } else {
-<span class="fc" id="L2631">            double s = 0.0;</span>
+<span class="fc" id="L2636">            double s = 0.0;</span>
             // use 1st row as cofactors and minors
-<span class="fc bfc" id="L2633" title="All 2 branches covered.">            for (int i = 0; i &lt; a.length; i++) {</span>
+<span class="fc bfc" id="L2638" title="All 2 branches covered.">            for (int i = 0; i &lt; a.length; i++) {</span>
 
-<span class="fc" id="L2635">                double[][] n = copyExcept(a, i, 0);</span>
+<span class="fc" id="L2640">                double[][] n = copyExcept(a, i, 0);</span>
 
-<span class="fc" id="L2637">                double tmp = a[i][0] * determinant(n);</span>
+<span class="fc" id="L2642">                double tmp = a[i][0] * determinant(n);</span>
 
-<span class="fc bfc" id="L2639" title="All 2 branches covered.">                if ((i &amp; 1) == 0) {</span>
-<span class="fc" id="L2640">                    s +=  tmp;</span>
+<span class="fc bfc" id="L2644" title="All 2 branches covered.">                if ((i &amp; 1) == 0) {</span>
+<span class="fc" id="L2645">                    s +=  tmp;</span>
                 } else {
-<span class="fc" id="L2642">                    s -=  tmp;</span>
+<span class="fc" id="L2647">                    s -=  tmp;</span>
                 }
             }
-<span class="fc" id="L2645">            return s;</span>
+<span class="fc" id="L2650">            return s;</span>
         }
     }
 
@@ -2655,26 +2660,26 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      */
     public static double determinantFromLU(double[][] a) {
 
-<span class="pc bpc" id="L2658" title="1 of 2 branches missed.">        if (!isSquare(a)) {</span>
-<span class="nc" id="L2659">            throw new IllegalArgumentException(&quot;matrix a must be square&quot;);</span>
+<span class="pc bpc" id="L2663" title="1 of 2 branches missed.">        if (!isSquare(a)) {</span>
+<span class="nc" id="L2664">            throw new IllegalArgumentException(&quot;matrix a must be square&quot;);</span>
         }
-<span class="pc bpc" id="L2661" title="3 of 4 branches missed.">        switch (a.length) {</span>
+<span class="pc bpc" id="L2666" title="3 of 4 branches missed.">        switch (a.length) {</span>
             case 0:
-<span class="nc" id="L2663">                throw new IllegalArgumentException(&quot;matrix a length must be larger than 0&quot;);</span>
+<span class="nc" id="L2668">                throw new IllegalArgumentException(&quot;matrix a length must be larger than 0&quot;);</span>
             case 1:
-<span class="nc" id="L2665">                return a[0][0];</span>
+<span class="nc" id="L2670">                return a[0][0];</span>
             case 2: {
-<span class="nc" id="L2667">                double s = ( a[0][0]*a[1][1] ) - ( a[0][1]*a[1][0] );</span>
-<span class="nc" id="L2668">                return s;</span>
+<span class="nc" id="L2672">                double s = ( a[0][0]*a[1][1] ) - ( a[0][1]*a[1][0] );</span>
+<span class="nc" id="L2673">                return s;</span>
             }
             default: {
-<span class="fc" id="L2671">                LU lu = LinearEquations.LUDecomposition(a);</span>
-<span class="fc" id="L2672">                double d = 1;</span>
+<span class="fc" id="L2676">                LU lu = LinearEquations.LUDecomposition(a);</span>
+<span class="fc" id="L2677">                double d = 1;</span>
                 int i;
-<span class="fc bfc" id="L2674" title="All 2 branches covered.">                for (i = 0; i &lt; lu.u.length; ++i) {</span>
-<span class="fc" id="L2675">                    d *= lu.u[i][i];</span>
+<span class="fc bfc" id="L2679" title="All 2 branches covered.">                for (i = 0; i &lt; lu.u.length; ++i) {</span>
+<span class="fc" id="L2680">                    d *= lu.u[i][i];</span>
                 }
-<span class="fc" id="L2677">                return d;</span>
+<span class="fc" id="L2682">                return d;</span>
             }
         }
     }
@@ -2688,31 +2693,31 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      */
     private static double[][] copyExcept(double[][] m, int col, int row) {
 
-<span class="fc" id="L2691">        double[][] n = new double[m.length - 1][m.length - 1];</span>
+<span class="fc" id="L2696">        double[][] n = new double[m.length - 1][m.length - 1];</span>
 
-<span class="fc" id="L2693">        int nr = 0;</span>
-<span class="fc" id="L2694">        int nc = 0;</span>
+<span class="fc" id="L2698">        int nr = 0;</span>
+<span class="fc" id="L2699">        int nc = 0;</span>
 
-<span class="fc bfc" id="L2696" title="All 2 branches covered.">        for (int mCol = 0; mCol &lt; m.length; mCol++) {</span>
-<span class="fc bfc" id="L2697" title="All 2 branches covered.">            if (mCol == col) {</span>
-<span class="fc" id="L2698">                continue;</span>
+<span class="fc bfc" id="L2701" title="All 2 branches covered.">        for (int mCol = 0; mCol &lt; m.length; mCol++) {</span>
+<span class="fc bfc" id="L2702" title="All 2 branches covered.">            if (mCol == col) {</span>
+<span class="fc" id="L2703">                continue;</span>
             }
 
-<span class="fc" id="L2701">            n[nc] = new double[m.length - 1];</span>
+<span class="fc" id="L2706">            n[nc] = new double[m.length - 1];</span>
 
-<span class="fc" id="L2703">            nr = 0;</span>
-<span class="fc bfc" id="L2704" title="All 2 branches covered.">            for (int mRow = 0; mRow &lt; m[0].length; mRow++) {</span>
-<span class="fc bfc" id="L2705" title="All 2 branches covered.">                if (mRow == row) {</span>
-<span class="fc" id="L2706">                    continue;</span>
+<span class="fc" id="L2708">            nr = 0;</span>
+<span class="fc bfc" id="L2709" title="All 2 branches covered.">            for (int mRow = 0; mRow &lt; m[0].length; mRow++) {</span>
+<span class="fc bfc" id="L2710" title="All 2 branches covered.">                if (mRow == row) {</span>
+<span class="fc" id="L2711">                    continue;</span>
                 }
 
-<span class="fc" id="L2709">                n[nc][nr] = m[mCol][mRow];</span>
-<span class="fc" id="L2710">                nr++;</span>
+<span class="fc" id="L2714">                n[nc][nr] = m[mCol][mRow];</span>
+<span class="fc" id="L2715">                nr++;</span>
             }
-<span class="fc" id="L2712">            nc++;</span>
+<span class="fc" id="L2717">            nc++;</span>
         }
 
-<span class="fc" id="L2715">        return n;</span>
+<span class="fc" id="L2720">        return n;</span>
     }
 
     /**
@@ -2732,13 +2737,13 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return skew-symmetric matrix of vector v
      */
     public static double[][] skewSymmetric(double[] v) {
-<span class="pc bpc" id="L2735" title="1 of 2 branches missed.">        if (v.length != 3) {</span>
-<span class="nc" id="L2736">            throw new IllegalArgumentException(&quot;v.length must be 3&quot;);</span>
+<span class="pc bpc" id="L2740" title="1 of 2 branches missed.">        if (v.length != 3) {</span>
+<span class="nc" id="L2741">            throw new IllegalArgumentException(&quot;v.length must be 3&quot;);</span>
         }
 
-<span class="fc" id="L2739">        double[][] out = new double[3][3];</span>
-<span class="fc" id="L2740">        skewSymmetric(v, out);</span>
-<span class="fc" id="L2741">        return out;</span>
+<span class="fc" id="L2744">        double[][] out = new double[3][3];</span>
+<span class="fc" id="L2745">        skewSymmetric(v, out);</span>
+<span class="fc" id="L2746">        return out;</span>
     }
 
     /**
@@ -2758,11 +2763,11 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @param out output skew-symmetric matrix for v
      */
     public static void skewSymmetric(double[] v, double[][] out) {
-<span class="pc bpc" id="L2761" title="1 of 2 branches missed.">        if (v.length != 3) {</span>
-<span class="nc" id="L2762">            throw new IllegalArgumentException(&quot;v.length must be 3&quot;);</span>
+<span class="pc bpc" id="L2766" title="1 of 2 branches missed.">        if (v.length != 3) {</span>
+<span class="nc" id="L2767">            throw new IllegalArgumentException(&quot;v.length must be 3&quot;);</span>
         }
-<span class="pc bpc" id="L2764" title="2 of 4 branches missed.">        if (out.length != 3 || out[0].length != 3) {</span>
-<span class="nc" id="L2765">            throw new IllegalArgumentException(&quot;out must be 3X3&quot;);</span>
+<span class="pc bpc" id="L2769" title="2 of 4 branches missed.">        if (out.length != 3 || out[0].length != 3) {</span>
+<span class="nc" id="L2770">            throw new IllegalArgumentException(&quot;out must be 3X3&quot;);</span>
         }
 
         /*
@@ -2771,17 +2776,17 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
         out[2] = new double[]{-v[1], v[0],    0};
         */
 
-<span class="fc" id="L2774">        out[0][0] = 0;</span>
-<span class="fc" id="L2775">        out[0][1] = -v[2];</span>
-<span class="fc" id="L2776">        out[0][2] = v[1];</span>
-<span class="fc" id="L2777">        out[1][0] = v[2];</span>
-<span class="fc" id="L2778">        out[1][1] = 0;</span>
-<span class="fc" id="L2779">        out[1][2] = -v[0];</span>
-<span class="fc" id="L2780">        out[2][0] = -v[1];</span>
-<span class="fc" id="L2781">        out[2][1] = v[0];</span>
-<span class="fc" id="L2782">        out[2][2] = 0;</span>
+<span class="fc" id="L2779">        out[0][0] = 0;</span>
+<span class="fc" id="L2780">        out[0][1] = -v[2];</span>
+<span class="fc" id="L2781">        out[0][2] = v[1];</span>
+<span class="fc" id="L2782">        out[1][0] = v[2];</span>
+<span class="fc" id="L2783">        out[1][1] = 0;</span>
+<span class="fc" id="L2784">        out[1][2] = -v[0];</span>
+<span class="fc" id="L2785">        out[2][0] = -v[1];</span>
+<span class="fc" id="L2786">        out[2][1] = v[0];</span>
+<span class="fc" id="L2787">        out[2][2] = 0;</span>
 
-<span class="fc" id="L2784">    }</span>
+<span class="fc" id="L2789">    }</span>
 
     /**
      * extract the vector from a skew-symmetric matrix.  the operation is called vee operator.
@@ -2789,11 +2794,11 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return extracted vector
      */
     public static double[] extractVectorFromSkewSymmetric(double[][] vHat) {
-<span class="nc" id="L2792">        double[] out = new double[3];</span>
-<span class="nc" id="L2793">        out[0] = 0.5*(vHat[2][1] - vHat[1][2]);</span>
-<span class="nc" id="L2794">        out[1] = 0.5*(vHat[0][2] - vHat[2][0]);</span>
-<span class="nc" id="L2795">        out[2] = 0.5*(vHat[1][0] - vHat[0][1]);</span>
-<span class="nc" id="L2796">        return out;</span>
+<span class="nc" id="L2797">        double[] out = new double[3];</span>
+<span class="nc" id="L2798">        out[0] = 0.5*(vHat[2][1] - vHat[1][2]);</span>
+<span class="nc" id="L2799">        out[1] = 0.5*(vHat[0][2] - vHat[2][0]);</span>
+<span class="nc" id="L2800">        out[2] = 0.5*(vHat[1][0] - vHat[0][1]);</span>
+<span class="nc" id="L2801">        return out;</span>
     }
 
     /**
@@ -2803,14 +2808,14 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return
      */
     public static double[] crossProduct(double[] p0, double[] p1) {
-<span class="pc bpc" id="L2806" title="2 of 4 branches missed.">        if (p0.length != 3 || p1.length != 3) {</span>
-<span class="nc" id="L2807">            throw new IllegalArgumentException(&quot;expecting p0 and p1 lengths to be 3&quot;);</span>
+<span class="pc bpc" id="L2811" title="2 of 4 branches missed.">        if (p0.length != 3 || p1.length != 3) {</span>
+<span class="nc" id="L2812">            throw new IllegalArgumentException(&quot;expecting p0 and p1 lengths to be 3&quot;);</span>
         }
-<span class="fc" id="L2809">        double[] out = new double[3];</span>
-<span class="fc" id="L2810">        out[0] = p0[1]*p1[2] - p0[2]*p1[1];</span>
-<span class="fc" id="L2811">        out[1] = p0[2]*p1[0] - p0[0]*p1[2];</span>
-<span class="fc" id="L2812">        out[2] = p0[0]*p1[1] - p0[1]*p1[0];</span>
-<span class="fc" id="L2813">        return out;</span>
+<span class="fc" id="L2814">        double[] out = new double[3];</span>
+<span class="fc" id="L2815">        out[0] = p0[1]*p1[2] - p0[2]*p1[1];</span>
+<span class="fc" id="L2816">        out[1] = p0[2]*p1[0] - p0[0]*p1[2];</span>
+<span class="fc" id="L2817">        out[2] = p0[0]*p1[1] - p0[1]*p1[0];</span>
+<span class="fc" id="L2818">        return out;</span>
     }
 
     /**
@@ -2821,12 +2826,12 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return
      */
     public static boolean areColinear(double[] p0, double[] p1, double eps) {
-<span class="pc bpc" id="L2824" title="2 of 4 branches missed.">        if (p0.length != 3 || p1.length != 3) {</span>
-<span class="nc" id="L2825">            throw new IllegalArgumentException(&quot;expecting p0 and p1 lengths to be 3&quot;);</span>
+<span class="pc bpc" id="L2829" title="2 of 4 branches missed.">        if (p0.length != 3 || p1.length != 3) {</span>
+<span class="nc" id="L2830">            throw new IllegalArgumentException(&quot;expecting p0 and p1 lengths to be 3&quot;);</span>
         }
-<span class="fc" id="L2827">        double[] cp = crossProduct(p0, p1);</span>
-<span class="fc" id="L2828">        double norm = lPSum(cp, 2);</span>
-<span class="fc bfc" id="L2829" title="All 2 branches covered.">        return Math.abs(norm) &lt; eps;</span>
+<span class="fc" id="L2832">        double[] cp = crossProduct(p0, p1);</span>
+<span class="fc" id="L2833">        double norm = lPSum(cp, 2);</span>
+<span class="fc bfc" id="L2834" title="All 2 branches covered.">        return Math.abs(norm) &lt; eps;</span>
     }
 
     /**
@@ -2838,17 +2843,17 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return
      */
     public static boolean areColinear(double[] p0, double[] p1, double[] p2, double eps) {
-<span class="nc bnc" id="L2841" title="All 6 branches missed.">        if (p0.length != 3 || p1.length != 3 || p2.length != 3) {</span>
-<span class="nc" id="L2842">            throw new IllegalArgumentException(&quot;expecting p0, p1 and p2 lengths to be 3&quot;);</span>
+<span class="nc bnc" id="L2846" title="All 6 branches missed.">        if (p0.length != 3 || p1.length != 3 || p2.length != 3) {</span>
+<span class="nc" id="L2847">            throw new IllegalArgumentException(&quot;expecting p0, p1 and p2 lengths to be 3&quot;);</span>
         }
         //adapted from code by Peter Kovesis for function
         // iscolinear.m.  r =  norm(cross(p2-p1, p3-p1)) &lt; eps
         // https://www.peterkovesi.com/matlabfns/
-<span class="nc" id="L2847">        double[] p21 = MatrixUtil.subtract(p1, p0);</span>
-<span class="nc" id="L2848">        double[] p31 = MatrixUtil.subtract(p2, p0);</span>
-<span class="nc" id="L2849">        double[] cp = crossProduct(p21, p31);</span>
-<span class="nc" id="L2850">        double norm = lPSum(cp, 2);</span>
-<span class="nc bnc" id="L2851" title="All 2 branches missed.">        return Math.abs(norm) &lt; eps;</span>
+<span class="nc" id="L2852">        double[] p21 = MatrixUtil.subtract(p1, p0);</span>
+<span class="nc" id="L2853">        double[] p31 = MatrixUtil.subtract(p2, p0);</span>
+<span class="nc" id="L2854">        double[] cp = crossProduct(p21, p31);</span>
+<span class="nc" id="L2855">        double norm = lPSum(cp, 2);</span>
+<span class="nc bnc" id="L2856" title="All 2 branches missed.">        return Math.abs(norm) &lt; eps;</span>
     }
 
     /**
@@ -2858,7 +2863,7 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return array v divided by the LP2 norm of v.
      */
     public static double[] normalizeL2(double[] v) {
-<span class="fc" id="L2861">        return normalizeLP(v, 2);</span>
+<span class="fc" id="L2866">        return normalizeLP(v, 2);</span>
     }
 
     /**
@@ -2869,17 +2874,19 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
     public static void normalizeColumnsL2(double[][] a) {
         double sum;
         int j;
-<span class="fc bfc" id="L2872" title="All 2 branches covered.">        for (int i = 0; i &lt; a[0].length; ++i) {</span>
-<span class="fc" id="L2873">            sum = 0;</span>
-<span class="fc bfc" id="L2874" title="All 2 branches covered.">            for (j = 0; j &lt; a.length; ++j) {</span>
-<span class="fc" id="L2875">                sum += (a[j][i]*a[j][i]);</span>
+<span class="fc bfc" id="L2877" title="All 2 branches covered.">        for (int i = 0; i &lt; a[0].length; ++i) {</span>
+<span class="fc" id="L2878">            sum = 0;</span>
+<span class="fc bfc" id="L2879" title="All 2 branches covered.">            for (j = 0; j &lt; a.length; ++j) {</span>
+<span class="fc" id="L2880">                sum += (a[j][i]*a[j][i]);</span>
             }
-<span class="fc" id="L2877">            sum = Math.sqrt(sum);</span>
-<span class="fc bfc" id="L2878" title="All 2 branches covered.">            for (j = 0; j &lt; a.length; ++j) {</span>
-<span class="fc" id="L2879">                a[j][i] /= sum;</span>
+<span class="fc" id="L2882">            sum = Math.sqrt(sum);</span>
+<span class="fc bfc" id="L2883" title="All 2 branches covered.">            for (j = 0; j &lt; a.length; ++j) {</span>
+<span class="pc bpc" id="L2884" title="1 of 2 branches missed.">                if (sum &gt; 0.) {</span>
+<span class="fc" id="L2885">                    a[j][i] /= sum;</span>
+                }
             }
         }
-<span class="fc" id="L2882">    }</span>
+<span class="fc" id="L2889">    }</span>
 
     /**
      * normalize each row of matrix a by the square root of the sum of
@@ -2889,17 +2896,19 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
     public static void normalizeRowsL2(double[][] a) {
         double sum;
         int j;
-<span class="fc bfc" id="L2892" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L2893">            sum = 0;</span>
-<span class="fc bfc" id="L2894" title="All 2 branches covered.">            for (j = 0; j &lt; a[0].length; ++j) {</span>
-<span class="fc" id="L2895">                sum += (a[i][j]*a[i][j]);</span>
+<span class="fc bfc" id="L2899" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L2900">            sum = 0;</span>
+<span class="fc bfc" id="L2901" title="All 2 branches covered.">            for (j = 0; j &lt; a[0].length; ++j) {</span>
+<span class="fc" id="L2902">                sum += (a[i][j]*a[i][j]);</span>
             }
-<span class="fc" id="L2897">            sum = Math.sqrt(sum);</span>
-<span class="fc bfc" id="L2898" title="All 2 branches covered.">            for (j = 0; j &lt; a[0].length; ++j) {</span>
-<span class="fc" id="L2899">                a[i][j] /= sum;</span>
+<span class="fc" id="L2904">            sum = Math.sqrt(sum);</span>
+<span class="fc bfc" id="L2905" title="All 2 branches covered.">            for (j = 0; j &lt; a[0].length; ++j) {</span>
+<span class="pc bpc" id="L2906" title="1 of 2 branches missed.">                if (sum &gt; 0.) {</span>
+<span class="fc" id="L2907">                    a[i][j] /= sum;</span>
+                }
             }
         }
-<span class="fc" id="L2902">    }</span>
+<span class="fc" id="L2911">    }</span>
 
     /**
      * calculate the condition number as the largest singular value divided
@@ -2922,19 +2931,19 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      */
     public static double conditionNumber(double[][] a) throws NotConvergedException {
 
-<span class="nc" id="L2925">        SVDProducts svd = performSVD(a);</span>
-<span class="nc" id="L2926">        int rm1 = -1;</span>
-<span class="nc bnc" id="L2927" title="All 2 branches missed.">        for (int i = 0; i &lt; svd.s.length; ++i) {</span>
-<span class="nc bnc" id="L2928" title="All 2 branches missed.">            if (svd.s[i] &gt; 0) {</span>
-<span class="nc" id="L2929">                rm1 = i;</span>
+<span class="nc" id="L2934">        SVDProducts svd = performSVD(a);</span>
+<span class="nc" id="L2935">        int rm1 = -1;</span>
+<span class="nc bnc" id="L2936" title="All 2 branches missed.">        for (int i = 0; i &lt; svd.s.length; ++i) {</span>
+<span class="nc bnc" id="L2937" title="All 2 branches missed.">            if (svd.s[i] &gt; 0) {</span>
+<span class="nc" id="L2938">                rm1 = i;</span>
             }
         }
-<span class="nc bnc" id="L2932" title="All 2 branches missed.">        if (rm1 == -1) {</span>
-<span class="nc" id="L2933">            throw new IllegalStateException(&quot;all singular values of a are 0&quot;);</span>
+<span class="nc bnc" id="L2941" title="All 2 branches missed.">        if (rm1 == -1) {</span>
+<span class="nc" id="L2942">            throw new IllegalStateException(&quot;all singular values of a are 0&quot;);</span>
         }
-<span class="nc" id="L2935">        double c = svd.s[0]/svd.s[rm1];</span>
+<span class="nc" id="L2944">        double c = svd.s[0]/svd.s[rm1];</span>
 
-<span class="nc" id="L2937">        return c;</span>
+<span class="nc" id="L2946">        return c;</span>
     }
 
     /**
@@ -3024,9 +3033,9 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
         if any inf-norm is 0, the inf-norm is replaced by value 1
         */
 
-<span class="fc" id="L3027">        int m = a.length;</span>
-<span class="fc" id="L3028">        int n = a[0].length;</span>
-<span class="fc" id="L3029">        double eps = 1E-8;</span>
+<span class="fc" id="L3036">        int m = a.length;</span>
+<span class="fc" id="L3037">        int n = a[0].length;</span>
+<span class="fc" id="L3038">        double eps = 1E-8;</span>
 
         /*
         alg:
@@ -3063,29 +3072,29 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
                d2Prev = d2Curr;
            }
         */
-<span class="fc" id="L3066">        double[][] aHatCurr = MatrixUtil.zeros(m, n);</span>
-<span class="fc" id="L3067">        double[][] tmp = MatrixUtil.zeros(m, n);</span>
-<span class="fc" id="L3068">        double[] d1Curr = new double[m];</span>
-<span class="fc" id="L3069">        double[] d2Curr = new double[n];</span>
-<span class="fc" id="L3070">        double[] rInfNorm = new double[m];</span>
-<span class="fc" id="L3071">        double[] cInfNorm = new double[n];</span>
+<span class="fc" id="L3075">        double[][] aHatCurr = MatrixUtil.zeros(m, n);</span>
+<span class="fc" id="L3076">        double[][] tmp = MatrixUtil.zeros(m, n);</span>
+<span class="fc" id="L3077">        double[] d1Curr = new double[m];</span>
+<span class="fc" id="L3078">        double[] d2Curr = new double[n];</span>
+<span class="fc" id="L3079">        double[] rInfNorm = new double[m];</span>
+<span class="fc" id="L3080">        double[] cInfNorm = new double[n];</span>
         double dR;
         double dC;
-<span class="fc" id="L3074">        double[] dRInv = new double[n];</span>
-<span class="fc" id="L3075">        double[] dCInv = new double[n];</span>
+<span class="fc" id="L3083">        double[] dRInv = new double[n];</span>
+<span class="fc" id="L3084">        double[] dCInv = new double[n];</span>
 
         // init the prev arrays
-<span class="fc" id="L3078">        double[][] aHatPrev = MatrixUtil.copy(a);</span>
-<span class="fc" id="L3079">        double[] d1Prev = new double[m];</span>
-<span class="fc" id="L3080">        Arrays.fill(d1Prev, 1);</span>
-<span class="fc" id="L3081">        double[] d2Prev = new double[n];</span>
-<span class="fc" id="L3082">        Arrays.fill(d2Prev, 1);</span>
+<span class="fc" id="L3087">        double[][] aHatPrev = MatrixUtil.copy(a);</span>
+<span class="fc" id="L3088">        double[] d1Prev = new double[m];</span>
+<span class="fc" id="L3089">        Arrays.fill(d1Prev, 1);</span>
+<span class="fc" id="L3090">        double[] d2Prev = new double[n];</span>
+<span class="fc" id="L3091">        Arrays.fill(d2Prev, 1);</span>
 
         int i;
         double s;
         double t;
-<span class="fc" id="L3087">        final int maxIter = 100;</span>
-<span class="fc" id="L3088">        int nIter = 0;</span>
+<span class="fc" id="L3096">        final int maxIter = 100;</span>
+<span class="fc" id="L3097">        int nIter = 0;</span>
 
         /*
         System.out.printf(&quot;  %d) aHat=\n%s\n&quot;, nIter, FormatArray.toString(a, &quot;%.5e&quot;));
@@ -3095,29 +3104,29 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
             e.printStackTrace();
         }*/
 
-<span class="pc bpc" id="L3098" title="1 of 2 branches missed.">        while (nIter &lt; maxIter) {</span>
-<span class="fc" id="L3099">            calculateInfNormForRows(aHatCurr, rInfNorm);</span>
-<span class="fc" id="L3100">            calculateInfNormForColumns(aHatCurr, cInfNorm);</span>
-<span class="fc bfc" id="L3101" title="All 2 branches covered.">            for (i = 0; i &lt; m; ++i) {</span>
-<span class="fc" id="L3102">                dR = Math.sqrt(rInfNorm[i]);</span>
-<span class="fc bfc" id="L3103" title="All 2 branches covered.">                if (dR &lt; 1E-11) {// eq 0</span>
-<span class="fc" id="L3104">                    dRInv[i] = 1;</span>
+<span class="pc bpc" id="L3107" title="1 of 2 branches missed.">        while (nIter &lt; maxIter) {</span>
+<span class="fc" id="L3108">            calculateInfNormForRows(aHatCurr, rInfNorm);</span>
+<span class="fc" id="L3109">            calculateInfNormForColumns(aHatCurr, cInfNorm);</span>
+<span class="fc bfc" id="L3110" title="All 2 branches covered.">            for (i = 0; i &lt; m; ++i) {</span>
+<span class="fc" id="L3111">                dR = Math.sqrt(rInfNorm[i]);</span>
+<span class="fc bfc" id="L3112" title="All 2 branches covered.">                if (dR &lt; 1E-11) {// eq 0</span>
+<span class="fc" id="L3113">                    dRInv[i] = 1;</span>
                 } else {
-<span class="fc" id="L3106">                    dRInv[i] = 1. / dR;</span>
+<span class="fc" id="L3115">                    dRInv[i] = 1. / dR;</span>
                 }
             }
-<span class="fc bfc" id="L3109" title="All 2 branches covered.">            for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L3110">                dC = Math.sqrt(cInfNorm[i]);</span>
-<span class="fc bfc" id="L3111" title="All 2 branches covered.">                if (dC &lt; 1E-11) {// eq 0</span>
-<span class="fc" id="L3112">                    dCInv[i] = 1;</span>
+<span class="fc bfc" id="L3118" title="All 2 branches covered.">            for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L3119">                dC = Math.sqrt(cInfNorm[i]);</span>
+<span class="fc bfc" id="L3120" title="All 2 branches covered.">                if (dC &lt; 1E-11) {// eq 0</span>
+<span class="fc" id="L3121">                    dCInv[i] = 1;</span>
                 } else {
-<span class="fc" id="L3114">                    dCInv[i] = 1. / dC;</span>
+<span class="fc" id="L3123">                    dCInv[i] = 1. / dC;</span>
                 }
             }
 
             //aHatCurr = (dR)^-1 * aHatPrev * (dC)^-1
-<span class="fc" id="L3119">            MatrixUtil.multiplyDiagonalByMatrix(dRInv, aHatPrev, tmp);</span>
-<span class="fc" id="L3120">            MatrixUtil.multiplyByDiagonal(tmp, dCInv, aHatCurr);</span>
+<span class="fc" id="L3128">            MatrixUtil.multiplyDiagonalByMatrix(dRInv, aHatPrev, tmp);</span>
+<span class="fc" id="L3129">            MatrixUtil.multiplyByDiagonal(tmp, dCInv, aHatCurr);</span>
 
             /*
             System.out.printf(&quot;  %d)\n&quot;, nIter);
@@ -3134,50 +3143,50 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
             */
 
             //d1Curr = d1Prev * (dR)^-1
-<span class="fc bfc" id="L3137" title="All 2 branches covered.">            for (i = 0; i &lt; m; ++i) {</span>
-<span class="fc" id="L3138">                d1Curr[i] = d1Prev[i] * dRInv[i];</span>
+<span class="fc bfc" id="L3146" title="All 2 branches covered.">            for (i = 0; i &lt; m; ++i) {</span>
+<span class="fc" id="L3147">                d1Curr[i] = d1Prev[i] * dRInv[i];</span>
             }
             //d2Curr = d2Prev * (dC)^-1
-<span class="fc bfc" id="L3141" title="All 2 branches covered.">            for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L3142">                d2Curr[i] = d2Prev[i] * dCInv[i];</span>
+<span class="fc bfc" id="L3150" title="All 2 branches covered.">            for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L3151">                d2Curr[i] = d2Prev[i] * dCInv[i];</span>
             }
 
-<span class="fc" id="L3145">            ++nIter;</span>
+<span class="fc" id="L3154">            ++nIter;</span>
             // test convergence
-<span class="fc" id="L3147">            s = Double.NEGATIVE_INFINITY;</span>
-<span class="fc bfc" id="L3148" title="All 2 branches covered.">            for (i = 0; i &lt; m; ++i) {</span>
-<span class="fc" id="L3149">                t = Math.abs(1 - rInfNorm[i]);</span>
-<span class="fc bfc" id="L3150" title="All 2 branches covered.">                if (t &gt; s) {</span>
-<span class="fc" id="L3151">                    s = t;</span>
+<span class="fc" id="L3156">            s = Double.NEGATIVE_INFINITY;</span>
+<span class="fc bfc" id="L3157" title="All 2 branches covered.">            for (i = 0; i &lt; m; ++i) {</span>
+<span class="fc" id="L3158">                t = Math.abs(1 - rInfNorm[i]);</span>
+<span class="fc bfc" id="L3159" title="All 2 branches covered.">                if (t &gt; s) {</span>
+<span class="fc" id="L3160">                    s = t;</span>
                 }
             }
-<span class="fc" id="L3154">            System.out.printf(&quot;      s=%.3e\n&quot;, s);</span>
-<span class="fc bfc" id="L3155" title="All 2 branches covered.">            if (s &lt;= eps) {</span>
+<span class="fc" id="L3163">            System.out.printf(&quot;      s=%.3e\n&quot;, s);</span>
+<span class="fc bfc" id="L3164" title="All 2 branches covered.">            if (s &lt;= eps) {</span>
                 // test column convergence
-<span class="fc" id="L3157">                s = Double.NEGATIVE_INFINITY;</span>
-<span class="fc bfc" id="L3158" title="All 2 branches covered.">                for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L3159">                    t = Math.abs(1 - cInfNorm[i]);</span>
-<span class="fc bfc" id="L3160" title="All 2 branches covered.">                    if (t &gt; s) {</span>
-<span class="fc" id="L3161">                        s = t;</span>
+<span class="fc" id="L3166">                s = Double.NEGATIVE_INFINITY;</span>
+<span class="fc bfc" id="L3167" title="All 2 branches covered.">                for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L3168">                    t = Math.abs(1 - cInfNorm[i]);</span>
+<span class="fc bfc" id="L3169" title="All 2 branches covered.">                    if (t &gt; s) {</span>
+<span class="fc" id="L3170">                        s = t;</span>
                     }
                 }
-<span class="pc bpc" id="L3164" title="1 of 2 branches missed.">                if (s &lt;= eps) {</span>
-<span class="fc" id="L3165">                    break;</span>
+<span class="pc bpc" id="L3173" title="1 of 2 branches missed.">                if (s &lt;= eps) {</span>
+<span class="fc" id="L3174">                    break;</span>
                 }
             }
             //aHatPrev = aHatCurr
-<span class="fc" id="L3169">            MatrixUtil.copy(aHatCurr, aHatPrev);</span>
+<span class="fc" id="L3178">            MatrixUtil.copy(aHatCurr, aHatPrev);</span>
             //d1Prev = d1Curr;
-<span class="fc" id="L3171">            System.arraycopy(d1Curr,0, d1Prev, 0, d1Curr.length);</span>
+<span class="fc" id="L3180">            System.arraycopy(d1Curr,0, d1Prev, 0, d1Curr.length);</span>
             //d2Prev = d2Curr;
-<span class="fc" id="L3173">            System.arraycopy(d2Curr,0, d2Prev, 0, d2Curr.length);</span>
+<span class="fc" id="L3182">            System.arraycopy(d2Curr,0, d2Prev, 0, d2Curr.length);</span>
         }
 
-<span class="fc" id="L3176">        ConditionedMatrix c = new ConditionedMatrix();</span>
-<span class="fc" id="L3177">        c.aHat = aHatCurr;</span>
-<span class="fc" id="L3178">        c.d1 = d1Curr;</span>
-<span class="fc" id="L3179">        c.d2 = d2Curr;</span>
-<span class="fc" id="L3180">        return c;</span>
+<span class="fc" id="L3185">        ConditionedMatrix c = new ConditionedMatrix();</span>
+<span class="fc" id="L3186">        c.aHat = aHatCurr;</span>
+<span class="fc" id="L3187">        c.d1 = d1Curr;</span>
+<span class="fc" id="L3188">        c.d2 = d2Curr;</span>
+<span class="fc" id="L3189">        return c;</span>
     }
 
     /**
@@ -3187,22 +3196,22 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @param output array of size a.length to be populated with the infinity norms for each column of a
      */
     public static void calculateInfNormForColumns(double[][] a, double[] output) {
-<span class="fc" id="L3190">        int n = a[0].length;</span>
-<span class="pc bpc" id="L3191" title="1 of 2 branches missed.">        if (output.length != n) {</span>
-<span class="nc" id="L3192">            throw new IllegalArgumentException(&quot;output.length must equal a[0].length&quot;);</span>
+<span class="fc" id="L3199">        int n = a[0].length;</span>
+<span class="pc bpc" id="L3200" title="1 of 2 branches missed.">        if (output.length != n) {</span>
+<span class="nc" id="L3201">            throw new IllegalArgumentException(&quot;output.length must equal a[0].length&quot;);</span>
         }
-<span class="fc" id="L3194">        Arrays.fill(output, Double.NEGATIVE_INFINITY);</span>
+<span class="fc" id="L3203">        Arrays.fill(output, Double.NEGATIVE_INFINITY);</span>
         double c;
         int i, j;
-<span class="fc bfc" id="L3197" title="All 2 branches covered.">        for (j = 0; j &lt; n; ++j) {</span>
-<span class="fc bfc" id="L3198" title="All 2 branches covered.">            for (i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L3199">                c = Math.abs(a[i][j]);</span>
-<span class="fc bfc" id="L3200" title="All 2 branches covered.">                if (c &gt; output[j]) {</span>
-<span class="fc" id="L3201">                    output[j] = c;</span>
+<span class="fc bfc" id="L3206" title="All 2 branches covered.">        for (j = 0; j &lt; n; ++j) {</span>
+<span class="fc bfc" id="L3207" title="All 2 branches covered.">            for (i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L3208">                c = Math.abs(a[i][j]);</span>
+<span class="fc bfc" id="L3209" title="All 2 branches covered.">                if (c &gt; output[j]) {</span>
+<span class="fc" id="L3210">                    output[j] = c;</span>
                 }
             }
         }
-<span class="fc" id="L3205">    }</span>
+<span class="fc" id="L3214">    }</span>
 
     /**
      * calculate the infinity norm for each row of matrix a where the infinity norm
@@ -3211,22 +3220,22 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @param output array of size a.length to be populated with the infinity norms for each row of a
      */
     public static void calculateInfNormForRows(double[][] a, double[] output) {
-<span class="fc" id="L3214">        int m = a.length;</span>
-<span class="pc bpc" id="L3215" title="1 of 2 branches missed.">        if (output.length != m) {</span>
-<span class="nc" id="L3216">            throw new IllegalArgumentException(&quot;output.length must equal a.length&quot;);</span>
+<span class="fc" id="L3223">        int m = a.length;</span>
+<span class="pc bpc" id="L3224" title="1 of 2 branches missed.">        if (output.length != m) {</span>
+<span class="nc" id="L3225">            throw new IllegalArgumentException(&quot;output.length must equal a.length&quot;);</span>
         }
-<span class="fc" id="L3218">        Arrays.fill(output, Double.NEGATIVE_INFINITY);</span>
+<span class="fc" id="L3227">        Arrays.fill(output, Double.NEGATIVE_INFINITY);</span>
         double r;
         int j;
-<span class="fc bfc" id="L3221" title="All 2 branches covered.">        for (int i = 0; i &lt; m; ++i) {</span>
-<span class="fc bfc" id="L3222" title="All 2 branches covered.">            for (j = 0; j &lt; a[i].length; ++j) {</span>
-<span class="fc" id="L3223">                r = Math.abs(a[i][j]);</span>
-<span class="fc bfc" id="L3224" title="All 2 branches covered.">                if (r &gt; output[i]) {</span>
-<span class="fc" id="L3225">                    output[i] = r;</span>
+<span class="fc bfc" id="L3230" title="All 2 branches covered.">        for (int i = 0; i &lt; m; ++i) {</span>
+<span class="fc bfc" id="L3231" title="All 2 branches covered.">            for (j = 0; j &lt; a[i].length; ++j) {</span>
+<span class="fc" id="L3232">                r = Math.abs(a[i][j]);</span>
+<span class="fc bfc" id="L3233" title="All 2 branches covered.">                if (r &gt; output[i]) {</span>
+<span class="fc" id="L3234">                    output[i] = r;</span>
                 }
             }
         }
-<span class="fc" id="L3229">    }</span>
+<span class="fc" id="L3238">    }</span>
 
     /**
      * summation = the (1/p) power of sum of its (components)^p.
@@ -3235,12 +3244,12 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return he (1/p) power of sum of its (components)^p
      */
     public static double lPSum(double[] v, double p) {
-<span class="fc" id="L3238">        double sum = 0;</span>
-<span class="fc bfc" id="L3239" title="All 2 branches covered.">        for (double a : v) {</span>
-<span class="fc" id="L3240">            sum += Math.pow(a, p);</span>
+<span class="fc" id="L3247">        double sum = 0;</span>
+<span class="fc bfc" id="L3248" title="All 2 branches covered.">        for (double a : v) {</span>
+<span class="fc" id="L3249">            sum += Math.pow(a, p);</span>
         }
-<span class="fc" id="L3242">        sum = Math.pow(sum, 1./p);</span>
-<span class="fc" id="L3243">        return sum;</span>
+<span class="fc" id="L3251">        sum = Math.pow(sum, 1./p);</span>
+<span class="fc" id="L3252">        return sum;</span>
     }
 
     /**
@@ -3255,18 +3264,18 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
     @return the maximum absolute column sum of the matrix
     */
     public static int lp1Norm(int[][] a) {
-<span class="fc" id="L3258">        int maxSum = Integer.MIN_VALUE;</span>
+<span class="fc" id="L3267">        int maxSum = Integer.MIN_VALUE;</span>
         int i, j, sum;
-<span class="fc bfc" id="L3260" title="All 2 branches covered.">        for (j = 0; j &lt; a[0].length; ++j) {</span>
-<span class="fc" id="L3261">            sum = 0;</span>
-<span class="fc bfc" id="L3262" title="All 2 branches covered.">            for (i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L3263">                sum += Math.abs(a[i][j]);</span>
+<span class="fc bfc" id="L3269" title="All 2 branches covered.">        for (j = 0; j &lt; a[0].length; ++j) {</span>
+<span class="fc" id="L3270">            sum = 0;</span>
+<span class="fc bfc" id="L3271" title="All 2 branches covered.">            for (i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L3272">                sum += Math.abs(a[i][j]);</span>
             }
-<span class="fc bfc" id="L3265" title="All 2 branches covered.">            if (sum &gt; maxSum) {</span>
-<span class="fc" id="L3266">                maxSum = sum;</span>
+<span class="fc bfc" id="L3274" title="All 2 branches covered.">            if (sum &gt; maxSum) {</span>
+<span class="fc" id="L3275">                maxSum = sum;</span>
             }
         }
-<span class="fc" id="L3269">        return maxSum;</span>
+<span class="fc" id="L3278">        return maxSum;</span>
     }
 
     /**
@@ -3281,14 +3290,14 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return the sum of each element of a squared
      */
     public static double frobeniusNorm(double[][] a) {
-<span class="fc" id="L3284">        double sum = 0;</span>
+<span class="fc" id="L3293">        double sum = 0;</span>
         int i, j;
-<span class="fc bfc" id="L3286" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc bfc" id="L3287" title="All 2 branches covered.">            for (j = 0; j &lt; a[i].length; ++j) {</span>
-<span class="fc" id="L3288">                sum += (a[i][j]*a[i][j]);</span>
+<span class="fc bfc" id="L3295" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc bfc" id="L3296" title="All 2 branches covered.">            for (j = 0; j &lt; a[i].length; ++j) {</span>
+<span class="fc" id="L3297">                sum += (a[i][j]*a[i][j]);</span>
             }
         }
-<span class="fc" id="L3291">        return Math.sqrt(sum);</span>
+<span class="fc" id="L3300">        return Math.sqrt(sum);</span>
     }
 
     /**
@@ -3305,9 +3314,9 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      * @throws NotConvergedException thrown by MTJ when SVD could not converge
      */
     public static double spectralNorm(double[][] r) throws NotConvergedException {
-<span class="fc" id="L3308">        SVDProducts svd = performSVDATransposeA(r);</span>
-<span class="fc" id="L3309">        double norm = Math.sqrt(svd.s[0]);</span>
-<span class="fc" id="L3310">        return norm;</span>
+<span class="fc" id="L3317">        SVDProducts svd = performSVDATransposeA(r);</span>
+<span class="fc" id="L3318">        double norm = Math.sqrt(svd.s[0]);</span>
+<span class="fc" id="L3319">        return norm;</span>
     }
 
     /**
@@ -3329,12 +3338,12 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
     public static double[][] nearestPositiveSemidefiniteToASymmetric(double[][] a,
         double eps) throws NotConvergedException {
 
-<span class="pc bpc" id="L3332" title="1 of 2 branches missed.">        if (eps &lt; 0) {</span>
-<span class="nc" id="L3333">            throw new IllegalArgumentException(&quot;eps must be .gte. 0&quot;);</span>
+<span class="pc bpc" id="L3341" title="1 of 2 branches missed.">        if (eps &lt; 0) {</span>
+<span class="nc" id="L3342">            throw new IllegalArgumentException(&quot;eps must be .gte. 0&quot;);</span>
         }
 
-<span class="pc bpc" id="L3336" title="1 of 2 branches missed.">        if (!isSymmetric(a, eps)) {</span>
-<span class="nc" id="L3337">            System.err.println(&quot;matrix is not symmetric in current form&quot;);</span>
+<span class="pc bpc" id="L3345" title="1 of 2 branches missed.">        if (!isSymmetric(a, eps)) {</span>
+<span class="nc" id="L3346">            System.err.println(&quot;matrix is not symmetric in current form&quot;);</span>
         }
 
         // uses the Frobenius norm as a distance.  notation: ||A||_F
@@ -3345,21 +3354,21 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
         //                  { or eps_i    for lambda_i &lt;  eps
         //        where lambda_i are the eigenvalues of A
 
-<span class="fc" id="L3348">        EVD evd = EVD.factorize(new DenseMatrix(a));</span>
-<span class="fc" id="L3349">        double[][] leftEV = MatrixUtil.convertToRowMajor(evd.getLeftEigenvectors());</span>
+<span class="fc" id="L3357">        EVD evd = EVD.factorize(new DenseMatrix(a));</span>
+<span class="fc" id="L3358">        double[][] leftEV = MatrixUtil.convertToRowMajor(evd.getLeftEigenvectors());</span>
 
-<span class="fc" id="L3351">        double[] tau = Arrays.copyOf(evd.getRealEigenvalues(),</span>
-<span class="fc" id="L3352">            evd.getRealEigenvalues().length);</span>
+<span class="fc" id="L3360">        double[] tau = Arrays.copyOf(evd.getRealEigenvalues(),</span>
+<span class="fc" id="L3361">            evd.getRealEigenvalues().length);</span>
 
         int i;
-<span class="fc bfc" id="L3355" title="All 2 branches covered.">        for (i = 0; i &lt; tau.length; ++i) {</span>
-<span class="fc bfc" id="L3356" title="All 2 branches covered.">            if (tau[i] &lt; eps) {</span>
-<span class="fc" id="L3357">                tau[i] = eps;</span>
+<span class="fc bfc" id="L3364" title="All 2 branches covered.">        for (i = 0; i &lt; tau.length; ++i) {</span>
+<span class="fc bfc" id="L3365" title="All 2 branches covered.">            if (tau[i] &lt; eps) {</span>
+<span class="fc" id="L3366">                tau[i] = eps;</span>
             }
         }
 
-<span class="fc" id="L3361">        double[][] aPSD = MatrixUtil.multiplyByDiagonal(leftEV, tau);</span>
-<span class="fc" id="L3362">        aPSD = MatrixUtil.multiply(aPSD, MatrixUtil.transpose(leftEV));</span>
+<span class="fc" id="L3370">        double[][] aPSD = MatrixUtil.multiplyByDiagonal(leftEV, tau);</span>
+<span class="fc" id="L3371">        aPSD = MatrixUtil.multiply(aPSD, MatrixUtil.transpose(leftEV));</span>
 
         /*
         // another solution for X uses polar decomposition B = UH,
@@ -3382,7 +3391,7 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
         MatrixUtil.multiply(aPSD2, 0.5);
         */
 
-<span class="fc" id="L3385">        return aPSD;</span>
+<span class="fc" id="L3394">        return aPSD;</span>
     }
 
     /**
@@ -3397,20 +3406,20 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return a matrix which is the nearest symmetric to a
      */
     public static double[][] nearestSymmetricToA(double[][] a) {
-<span class="pc bpc" id="L3400" title="1 of 2 branches missed.">        if (!isSquare(a)) {</span>
-<span class="nc" id="L3401">            throw new IllegalArgumentException(&quot;a must be square&quot;);</span>
+<span class="pc bpc" id="L3409" title="1 of 2 branches missed.">        if (!isSquare(a)) {</span>
+<span class="nc" id="L3410">            throw new IllegalArgumentException(&quot;a must be square&quot;);</span>
         }
         //0.5 * (A + A^T)
-<span class="fc" id="L3404">        int n = a.length;</span>
-<span class="fc" id="L3405">        double[][] out = new double[n][];</span>
+<span class="fc" id="L3413">        int n = a.length;</span>
+<span class="fc" id="L3414">        double[][] out = new double[n][];</span>
         int i, j;
-<span class="fc bfc" id="L3407" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L3408">            out[i] = new double[n];</span>
-<span class="fc bfc" id="L3409" title="All 2 branches covered.">            for (j = 0; j &lt; a[i].length; ++j) {</span>
-<span class="fc" id="L3410">                out[i][j] = 0.5 * (a[i][j] + a[j][i]);</span>
+<span class="fc bfc" id="L3416" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L3417">            out[i] = new double[n];</span>
+<span class="fc bfc" id="L3418" title="All 2 branches covered.">            for (j = 0; j &lt; a[i].length; ++j) {</span>
+<span class="fc" id="L3419">                out[i][j] = 0.5 * (a[i][j] + a[j][i]);</span>
             }
         }
-<span class="fc" id="L3413">        return out;</span>
+<span class="fc" id="L3422">        return out;</span>
     }
 
     /**
@@ -3436,13 +3445,13 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
     public static double[][] nearestPositiveSemidefiniteToA(double[][] a,
         double eps) throws NotConvergedException {
 
-<span class="pc bpc" id="L3439" title="1 of 2 branches missed.">        if (eps &lt; 0) {</span>
-<span class="nc" id="L3440">            throw new IllegalArgumentException(&quot;eps must be .gte. 0&quot;);</span>
+<span class="pc bpc" id="L3448" title="1 of 2 branches missed.">        if (eps &lt; 0) {</span>
+<span class="nc" id="L3449">            throw new IllegalArgumentException(&quot;eps must be .gte. 0&quot;);</span>
         }
         // uses the Frobenius norm as a distance
 
-<span class="pc bpc" id="L3444" title="1 of 2 branches missed.">        if (!isSquare(a)) {</span>
-<span class="nc" id="L3445">            System.err.println(&quot;matrix must be square for nearestPositiveSemidefiniteToA()&quot;);</span>
+<span class="pc bpc" id="L3453" title="1 of 2 branches missed.">        if (!isSquare(a)) {</span>
+<span class="nc" id="L3454">            System.err.println(&quot;matrix must be square for nearestPositiveSemidefiniteToA()&quot;);</span>
         }
 
         // uses the Frobenius norm as a distance.  notation: ||A||_F
@@ -3461,7 +3470,7 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
 
         // can use polar decomposition on square matrices:
 
-<span class="fc" id="L3464">        double[][] b = nearestSymmetricToA(a);</span>
+<span class="fc" id="L3473">        double[][] b = nearestSymmetricToA(a);</span>
 
         /* another to method to solve for X_F = PSD
         // [Q,d] = eig(B,'vector'); X_F = Q*(max(d,0).*Q'); X_F = (X_F + X_F')/2;
@@ -3481,43 +3490,43 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
          */
 
         // H is formed from V, S, and V^T of SVD(B)
-<span class="fc" id="L3484">        QH qh = performPolarDecomposition(b);</span>
-<span class="fc" id="L3485">        double[][] h = qh.h;</span>
+<span class="fc" id="L3493">        QH qh = performPolarDecomposition(b);</span>
+<span class="fc" id="L3494">        double[][] h = qh.h;</span>
 
         //X = (B + H)/2.
-<span class="fc" id="L3488">        double[][] aPSD = MatrixUtil.pointwiseAdd(b, h);</span>
-<span class="fc" id="L3489">        MatrixUtil.multiply(aPSD, 0.5);</span>
+<span class="fc" id="L3497">        double[][] aPSD = MatrixUtil.pointwiseAdd(b, h);</span>
+<span class="fc" id="L3498">        MatrixUtil.multiply(aPSD, 0.5);</span>
 
         // check that all eigenvalues are &gt;= eps
-<span class="fc" id="L3492">        EVD evd = EVD.factorize(new DenseMatrix(aPSD));</span>
+<span class="fc" id="L3501">        EVD evd = EVD.factorize(new DenseMatrix(aPSD));</span>
         int i;
-<span class="fc" id="L3494">        double[] eig = evd.getRealEigenvalues();</span>
-<span class="fc" id="L3495">        boolean ok = true;</span>
-<span class="pc bpc" id="L3496" title="1 of 2 branches missed.">        for (i = 0; i &lt; eig.length; ++i) {</span>
-<span class="pc bpc" id="L3497" title="1 of 2 branches missed.">            if (eig[i] &lt; eps) {</span>
-<span class="fc" id="L3498">                ok = false;</span>
-<span class="fc" id="L3499">                break;</span>
+<span class="fc" id="L3503">        double[] eig = evd.getRealEigenvalues();</span>
+<span class="fc" id="L3504">        boolean ok = true;</span>
+<span class="pc bpc" id="L3505" title="1 of 2 branches missed.">        for (i = 0; i &lt; eig.length; ++i) {</span>
+<span class="pc bpc" id="L3506" title="1 of 2 branches missed.">            if (eig[i] &lt; eps) {</span>
+<span class="fc" id="L3507">                ok = false;</span>
+<span class="fc" id="L3508">                break;</span>
             }
         }
-<span class="pc bpc" id="L3502" title="1 of 2 branches missed.">        if (!ok) {</span>
+<span class="pc bpc" id="L3511" title="1 of 2 branches missed.">        if (!ok) {</span>
             //System.out.printf(&quot;before: evd eigenvalues=%s\n&quot;, FormatArray.toString(evd.getRealEigenvalues(), &quot;%.5e&quot;));
 
             //still needs a small perturbation to make the eigenvalues all &gt;= eps
             // see https://nhigham.com/2021/02/16/diagonally-perturbing-a-symmetric-matrix-to-make-it-positive-definite/
 
-<span class="fc" id="L3508">            double[] e = Arrays.copyOf(eig, eig.length);</span>
-<span class="fc" id="L3509">            Arrays.sort(e);</span>
-<span class="fc" id="L3510">            double eigMin = Math.max(-e[0], eps);</span>
-<span class="fc" id="L3511">            double[][] D = MatrixUtil.zeros(a.length, a.length);</span>
-<span class="fc bfc" id="L3512" title="All 2 branches covered.">            for (i = 0; i &lt; D.length; ++i) {</span>
-<span class="fc" id="L3513">                D[i][i] = eigMin;</span>
+<span class="fc" id="L3517">            double[] e = Arrays.copyOf(eig, eig.length);</span>
+<span class="fc" id="L3518">            Arrays.sort(e);</span>
+<span class="fc" id="L3519">            double eigMin = Math.max(-e[0], eps);</span>
+<span class="fc" id="L3520">            double[][] D = MatrixUtil.zeros(a.length, a.length);</span>
+<span class="fc bfc" id="L3521" title="All 2 branches covered.">            for (i = 0; i &lt; D.length; ++i) {</span>
+<span class="fc" id="L3522">                D[i][i] = eigMin;</span>
             }
-<span class="fc" id="L3515">            aPSD = MatrixUtil.pointwiseAdd(aPSD, D);</span>
+<span class="fc" id="L3524">            aPSD = MatrixUtil.pointwiseAdd(aPSD, D);</span>
             //evd = EVD.factorize(new DenseMatrix(aPSD));
             //System.out.printf(&quot;after:  evd eigenvalues=%s\n&quot;, FormatArray.toString(evd.getRealEigenvalues(), &quot;%.5e&quot;));
         }
 
-<span class="fc" id="L3520">        return aPSD;</span>
+<span class="fc" id="L3529">        return aPSD;</span>
     }
 
     /**
@@ -3533,21 +3542,23 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return array v normalized by its lp_p sum.
      */
     public static double[] normalizeLP(double[] v, double p) {
-<span class="fc" id="L3536">        double divisor = 0;</span>
-<span class="pc bpc" id="L3537" title="1 of 2 branches missed.">        if (Double.isInfinite(p)) {</span>
-<span class="nc" id="L3538">            divisor = MiscMath0.findMax(v);</span>
+<span class="fc" id="L3545">        double divisor = 0;</span>
+<span class="pc bpc" id="L3546" title="1 of 2 branches missed.">        if (Double.isInfinite(p)) {</span>
+<span class="nc" id="L3547">            divisor = MiscMath0.findMax(v);</span>
         } else {
 
-<span class="fc bfc" id="L3541" title="All 2 branches covered.">            for (double a : v) {</span>
-<span class="fc" id="L3542">                divisor += Math.pow(a, p);</span>
+<span class="fc bfc" id="L3550" title="All 2 branches covered.">            for (double a : v) {</span>
+<span class="fc" id="L3551">                divisor += Math.pow(a, p);</span>
             }
-<span class="fc" id="L3544">            divisor = Math.pow(divisor, 1. / p);</span>
+<span class="fc" id="L3553">            divisor = Math.pow(divisor, 1. / p);</span>
         }
-<span class="fc" id="L3546">        double[] out = Arrays.copyOf(v, v.length);</span>
-<span class="fc bfc" id="L3547" title="All 2 branches covered.">        for (int i = 0; i &lt; v.length; ++i) {</span>
-<span class="fc" id="L3548">            out[i] /= divisor;</span>
+<span class="fc" id="L3555">        double[] out = Arrays.copyOf(v, v.length);</span>
+<span class="pc bpc" id="L3556" title="1 of 2 branches missed.">        if (divisor != 0.) {</span>
+<span class="fc bfc" id="L3557" title="All 2 branches covered.">            for (int i = 0; i &lt; v.length; ++i) {</span>
+<span class="fc" id="L3558">                out[i] /= divisor;</span>
+            }
         }
-<span class="fc" id="L3550">        return out;</span>
+<span class="fc" id="L3561">        return out;</span>
     }
 
     /**
@@ -3559,15 +3570,15 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      * size v1.length X v2.length.
      */
     public static double[][] outerProduct(double[] v1, double[] v2) {
-<span class="fc" id="L3562">        int n = v1.length;</span>
-<span class="fc" id="L3563">        int m = v2.length;</span>
-<span class="fc" id="L3564">        double[][] out = new double[n][m];</span>
-<span class="fc bfc" id="L3565" title="All 2 branches covered.">        for (int row = 0; row &lt; n; ++row) {</span>
-<span class="fc bfc" id="L3566" title="All 2 branches covered.">            for (int col = 0; col &lt; m; ++col) {</span>
-<span class="fc" id="L3567">                out[row][col] = v1[row] * v2[col];</span>
+<span class="fc" id="L3573">        int n = v1.length;</span>
+<span class="fc" id="L3574">        int m = v2.length;</span>
+<span class="fc" id="L3575">        double[][] out = new double[n][m];</span>
+<span class="fc bfc" id="L3576" title="All 2 branches covered.">        for (int row = 0; row &lt; n; ++row) {</span>
+<span class="fc bfc" id="L3577" title="All 2 branches covered.">            for (int col = 0; col &lt; m; ++col) {</span>
+<span class="fc" id="L3578">                out[row][col] = v1[row] * v2[col];</span>
             }
         }
-<span class="fc" id="L3570">        return out;</span>
+<span class="fc" id="L3581">        return out;</span>
     }
 
     /**
@@ -3602,44 +3613,44 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
 
         // is diagonalizable.   From wikipedia: &quot;Real symmetric matrices are diagonalizable by orthogonal matrices; i.e.,
         // given a real symmetric matrix A, Q^T * A * Q is diagonal for some orthogonal matrix Q
-<span class="pc bpc" id="L3605" title="1 of 2 branches missed.">        if (!isSquare(a)) {</span>
-<span class="nc" id="L3606">            throw new IllegalArgumentException(&quot;a must be a square matrix&quot;);</span>
+<span class="pc bpc" id="L3616" title="1 of 2 branches missed.">        if (!isSquare(a)) {</span>
+<span class="nc" id="L3617">            throw new IllegalArgumentException(&quot;a must be a square matrix&quot;);</span>
         }
 
         // v_k = A^k * v_0  = (c_1*(lambda_1)^k * x_1) + ... (c_n*(lambda_n)^k * x_n)
 
-<span class="fc" id="L3611">        int nR = a.length;</span>
-<span class="fc" id="L3612">        double[] v = new double[nR];</span>
+<span class="fc" id="L3622">        int nR = a.length;</span>
+<span class="fc" id="L3623">        double[] v = new double[nR];</span>
         double[] z;
         double norm;
-<span class="fc" id="L3615">        double eig = 0;</span>
+<span class="fc" id="L3626">        double eig = 0;</span>
         int row;
 
-<span class="fc" id="L3618">        Random rand = Misc0.getSecureRandom();</span>
-<span class="fc" id="L3619">        long seed = System.nanoTime();</span>
+<span class="fc" id="L3629">        Random rand = Misc0.getSecureRandom();</span>
+<span class="fc" id="L3630">        long seed = System.nanoTime();</span>
         //System.out.println(&quot;SEED=&quot; + seed);
-<span class="fc" id="L3621">        rand.setSeed(seed);</span>
+<span class="fc" id="L3632">        rand.setSeed(seed);</span>
         //avoid orthogonal first guess at v using randomization.
-<span class="fc bfc" id="L3623" title="All 2 branches covered.">        for (row = 0; row &lt; nR; ++row) {</span>
-<span class="fc" id="L3624">            v[row] = rand.nextDouble();</span>
+<span class="fc bfc" id="L3634" title="All 2 branches covered.">        for (row = 0; row &lt; nR; ++row) {</span>
+<span class="fc" id="L3635">            v[row] = rand.nextDouble();</span>
         }
 
-<span class="fc bfc" id="L3627" title="All 2 branches covered.">        for (int i = 0; i &lt; nIterations; ++i) {</span>
+<span class="fc bfc" id="L3638" title="All 2 branches covered.">        for (int i = 0; i &lt; nIterations; ++i) {</span>
 
-<span class="fc" id="L3629">            z = MatrixUtil.multiplyMatrixByColumnVector(a, v);</span>
-<span class="fc" id="L3630">            norm = 0;</span>
-<span class="fc bfc" id="L3631" title="All 2 branches covered.">            for (row = 0; row &lt; nR; ++row) {</span>
-<span class="fc" id="L3632">                norm += (z[row]*z[row]);</span>
+<span class="fc" id="L3640">            z = MatrixUtil.multiplyMatrixByColumnVector(a, v);</span>
+<span class="fc" id="L3641">            norm = 0;</span>
+<span class="fc bfc" id="L3642" title="All 2 branches covered.">            for (row = 0; row &lt; nR; ++row) {</span>
+<span class="fc" id="L3643">                norm += (z[row]*z[row]);</span>
             }
-<span class="fc" id="L3634">            norm = Math.sqrt(norm);</span>
-<span class="fc" id="L3635">            eig = norm;</span>
-<span class="fc bfc" id="L3636" title="All 2 branches covered.">            for (row = 0; row &lt; nR; ++row) {</span>
-<span class="fc" id="L3637">                v[row] = z[row] / eig;</span>
+<span class="fc" id="L3645">            norm = Math.sqrt(norm);</span>
+<span class="fc" id="L3646">            eig = norm;</span>
+<span class="fc bfc" id="L3647" title="All 2 branches covered.">            for (row = 0; row &lt; nR; ++row) {</span>
+<span class="fc" id="L3648">                v[row] = z[row] / eig;</span>
             }
             //System.out.printf(&quot;eig=%.3f\n  v=%s\n  z=%s\n&quot;, eig, Arrays.toString(v),
             //    Arrays.toString(z));
         }
-<span class="fc" id="L3642">        return eig;</span>
+<span class="fc" id="L3653">        return eig;</span>
     }
 
     /**
@@ -3665,50 +3676,50 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return the largest eigenvalue of a
      */
     public static double powerMethod(double[][] a, double tolerance, double[] x) {
-<span class="fc" id="L3668">        int nR = a.length;</span>
-<span class="fc" id="L3669">        double[] v = new double[nR];</span>
+<span class="fc" id="L3679">        int nR = a.length;</span>
+<span class="fc" id="L3680">        double[] v = new double[nR];</span>
         double[] z;
         double norm, t;
-<span class="fc" id="L3672">        double eig = 0;</span>
+<span class="fc" id="L3683">        double eig = 0;</span>
         int row, stop;
 
-<span class="fc" id="L3675">        Random rand = Misc0.getSecureRandom();</span>
-<span class="fc" id="L3676">        long seed = System.nanoTime();</span>
+<span class="fc" id="L3686">        Random rand = Misc0.getSecureRandom();</span>
+<span class="fc" id="L3687">        long seed = System.nanoTime();</span>
         //System.out.println(&quot;SEED=&quot; + seed);
-<span class="fc" id="L3678">        rand.setSeed(seed);</span>
+<span class="fc" id="L3689">        rand.setSeed(seed);</span>
         //avoid orthogonal first guess at v using randomization.
-<span class="fc bfc" id="L3680" title="All 2 branches covered.">        for (row = 0; row &lt; nR; ++row) {</span>
-<span class="fc" id="L3681">            v[row] = rand.nextDouble();</span>
+<span class="fc bfc" id="L3691" title="All 2 branches covered.">        for (row = 0; row &lt; nR; ++row) {</span>
+<span class="fc" id="L3692">            v[row] = rand.nextDouble();</span>
         }
 
-<span class="fc" id="L3684">        int nIter = 0;</span>
+<span class="fc" id="L3695">        int nIter = 0;</span>
 
         while (true) {
 
-<span class="fc" id="L3688">            z = MatrixUtil.multiplyMatrixByColumnVector(a, v);</span>
-<span class="fc" id="L3689">            norm = 0;</span>
-<span class="fc bfc" id="L3690" title="All 2 branches covered.">            for (row = 0; row &lt; nR; ++row) {</span>
-<span class="fc" id="L3691">                norm += (z[row]*z[row]);</span>
+<span class="fc" id="L3699">            z = MatrixUtil.multiplyMatrixByColumnVector(a, v);</span>
+<span class="fc" id="L3700">            norm = 0;</span>
+<span class="fc bfc" id="L3701" title="All 2 branches covered.">            for (row = 0; row &lt; nR; ++row) {</span>
+<span class="fc" id="L3702">                norm += (z[row]*z[row]);</span>
             }
-<span class="fc" id="L3693">            norm = Math.sqrt(norm);</span>
-<span class="fc" id="L3694">            eig = norm;</span>
-<span class="fc" id="L3695">            stop = 1;</span>
-<span class="fc bfc" id="L3696" title="All 2 branches covered.">            for (row = 0; row &lt; nR; ++row) {</span>
-<span class="fc" id="L3697">                t = z[row]/eig;</span>
-<span class="fc bfc" id="L3698" title="All 2 branches covered.">                if (Math.abs(v[row] - t) &gt; tolerance) {</span>
-<span class="fc" id="L3699">                    stop = 0;</span>
+<span class="fc" id="L3704">            norm = Math.sqrt(norm);</span>
+<span class="fc" id="L3705">            eig = norm;</span>
+<span class="fc" id="L3706">            stop = 1;</span>
+<span class="fc bfc" id="L3707" title="All 2 branches covered.">            for (row = 0; row &lt; nR; ++row) {</span>
+<span class="fc" id="L3708">                t = z[row]/eig;</span>
+<span class="fc bfc" id="L3709" title="All 2 branches covered.">                if (Math.abs(v[row] - t) &gt; tolerance) {</span>
+<span class="fc" id="L3710">                    stop = 0;</span>
                 }
-<span class="fc" id="L3701">                v[row] = t;</span>
+<span class="fc" id="L3712">                v[row] = t;</span>
             }
-<span class="fc bfc" id="L3703" title="All 2 branches covered.">            if (stop == 1) {</span>
-<span class="fc" id="L3704">                break;</span>
+<span class="fc bfc" id="L3714" title="All 2 branches covered.">            if (stop == 1) {</span>
+<span class="fc" id="L3715">                break;</span>
             }
             //System.out.printf(&quot;nIter=%d eig=%.3f\n  v=%s\n  z=%s\n&quot;, nIter,
             //    eig, Arrays.toString(v), Arrays.toString(z));
-<span class="fc" id="L3708">            nIter++;</span>
+<span class="fc" id="L3719">            nIter++;</span>
         }
-<span class="fc" id="L3710">        System.arraycopy(v, 0, x, 0, v.length);</span>
-<span class="fc" id="L3711">        return eig;</span>
+<span class="fc" id="L3721">        System.arraycopy(v, 0, x, 0, v.length);</span>
+<span class="fc" id="L3722">        return eig;</span>
     }
 
      /**
@@ -3729,8 +3740,8 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return the largest eigenvalue of a
      */
     public static double powerMethod(double[][] a, double tolerance) {
-<span class="fc" id="L3732">        double[] x = new double[a.length];</span>
-<span class="fc" id="L3733">        return powerMethod(a, tolerance, x);</span>
+<span class="fc" id="L3743">        double[] x = new double[a.length];</span>
+<span class="fc" id="L3744">        return powerMethod(a, tolerance, x);</span>
     }
 
     /**
@@ -3748,32 +3759,32 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      */
     public static double[] powerMethodEigenPairs(double[][] a, double tolerance) {
 
-<span class="fc" id="L3751">        double[] x = new double[a.length];</span>
+<span class="fc" id="L3762">        double[] x = new double[a.length];</span>
         double eig;
-<span class="fc" id="L3753">        double[] eigs = new double[a.length];</span>
+<span class="fc" id="L3764">        double[] eigs = new double[a.length];</span>
         double[][] x2, a2;
 
-<span class="fc bfc" id="L3756" title="All 2 branches covered.">        for (int nr = 0; nr &lt; a.length; ++nr) {</span>
+<span class="fc bfc" id="L3767" title="All 2 branches covered.">        for (int nr = 0; nr &lt; a.length; ++nr) {</span>
 
-<span class="fc" id="L3758">            eigs[nr] = powerMethod(a, tolerance, x);</span>
+<span class="fc" id="L3769">            eigs[nr] = powerMethod(a, tolerance, x);</span>
 
-<span class="fc" id="L3760">            x2 = outerProduct(x, x);</span>
-<span class="fc" id="L3761">            a2 = copy(a);</span>
-<span class="fc bfc" id="L3762" title="All 2 branches covered.">            for (int i = 0; i &lt; a2.length; ++i) {</span>
-<span class="fc bfc" id="L3763" title="All 2 branches covered.">                for (int j = 0; j &lt; a2[i].length; ++j) {</span>
-<span class="fc" id="L3764">                    a2[i][j] -= (eigs[nr] * x2[i][j]);</span>
+<span class="fc" id="L3771">            x2 = outerProduct(x, x);</span>
+<span class="fc" id="L3772">            a2 = copy(a);</span>
+<span class="fc bfc" id="L3773" title="All 2 branches covered.">            for (int i = 0; i &lt; a2.length; ++i) {</span>
+<span class="fc bfc" id="L3774" title="All 2 branches covered.">                for (int j = 0; j &lt; a2[i].length; ++j) {</span>
+<span class="fc" id="L3775">                    a2[i][j] -= (eigs[nr] * x2[i][j]);</span>
                 }
             }
-<span class="fc" id="L3767">            a = a2;</span>
+<span class="fc" id="L3778">            a = a2;</span>
 
-<span class="fc" id="L3769">            System.out.printf(&quot;eig[%d]=%.5f x=%s\n&quot;, nr, eigs[nr], Arrays.toString(x));</span>
-<span class="fc" id="L3770">            System.out.println(&quot;  a2=\n&quot;);</span>
-<span class="fc bfc" id="L3771" title="All 2 branches covered.">            for (int i = 0; i &lt; a2.length; ++i) {</span>
-<span class="fc" id="L3772">                System.out.printf(&quot;  %s\n&quot;, Arrays.toString(a2[i]));</span>
+<span class="fc" id="L3780">            System.out.printf(&quot;eig[%d]=%.5f x=%s\n&quot;, nr, eigs[nr], Arrays.toString(x));</span>
+<span class="fc" id="L3781">            System.out.println(&quot;  a2=\n&quot;);</span>
+<span class="fc bfc" id="L3782" title="All 2 branches covered.">            for (int i = 0; i &lt; a2.length; ++i) {</span>
+<span class="fc" id="L3783">                System.out.printf(&quot;  %s\n&quot;, Arrays.toString(a2[i]));</span>
             }
         }
 
-<span class="fc" id="L3776">        return eigs;</span>
+<span class="fc" id="L3787">        return eigs;</span>
     }
 
     /**
@@ -3787,31 +3798,31 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      * @throws no.uib.cipr.matrix.NotConvergedException
      */
     public double[][] powerOf(double[][] a, int power) throws NotConvergedException {
-<span class="nc bnc" id="L3790" title="All 2 branches missed.">        if (!isSquare(a)) {</span>
-<span class="nc" id="L3791">            throw new IllegalArgumentException(&quot;matrix a must be square&quot;);</span>
+<span class="nc bnc" id="L3801" title="All 2 branches missed.">        if (!isSquare(a)) {</span>
+<span class="nc" id="L3802">            throw new IllegalArgumentException(&quot;matrix a must be square&quot;);</span>
         }
-<span class="nc" id="L3793">        double eps = 1E-15;</span>
-<span class="nc" id="L3794">        MatrixUtil.SVDProducts svd = MatrixUtil.performSVD(a);</span>
+<span class="nc" id="L3804">        double eps = 1E-15;</span>
+<span class="nc" id="L3805">        MatrixUtil.SVDProducts svd = MatrixUtil.performSVD(a);</span>
 
-<span class="nc" id="L3796">        int rank = 0;</span>
-<span class="nc bnc" id="L3797" title="All 2 branches missed.">        for (double sv : svd.s) {</span>
-<span class="nc bnc" id="L3798" title="All 2 branches missed.">            if (sv &gt; eps) {</span>
-<span class="nc" id="L3799">                rank++;</span>
+<span class="nc" id="L3807">        int rank = 0;</span>
+<span class="nc bnc" id="L3808" title="All 2 branches missed.">        for (double sv : svd.s) {</span>
+<span class="nc bnc" id="L3809" title="All 2 branches missed.">            if (sv &gt; eps) {</span>
+<span class="nc" id="L3810">                rank++;</span>
             }
         }
 
-<span class="nc bnc" id="L3803" title="All 2 branches missed.">        if (rank &lt; svd.u.length) {</span>
+<span class="nc bnc" id="L3814" title="All 2 branches missed.">        if (rank &lt; svd.u.length) {</span>
             // this case has eigenvalues that are 0.
             //  det(A - lambda*I) = 0, so is not diagonalizable.
-<span class="nc" id="L3806">            throw new IllegalStateException(&quot;there are eigenvalues with value 0, so matrix a is not diagonalizable&quot;);</span>
+<span class="nc" id="L3817">            throw new IllegalStateException(&quot;there are eigenvalues with value 0, so matrix a is not diagonalizable&quot;);</span>
         }
 
-<span class="nc" id="L3809">        double[] d = new double[a.length];</span>
-<span class="nc bnc" id="L3810" title="All 2 branches missed.">        for (int i = 0; i &lt; a.length; ++i) {</span>
-<span class="nc" id="L3811">            d[i] = Math.pow(svd.s[i], power);</span>
+<span class="nc" id="L3820">        double[] d = new double[a.length];</span>
+<span class="nc bnc" id="L3821" title="All 2 branches missed.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="nc" id="L3822">            d[i] = Math.pow(svd.s[i], power);</span>
         }
 
-<span class="nc" id="L3814">        double[][] s = svd.u;</span>
+<span class="nc" id="L3825">        double[][] s = svd.u;</span>
 
         double[][] sInv;
         // check that the eigenvectors are independent.
@@ -3820,11 +3831,11 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
         //  X = A\B in MTJ is X = A.solve(B, X), that is, inputs are A and B.
         //  S*S^-1 = I
         //  S.solve(I, sInv) to get sInv using MTJ:
-<span class="nc" id="L3823">        DenseMatrix _sInv = new DenseMatrix(s.length, s.length);</span>
-<span class="nc" id="L3824">        _sInv = (DenseMatrix) new DenseMatrix(s).solve(</span>
-<span class="nc" id="L3825">             new DenseMatrix(MatrixUtil.createIdentityMatrix(s.length)),</span>
+<span class="nc" id="L3834">        DenseMatrix _sInv = new DenseMatrix(s.length, s.length);</span>
+<span class="nc" id="L3835">        _sInv = (DenseMatrix) new DenseMatrix(s).solve(</span>
+<span class="nc" id="L3836">             new DenseMatrix(MatrixUtil.createIdentityMatrix(s.length)),</span>
              _sInv);
-<span class="nc" id="L3827">        sInv = MatrixUtil.convertToRowMajor(_sInv);</span>
+<span class="nc" id="L3838">        sInv = MatrixUtil.convertToRowMajor(_sInv);</span>
 
         /*
             // check this condition... S not invertible so check math in A = S^-1 * Delta * S
@@ -3836,9 +3847,9 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
         */
 
         // A = S^-1 * delta^power * S
-<span class="nc" id="L3839">        double[][] aP = MatrixUtil.multiply(MatrixUtil.multiplyByDiagonal(s, d), sInv);</span>
+<span class="nc" id="L3850">        double[][] aP = MatrixUtil.multiply(MatrixUtil.multiplyByDiagonal(s, d), sInv);</span>
 
-<span class="nc" id="L3841">        return aP;</span>
+<span class="nc" id="L3852">        return aP;</span>
     }
 
     /**
@@ -3860,38 +3871,38 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      */
     public static double[][] squareRoot(double[][] a) throws NotConvergedException {
 
-<span class="pc bpc" id="L3863" title="1 of 2 branches missed.">        if (!MatrixUtil.isPositiveDefinite(a)) {</span>
-<span class="nc" id="L3864">            throw new IllegalArgumentException(&quot;a must be a non-negative definite matrix&quot;);</span>
+<span class="pc bpc" id="L3874" title="1 of 2 branches missed.">        if (!MatrixUtil.isPositiveDefinite(a)) {</span>
+<span class="nc" id="L3875">            throw new IllegalArgumentException(&quot;a must be a non-negative definite matrix&quot;);</span>
         }
 
-<span class="fc" id="L3867">        int m = a.length;</span>
-<span class="fc" id="L3868">        int n = a[0].length;</span>
+<span class="fc" id="L3878">        int m = a.length;</span>
+<span class="fc" id="L3879">        int n = a[0].length;</span>
 
-<span class="pc bpc" id="L3870" title="1 of 2 branches missed.">        if (m &lt; n) {</span>
-<span class="nc" id="L3871">            a = MatrixUtil.transpose(a);</span>
-<span class="nc" id="L3872">            m = a.length;</span>
-<span class="nc" id="L3873">            n = a[0].length;</span>
+<span class="pc bpc" id="L3881" title="1 of 2 branches missed.">        if (m &lt; n) {</span>
+<span class="nc" id="L3882">            a = MatrixUtil.transpose(a);</span>
+<span class="nc" id="L3883">            m = a.length;</span>
+<span class="nc" id="L3884">            n = a[0].length;</span>
         }
 
         // limit for a number to be significant above 0
-<span class="fc" id="L3877">        double eps = 1e-16;</span>
+<span class="fc" id="L3888">        double eps = 1e-16;</span>
 
-<span class="fc" id="L3879">        DenseMatrix aMatrix = new DenseMatrix(a);</span>
-<span class="fc" id="L3880">        SVD svd = SVD.factorize(aMatrix); // U is mxn; S=nxn; V=nxn</span>
+<span class="fc" id="L3890">        DenseMatrix aMatrix = new DenseMatrix(a);</span>
+<span class="fc" id="L3891">        SVD svd = SVD.factorize(aMatrix); // U is mxn; S=nxn; V=nxn</span>
 
         // s is an array of size min(m,n)  which is nxn here
-<span class="fc" id="L3883">        double[] s = svd.getS();</span>
+<span class="fc" id="L3894">        double[] s = svd.getS();</span>
 
-<span class="fc" id="L3885">        double[][] sMatrix = new double[n][n];</span>
-<span class="fc bfc" id="L3886" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L3887">            sMatrix[i] = new double[n];</span>
-<span class="fc" id="L3888">            sMatrix[i][i] = Math.sqrt(s[i]);</span>
+<span class="fc" id="L3896">        double[][] sMatrix = new double[n][n];</span>
+<span class="fc bfc" id="L3897" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L3898">            sMatrix[i] = new double[n];</span>
+<span class="fc" id="L3899">            sMatrix[i][i] = Math.sqrt(s[i]);</span>
         }
 
-<span class="fc" id="L3891">        int rank = 0;</span>
-<span class="fc bfc" id="L3892" title="All 2 branches covered.">        for (double sv : s) {</span>
-<span class="pc bpc" id="L3893" title="1 of 2 branches missed.">            if (sv &gt; eps) {</span>
-<span class="fc" id="L3894">                rank++;</span>
+<span class="fc" id="L3902">        int rank = 0;</span>
+<span class="fc bfc" id="L3903" title="All 2 branches covered.">        for (double sv : s) {</span>
+<span class="pc bpc" id="L3904" title="1 of 2 branches missed.">            if (sv &gt; eps) {</span>
+<span class="fc" id="L3905">                rank++;</span>
             }
         }
         // the number of distinct non-zero eigenvalues is rank.
@@ -3929,20 +3940,20 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
         a_r1_c0 * s[0]    a_r1_c1 * s[1]
         a_r2_c0 * s[0]    a_r2_c1 * s[1]
         */
-<span class="fc" id="L3932">        DenseMatrix vT = (DenseMatrix) svd.getVt();</span>
+<span class="fc" id="L3943">        DenseMatrix vT = (DenseMatrix) svd.getVt();</span>
         //DenseMatrix u = (DenseMatrix) svd.getU();
 
-<span class="fc" id="L3935">        double[][] _vT = Matrices.getArray(vT);</span>
+<span class="fc" id="L3946">        double[][] _vT = Matrices.getArray(vT);</span>
 
-<span class="fc" id="L3937">        double[][] j = MatrixUtil.multiply(MatrixUtil.transpose(_vT), sMatrix);</span>
-<span class="fc" id="L3938">        j = MatrixUtil.multiply(j, _vT);</span>
+<span class="fc" id="L3948">        double[][] j = MatrixUtil.multiply(MatrixUtil.transpose(_vT), sMatrix);</span>
+<span class="fc" id="L3949">        j = MatrixUtil.multiply(j, _vT);</span>
 
         // Strang,&quot;Introduction to Linear Algebra&quot;, chap 7, Section Polar Decomposition&quot;
         // A = U * Σ * V^T
         //   = (U * V^T) * (V * Σ * V^T)
         //   =  (Q)      *  (H)
 
-<span class="fc" id="L3945">        return j;</span>
+<span class="fc" id="L3956">        return j;</span>
     }
 
     /**
@@ -3951,7 +3962,7 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return
      */
     public static boolean isSquare(double[][] a) {
-<span class="pc bpc" id="L3954" title="1 of 2 branches missed.">        return (a.length == a[0].length);</span>
+<span class="pc bpc" id="L3965" title="1 of 2 branches missed.">        return (a.length == a[0].length);</span>
     }
 
     /**
@@ -3965,17 +3976,17 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return true if a is symmetric
      */
     public static boolean isSymmetric(double[][] a, double tol) {
-<span class="pc bpc" id="L3968" title="1 of 2 branches missed.">        if (!isSquare(a)) {</span>
-<span class="nc" id="L3969">            return false;</span>
+<span class="pc bpc" id="L3979" title="1 of 2 branches missed.">        if (!isSquare(a)) {</span>
+<span class="nc" id="L3980">            return false;</span>
         }
         // compare aij with aji
 
-<span class="fc" id="L3973">        int n = a.length;</span>
+<span class="fc" id="L3984">        int n = a.length;</span>
         int i, j;
-<span class="fc bfc" id="L3975" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc bfc" id="L3976" title="All 2 branches covered.">            for (j = i; j &lt; n; ++j) {</span>
-<span class="fc bfc" id="L3977" title="All 2 branches covered.">                if (Math.abs(a[i][j] - a[j][i]) &gt; tol) {</span>
-<span class="fc" id="L3978">                    return false;</span>
+<span class="fc bfc" id="L3986" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc bfc" id="L3987" title="All 2 branches covered.">            for (j = i; j &lt; n; ++j) {</span>
+<span class="fc bfc" id="L3988" title="All 2 branches covered.">                if (Math.abs(a[i][j] - a[j][i]) &gt; tol) {</span>
+<span class="fc" id="L3989">                    return false;</span>
                 }
             }
         }
@@ -3985,7 +3996,7 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
         //      [48, 57] &lt;--- divide by 2 and the matrix is symmetric
         //
 
-<span class="fc" id="L3988">        return true;</span>
+<span class="fc" id="L3999">        return true;</span>
     }
 
     /**
@@ -3994,24 +4005,24 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return
      */
     public static boolean isPositiveSymmetric(double[][] a) {
-<span class="nc bnc" id="L3997" title="All 2 branches missed.">        if (!isSquare(a)) {</span>
-<span class="nc" id="L3998">            return false;</span>
+<span class="nc bnc" id="L4008" title="All 2 branches missed.">        if (!isSquare(a)) {</span>
+<span class="nc" id="L4009">            return false;</span>
         }
 
-<span class="nc" id="L4001">        double tol = 1e-3;</span>
-<span class="nc" id="L4002">        int n = a.length;</span>
+<span class="nc" id="L4012">        double tol = 1e-3;</span>
+<span class="nc" id="L4013">        int n = a.length;</span>
         int i, j;
-<span class="nc bnc" id="L4004" title="All 2 branches missed.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="nc bnc" id="L4005" title="All 2 branches missed.">            for (j = i; j &lt; n; ++j) {</span>
-<span class="nc bnc" id="L4006" title="All 4 branches missed.">                if (Math.abs(a[i][j]) &lt; 1e-17 || Math.abs(a[j][i]) &lt; 1e-17) {</span>
-<span class="nc" id="L4007">                    return false;</span>
+<span class="nc bnc" id="L4015" title="All 2 branches missed.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="nc bnc" id="L4016" title="All 2 branches missed.">            for (j = i; j &lt; n; ++j) {</span>
+<span class="nc bnc" id="L4017" title="All 4 branches missed.">                if (Math.abs(a[i][j]) &lt; 1e-17 || Math.abs(a[j][i]) &lt; 1e-17) {</span>
+<span class="nc" id="L4018">                    return false;</span>
                 }
-<span class="nc bnc" id="L4009" title="All 2 branches missed.">                if (Math.abs(a[i][j] - a[j][i]) &gt; tol) {</span>
-<span class="nc" id="L4010">                    return false;</span>
+<span class="nc bnc" id="L4020" title="All 2 branches missed.">                if (Math.abs(a[i][j] - a[j][i]) &gt; tol) {</span>
+<span class="nc" id="L4021">                    return false;</span>
                 }
             }
         }
-<span class="nc" id="L4014">        return true;</span>
+<span class="nc" id="L4025">        return true;</span>
     }
 
     /**
@@ -4053,19 +4064,19 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
          and P = p * b
         */
 
-<span class="fc" id="L4056">        ProjectionResults pr = new ProjectionResults();</span>
+<span class="fc" id="L4067">        ProjectionResults pr = new ProjectionResults();</span>
 
         // A_pseudoinverse = inverse(A^T*A) * A^T
         // [a[0].length][a.length]
-<span class="fc" id="L4060">        double[][] aPseudoInv = MatrixUtil.pseudoinverseFullColumnRank(a);</span>
+<span class="fc" id="L4071">        double[][] aPseudoInv = MatrixUtil.pseudoinverseFullColumnRank(a);</span>
 
-<span class="fc" id="L4062">        pr.x = MatrixUtil.multiplyMatrixByColumnVector(aPseudoInv, b);</span>
+<span class="fc" id="L4073">        pr.x = MatrixUtil.multiplyMatrixByColumnVector(aPseudoInv, b);</span>
 
-<span class="fc" id="L4064">        pr.p = MatrixUtil.multiplyMatrixByColumnVector(a, pr.x);</span>
+<span class="fc" id="L4075">        pr.p = MatrixUtil.multiplyMatrixByColumnVector(a, pr.x);</span>
 
-<span class="fc" id="L4066">        pr.pMatrix = MatrixUtil.multiply(a, aPseudoInv);</span>
+<span class="fc" id="L4077">        pr.pMatrix = MatrixUtil.multiply(a, aPseudoInv);</span>
 
-<span class="fc" id="L4068">        return pr;</span>
+<span class="fc" id="L4079">        return pr;</span>
     }
 
     /**
@@ -4080,8 +4091,8 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      */
     public static boolean isPositiveDefinite(double[][] a) {
 
-<span class="fc bfc" id="L4083" title="All 2 branches covered.">        if (!isSymmetric(a, 1E-7)) {</span>
-<span class="fc" id="L4084">            System.err.println(&quot;matrix is not symmetric in current form&quot;);</span>
+<span class="fc bfc" id="L4094" title="All 2 branches covered.">        if (!isSymmetric(a, 1E-7)) {</span>
+<span class="fc" id="L4095">            System.err.println(&quot;matrix is not symmetric in current form&quot;);</span>
             //return false;
         }
 
@@ -4098,27 +4109,27 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
             4) the function x^T * A * x is positive except at x = 0
         */
 
-<span class="fc" id="L4101">        int n = a.length;</span>
+<span class="fc" id="L4112">        int n = a.length;</span>
         int i;
 
-<span class="fc" id="L4104">        double[] x = new double[n];</span>
-<span class="fc bfc" id="L4105" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L4106">            x[i] = i + 1;</span>
+<span class="fc" id="L4115">        double[] x = new double[n];</span>
+<span class="fc bfc" id="L4116" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L4117">            x[i] = i + 1;</span>
         }
-<span class="fc" id="L4108">        double p = MatrixUtil.innerProduct(MatrixUtil.multiplyRowVectorByMatrix(x, a), x);</span>
+<span class="fc" id="L4119">        double p = MatrixUtil.innerProduct(MatrixUtil.multiplyRowVectorByMatrix(x, a), x);</span>
         //return p &gt; 0;
 
         // using rule that left upward rooted determinants &gt; 0
         double[][] sa;
         double det;
-<span class="fc bfc" id="L4114" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L4115">            sa = MatrixUtil.copySubMatrix(a, 0, i, 0, i);</span>
-<span class="fc" id="L4116">            det = MatrixUtil.determinant(sa);</span>
-<span class="pc bpc" id="L4117" title="1 of 2 branches missed.">            if (det &lt; 0) {</span>
-<span class="nc" id="L4118">                return false;</span>
+<span class="fc bfc" id="L4125" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L4126">            sa = MatrixUtil.copySubMatrix(a, 0, i, 0, i);</span>
+<span class="fc" id="L4127">            det = MatrixUtil.determinant(sa);</span>
+<span class="pc bpc" id="L4128" title="1 of 2 branches missed.">            if (det &lt; 0) {</span>
+<span class="nc" id="L4129">                return false;</span>
             }
         }
-<span class="fc" id="L4121">        return true;</span>
+<span class="fc" id="L4132">        return true;</span>
     }
 
         /*
@@ -4145,33 +4156,33 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
 
     public static double[][] createCofactor(double[][] m) {
 
-<span class="fc" id="L4148">        int ncols = m.length;</span>
-<span class="fc" id="L4149">        int nrows = m[0].length;</span>
+<span class="fc" id="L4159">        int ncols = m.length;</span>
+<span class="fc" id="L4160">        int nrows = m[0].length;</span>
 
-<span class="fc" id="L4151">        double[][] cofactor = new double[ncols][nrows];</span>
+<span class="fc" id="L4162">        double[][] cofactor = new double[ncols][nrows];</span>
 
-<span class="fc bfc" id="L4153" title="All 2 branches covered.">        for (int i = 0; i &lt; ncols; i++) {</span>
+<span class="fc bfc" id="L4164" title="All 2 branches covered.">        for (int i = 0; i &lt; ncols; i++) {</span>
 
-<span class="fc" id="L4155">            cofactor[i] = new double[nrows];</span>
+<span class="fc" id="L4166">            cofactor[i] = new double[nrows];</span>
 
-<span class="fc bfc" id="L4157" title="All 2 branches covered.">            boolean si = ((i &amp; 1) == 1); // sign is -</span>
+<span class="fc bfc" id="L4168" title="All 2 branches covered.">            boolean si = ((i &amp; 1) == 1); // sign is -</span>
 
-<span class="fc bfc" id="L4159" title="All 2 branches covered.">            for (int j = 0; j &lt; nrows; j++) {</span>
+<span class="fc bfc" id="L4170" title="All 2 branches covered.">            for (int j = 0; j &lt; nrows; j++) {</span>
 
-<span class="fc bfc" id="L4161" title="All 2 branches covered.">                boolean sj = ((j &amp; 1) == 1); // sign is -</span>
+<span class="fc bfc" id="L4172" title="All 2 branches covered.">                boolean sj = ((j &amp; 1) == 1); // sign is -</span>
 
-<span class="fc" id="L4163">                double[][] n = copyExcept(m, i, j);</span>
+<span class="fc" id="L4174">                double[][] n = copyExcept(m, i, j);</span>
 
-<span class="fc" id="L4165">                double cfctr = determinant(n);</span>
+<span class="fc" id="L4176">                double cfctr = determinant(n);</span>
 
-<span class="fc bfc" id="L4167" title="All 2 branches covered.">                if (si ^ sj) { // XOR if either is 1 but not both</span>
-<span class="fc" id="L4168">                    cfctr = -1*cfctr;</span>
+<span class="fc bfc" id="L4178" title="All 2 branches covered.">                if (si ^ sj) { // XOR if either is 1 but not both</span>
+<span class="fc" id="L4179">                    cfctr = -1*cfctr;</span>
                 }
 
-<span class="fc" id="L4171">                cofactor[i][j] = cfctr;</span>
+<span class="fc" id="L4182">                cofactor[i][j] = cfctr;</span>
             }
          }
-<span class="fc" id="L4174">        return cofactor;</span>
+<span class="fc" id="L4185">        return cofactor;</span>
     }
 
     /**
@@ -4194,15 +4205,15 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
     public static double[][] inverse(double[][] m) {
 
         // create cofactor of matrix:
-<span class="fc" id="L4197">        double[][] cofactor = createCofactor(m);</span>
+<span class="fc" id="L4208">        double[][] cofactor = createCofactor(m);</span>
 
-<span class="fc" id="L4199">        double[][] cofactorTransposed = transpose(cofactor);</span>
+<span class="fc" id="L4210">        double[][] cofactorTransposed = transpose(cofactor);</span>
 
-<span class="fc" id="L4201">        double det = determinant(m);</span>
+<span class="fc" id="L4212">        double det = determinant(m);</span>
 
-<span class="fc" id="L4203">        multiply(cofactorTransposed, 1./det);</span>
+<span class="fc" id="L4214">        multiply(cofactorTransposed, 1./det);</span>
 
-<span class="fc" id="L4205">        return cofactorTransposed;</span>
+<span class="fc" id="L4216">        return cofactorTransposed;</span>
     }
 
     /**
@@ -4215,20 +4226,20 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return mean of each column as an array of size a[0].length
      */
     public static double[] columnMeans(double[][] a) {
-<span class="fc" id="L4218">        int nSamples = a.length;</span>
-<span class="fc" id="L4219">        int nVariables = a[0].length;</span>
+<span class="fc" id="L4229">        int nSamples = a.length;</span>
+<span class="fc" id="L4230">        int nVariables = a[0].length;</span>
 
         int i, j;
-<span class="fc" id="L4222">        double[] mean = new double[nVariables];</span>
+<span class="fc" id="L4233">        double[] mean = new double[nVariables];</span>
         double sum;
-<span class="fc bfc" id="L4224" title="All 2 branches covered.">        for (j = 0; j &lt; nVariables; ++j) {</span>
-<span class="fc" id="L4225">            sum = 0;</span>
-<span class="fc bfc" id="L4226" title="All 2 branches covered.">            for (i = 0; i &lt; nSamples; ++i) {</span>
-<span class="fc" id="L4227">                sum += (a[i][j]);</span>
+<span class="fc bfc" id="L4235" title="All 2 branches covered.">        for (j = 0; j &lt; nVariables; ++j) {</span>
+<span class="fc" id="L4236">            sum = 0;</span>
+<span class="fc bfc" id="L4237" title="All 2 branches covered.">            for (i = 0; i &lt; nSamples; ++i) {</span>
+<span class="fc" id="L4238">                sum += (a[i][j]);</span>
             }
-<span class="fc" id="L4229">            mean[j] = sum/(double)nSamples;</span>
+<span class="fc" id="L4240">            mean[j] = sum/(double)nSamples;</span>
         }
-<span class="fc" id="L4231">        return mean;</span>
+<span class="fc" id="L4242">        return mean;</span>
     }
 
     /**
@@ -4237,20 +4248,20 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return mean of each row as an array of size a.length
      */
     public static double[] rowMeans(double[][] a) {
-<span class="nc" id="L4240">        int nSamples = a.length;</span>
-<span class="nc" id="L4241">        int nVariables = a[0].length;</span>
+<span class="nc" id="L4251">        int nSamples = a.length;</span>
+<span class="nc" id="L4252">        int nVariables = a[0].length;</span>
 
         int i, j;
-<span class="nc" id="L4244">        double[] mean = new double[nSamples];</span>
+<span class="nc" id="L4255">        double[] mean = new double[nSamples];</span>
         double sum;
-<span class="nc bnc" id="L4246" title="All 2 branches missed.">        for (i = 0; i &lt; nSamples; ++i) {</span>
-<span class="nc" id="L4247">            sum = 0;</span>
-<span class="nc bnc" id="L4248" title="All 2 branches missed.">            for (j = 0; j &lt; nVariables; ++j) {</span>
-<span class="nc" id="L4249">                sum += (a[i][j]);</span>
+<span class="nc bnc" id="L4257" title="All 2 branches missed.">        for (i = 0; i &lt; nSamples; ++i) {</span>
+<span class="nc" id="L4258">            sum = 0;</span>
+<span class="nc bnc" id="L4259" title="All 2 branches missed.">            for (j = 0; j &lt; nVariables; ++j) {</span>
+<span class="nc" id="L4260">                sum += (a[i][j]);</span>
             }
-<span class="nc" id="L4251">            mean[i] = sum/(double)nVariables;</span>
+<span class="nc" id="L4262">            mean[i] = sum/(double)nVariables;</span>
         }
-<span class="nc" id="L4253">        return mean;</span>
+<span class="nc" id="L4264">        return mean;</span>
     }
 
 
@@ -4264,25 +4275,25 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return standard deviation of the variables.  length is a[0].length
      */
     public static double[] standardDeviation(double[][] a) {
-<span class="fc" id="L4267">        int nSamples = a.length;</span>
-<span class="fc" id="L4268">        int nVars = a[0].length;</span>
+<span class="fc" id="L4278">        int nSamples = a.length;</span>
+<span class="fc" id="L4279">        int nVars = a[0].length;</span>
 
-<span class="fc" id="L4270">        double[] c = columnMeans(a);</span>
+<span class="fc" id="L4281">        double[] c = columnMeans(a);</span>
 
-<span class="fc" id="L4272">        double[] out = new double[nVars];</span>
+<span class="fc" id="L4283">        double[] out = new double[nVars];</span>
         int i, d;
         double diff;
-<span class="fc bfc" id="L4275" title="All 2 branches covered.">        for (i = 0; i &lt; nSamples; ++i) {</span>
-<span class="fc bfc" id="L4276" title="All 2 branches covered.">            for (d = 0; d &lt; nVars; ++d) {</span>
-<span class="fc" id="L4277">                diff = a[i][d] - c[d];</span>
-<span class="fc" id="L4278">                out[d] += (diff*diff);</span>
+<span class="fc bfc" id="L4286" title="All 2 branches covered.">        for (i = 0; i &lt; nSamples; ++i) {</span>
+<span class="fc bfc" id="L4287" title="All 2 branches covered.">            for (d = 0; d &lt; nVars; ++d) {</span>
+<span class="fc" id="L4288">                diff = a[i][d] - c[d];</span>
+<span class="fc" id="L4289">                out[d] += (diff*diff);</span>
             }
         }
-<span class="fc bfc" id="L4281" title="All 2 branches covered.">        for (d = 0; d &lt; nVars; ++d) {</span>
-<span class="fc" id="L4282">            out[d] = Math.sqrt(out[d]/(nSamples - 1.0));</span>
+<span class="fc bfc" id="L4292" title="All 2 branches covered.">        for (d = 0; d &lt; nVars; ++d) {</span>
+<span class="fc" id="L4293">            out[d] = Math.sqrt(out[d]/(nSamples - 1.0));</span>
         }
 
-<span class="fc" id="L4285">        return out;</span>
+<span class="fc" id="L4296">        return out;</span>
     }
 
     /**
@@ -4293,22 +4304,22 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return the matrix a - v*I.
      */
     public static double[][] aMinusVectorTimesIdentity(double[][] a, double[] v) {
-<span class="fc" id="L4296">        int n = a.length;</span>
-<span class="pc bpc" id="L4297" title="1 of 2 branches missed.">        if (n != a[0].length) {</span>
-<span class="nc" id="L4298">            throw new IllegalArgumentException(&quot;a must be a square matrix&quot;);</span>
+<span class="fc" id="L4307">        int n = a.length;</span>
+<span class="pc bpc" id="L4308" title="1 of 2 branches missed.">        if (n != a[0].length) {</span>
+<span class="nc" id="L4309">            throw new IllegalArgumentException(&quot;a must be a square matrix&quot;);</span>
         }
-<span class="pc bpc" id="L4300" title="1 of 2 branches missed.">        if (n != v.length) {</span>
-<span class="nc" id="L4301">            throw new IllegalArgumentException(&quot;v must be same length as a&quot;);</span>
+<span class="pc bpc" id="L4311" title="1 of 2 branches missed.">        if (n != v.length) {</span>
+<span class="nc" id="L4312">            throw new IllegalArgumentException(&quot;v must be same length as a&quot;);</span>
         }
 
-<span class="fc" id="L4304">        double[][] out = copy(a);</span>
+<span class="fc" id="L4315">        double[][] out = copy(a);</span>
 
         int i;
-<span class="fc bfc" id="L4307" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L4308">            out[i][i] -= v[i];</span>
+<span class="fc bfc" id="L4318" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L4319">            out[i][i] -= v[i];</span>
         }
 
-<span class="fc" id="L4311">        return out;</span>
+<span class="fc" id="L4322">        return out;</span>
     }
 
     /**
@@ -4319,19 +4330,19 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return the sum of the diagonal elements of a
      */
     public static double trace(double[][] a) {
-<span class="fc" id="L4322">        int n = a.length;</span>
-<span class="pc bpc" id="L4323" title="1 of 2 branches missed.">        if (n != a[0].length) {</span>
-<span class="nc" id="L4324">            throw new IllegalArgumentException(&quot;a must be a square matrix&quot;);</span>
+<span class="fc" id="L4333">        int n = a.length;</span>
+<span class="pc bpc" id="L4334" title="1 of 2 branches missed.">        if (n != a[0].length) {</span>
+<span class="nc" id="L4335">            throw new IllegalArgumentException(&quot;a must be a square matrix&quot;);</span>
         }
 
-<span class="fc" id="L4327">        double sum = 0;</span>
+<span class="fc" id="L4338">        double sum = 0;</span>
 
         int i;
-<span class="fc bfc" id="L4330" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L4331">            sum += a[i][i];</span>
+<span class="fc bfc" id="L4341" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L4342">            sum += a[i][i];</span>
         }
 
-<span class="fc" id="L4334">        return sum;</span>
+<span class="fc" id="L4345">        return sum;</span>
     }
 
     /**
@@ -4340,16 +4351,16 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return the sum of the elements of v
      */
     public static double trace(double[] v) {
-<span class="fc" id="L4343">        int n = v.length;</span>
+<span class="fc" id="L4354">        int n = v.length;</span>
 
-<span class="fc" id="L4345">        double sum = 0;</span>
+<span class="fc" id="L4356">        double sum = 0;</span>
 
         int i;
-<span class="fc bfc" id="L4348" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L4349">            sum += v[i];</span>
+<span class="fc bfc" id="L4359" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L4360">            sum += v[i];</span>
         }
 
-<span class="fc" id="L4352">        return sum;</span>
+<span class="fc" id="L4363">        return sum;</span>
     }
 
     /**
@@ -4359,22 +4370,22 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return element-wise multiplication of elements in a and b
      */
     public static double[][] pointwiseMultiplication(double[][] a, double[][] b) {
-<span class="fc" id="L4362">        int m = a.length;</span>
-<span class="fc" id="L4363">        int n = a[0].length;</span>
+<span class="fc" id="L4373">        int m = a.length;</span>
+<span class="fc" id="L4374">        int n = a[0].length;</span>
 
-<span class="pc bpc" id="L4365" title="2 of 4 branches missed.">        if (b.length != m || b[0].length != n) {</span>
-<span class="nc" id="L4366">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
+<span class="pc bpc" id="L4376" title="2 of 4 branches missed.">        if (b.length != m || b[0].length != n) {</span>
+<span class="nc" id="L4377">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
         }
 
         int j;
-<span class="fc" id="L4370">        double[][] out = new double[m][n];</span>
-<span class="fc bfc" id="L4371" title="All 2 branches covered.">        for (int i = 0; i &lt; m; ++i) {</span>
-<span class="fc" id="L4372">            out[i] = new double[n];</span>
-<span class="fc bfc" id="L4373" title="All 2 branches covered.">            for (j = 0; j &lt; n; ++j) {</span>
-<span class="fc" id="L4374">                out[i][j] = a[i][j] * b[i][j];</span>
+<span class="fc" id="L4381">        double[][] out = new double[m][n];</span>
+<span class="fc bfc" id="L4382" title="All 2 branches covered.">        for (int i = 0; i &lt; m; ++i) {</span>
+<span class="fc" id="L4383">            out[i] = new double[n];</span>
+<span class="fc bfc" id="L4384" title="All 2 branches covered.">            for (j = 0; j &lt; n; ++j) {</span>
+<span class="fc" id="L4385">                out[i][j] = a[i][j] * b[i][j];</span>
             }
         }
-<span class="fc" id="L4377">        return out;</span>
+<span class="fc" id="L4388">        return out;</span>
     }
 
     /**
@@ -4384,22 +4395,22 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return element-wise multiplication of elements in a and b
      */
     public static int[][] pointwiseMultiplication(int[][] a, int[][] b) {
-<span class="fc" id="L4387">        int m = a.length;</span>
-<span class="fc" id="L4388">        int n = a[0].length;</span>
+<span class="fc" id="L4398">        int m = a.length;</span>
+<span class="fc" id="L4399">        int n = a[0].length;</span>
 
-<span class="pc bpc" id="L4390" title="2 of 4 branches missed.">        if (b.length != m || b[0].length != n) {</span>
-<span class="nc" id="L4391">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
+<span class="pc bpc" id="L4401" title="2 of 4 branches missed.">        if (b.length != m || b[0].length != n) {</span>
+<span class="nc" id="L4402">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
         }
 
         int j;
-<span class="fc" id="L4395">        int[][] out = new int[m][n];</span>
-<span class="fc bfc" id="L4396" title="All 2 branches covered.">        for (int i = 0; i &lt; m; ++i) {</span>
-<span class="fc" id="L4397">            out[i] = new int[n];</span>
-<span class="fc bfc" id="L4398" title="All 2 branches covered.">            for (j = 0; j &lt; n; ++j) {</span>
-<span class="fc" id="L4399">                out[i][j] = a[i][j] * b[i][j];</span>
+<span class="fc" id="L4406">        int[][] out = new int[m][n];</span>
+<span class="fc bfc" id="L4407" title="All 2 branches covered.">        for (int i = 0; i &lt; m; ++i) {</span>
+<span class="fc" id="L4408">            out[i] = new int[n];</span>
+<span class="fc bfc" id="L4409" title="All 2 branches covered.">            for (j = 0; j &lt; n; ++j) {</span>
+<span class="fc" id="L4410">                out[i][j] = a[i][j] * b[i][j];</span>
             }
         }
-<span class="fc" id="L4402">        return out;</span>
+<span class="fc" id="L4413">        return out;</span>
     }
 
     /**
@@ -4409,9 +4420,9 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return element-wise addition of elements in a and b
      */
     public static double[][] pointwiseAdd(double[][] a, double[][] b) {
-<span class="fc" id="L4412">        double[][] out = MatrixUtil.zeros(a.length, a[0].length);</span>
-<span class="fc" id="L4413">        pointwiseAdd(a, b, out);</span>
-<span class="fc" id="L4414">        return out;</span>
+<span class="fc" id="L4423">        double[][] out = MatrixUtil.zeros(a.length, a[0].length);</span>
+<span class="fc" id="L4424">        pointwiseAdd(a, b, out);</span>
+<span class="fc" id="L4425">        return out;</span>
     }
 
     /**
@@ -4422,23 +4433,23 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      * is safe to provide out as the same object as input argument a or b.
      */
     public static void pointwiseAdd(double[][] a, double[][] b, double[][] out) {
-<span class="fc" id="L4425">        int m = a.length;</span>
-<span class="fc" id="L4426">        int n = a[0].length;</span>
+<span class="fc" id="L4436">        int m = a.length;</span>
+<span class="fc" id="L4437">        int n = a[0].length;</span>
 
-<span class="pc bpc" id="L4428" title="2 of 4 branches missed.">        if (b.length != m || b[0].length != n) {</span>
-<span class="nc" id="L4429">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
+<span class="pc bpc" id="L4439" title="2 of 4 branches missed.">        if (b.length != m || b[0].length != n) {</span>
+<span class="nc" id="L4440">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
         }
-<span class="pc bpc" id="L4431" title="2 of 4 branches missed.">        if (out.length != m || out[0].length != n) {</span>
-<span class="nc" id="L4432">            throw new IllegalArgumentException(&quot;a and out must have same dimensions&quot;);</span>
+<span class="pc bpc" id="L4442" title="2 of 4 branches missed.">        if (out.length != m || out[0].length != n) {</span>
+<span class="nc" id="L4443">            throw new IllegalArgumentException(&quot;a and out must have same dimensions&quot;);</span>
         }
 
         int i, j;
-<span class="fc bfc" id="L4436" title="All 2 branches covered.">        for (i = 0; i &lt; out.length; ++i) {</span>
-<span class="fc bfc" id="L4437" title="All 2 branches covered.">            for (j = 0; j &lt; out[i].length; ++j) {</span>
-<span class="fc" id="L4438">                out[i][j] = a[i][j] + b[i][j];</span>
+<span class="fc bfc" id="L4447" title="All 2 branches covered.">        for (i = 0; i &lt; out.length; ++i) {</span>
+<span class="fc bfc" id="L4448" title="All 2 branches covered.">            for (j = 0; j &lt; out[i].length; ++j) {</span>
+<span class="fc" id="L4449">                out[i][j] = a[i][j] + b[i][j];</span>
             }
         }
-<span class="fc" id="L4441">    }</span>
+<span class="fc" id="L4452">    }</span>
 
     /** pointwise subtraction
      @param a matrix a
@@ -4446,9 +4457,9 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return element-wise subtraction of elements in a and b
      */
     public static double[][] pointwiseSubtract(double[][] a, double[][] b) {
-<span class="fc" id="L4449">        double[][] out = MatrixUtil.zeros(a.length, a[0].length);</span>
-<span class="fc" id="L4450">        pointwiseSubtract(a, b, out);</span>
-<span class="fc" id="L4451">        return out;</span>
+<span class="fc" id="L4460">        double[][] out = MatrixUtil.zeros(a.length, a[0].length);</span>
+<span class="fc" id="L4461">        pointwiseSubtract(a, b, out);</span>
+<span class="fc" id="L4462">        return out;</span>
     }
 
     /**
@@ -4458,23 +4469,23 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @param out the results of element wise subtraction, a - b. Note that it
      */
     public static void pointwiseSubtract(double[][] a, double[][] b, double[][] out) {
-<span class="fc" id="L4461">        int m = a.length;</span>
-<span class="fc" id="L4462">        int n = a[0].length;</span>
+<span class="fc" id="L4472">        int m = a.length;</span>
+<span class="fc" id="L4473">        int n = a[0].length;</span>
 
-<span class="pc bpc" id="L4464" title="2 of 4 branches missed.">        if (b.length != m || b[0].length != n) {</span>
-<span class="nc" id="L4465">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
+<span class="pc bpc" id="L4475" title="2 of 4 branches missed.">        if (b.length != m || b[0].length != n) {</span>
+<span class="nc" id="L4476">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
         }
-<span class="pc bpc" id="L4467" title="2 of 4 branches missed.">        if (out.length != m || out[0].length != n) {</span>
-<span class="nc" id="L4468">            throw new IllegalArgumentException(&quot;a and out must have same dimensions&quot;);</span>
+<span class="pc bpc" id="L4478" title="2 of 4 branches missed.">        if (out.length != m || out[0].length != n) {</span>
+<span class="nc" id="L4479">            throw new IllegalArgumentException(&quot;a and out must have same dimensions&quot;);</span>
         }
 
         int i, j;
-<span class="fc bfc" id="L4472" title="All 2 branches covered.">        for (i = 0; i &lt; out.length; ++i) {</span>
-<span class="fc bfc" id="L4473" title="All 2 branches covered.">            for (j = 0; j &lt; out[i].length; ++j) {</span>
-<span class="fc" id="L4474">                out[i][j] = a[i][j] - b[i][j];</span>
+<span class="fc bfc" id="L4483" title="All 2 branches covered.">        for (i = 0; i &lt; out.length; ++i) {</span>
+<span class="fc bfc" id="L4484" title="All 2 branches covered.">            for (j = 0; j &lt; out[i].length; ++j) {</span>
+<span class="fc" id="L4485">                out[i][j] = a[i][j] - b[i][j];</span>
             }
         }
-<span class="fc" id="L4477">    }</span>
+<span class="fc" id="L4488">    }</span>
 
     /**
      * point-wise subtraction
@@ -4483,23 +4494,23 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return the results of point-wise subtraction, a - b.
      */
     public static int[][] pointwiseSubtract(int[][] a, int[][] b) {
-<span class="fc" id="L4486">        int m = a.length;</span>
-<span class="fc" id="L4487">        int n = a[0].length;</span>
+<span class="fc" id="L4497">        int m = a.length;</span>
+<span class="fc" id="L4498">        int n = a[0].length;</span>
 
-<span class="pc bpc" id="L4489" title="2 of 4 branches missed.">        if (b.length != m || b[0].length != n) {</span>
-<span class="nc" id="L4490">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
+<span class="pc bpc" id="L4500" title="2 of 4 branches missed.">        if (b.length != m || b[0].length != n) {</span>
+<span class="nc" id="L4501">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
         }
 
-<span class="fc" id="L4493">        int[][] out = new int[m][];</span>
+<span class="fc" id="L4504">        int[][] out = new int[m][];</span>
 
         int i, j;
-<span class="fc bfc" id="L4496" title="All 2 branches covered.">        for (i = 0; i &lt; out.length; ++i) {</span>
-<span class="fc" id="L4497">            out[i] = new int[n];</span>
-<span class="fc bfc" id="L4498" title="All 2 branches covered.">            for (j = 0; j &lt; out[i].length; ++j) {</span>
-<span class="fc" id="L4499">                out[i][j] = a[i][j] - b[i][j];</span>
+<span class="fc bfc" id="L4507" title="All 2 branches covered.">        for (i = 0; i &lt; out.length; ++i) {</span>
+<span class="fc" id="L4508">            out[i] = new int[n];</span>
+<span class="fc bfc" id="L4509" title="All 2 branches covered.">            for (j = 0; j &lt; out[i].length; ++j) {</span>
+<span class="fc" id="L4510">                out[i][j] = a[i][j] - b[i][j];</span>
             }
         }
-<span class="fc" id="L4502">        return out;</span>
+<span class="fc" id="L4513">        return out;</span>
     }
 
     /**
@@ -4510,20 +4521,20 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      * is safe to provide out as the same object as input argument a or b.
      */
     public static void pointwiseSubtract(double[] a, double[] b, double[] out) {
-<span class="fc" id="L4513">        int m = a.length;</span>
+<span class="fc" id="L4524">        int m = a.length;</span>
 
-<span class="pc bpc" id="L4515" title="1 of 2 branches missed.">        if (b.length != m) {</span>
-<span class="nc" id="L4516">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
+<span class="pc bpc" id="L4526" title="1 of 2 branches missed.">        if (b.length != m) {</span>
+<span class="nc" id="L4527">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
         }
-<span class="pc bpc" id="L4518" title="1 of 2 branches missed.">        if (out.length != m) {</span>
-<span class="nc" id="L4519">            throw new IllegalArgumentException(&quot;a and out must have same dimensions&quot;);</span>
+<span class="pc bpc" id="L4529" title="1 of 2 branches missed.">        if (out.length != m) {</span>
+<span class="nc" id="L4530">            throw new IllegalArgumentException(&quot;a and out must have same dimensions&quot;);</span>
         }
 
         int i;
-<span class="fc bfc" id="L4523" title="All 2 branches covered.">        for (i = 0; i &lt; out.length; ++i) {</span>
-<span class="fc" id="L4524">            out[i] = a[i] - b[i];</span>
+<span class="fc bfc" id="L4534" title="All 2 branches covered.">        for (i = 0; i &lt; out.length; ++i) {</span>
+<span class="fc" id="L4535">            out[i] = a[i] - b[i];</span>
         }
-<span class="fc" id="L4526">    }</span>
+<span class="fc" id="L4537">    }</span>
 
     /**
      * pointwise multiplication (a.k.a. Hadamard product, entrywise product, and Schur product)
@@ -4532,18 +4543,18 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return  element-wise multiplication of elements in a and b
      */
     public static double[] pointwiseMultiplication(double[] a, double[] b) {
-<span class="fc" id="L4535">        int m = a.length;</span>
+<span class="fc" id="L4546">        int m = a.length;</span>
 
-<span class="pc bpc" id="L4537" title="1 of 2 branches missed.">        if (b.length != m) {</span>
-<span class="nc" id="L4538">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
+<span class="pc bpc" id="L4548" title="1 of 2 branches missed.">        if (b.length != m) {</span>
+<span class="nc" id="L4549">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
         }
 
         int j;
-<span class="fc" id="L4542">        double[] out = new double[m];</span>
-<span class="fc bfc" id="L4543" title="All 2 branches covered.">        for (int i = 0; i &lt; m; ++i) {</span>
-<span class="fc" id="L4544">            out[i] = a[i] * b[i];</span>
+<span class="fc" id="L4553">        double[] out = new double[m];</span>
+<span class="fc bfc" id="L4554" title="All 2 branches covered.">        for (int i = 0; i &lt; m; ++i) {</span>
+<span class="fc" id="L4555">            out[i] = a[i] * b[i];</span>
         }
-<span class="fc" id="L4546">        return out;</span>
+<span class="fc" id="L4557">        return out;</span>
     }
 
     /**
@@ -4553,17 +4564,17 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return dot product of a and b which is a.k.a.inner product
      */
     public static double dot(double[] a, double[] b) {
-<span class="nc" id="L4556">        int m = a.length;</span>
+<span class="nc" id="L4567">        int m = a.length;</span>
 
-<span class="nc bnc" id="L4558" title="All 2 branches missed.">        if (b.length != m) {</span>
-<span class="nc" id="L4559">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
+<span class="nc bnc" id="L4569" title="All 2 branches missed.">        if (b.length != m) {</span>
+<span class="nc" id="L4570">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
         }
 
-<span class="nc" id="L4562">        double out = 0;</span>
-<span class="nc bnc" id="L4563" title="All 2 branches missed.">        for (int i = 0; i &lt; m; ++i) {</span>
-<span class="nc" id="L4564">            out += a[i] * b[i];</span>
+<span class="nc" id="L4573">        double out = 0;</span>
+<span class="nc bnc" id="L4574" title="All 2 branches missed.">        for (int i = 0; i &lt; m; ++i) {</span>
+<span class="nc" id="L4575">            out += a[i] * b[i];</span>
         }
-<span class="nc" id="L4566">        return out;</span>
+<span class="nc" id="L4577">        return out;</span>
     }
 
     /**
@@ -4573,12 +4584,12 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return a new empty double array of size [nRows X nCols] in row major notation.
      */
     public static double[][] zeros(int nRows, int nCols) {
-<span class="fc" id="L4576">        double[][] out = new double[nRows][nCols];</span>
-<span class="fc bfc" id="L4577" title="All 2 branches covered.">        for (int i = 0; i &lt; nRows; ++i) {</span>
-<span class="fc" id="L4578">            out[i] = new double[nCols];</span>
+<span class="fc" id="L4587">        double[][] out = new double[nRows][nCols];</span>
+<span class="fc bfc" id="L4588" title="All 2 branches covered.">        for (int i = 0; i &lt; nRows; ++i) {</span>
+<span class="fc" id="L4589">            out[i] = new double[nCols];</span>
             // java, by default, initializes with zeroes
         }
-<span class="fc" id="L4581">        return out;</span>
+<span class="fc" id="L4592">        return out;</span>
     }
 
     /**
@@ -4587,12 +4598,12 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return
      */
     public static double[][] createIdentityMatrix(int nRows) {
-<span class="fc" id="L4590">        double[][] out = new double[nRows][nRows];</span>
-<span class="fc bfc" id="L4591" title="All 2 branches covered.">        for (int i = 0; i &lt; nRows; ++i) {</span>
-<span class="fc" id="L4592">            out[i] = new double[nRows];</span>
-<span class="fc" id="L4593">            out[i][i] = 1;</span>
+<span class="fc" id="L4601">        double[][] out = new double[nRows][nRows];</span>
+<span class="fc bfc" id="L4602" title="All 2 branches covered.">        for (int i = 0; i &lt; nRows; ++i) {</span>
+<span class="fc" id="L4603">            out[i] = new double[nRows];</span>
+<span class="fc" id="L4604">            out[i][i] = 1;</span>
         }
-<span class="fc" id="L4595">        return out;</span>
+<span class="fc" id="L4606">        return out;</span>
     }
 
     /**
@@ -4602,22 +4613,22 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return element-wise division of elements in a and b
      */
     public static double[][] pointwiseDivision(double[][] a, double[][] b) {
-<span class="nc" id="L4605">        int m = a.length;</span>
-<span class="nc" id="L4606">        int n = a[0].length;</span>
+<span class="nc" id="L4616">        int m = a.length;</span>
+<span class="nc" id="L4617">        int n = a[0].length;</span>
 
-<span class="nc bnc" id="L4608" title="All 4 branches missed.">        if (b.length != m || b[0].length != n) {</span>
-<span class="nc" id="L4609">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
+<span class="nc bnc" id="L4619" title="All 4 branches missed.">        if (b.length != m || b[0].length != n) {</span>
+<span class="nc" id="L4620">            throw new IllegalArgumentException(&quot;a and b must have same dimensions&quot;);</span>
         }
 
         int j;
-<span class="nc" id="L4613">        double[][] out = new double[m][n];</span>
-<span class="nc bnc" id="L4614" title="All 2 branches missed.">        for (int i = 0; i &lt; m; ++i) {</span>
-<span class="nc" id="L4615">            out[i] = new double[n];</span>
-<span class="nc bnc" id="L4616" title="All 2 branches missed.">            for (j = 0; j &lt; n; ++j) {</span>
-<span class="nc" id="L4617">                out[i][j] = a[i][j] / b[i][j];</span>
+<span class="nc" id="L4624">        double[][] out = new double[m][n];</span>
+<span class="nc bnc" id="L4625" title="All 2 branches missed.">        for (int i = 0; i &lt; m; ++i) {</span>
+<span class="nc" id="L4626">            out[i] = new double[n];</span>
+<span class="nc bnc" id="L4627" title="All 2 branches missed.">            for (j = 0; j &lt; n; ++j) {</span>
+<span class="nc" id="L4628">                out[i][j] = a[i][j] / b[i][j];</span>
             }
         }
-<span class="nc" id="L4620">        return out;</span>
+<span class="nc" id="L4631">        return out;</span>
     }
 
     /**
@@ -4627,18 +4638,18 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return element-wise division of elements in a and b
      */
     public static double[] pointwiseDivision(double[] a, double[] b) {
-<span class="nc" id="L4630">        int m = a.length;</span>
+<span class="nc" id="L4641">        int m = a.length;</span>
 
-<span class="nc bnc" id="L4632" title="All 2 branches missed.">        if (b.length != m) {</span>
-<span class="nc" id="L4633">            throw new IllegalArgumentException(&quot;a and b must have same lengths&quot;);</span>
+<span class="nc bnc" id="L4643" title="All 2 branches missed.">        if (b.length != m) {</span>
+<span class="nc" id="L4644">            throw new IllegalArgumentException(&quot;a and b must have same lengths&quot;);</span>
         }
 
         int j;
-<span class="nc" id="L4637">        double[] out = Arrays.copyOf(a, m);</span>
-<span class="nc bnc" id="L4638" title="All 2 branches missed.">        for (int i = 0; i &lt; m; ++i) {</span>
-<span class="nc" id="L4639">            out[i] /= b[i];</span>
+<span class="nc" id="L4648">        double[] out = Arrays.copyOf(a, m);</span>
+<span class="nc bnc" id="L4649" title="All 2 branches missed.">        for (int i = 0; i &lt; m; ++i) {</span>
+<span class="nc" id="L4650">            out[i] /= b[i];</span>
         }
-<span class="nc" id="L4641">        return out;</span>
+<span class="nc" id="L4652">        return out;</span>
     }
 
     /**
@@ -4647,24 +4658,24 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @param a  matrix a
      */
     public static void flipLR(double[][] a) {
-<span class="fc" id="L4650">        int idxHi = a[0].length - 1;</span>
-<span class="fc" id="L4651">        int idxLo = 0;</span>
-<span class="fc" id="L4652">        int n = idxHi - idxLo + 1;</span>
-<span class="fc" id="L4653">        int end = idxLo + (n/2);</span>
+<span class="fc" id="L4661">        int idxHi = a[0].length - 1;</span>
+<span class="fc" id="L4662">        int idxLo = 0;</span>
+<span class="fc" id="L4663">        int n = idxHi - idxLo + 1;</span>
+<span class="fc" id="L4664">        int end = idxLo + (n/2);</span>
 
         double swap;
         int col, row, idx2;
-<span class="fc" id="L4657">        int count = 0;</span>
-<span class="fc bfc" id="L4658" title="All 2 branches covered.">        for (col = idxLo; col &lt; end; col++) {</span>
-<span class="fc" id="L4659">            idx2 = idxHi - count;</span>
-<span class="fc bfc" id="L4660" title="All 2 branches covered.">            for (row = 0; row &lt; a.length; row++) {</span>
-<span class="fc" id="L4661">                swap = a[row][col];</span>
-<span class="fc" id="L4662">                a[row][col] = a[row][idx2];</span>
-<span class="fc" id="L4663">                a[row][idx2] = swap;</span>
+<span class="fc" id="L4668">        int count = 0;</span>
+<span class="fc bfc" id="L4669" title="All 2 branches covered.">        for (col = idxLo; col &lt; end; col++) {</span>
+<span class="fc" id="L4670">            idx2 = idxHi - count;</span>
+<span class="fc bfc" id="L4671" title="All 2 branches covered.">            for (row = 0; row &lt; a.length; row++) {</span>
+<span class="fc" id="L4672">                swap = a[row][col];</span>
+<span class="fc" id="L4673">                a[row][col] = a[row][idx2];</span>
+<span class="fc" id="L4674">                a[row][idx2] = swap;</span>
             }
-<span class="fc" id="L4665">            count++;</span>
+<span class="fc" id="L4676">            count++;</span>
         }
-<span class="fc" id="L4667">    }</span>
+<span class="fc" id="L4678">    }</span>
 
     /**
      * perform an up-down swap of the rows of a, flipping the matrix
@@ -4672,22 +4683,22 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @param a matrix a
      */
     public static void flipUD(double[][] a) {
-<span class="fc" id="L4675">        int idxHi = a.length - 1;</span>
-<span class="fc" id="L4676">        int idxLo = 0;</span>
-<span class="fc" id="L4677">        int n = idxHi - idxLo + 1;</span>
+<span class="fc" id="L4686">        int idxHi = a.length - 1;</span>
+<span class="fc" id="L4687">        int idxLo = 0;</span>
+<span class="fc" id="L4688">        int n = idxHi - idxLo + 1;</span>
 
-<span class="fc" id="L4679">        int end = idxLo + (n/2);</span>
+<span class="fc" id="L4690">        int end = idxLo + (n/2);</span>
         double[] swap;
-<span class="fc" id="L4681">        int count = 0;</span>
+<span class="fc" id="L4692">        int count = 0;</span>
         int i, idx2;
-<span class="fc bfc" id="L4683" title="All 2 branches covered.">        for (i = idxLo; i &lt; end; i++) {</span>
-<span class="fc" id="L4684">            idx2 = idxHi - count;</span>
-<span class="fc" id="L4685">            swap = a[i];</span>
-<span class="fc" id="L4686">            a[i] = a[idx2];</span>
-<span class="fc" id="L4687">            a[idx2] = swap;</span>
-<span class="fc" id="L4688">            count++;</span>
+<span class="fc bfc" id="L4694" title="All 2 branches covered.">        for (i = idxLo; i &lt; end; i++) {</span>
+<span class="fc" id="L4695">            idx2 = idxHi - count;</span>
+<span class="fc" id="L4696">            swap = a[i];</span>
+<span class="fc" id="L4697">            a[i] = a[idx2];</span>
+<span class="fc" id="L4698">            a[idx2] = swap;</span>
+<span class="fc" id="L4699">            count++;</span>
         }
-<span class="fc" id="L4690">    }</span>
+<span class="fc" id="L4701">    }</span>
 
     /**
      * solves for vector x in the equation L*x=b where L is the lower triangular
@@ -4698,9 +4709,9 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return x in equation L*x = b
      */
     public static double[] forwardSubstitution(double[][] lowerTriangular, double[] b) {
-<span class="fc" id="L4701">        double[] outX = new double[b.length];</span>
-<span class="fc" id="L4702">        forwardSubstitution(lowerTriangular, b, outX);</span>
-<span class="fc" id="L4703">        return outX;</span>
+<span class="fc" id="L4712">        double[] outX = new double[b.length];</span>
+<span class="fc" id="L4713">        forwardSubstitution(lowerTriangular, b, outX);</span>
+<span class="fc" id="L4714">        return outX;</span>
     }
 
     /**
@@ -4715,25 +4726,25 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
     public static void forwardSubstitution(double[][] lowerTriangular, double[] b,
         double[] outX) {
 
-<span class="fc" id="L4718">        int m = b.length;</span>
+<span class="fc" id="L4729">        int m = b.length;</span>
 
-<span class="pc bpc" id="L4720" title="1 of 2 branches missed.">        if (lowerTriangular[0].length != m) {</span>
-<span class="nc" id="L4721">            throw new IllegalArgumentException(&quot;the number of columns in &quot;</span>
+<span class="pc bpc" id="L4731" title="1 of 2 branches missed.">        if (lowerTriangular[0].length != m) {</span>
+<span class="nc" id="L4732">            throw new IllegalArgumentException(&quot;the number of columns in &quot;</span>
                     + &quot;lowerTriangular must equal the length of b&quot;);
         }
-<span class="pc bpc" id="L4724" title="1 of 2 branches missed.">        if (outX.length != m) {</span>
-<span class="nc" id="L4725">            throw new IllegalArgumentException(&quot;outX.length must equal the length of b&quot;);</span>
+<span class="pc bpc" id="L4735" title="1 of 2 branches missed.">        if (outX.length != m) {</span>
+<span class="nc" id="L4736">            throw new IllegalArgumentException(&quot;outX.length must equal the length of b&quot;);</span>
         }
 
         int i, j;
-<span class="fc bfc" id="L4729" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
-<span class="fc" id="L4730">            outX[i] = b[i];</span>
-<span class="fc bfc" id="L4731" title="All 2 branches covered.">            for (j = 0; j &lt;= (i-1); ++j) {</span>
-<span class="fc" id="L4732">                outX[i] -= (lowerTriangular[i][j] * outX[j]);</span>
+<span class="fc bfc" id="L4740" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
+<span class="fc" id="L4741">            outX[i] = b[i];</span>
+<span class="fc bfc" id="L4742" title="All 2 branches covered.">            for (j = 0; j &lt;= (i-1); ++j) {</span>
+<span class="fc" id="L4743">                outX[i] -= (lowerTriangular[i][j] * outX[j]);</span>
             }
-<span class="fc" id="L4734">            outX[i] /= lowerTriangular[i][i];</span>
+<span class="fc" id="L4745">            outX[i] /= lowerTriangular[i][i];</span>
         }
-<span class="fc" id="L4736">    }</span>
+<span class="fc" id="L4747">    }</span>
 
     /**
      * solves for vector x in the equation L*x=b where L is the lower triangular
@@ -4746,25 +4757,25 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      */
     public static double[] forwardSubstitution(LowerTriangDenseMatrix lowerTriangular, double[] b) {
 
-<span class="fc" id="L4749">        int m = b.length;</span>
+<span class="fc" id="L4760">        int m = b.length;</span>
 
-<span class="pc bpc" id="L4751" title="1 of 2 branches missed.">        if (lowerTriangular.numColumns() != m) {</span>
-<span class="nc" id="L4752">            throw new IllegalArgumentException(&quot;the number of columns in &quot;</span>
+<span class="pc bpc" id="L4762" title="1 of 2 branches missed.">        if (lowerTriangular.numColumns() != m) {</span>
+<span class="nc" id="L4763">            throw new IllegalArgumentException(&quot;the number of columns in &quot;</span>
                     + &quot;lowerTriangular must equal the length of b&quot;);
         }
 
-<span class="fc" id="L4756">        double[] x = new double[b.length];</span>
+<span class="fc" id="L4767">        double[] x = new double[b.length];</span>
 
         int i, j;
-<span class="fc bfc" id="L4759" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
-<span class="fc" id="L4760">            x[i] = b[i];</span>
-<span class="fc bfc" id="L4761" title="All 2 branches covered.">            for (j = 0; j &lt;= (i-1); ++j) {</span>
-<span class="fc" id="L4762">                x[i] -= (lowerTriangular.get(i, j) * x[j]);</span>
+<span class="fc bfc" id="L4770" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
+<span class="fc" id="L4771">            x[i] = b[i];</span>
+<span class="fc bfc" id="L4772" title="All 2 branches covered.">            for (j = 0; j &lt;= (i-1); ++j) {</span>
+<span class="fc" id="L4773">                x[i] -= (lowerTriangular.get(i, j) * x[j]);</span>
             }
-<span class="fc" id="L4764">            x[i] /= lowerTriangular.get(i, i);</span>
+<span class="fc" id="L4775">            x[i] /= lowerTriangular.get(i, i);</span>
         }
 
-<span class="fc" id="L4767">        return x;</span>
+<span class="fc" id="L4778">        return x;</span>
     }
 
     /**
@@ -4786,11 +4797,11 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      */
     public static double[] backwardSubstitution(double[][] upperTriangular, double[] y) {
 
-<span class="fc" id="L4789">        double[] outX = new double[y.length];</span>
+<span class="fc" id="L4800">        double[] outX = new double[y.length];</span>
 
-<span class="fc" id="L4791">        backwardSubstitution(upperTriangular, y, outX);</span>
+<span class="fc" id="L4802">        backwardSubstitution(upperTriangular, y, outX);</span>
 
-<span class="fc" id="L4793">        return outX;</span>
+<span class="fc" id="L4804">        return outX;</span>
     }
 
     /**
@@ -4812,25 +4823,25 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
     public static void backwardSubstitution(double[][] upperTriangular, double[] y,
         double[] outX) {
 
-<span class="fc" id="L4815">        int m = y.length;</span>
+<span class="fc" id="L4826">        int m = y.length;</span>
 
-<span class="pc bpc" id="L4817" title="1 of 2 branches missed.">        if (upperTriangular[0].length != m) {</span>
-<span class="nc" id="L4818">            throw new IllegalArgumentException(&quot;the number of columns in &quot;</span>
+<span class="pc bpc" id="L4828" title="1 of 2 branches missed.">        if (upperTriangular[0].length != m) {</span>
+<span class="nc" id="L4829">            throw new IllegalArgumentException(&quot;the number of columns in &quot;</span>
                     + &quot;upperTriangular must equal the length of y&quot;);
         }
-<span class="pc bpc" id="L4821" title="1 of 2 branches missed.">        if (outX.length != m) {</span>
-<span class="nc" id="L4822">            throw new IllegalArgumentException(&quot;outX.length must equal the length of y&quot;);</span>
+<span class="pc bpc" id="L4832" title="1 of 2 branches missed.">        if (outX.length != m) {</span>
+<span class="nc" id="L4833">            throw new IllegalArgumentException(&quot;outX.length must equal the length of y&quot;);</span>
         }
 
         int i, j;
-<span class="fc bfc" id="L4826" title="All 2 branches covered.">        for (i = m-1; i &gt;= 0; i--) {</span>
-<span class="fc" id="L4827">            outX[i] = y[i];</span>
-<span class="fc bfc" id="L4828" title="All 2 branches covered.">            for (j = i+1; j &lt; m; ++j) {</span>
-<span class="fc" id="L4829">                outX[i] -= (outX[j]*upperTriangular[i][j]);</span>
+<span class="fc bfc" id="L4837" title="All 2 branches covered.">        for (i = m-1; i &gt;= 0; i--) {</span>
+<span class="fc" id="L4838">            outX[i] = y[i];</span>
+<span class="fc bfc" id="L4839" title="All 2 branches covered.">            for (j = i+1; j &lt; m; ++j) {</span>
+<span class="fc" id="L4840">                outX[i] -= (outX[j]*upperTriangular[i][j]);</span>
             }
-<span class="fc" id="L4831">            outX[i] /= upperTriangular[i][i];</span>
+<span class="fc" id="L4842">            outX[i] /= upperTriangular[i][i];</span>
         }
-<span class="fc" id="L4833">    }</span>
+<span class="fc" id="L4844">    }</span>
 
     /**
      * solves for vector x in the equation U*x = y where
@@ -4843,23 +4854,23 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
     public static double[] backwardSubstitution(UpperTriangDenseMatrix upperTriangular,
         double[] y) {
 
-<span class="fc" id="L4846">        int m = y.length;</span>
+<span class="fc" id="L4857">        int m = y.length;</span>
 
-<span class="pc bpc" id="L4848" title="1 of 2 branches missed.">        if (upperTriangular.numColumns() != m) {</span>
-<span class="nc" id="L4849">            throw new IllegalArgumentException(&quot;the number of columns in &quot;</span>
+<span class="pc bpc" id="L4859" title="1 of 2 branches missed.">        if (upperTriangular.numColumns() != m) {</span>
+<span class="nc" id="L4860">            throw new IllegalArgumentException(&quot;the number of columns in &quot;</span>
                     + &quot;upperTriangular must equal the length of y&quot;);
         }
 
-<span class="fc" id="L4853">        double[] x = new double[m];</span>
+<span class="fc" id="L4864">        double[] x = new double[m];</span>
         int i, j;
-<span class="fc bfc" id="L4855" title="All 2 branches covered.">        for (i = m-1; i &gt;= 0; i--) {</span>
-<span class="fc" id="L4856">            x[i] = y[i];</span>
-<span class="fc bfc" id="L4857" title="All 2 branches covered.">            for (j = i+1; j &lt; m; ++j) {</span>
-<span class="fc" id="L4858">                x[i] -= (x[j]*upperTriangular.get(i, j));</span>
+<span class="fc bfc" id="L4866" title="All 2 branches covered.">        for (i = m-1; i &gt;= 0; i--) {</span>
+<span class="fc" id="L4867">            x[i] = y[i];</span>
+<span class="fc bfc" id="L4868" title="All 2 branches covered.">            for (j = i+1; j &lt; m; ++j) {</span>
+<span class="fc" id="L4869">                x[i] -= (x[j]*upperTriangular.get(i, j));</span>
             }
-<span class="fc" id="L4860">            x[i] /= upperTriangular.get(i, i);</span>
+<span class="fc" id="L4871">            x[i] /= upperTriangular.get(i, i);</span>
         }
-<span class="fc" id="L4862">        return x;</span>
+<span class="fc" id="L4873">        return x;</span>
     }
 
     /**
@@ -4869,10 +4880,10 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      */
     public static void fill(double[][] a, double value) {
         int i;
-<span class="fc bfc" id="L4872" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L4873">            Arrays.fill(a[i], value);</span>
+<span class="fc bfc" id="L4883" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L4884">            Arrays.fill(a[i], value);</span>
         }
-<span class="fc" id="L4875">    }</span>
+<span class="fc" id="L4886">    }</span>
 
     /**
      *
@@ -4881,11 +4892,11 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      */
     public static BlockMatrixIsometric transpose(BlockMatrixIsometric a) {
 
-<span class="fc" id="L4884">        double[][] _b = MatrixUtil.zeros(a.getA()[0].length, a.getA().length);</span>
+<span class="fc" id="L4895">        double[][] _b = MatrixUtil.zeros(a.getA()[0].length, a.getA().length);</span>
 
-<span class="fc" id="L4886">        BlockMatrixIsometric b = new BlockMatrixIsometric(_b, a.getBlockSize1(), a.getBlockSize0());</span>
+<span class="fc" id="L4897">        BlockMatrixIsometric b = new BlockMatrixIsometric(_b, a.getBlockSize1(), a.getBlockSize0());</span>
 
-<span class="fc" id="L4888">        transpose(a.getA(), b.getA());</span>
+<span class="fc" id="L4899">        transpose(a.getA(), b.getA());</span>
 
         /*
         double[][] block = MatrixUtil.zeros(a.getBlockSize0(), a.getBlockSize1());
@@ -4907,7 +4918,7 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
         }
         */
         
-<span class="fc" id="L4910">        return b;</span>
+<span class="fc" id="L4921">        return b;</span>
     }
     
     /**
@@ -4917,16 +4928,16 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return matrix a reshaped into an array
      */
     public static double[] reshapeToVector(double[][] a) {
-<span class="fc" id="L4920">        double[] out = new double[a.length * a[0].length];</span>
-<span class="fc" id="L4921">        int c = 0;</span>
+<span class="fc" id="L4931">        double[] out = new double[a.length * a[0].length];</span>
+<span class="fc" id="L4932">        int c = 0;</span>
         int i, j;
-<span class="fc bfc" id="L4923" title="All 2 branches covered.">        for (j = 0; j &lt; a[0].length; ++j) {</span>
-<span class="fc bfc" id="L4924" title="All 2 branches covered.">            for (i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L4925">                out[c] = a[i][j];</span>
-<span class="fc" id="L4926">                c++;</span>
+<span class="fc bfc" id="L4934" title="All 2 branches covered.">        for (j = 0; j &lt; a[0].length; ++j) {</span>
+<span class="fc bfc" id="L4935" title="All 2 branches covered.">            for (i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L4936">                out[c] = a[i][j];</span>
+<span class="fc" id="L4937">                c++;</span>
             }
         }
-<span class="fc" id="L4929">        return out;</span>
+<span class="fc" id="L4940">        return out;</span>
     }
      
     /**
@@ -4967,9 +4978,9 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      */
     public static double[][] calculatePreconditionerFromLUP(double[][] a) {
         
-<span class="nc" id="L4970">        LUP lup = LinearEquations.LUPDecomposition(a);</span>
+<span class="nc" id="L4981">        LUP lup = LinearEquations.LUPDecomposition(a);</span>
         
-<span class="nc" id="L4972">        return lup.u;</span>
+<span class="nc" id="L4983">        return lup.u;</span>
     }
     
     /**
@@ -5007,23 +5018,23 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return matrix with dimensions of a^T
      */
     public static double[][] calculatePreconditionerFromColumns(double[][] a) {
-<span class="nc" id="L5010">        int m = a.length;</span>
-<span class="nc" id="L5011">        int n = a[0].length;</span>
+<span class="nc" id="L5021">        int m = a.length;</span>
+<span class="nc" id="L5022">        int n = a[0].length;</span>
         /*
         D^(1/2) = diag( sqrt(d_1), ... sqrt(d_n)) where 
         d_j = (||a_j||_2)^2  where a_j is column j of a.
         */
         int j, i;
-<span class="nc" id="L5017">        double[][] diag = MatrixUtil.zeros(n, n);</span>
+<span class="nc" id="L5028">        double[][] diag = MatrixUtil.zeros(n, n);</span>
         
-<span class="nc bnc" id="L5019" title="All 2 branches missed.">        for (j = 0; j &lt; n; ++j) {</span>
-<span class="nc bnc" id="L5020" title="All 2 branches missed.">            for (i = 0; i &lt; m; ++i) {</span>
-<span class="nc" id="L5021">                diag[j][j] += (a[i][j] + a[i][j]);</span>
+<span class="nc bnc" id="L5030" title="All 2 branches missed.">        for (j = 0; j &lt; n; ++j) {</span>
+<span class="nc bnc" id="L5031" title="All 2 branches missed.">            for (i = 0; i &lt; m; ++i) {</span>
+<span class="nc" id="L5032">                diag[j][j] += (a[i][j] + a[i][j]);</span>
             }
-<span class="nc" id="L5023">            diag[j][j] = Math.sqrt(diag[j][j]);</span>
+<span class="nc" id="L5034">            diag[j][j] = Math.sqrt(diag[j][j]);</span>
         }
         
-<span class="nc" id="L5026">        return diag;</span>
+<span class="nc" id="L5037">        return diag;</span>
     }
     
     /**
@@ -5037,24 +5048,24 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      */
     public static QH performPolarDecomposition(double[][] a) throws NotConvergedException {
         
-<span class="pc bpc" id="L5040" title="1 of 2 branches missed.">        if (!isSquare(a)) {</span>
-<span class="nc" id="L5041">            throw new IllegalArgumentException(&quot;a must be a square matrix&quot;);</span>
+<span class="pc bpc" id="L5051" title="1 of 2 branches missed.">        if (!isSquare(a)) {</span>
+<span class="nc" id="L5052">            throw new IllegalArgumentException(&quot;a must be a square matrix&quot;);</span>
         }
         
-<span class="fc" id="L5044">        SVDProducts svd = performSVD(a);</span>
+<span class="fc" id="L5055">        SVDProducts svd = performSVD(a);</span>
         
-<span class="fc" id="L5046">        double[][] q = MatrixUtil.multiply(svd.u, svd.vT);</span>
+<span class="fc" id="L5057">        double[][] q = MatrixUtil.multiply(svd.u, svd.vT);</span>
         
-<span class="fc" id="L5048">        double[][] v = MatrixUtil.transpose(svd.vT);</span>
+<span class="fc" id="L5059">        double[][] v = MatrixUtil.transpose(svd.vT);</span>
         
-<span class="fc" id="L5050">        double[][] h = MatrixUtil.multiplyByDiagonal(v, svd.s);</span>
-<span class="fc" id="L5051">        h = MatrixUtil.multiply(h, svd.vT);</span>
+<span class="fc" id="L5061">        double[][] h = MatrixUtil.multiplyByDiagonal(v, svd.s);</span>
+<span class="fc" id="L5062">        h = MatrixUtil.multiply(h, svd.vT);</span>
         
-<span class="fc" id="L5053">        QH qh = new QH();</span>
-<span class="fc" id="L5054">        qh.q = q;</span>
-<span class="fc" id="L5055">        qh.h = h;</span>
+<span class="fc" id="L5064">        QH qh = new QH();</span>
+<span class="fc" id="L5065">        qh.q = q;</span>
+<span class="fc" id="L5066">        qh.h = h;</span>
         
-<span class="fc" id="L5057">        return qh;</span>
+<span class="fc" id="L5068">        return qh;</span>
     }
     
     /**
@@ -5086,21 +5097,21 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      */
     public static int[] multisetIntersection(int[] orderedA, int[] orderedB) {
         
-<span class="fc" id="L5089">        TIntList c = new TIntArrayList();</span>
+<span class="fc" id="L5100">        TIntList c = new TIntArrayList();</span>
         
-<span class="fc" id="L5091">        int i = 0, j = 0;</span>
-<span class="fc bfc" id="L5092" title="All 4 branches covered.">        while (i &lt; orderedA.length &amp;&amp; j &lt; orderedB.length) {</span>
-<span class="fc bfc" id="L5093" title="All 2 branches covered.">            if (orderedA[i] == orderedB[j]) {</span>
-<span class="fc" id="L5094">                c.add(orderedA[i]);</span>
-<span class="fc" id="L5095">                i++; </span>
-<span class="fc" id="L5096">                j++;</span>
-<span class="fc bfc" id="L5097" title="All 2 branches covered.">            } else if (orderedA[i] &lt; orderedB[j]) {</span>
-<span class="fc" id="L5098">                i++;</span>
+<span class="fc" id="L5102">        int i = 0, j = 0;</span>
+<span class="fc bfc" id="L5103" title="All 4 branches covered.">        while (i &lt; orderedA.length &amp;&amp; j &lt; orderedB.length) {</span>
+<span class="fc bfc" id="L5104" title="All 2 branches covered.">            if (orderedA[i] == orderedB[j]) {</span>
+<span class="fc" id="L5105">                c.add(orderedA[i]);</span>
+<span class="fc" id="L5106">                i++; </span>
+<span class="fc" id="L5107">                j++;</span>
+<span class="fc bfc" id="L5108" title="All 2 branches covered.">            } else if (orderedA[i] &lt; orderedB[j]) {</span>
+<span class="fc" id="L5109">                i++;</span>
             } else {
-<span class="fc" id="L5100">                j++;</span>
+<span class="fc" id="L5111">                j++;</span>
             }
         }
-<span class="fc" id="L5103">        return c.toArray();</span>
+<span class="fc" id="L5114">        return c.toArray();</span>
     }
     
     /**
@@ -5114,12 +5125,12 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      */
     public static int[] multisetUnorderedIntersection(int[] a, int[] b) {
         
-<span class="fc" id="L5117">        a = Arrays.copyOf(a, a.length);</span>
-<span class="fc" id="L5118">        b = Arrays.copyOf(b, b.length);</span>
-<span class="fc" id="L5119">        Arrays.sort(a);</span>
-<span class="fc" id="L5120">        Arrays.sort(b);</span>
+<span class="fc" id="L5128">        a = Arrays.copyOf(a, a.length);</span>
+<span class="fc" id="L5129">        b = Arrays.copyOf(b, b.length);</span>
+<span class="fc" id="L5130">        Arrays.sort(a);</span>
+<span class="fc" id="L5131">        Arrays.sort(b);</span>
         
-<span class="fc" id="L5122">        return multisetIntersection(a, b);</span>
+<span class="fc" id="L5133">        return multisetIntersection(a, b);</span>
     }
     
     /**
@@ -5128,27 +5139,27 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return
      */
     public static TIntObjectMap&lt;TIntSet&gt; copy(TIntObjectMap&lt;TIntSet&gt; a) {
-<span class="fc" id="L5131">        TIntObjectMap&lt;TIntSet&gt; c = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
-<span class="fc" id="L5132">        TIntObjectIterator&lt;TIntSet&gt; iter = a.iterator();</span>
+<span class="fc" id="L5142">        TIntObjectMap&lt;TIntSet&gt; c = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
+<span class="fc" id="L5143">        TIntObjectIterator&lt;TIntSet&gt; iter = a.iterator();</span>
         TIntSet set, cSet;
         TIntIterator iter2;
         int i, key;
-<span class="fc bfc" id="L5136" title="All 2 branches covered.">        for (i = 0; i &lt; a.size(); ++i) {</span>
-<span class="fc" id="L5137">            iter.advance();</span>
+<span class="fc bfc" id="L5147" title="All 2 branches covered.">        for (i = 0; i &lt; a.size(); ++i) {</span>
+<span class="fc" id="L5148">            iter.advance();</span>
             
-<span class="fc" id="L5139">            key = iter.key();</span>
-<span class="fc" id="L5140">            set = iter.value();</span>
+<span class="fc" id="L5150">            key = iter.key();</span>
+<span class="fc" id="L5151">            set = iter.value();</span>
             
-<span class="fc" id="L5142">            cSet = new TIntHashSet();</span>
+<span class="fc" id="L5153">            cSet = new TIntHashSet();</span>
             
-<span class="fc" id="L5144">            iter2 = set.iterator();</span>
+<span class="fc" id="L5155">            iter2 = set.iterator();</span>
             
-<span class="fc bfc" id="L5146" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
-<span class="fc" id="L5147">                cSet.add(iter2.next());</span>
+<span class="fc bfc" id="L5157" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
+<span class="fc" id="L5158">                cSet.add(iter2.next());</span>
             }
-<span class="fc" id="L5149">            c.put(key, cSet);</span>
+<span class="fc" id="L5160">            c.put(key, cSet);</span>
         }
-<span class="fc" id="L5151">        return c;</span>
+<span class="fc" id="L5162">        return c;</span>
     }
     
     /**
@@ -5158,18 +5169,18 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      */
     public static TObjectDoubleMap&lt;PairInt&gt; copy(TObjectDoubleMap&lt;PairInt&gt; a) {
         
-<span class="fc" id="L5161">        TObjectDoubleMap&lt;PairInt&gt; out = new TObjectDoubleHashMap&lt;PairInt&gt;();</span>
+<span class="fc" id="L5172">        TObjectDoubleMap&lt;PairInt&gt; out = new TObjectDoubleHashMap&lt;PairInt&gt;();</span>
         
-<span class="fc" id="L5163">        TObjectDoubleIterator&lt;PairInt&gt; iter = a.iterator();</span>
+<span class="fc" id="L5174">        TObjectDoubleIterator&lt;PairInt&gt; iter = a.iterator();</span>
         PairInt p;
         int i;
-<span class="fc bfc" id="L5166" title="All 2 branches covered.">        for (i = 0; i &lt; a.size(); ++i) {</span>
-<span class="fc" id="L5167">            iter.advance();</span>
-<span class="fc" id="L5168">            p = iter.key();</span>
-<span class="fc" id="L5169">            out.put(p.copy(), iter.value());</span>
+<span class="fc bfc" id="L5177" title="All 2 branches covered.">        for (i = 0; i &lt; a.size(); ++i) {</span>
+<span class="fc" id="L5178">            iter.advance();</span>
+<span class="fc" id="L5179">            p = iter.key();</span>
+<span class="fc" id="L5180">            out.put(p.copy(), iter.value());</span>
         }
         
-<span class="fc" id="L5172">        return out;</span>
+<span class="fc" id="L5183">        return out;</span>
     }
     
     /**
@@ -5178,41 +5189,41 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return a sthe ymmetric adjacency map of a
      */
     public static TIntObjectMap&lt;TIntSet&gt; copyToSymmetricMap(TIntObjectMap&lt;TIntSet&gt; a) {
-<span class="fc" id="L5181">        TIntObjectMap&lt;TIntSet&gt; out = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
+<span class="fc" id="L5192">        TIntObjectMap&lt;TIntSet&gt; out = new TIntObjectHashMap&lt;TIntSet&gt;();</span>
         
-<span class="fc" id="L5183">        TIntObjectIterator&lt;TIntSet&gt; iter = a.iterator();</span>
+<span class="fc" id="L5194">        TIntObjectIterator&lt;TIntSet&gt; iter = a.iterator();</span>
         TIntSet set, uSet, vSet;
         TIntIterator iter2;
         
         int i, u, v;
-<span class="fc bfc" id="L5188" title="All 2 branches covered.">        for (i = 0; i &lt; a.size(); ++i) {</span>
-<span class="fc" id="L5189">            iter.advance();</span>
+<span class="fc bfc" id="L5199" title="All 2 branches covered.">        for (i = 0; i &lt; a.size(); ++i) {</span>
+<span class="fc" id="L5200">            iter.advance();</span>
             
-<span class="fc" id="L5191">            u = iter.key();</span>
-<span class="fc" id="L5192">            set = iter.value();</span>
+<span class="fc" id="L5202">            u = iter.key();</span>
+<span class="fc" id="L5203">            set = iter.value();</span>
             
-<span class="fc" id="L5194">            uSet = out.get(u);</span>
-<span class="fc bfc" id="L5195" title="All 2 branches covered.">            if (uSet == null) {</span>
-<span class="fc" id="L5196">                uSet = new TIntHashSet();</span>
-<span class="fc" id="L5197">                out.put(u, uSet);</span>
+<span class="fc" id="L5205">            uSet = out.get(u);</span>
+<span class="fc bfc" id="L5206" title="All 2 branches covered.">            if (uSet == null) {</span>
+<span class="fc" id="L5207">                uSet = new TIntHashSet();</span>
+<span class="fc" id="L5208">                out.put(u, uSet);</span>
             }
             
-<span class="fc" id="L5200">            iter2 = set.iterator();</span>
-<span class="fc bfc" id="L5201" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
-<span class="fc" id="L5202">                v = iter2.next();</span>
+<span class="fc" id="L5211">            iter2 = set.iterator();</span>
+<span class="fc bfc" id="L5212" title="All 2 branches covered.">            while (iter2.hasNext()) {</span>
+<span class="fc" id="L5213">                v = iter2.next();</span>
                 
-<span class="fc" id="L5204">                uSet.add(v);</span>
+<span class="fc" id="L5215">                uSet.add(v);</span>
                 
-<span class="fc" id="L5206">                vSet = out.get(v);</span>
-<span class="fc bfc" id="L5207" title="All 2 branches covered.">                if (vSet == null) {</span>
-<span class="fc" id="L5208">                    vSet = new TIntHashSet();</span>
-<span class="fc" id="L5209">                    out.put(v, vSet);</span>
+<span class="fc" id="L5217">                vSet = out.get(v);</span>
+<span class="fc bfc" id="L5218" title="All 2 branches covered.">                if (vSet == null) {</span>
+<span class="fc" id="L5219">                    vSet = new TIntHashSet();</span>
+<span class="fc" id="L5220">                    out.put(v, vSet);</span>
                 }
-<span class="fc" id="L5211">                vSet.add(u);</span>
+<span class="fc" id="L5222">                vSet.add(u);</span>
             }
         }
         
-<span class="fc" id="L5215">        return out;</span>
+<span class="fc" id="L5226">        return out;</span>
     }
     
     /**
@@ -5221,14 +5232,14 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return
      */
     public static TIntIntMap copy(TIntIntMap a) {
-<span class="nc" id="L5224">        TIntIntMap c = new TIntIntHashMap();</span>
-<span class="nc" id="L5225">        TIntIntIterator iter = a.iterator();</span>
+<span class="nc" id="L5235">        TIntIntMap c = new TIntIntHashMap();</span>
+<span class="nc" id="L5236">        TIntIntIterator iter = a.iterator();</span>
         int i;
-<span class="nc bnc" id="L5227" title="All 2 branches missed.">        for (i = 0; i &lt; a.size(); ++i) {</span>
-<span class="nc" id="L5228">            iter.advance();</span>
-<span class="nc" id="L5229">            c.put(iter.key(), iter.value());</span>
+<span class="nc bnc" id="L5238" title="All 2 branches missed.">        for (i = 0; i &lt; a.size(); ++i) {</span>
+<span class="nc" id="L5239">            iter.advance();</span>
+<span class="nc" id="L5240">            c.put(iter.key(), iter.value());</span>
         }
-<span class="nc" id="L5231">        return c;</span>
+<span class="nc" id="L5242">        return c;</span>
     }
     
     /**
@@ -5237,15 +5248,15 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return
      */
     public static float[][] convertToFloat(double[][] a) {
-<span class="fc" id="L5240">        float[][] c = new float[a.length][];</span>
+<span class="fc" id="L5251">        float[][] c = new float[a.length][];</span>
         int i, j;
-<span class="fc bfc" id="L5242" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L5243">            c[i] = new float[a[0].length];</span>
-<span class="fc bfc" id="L5244" title="All 2 branches covered.">            for (j = 0; j &lt; a[0].length; ++j) {</span>
-<span class="fc" id="L5245">                c[i][j] = (float) a[i][j];</span>
+<span class="fc bfc" id="L5253" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L5254">            c[i] = new float[a[0].length];</span>
+<span class="fc bfc" id="L5255" title="All 2 branches covered.">            for (j = 0; j &lt; a[0].length; ++j) {</span>
+<span class="fc" id="L5256">                c[i][j] = (float) a[i][j];</span>
             }
         }
-<span class="fc" id="L5248">        return c;</span>
+<span class="fc" id="L5259">        return c;</span>
     }
 
     /**
@@ -5254,12 +5265,12 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return
      */
     public static float[] convertToFloat(double[] a) {
-<span class="fc" id="L5257">        float[] c = new float[a.length];</span>
+<span class="fc" id="L5268">        float[] c = new float[a.length];</span>
         int i;
-<span class="fc bfc" id="L5259" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L5260">            c[i] = (float) a[i];</span>
+<span class="fc bfc" id="L5270" title="All 2 branches covered.">        for (i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L5271">            c[i] = (float) a[i];</span>
         }
-<span class="fc" id="L5262">        return c;</span>
+<span class="fc" id="L5273">        return c;</span>
     }
 
     /**
@@ -5268,15 +5279,15 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return
      */
     public static double[][] convertIntToDouble(int[][] a) {
-<span class="nc" id="L5271">        double[][] c = new double[a.length][];</span>
+<span class="nc" id="L5282">        double[][] c = new double[a.length][];</span>
         int i, j;
-<span class="nc bnc" id="L5273" title="All 2 branches missed.">        for (i = 0; i &lt; a.length; ++i) {</span>
-<span class="nc" id="L5274">            c[i] = new double[a[0].length];</span>
-<span class="nc bnc" id="L5275" title="All 2 branches missed.">            for (j = 0; j &lt; a[0].length; ++j) {</span>
-<span class="nc" id="L5276">                c[i][j] = a[i][j];</span>
+<span class="nc bnc" id="L5284" title="All 2 branches missed.">        for (i = 0; i &lt; a.length; ++i) {</span>
+<span class="nc" id="L5285">            c[i] = new double[a[0].length];</span>
+<span class="nc bnc" id="L5286" title="All 2 branches missed.">            for (j = 0; j &lt; a[0].length; ++j) {</span>
+<span class="nc" id="L5287">                c[i][j] = a[i][j];</span>
             }
         }
-<span class="nc" id="L5279">        return c;</span>
+<span class="nc" id="L5290">        return c;</span>
     }
 
     /**
@@ -5285,15 +5296,15 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return
      */
     public static double[][] convertToDouble(float[][] a) {
-<span class="nc" id="L5288">        double[][] c = new double[a.length][];</span>
+<span class="nc" id="L5299">        double[][] c = new double[a.length][];</span>
         int i, j;
-<span class="nc bnc" id="L5290" title="All 2 branches missed.">        for (i = 0; i &lt; a.length; ++i) {</span>
-<span class="nc" id="L5291">            c[i] = new double[a[0].length];</span>
-<span class="nc bnc" id="L5292" title="All 2 branches missed.">            for (j = 0; j &lt; a[0].length; ++j) {</span>
-<span class="nc" id="L5293">                c[i][j] = a[i][j];</span>
+<span class="nc bnc" id="L5301" title="All 2 branches missed.">        for (i = 0; i &lt; a.length; ++i) {</span>
+<span class="nc" id="L5302">            c[i] = new double[a[0].length];</span>
+<span class="nc bnc" id="L5303" title="All 2 branches missed.">            for (j = 0; j &lt; a[0].length; ++j) {</span>
+<span class="nc" id="L5304">                c[i][j] = a[i][j];</span>
             }
         }
-<span class="nc" id="L5296">        return c;</span>
+<span class="nc" id="L5307">        return c;</span>
     }
 
     /**
@@ -5302,15 +5313,15 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return
      */
     public static float[][] convertToFloat(int[][] a) {
-<span class="nc" id="L5305">        float[][] c = new float[a.length][];</span>
+<span class="nc" id="L5316">        float[][] c = new float[a.length][];</span>
         int i, j;
-<span class="nc bnc" id="L5307" title="All 2 branches missed.">        for (i = 0; i &lt; a.length; ++i) {</span>
-<span class="nc" id="L5308">            c[i] = new float[a[0].length];</span>
-<span class="nc bnc" id="L5309" title="All 2 branches missed.">            for (j = 0; j &lt; a[0].length; ++j) {</span>
-<span class="nc" id="L5310">                c[i][j] = a[i][j];</span>
+<span class="nc bnc" id="L5318" title="All 2 branches missed.">        for (i = 0; i &lt; a.length; ++i) {</span>
+<span class="nc" id="L5319">            c[i] = new float[a[0].length];</span>
+<span class="nc bnc" id="L5320" title="All 2 branches missed.">            for (j = 0; j &lt; a[0].length; ++j) {</span>
+<span class="nc" id="L5321">                c[i][j] = a[i][j];</span>
             }
         }
-<span class="nc" id="L5313">        return c;</span>
+<span class="nc" id="L5324">        return c;</span>
     }
     
     /**
@@ -5321,17 +5332,17 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return permutation matrix
      */
     public static int[][] createPermutationMatrix(int[] assignments) {
-<span class="fc" id="L5324">        int n = assignments.length;</span>
-<span class="fc" id="L5325">        int[][] p = new int[n][];</span>
+<span class="fc" id="L5335">        int n = assignments.length;</span>
+<span class="fc" id="L5336">        int[][] p = new int[n][];</span>
         int i;
-<span class="fc bfc" id="L5327" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L5328">            p[i] = new int[n];</span>
+<span class="fc bfc" id="L5338" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L5339">            p[i] = new int[n];</span>
         }
-<span class="fc bfc" id="L5330" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L5331">            p[i][assignments[i]] = 1;</span>
+<span class="fc bfc" id="L5341" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L5342">            p[i][assignments[i]] = 1;</span>
         }
-<span class="pc bnc" id="L5333" title="All 2 branches missed.">        assert(MatrixUtil.isAPermutationMatrix(p));</span>
-<span class="fc" id="L5334">        return p;</span>
+<span class="pc bnc" id="L5344" title="All 2 branches missed.">        assert(MatrixUtil.isAPermutationMatrix(p));</span>
+<span class="fc" id="L5345">        return p;</span>
     }
 
     /**
@@ -5341,17 +5352,17 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return the output vector of stacked columns of a
      */
     public static double[] stack(double[][] a) {
-<span class="fc" id="L5344">        int m = a.length;</span>
-<span class="fc" id="L5345">        int n = a[0].length;</span>
-<span class="fc" id="L5346">        double[] out = new double[m*n];</span>
+<span class="fc" id="L5355">        int m = a.length;</span>
+<span class="fc" id="L5356">        int n = a[0].length;</span>
+<span class="fc" id="L5357">        double[] out = new double[m*n];</span>
         int j;
-<span class="fc bfc" id="L5348" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="fc bfc" id="L5349" title="All 2 branches covered.">            for (j = 0; j &lt; m; ++j) {</span>
-<span class="fc" id="L5350">                out[i*m + j] = a[j][i];</span>
+<span class="fc bfc" id="L5359" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc bfc" id="L5360" title="All 2 branches covered.">            for (j = 0; j &lt; m; ++j) {</span>
+<span class="fc" id="L5361">                out[i*m + j] = a[j][i];</span>
             }
         }
 
-<span class="fc" id="L5354">        return out;</span>
+<span class="fc" id="L5365">        return out;</span>
     }
 
     /**
@@ -5364,28 +5375,28 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      */
     public static double[][] kroneckerProduct(double[][] a, double[][] b) {
 
-<span class="fc" id="L5367">        int m = a.length;</span>
-<span class="fc" id="L5368">        int n = a[0].length;</span>
-<span class="fc" id="L5369">        int k = b.length;</span>
-<span class="fc" id="L5370">        int l = b[0].length;</span>
-<span class="fc" id="L5371">        int mk = m * k;</span>
-<span class="fc" id="L5372">        int nl = n * l;</span>
+<span class="fc" id="L5378">        int m = a.length;</span>
+<span class="fc" id="L5379">        int n = a[0].length;</span>
+<span class="fc" id="L5380">        int k = b.length;</span>
+<span class="fc" id="L5381">        int l = b[0].length;</span>
+<span class="fc" id="L5382">        int mk = m * k;</span>
+<span class="fc" id="L5383">        int nl = n * l;</span>
 
-<span class="fc" id="L5374">        double[][] kron = MatrixUtil.zeros(mk, nl);</span>
+<span class="fc" id="L5385">        double[][] kron = MatrixUtil.zeros(mk, nl);</span>
         int i;
         int j;
         int ii;
         double[][] b2;
-<span class="fc" id="L5379">        int r = 0;</span>
-<span class="fc" id="L5380">        int c = 0;</span>
-<span class="fc bfc" id="L5381" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
-<span class="fc bfc" id="L5382" title="All 2 branches covered.">            for (j = 0; j &lt; n; ++j) {</span>
+<span class="fc" id="L5390">        int r = 0;</span>
+<span class="fc" id="L5391">        int c = 0;</span>
+<span class="fc bfc" id="L5392" title="All 2 branches covered.">        for (i = 0; i &lt; m; ++i) {</span>
+<span class="fc bfc" id="L5393" title="All 2 branches covered.">            for (j = 0; j &lt; n; ++j) {</span>
                 // multiply each a[i][j] by entire matrix b2
-<span class="fc" id="L5384">                b2 = MatrixUtil.copy(b);</span>
-<span class="fc" id="L5385">                MatrixUtil.multiply(b2, a[i][j]);</span>
+<span class="fc" id="L5395">                b2 = MatrixUtil.copy(b);</span>
+<span class="fc" id="L5396">                MatrixUtil.multiply(b2, a[i][j]);</span>
                 // write the kXl items of b2 into [m*k][n*l] matrix starting at [i*k][j*l]
-<span class="fc bfc" id="L5387" title="All 2 branches covered.">                for (ii = 0; ii &lt; k; ++ii) {</span>
-<span class="fc" id="L5388">                    System.arraycopy(b2[ii], 0, kron[i*k + ii], j*l, b2[ii].length);</span>
+<span class="fc bfc" id="L5398" title="All 2 branches covered.">                for (ii = 0; ii &lt; k; ++ii) {</span>
+<span class="fc" id="L5399">                    System.arraycopy(b2[ii], 0, kron[i*k + ii], j*l, b2[ii].length);</span>
                 }
 
                 // e.g. m=1,n=3,  k=3, l=4
@@ -5395,7 +5406,7 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
                 // B: 3, ...
             }
         }
-<span class="fc" id="L5398">        return kron;</span>
+<span class="fc" id="L5409">        return kron;</span>
     }
 
     /**
@@ -5407,7 +5418,7 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      @return the outer product
      */
     public static double[][] kroneckerProduct(double[] a, double[] b) {
-<span class="nc" id="L5410">        return outerProduct(a, b);</span>
+<span class="nc" id="L5421">        return outerProduct(a, b);</span>
     }
 
     /**
@@ -5419,22 +5430,22 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      * @throws no.uib.cipr.matrix.NotConvergedException
      */
     public static double[][] nullSpaceUsingSVD(double[][] a, double tol) throws NotConvergedException {
-<span class="nc" id="L5422">        SVDProducts svd = MatrixUtil.performSVD(a);</span>
-<span class="nc" id="L5423">        int rank = 0;</span>
+<span class="nc" id="L5433">        SVDProducts svd = MatrixUtil.performSVD(a);</span>
+<span class="nc" id="L5434">        int rank = 0;</span>
         int i;
-<span class="nc bnc" id="L5425" title="All 2 branches missed.">        for (i = 0; i &lt; svd.s.length; ++i) {</span>
-<span class="nc bnc" id="L5426" title="All 2 branches missed.">            if (svd.s[i] &gt; tol) {</span>
-<span class="nc" id="L5427">                rank++;</span>
+<span class="nc bnc" id="L5436" title="All 2 branches missed.">        for (i = 0; i &lt; svd.s.length; ++i) {</span>
+<span class="nc bnc" id="L5437" title="All 2 branches missed.">            if (svd.s[i] &gt; tol) {</span>
+<span class="nc" id="L5438">                rank++;</span>
             }
         }
-<span class="nc" id="L5430">        int n = a[0].length;</span>
+<span class="nc" id="L5441">        int n = a[0].length;</span>
         // the last n-rank columns of V hold the nullspace
-<span class="nc" id="L5432">        double[][] nullspace = new double[n-rank][];</span>
+<span class="nc" id="L5443">        double[][] nullspace = new double[n-rank][];</span>
         int c;
-<span class="nc bnc" id="L5434" title="All 2 branches missed.">        for (i = rank, c = 0; i &lt; n; ++i, ++c) {</span>
-<span class="nc" id="L5435">            nullspace[c] = Arrays.copyOf(svd.vT[i], svd.vT[i].length);</span>
+<span class="nc bnc" id="L5445" title="All 2 branches missed.">        for (i = rank, c = 0; i &lt; n; ++i, ++c) {</span>
+<span class="nc" id="L5446">            nullspace[c] = Arrays.copyOf(svd.vT[i], svd.vT[i].length);</span>
         }
-<span class="nc" id="L5437">        return nullspace;</span>
+<span class="nc" id="L5448">        return nullspace;</span>
     }
 
     /**
@@ -5447,26 +5458,26 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      */
     public static double[][] nullSpaceUsingQR(double[][] a, double tol) throws NotConvergedException {
 
-<span class="nc" id="L5450">        QR qr = QR.factorize(new DenseMatrix(a));</span>
-<span class="nc" id="L5451">        UpperTriangDenseMatrix r = qr.getR();</span>
-<span class="nc" id="L5452">        DenseMatrix q = qr.getQ();</span>
-<span class="nc" id="L5453">        int rank = 0;</span>
+<span class="nc" id="L5461">        QR qr = QR.factorize(new DenseMatrix(a));</span>
+<span class="nc" id="L5462">        UpperTriangDenseMatrix r = qr.getR();</span>
+<span class="nc" id="L5463">        DenseMatrix q = qr.getQ();</span>
+<span class="nc" id="L5464">        int rank = 0;</span>
         int i;
         // r is square so can use the number of rows
-<span class="nc bnc" id="L5456" title="All 2 branches missed.">        for (i = 0; i &lt; r.numRows(); ++i) {</span>
-<span class="nc bnc" id="L5457" title="All 2 branches missed.">            if (r.get(i, i) &gt; tol) {</span>
-<span class="nc" id="L5458">                rank++;</span>
+<span class="nc bnc" id="L5467" title="All 2 branches missed.">        for (i = 0; i &lt; r.numRows(); ++i) {</span>
+<span class="nc bnc" id="L5468" title="All 2 branches missed.">            if (r.get(i, i) &gt; tol) {</span>
+<span class="nc" id="L5469">                rank++;</span>
             }
         }
-<span class="nc" id="L5461">        int n = a[0].length;</span>
-<span class="nc" id="L5462">        double[][] qT = MatrixUtil.transpose(Matrices.getArray(q));</span>
+<span class="nc" id="L5472">        int n = a[0].length;</span>
+<span class="nc" id="L5473">        double[][] qT = MatrixUtil.transpose(Matrices.getArray(q));</span>
         // the last n-rank columns of q hold the nullspace
-<span class="nc" id="L5464">        double[][] nullspace = new double[n-rank][];</span>
+<span class="nc" id="L5475">        double[][] nullspace = new double[n-rank][];</span>
         int c;
-<span class="nc bnc" id="L5466" title="All 2 branches missed.">        for (i = rank, c = 0; i &lt; n; ++i, ++c) {</span>
-<span class="nc" id="L5467">            nullspace[c] = Arrays.copyOf(qT[i], qT[i].length);</span>
+<span class="nc bnc" id="L5477" title="All 2 branches missed.">        for (i = rank, c = 0; i &lt; n; ++i, ++c) {</span>
+<span class="nc" id="L5478">            nullspace[c] = Arrays.copyOf(qT[i], qT[i].length);</span>
         }
-<span class="nc" id="L5469">        return nullspace;</span>
+<span class="nc" id="L5480">        return nullspace;</span>
     }
 
     /**
@@ -5486,7 +5497,7 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
      */
     public static double tripleProduct(double[] a, double[] b, double[] c) {
 
-<span class="nc" id="L5489">        return c[0]*(a[1]*b[2] - b[1]*a[2])</span>
+<span class="nc" id="L5500">        return c[0]*(a[1]*b[2] - b[1]*a[2])</span>
                 + c[1]*(a[2]*b[0] - b[2]*a[0])
                 + c[2]*(a[0]*b[1] - b[0]*a[1]);
     }
