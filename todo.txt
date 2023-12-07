@@ -41,6 +41,8 @@
 
 -- amazon sage and google's kaggle
 
+-- https://aimi.stanford.edu/shared-datasets
+
 -- non-linear state space modeling with factor graphs
    given a series of states up to time s, and wanting to 
    determine the state at time t.
