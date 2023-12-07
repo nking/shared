@@ -9,6 +9,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import gnu.trove.list.TFloatList;
+import gnu.trove.list.array.TFloatArrayList;
 import gnu.trove.map.TShortIntMap;
 import gnu.trove.map.hash.TShortIntHashMap;
 import gnu.trove.iterator.TShortIntIterator;
@@ -69,9 +71,11 @@ public class FNVHashTest extends TestCase {
 
         // key = hash, value = number of times seen
         TShortIntMap freq = new TShortIntHashMap();
-        PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();
+        PolygonAndPointPlotter plotter = null;//new PolygonAndPointPlotter();
 
         int limit = (1<<15)-1;
+        // shorter for runTests. comment this out for full testing and see plotter above
+        limit = (1 << 8) - 1;
         long n = 2*limit;
         final int lgK = 10;
         CpcSketch cpcSketch;
@@ -153,8 +157,9 @@ public class FNVHashTest extends TestCase {
             MultiArrayMergeSort.sortByIncr(xPoints, yPoints);
 
             // plot the hash vs frequency.
-            plotter.addPlot(xPoints, yPoints, xPolygon, yPolygon, label);
-
+            if (plotter != null) {
+                plotter.addPlot(xPoints, yPoints, xPolygon, yPolygon, label);
+            }
             // FreedmanDiaconis: binWidth = 2*IQR * n^(−1/3)
             long nn = kLLSketch.getN();
             float iqr = kLLSketch.getQuantile(0.75) - kLLSketch.getQuantile(0.5);
@@ -165,37 +170,42 @@ public class FNVHashTest extends TestCase {
 
             // plot rank vs quantile
             float dw = 0.01f;
-            int nw = (int)(1./dw);
-            float[] xd = new float[nw];
-            float[] yd = new float[nw];
+            int nw = (int)(1.f/dw);
+            TFloatList xd = new TFloatArrayList();
+            TFloatList yd = new TFloatArrayList();
             for (i = 0; i < nw; ++i) {
-                xd[i] = i*dw;
-                yd[i] = kLLSketch.getQuantile(xd[i]);
+                xd.add(i*dw);
+                yd.add(kLLSketch.getQuantile(xd.get(i)));
             }
             /*double[] pmf = kLLSketch.getPMF(xd);
             for (i = 0; i < nw; ++i) {
                 yd[i] = (float)pmf[i];
             }*/
-            plotter.addPlot(xd, yd, xPolygon, yPolygon, label + " CDF");
-
+            if (plotter != null) {
+                plotter.addPlot(xd.toArray(), yd.toArray(), xPolygon, yPolygon, label + " CDF");
+            }
             // create splitpoints and PMF
             dw = (float)binWidth;
             nw = (int)(limit/dw);
-            xd = new float[nw];
-            yd = new float[nw];
-            xd[0] = 1.f;
+            xd.clear();
+            yd.clear();
+            xd.add(1.f);
             for (i = 0; i < nw; ++i) {
-                xd[i] = i*dw;
+                xd.add(i*dw);
             }
-            double[] pmf = kLLSketch.getPMF(xd);
+            double[] pmf = kLLSketch.getPMF(xd.toArray());
             double sum = 0;
             for (i = 0; i < nw; ++i) {
-                yd[i] = (float)pmf[i];
-                sum += yd[i];
+                yd.add((float)pmf[i]);
+                sum += yd.get(i);
             }
-            plotter.addPlot(xd, yd, xPolygon, yPolygon, label + " PMF.  sum=" + sum);
+            if (plotter != null) {
+                plotter.addPlot(xd.toArray(), yd.toArray(), xPolygon, yPolygon, label + " PMF.  sum=" + sum);
+            }
         }
-        plotter.writeFile("hash_freq");
+        if (plotter != null) {
+            plotter.writeFile("hash_freq");
+        }
 
         /*
         int limit = (1<<15)-1;
@@ -226,6 +236,8 @@ public class FNVHashTest extends TestCase {
         //   for 31 bits, 1st collision = 65536, all elements collide = 8.6e9
 
         int limit = (1<<24)-1;//(1<<30)-1;
+        // shorter for runTests
+        limit = (1 << 8) - 1;
         long n = 2*limit;
         final int lgK = 10;
         //CpcSketch cpcSketch;

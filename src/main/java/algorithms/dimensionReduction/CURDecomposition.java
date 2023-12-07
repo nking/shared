@@ -104,8 +104,8 @@ public class CURDecomposition {
         cur.c = c.r;
         cur.r = r.r;
         cur.u = u;
-        cur.result = MatrixUtil.multiply(cur.getC(), cur.getU());
-        cur.result = MatrixUtil.multiply(cur.getResult(), cur.getR());
+        cur.result = MatrixUtil.multiply(cur.c, cur.u);
+        cur.result = MatrixUtil.multiply(cur.result, cur.r);
         
         return cur;        
     }
@@ -122,11 +122,17 @@ public class CURDecomposition {
         
         // normalize so that the last bin is "1".
         double norm = rowCDF[rowCDF.length - 1];
+        if (norm == 0.) {
+            System.err.println("last element of rowCDF is 0");
+        }
         for (int i = 0; i < rowCDF.length; ++i) {
             rowCDF[i] /= norm;
         }
         
         norm = colCDF[colCDF.length - 1];
+        if (norm == 0.) {
+            System.err.println("last element of colCDF is 0");
+        }
         for (int i = 0; i < colCDF.length; ++i) {
             colCDF[i] /= norm;
         }
@@ -206,6 +212,9 @@ public class CURDecomposition {
         double[][] s = sat0.createAbsoluteSummedAreaTable(a);
         
         double fN = s[s.length-1][s[0].length-1];
+        if (fN == 0.) {
+            System.err.println("last element of s is 0");
+        }
         
         double[] r = new double[s.length];
         double[] c = new double[s[0].length];
@@ -287,7 +296,7 @@ public class CURDecomposition {
         int i, j, d, ii;
         int rIdx = 0;
         double factor;
-        
+
         SelectedFromA sa = new SelectedFromA();
         sa.r = new double[kCorr][n];
         sa.indexesUnique = new int[kCorr];
@@ -302,8 +311,12 @@ public class CURDecomposition {
             }
             
             d = freq.get(j);
-            
-            factor = 1./Math.sqrt(k * rowPMF[j]);
+
+            if (rowPMF[j] == 0.) {
+                factor = 0.;
+            } else {
+                factor = 1. / Math.sqrt(k * rowPMF[j]);
+            }
             
             if (d > 1) {
                 factor *= Math.sqrt(d);

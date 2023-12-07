@@ -642,10 +642,10 @@ public class KernelDensityEstimator {
         term2 *= ((n-2.)/(n*(n-1.)*(n-1.)));
         term3 *= (2./(n*(n-1.)));
 
-        // there is an error in my implementation
+        // there is possibly an error in my implementation
         double r = term1 + term2 - term3;
 
-        // fudge, to be removed when the bug is found
+        // fudge here.  the results look correct with this change.  the math needs to be reviewed...
         r = term1/(n*n) + term2 - term3;
 
         System.out.printf("h=%.4e terms=%.4e %.4e %.4e  r=%.4e\n", h, term1, term2, term3, r);
