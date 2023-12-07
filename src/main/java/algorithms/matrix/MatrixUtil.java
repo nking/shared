@@ -2876,7 +2876,9 @@ public class MatrixUtil {
             }
             sum = Math.sqrt(sum);
             for (j = 0; j < a.length; ++j) {
-                a[j][i] /= sum;
+                if (sum > 0.) {
+                    a[j][i] /= sum;
+                }
             }
         }
     }
@@ -2896,7 +2898,9 @@ public class MatrixUtil {
             }
             sum = Math.sqrt(sum);
             for (j = 0; j < a[0].length; ++j) {
-                a[i][j] /= sum;
+                if (sum > 0.) {
+                    a[i][j] /= sum;
+                }
             }
         }
     }
@@ -3544,8 +3548,10 @@ public class MatrixUtil {
             divisor = Math.pow(divisor, 1. / p);
         }
         double[] out = Arrays.copyOf(v, v.length);
-        for (int i = 0; i < v.length; ++i) {
-            out[i] /= divisor;
+        if (divisor != 0.) {
+            for (int i = 0; i < v.length; ++i) {
+                out[i] /= divisor;
+            }
         }
         return out;
     }
