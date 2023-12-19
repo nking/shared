@@ -148,15 +148,16 @@ class GMM:
     #uses the BSD-3 Clause New or Revised license: https://github.com/scikit-learn/scikit-learn/blob/77aeb825b6494de1e3a2c1e7233b182e05d55ab0/COPYING
     def bic(self, p_x: np.array):
         n_params = self.k * self.p * (self.p + 1) / 2.0
-        return -2 * np.median(np.log(p_x)) * self.n + n_params * np.log(self.n)
-        return b
+        return -2 * np.median(np.log(p_x)) * p_x.shape[0] + n_params * np.log(self.n)
+        #return -2 * np.sum(np.log(p_x)) + n_params * np.log(self.n)
 
     # from https://github.com/scikit-learn/scikit-learn/blob/77aeb825b6494de1e3a2c1e7233b182e05d55ab0/sklearn/mixture/_gaussian_mixture.py#L510
     # and https://github.com/scikit-learn/scikit-learn/blob/77aeb825b6494de1e3a2c1e7233b182e05d55ab0/sklearn/mixture/_base.py
     #uses the BSD-3 Clause New or Revised license: https://github.com/scikit-learn/scikit-learn/blob/77aeb825b6494de1e3a2c1e7233b182e05d55ab0/COPYING
     def aic(self, p_x: np.array):
         n_params = self.k * self.p * (self.p + 1) / 2.0
-        return -2 * np.median(np.log(p_x)) * self.n + 2 * n_params
+        return -2 * np.median(np.log(p_x)) * p_x.shape[0] + 2 * n_params
+        #return -2 * np.sum(np.log(p_x)) + 2 * n_params
 
     def _calc_params(self, X : np.array, w: np.array):
         # phi(j) = sum over i=1,n of w^(i)_j
