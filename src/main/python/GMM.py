@@ -127,7 +127,8 @@ class GMM:
         '''
         after training model with fit(), predict the clusters that items in X2 belong in.
         Args:
-
+            X2: input array of data.  rows are datasets, columns are features.  the number of features
+            must match the number in the training dataset used to fit the model.
         Returns:
             p(z|x) with shape (n,k). Each row (i) contains the probability that that training set (i)
             belongs to cluster j, where j is the column number and is a cluster in range (0,k)
