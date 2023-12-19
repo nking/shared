@@ -143,7 +143,7 @@ class GMM:
         self._calc_posterior(X2, w, p_x)
         return w
 
-    # from https://github.com/scikit-learn/scikit-learn/blob/77aeb825b6494de1e3a2c1e7233b182e05d55ab0/sklearn/mixture/_gaussian_mixture.py#L510
+    # adapted from https://github.com/scikit-learn/scikit-learn/blob/77aeb825b6494de1e3a2c1e7233b182e05d55ab0/sklearn/mixture/_gaussian_mixture.py#L510
     # and https://github.com/scikit-learn/scikit-learn/blob/77aeb825b6494de1e3a2c1e7233b182e05d55ab0/sklearn/mixture/_base.py
     #uses the BSD-3 Clause New or Revised license: https://github.com/scikit-learn/scikit-learn/blob/77aeb825b6494de1e3a2c1e7233b182e05d55ab0/COPYING
     def bic(self, p_x: np.array):
@@ -151,7 +151,7 @@ class GMM:
         return -2 * np.median(np.log(p_x)) * p_x.shape[0] + n_params * np.log(self.n)
         #return -2 * np.sum(np.log(p_x)) + n_params * np.log(self.n)
 
-    # from https://github.com/scikit-learn/scikit-learn/blob/77aeb825b6494de1e3a2c1e7233b182e05d55ab0/sklearn/mixture/_gaussian_mixture.py#L510
+    # adapted from https://github.com/scikit-learn/scikit-learn/blob/77aeb825b6494de1e3a2c1e7233b182e05d55ab0/sklearn/mixture/_gaussian_mixture.py#L510
     # and https://github.com/scikit-learn/scikit-learn/blob/77aeb825b6494de1e3a2c1e7233b182e05d55ab0/sklearn/mixture/_base.py
     #uses the BSD-3 Clause New or Revised license: https://github.com/scikit-learn/scikit-learn/blob/77aeb825b6494de1e3a2c1e7233b182e05d55ab0/COPYING
     def aic(self, p_x: np.array):
