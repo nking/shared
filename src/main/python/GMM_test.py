@@ -69,7 +69,7 @@ def testA():
     plt.tight_layout()
 
     gmm = GMM(k=3, tol=1E-7, seed=seed)
-    converged = gmm.fit(X)
+    p_x = gmm.fit(X)
 
     gmm.print_params()
     plot_contours(X, gmm.mu, gmm.sigma, 'Initial clusters')
@@ -96,8 +96,8 @@ def testA():
             found_j.add(best_j)
     '''
 
-    print(f'aic={gmm.aic()}')
-    print(f'bic={gmm.bic()}')
+    print(f'aic={gmm.aic(p_x)}')
+    print(f'bic={gmm.bic(p_x)}')
 
     pxs = []
     aics = []
@@ -105,10 +105,10 @@ def testA():
     js = []
     for j in range(1, 5) :
         gmm = GMM(k=j, tol=1E-7, seed=seed)
-        converged = gmm.fit(X)
+        p_x = gmm.fit(X)
         plot_contours(X, gmm.mu, gmm.sigma, 'Initial clusters')
-        aics.append(gmm.aic())
-        bics.append(gmm.bic())
+        aics.append(gmm.aic(p_x))
+        bics.append(gmm.bic(p_x))
         js.append(j)
 
     print(f'aics={aics}')
