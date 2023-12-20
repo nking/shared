@@ -26,7 +26,7 @@ to run the code from command line and keep the python shell open
 for interactive use:
    python3 -i <script>
 
-to make a juptyper notebook:
+to make a jupytper notebook:
    pip3 install jupyter
    jupyter notebook
 

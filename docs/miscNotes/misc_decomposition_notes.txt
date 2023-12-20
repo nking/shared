@@ -1,0 +1,5 @@
+Covariance matrices:
+   Factor Analysis covariance matrix diagonals can be different values.
+
+   Probabilistic PCA covariance matrix diagonals are all the same value.
+
