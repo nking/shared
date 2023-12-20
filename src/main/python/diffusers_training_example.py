@@ -9,6 +9,7 @@ NLK:
 arguments and data directories.  The cloud version is in the Jupyter notebook file 
 with same title.
 * have added some math details to tie into background with noise filtering algorithms 
+  and diffusion mapping
 * have added a method for noise-filtering (non generative), that is, image restoration,
 to explore whether the algorithm can remove noise from the image (like BM3D, etc.).
 The authors also state at end of Sect 3.2 that when their DDPM model is configured to
@@ -22,16 +23,42 @@ The DDPM paper reference is
 Ho, J., Jain, A. and Abbeel, P., 2020. Denoising diffusion probabilistic models.
 Advances in Neural Information Processing Systems, 33, pp.6840-6851.
 
-
 This tutorial's choice of training images is a set of well curated images of butterflies.
 One can also find a pretrained model from a set of cat images "google/ddpm-cat-256".
 The butterfly training uses many images that are carefully prepared to represent samples from the same distribution.
 The DDPM paper authors (Ho, Jain, Abbeel 2020) however, use images that are busy, uncentered,
-and do not have background removed, but are all of same distribution category (e.g. castles, bedrooms, etc).
+and do not have background removed, but are all of same distribution category (e.g. castles, 
+bedrooms, etc).
 This distribution is part of the encoding for the continuous latent space.
 
 B.T.W. The white background of the training images makes it easier to see effects of
 applying the reverse process to the images (for filter_noise()).
+
+**Some details on diffusion and diffusion mapping:**
+in Brownian motion (Langevin dynamics), we see a large particle's mean square positional
+displacement in response to small perturbation forces from 
+collisions with an ensemble of smaller particles.  The Brownian particle's displacement appears
+to be a random walk.  
+The Brownian mean squared displacement is proportional to the elapsed time,
+and so the displacement is proportional to the square root of the elapsed time.
+This is a diffusion process.
+
+The diffusion model extends the concept as a process that takes as
+input an organized state and applies diffusion to transition to a less organized state.
+
+In the probabilistic diffusion models, the diffusion is modeled as reversible and so one
+can learn the removal of noise as the backward process (by adding the noise to an image 
+as the forward process).  The prediction of the removal of noise from an image is 
+referred to as sampling in DDPM context.
+
+This article has great visualizations:
+https://towardsdatascience.com/understanding-diffusion-probabilistic-models-dpms-1940329d6048
+
+Note that the term diffusion maps is a form of dimension reduction that creates embeddings
+in which the distance between points in the embedded space is equal to the 
+"diffusion distance" between probability distributions centered at those points.
+see https://en.m.wikipedia.org/wiki/Diffusion_map
+see Nadler et al. 2005, "Diffusion Maps, Spectral Clustering and Eigenfunctions of Fokker-Planck Operators"
 
 **Some details on noise removal algorithms:**
 
