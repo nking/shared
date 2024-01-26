@@ -218,7 +218,7 @@ public class PrimsMST {
         int root = findRoot();
         return getPreorderIndexes(root);
     }
-    // left subtree, root, right subtree
+    //  root, left subtree, right subtree
     private TIntList getPreorderIndexes(int root) {
         
         TIntList out = new TIntArrayList();

@@ -1,10 +1,8 @@
 package algorithms;
 
 import algorithms.heapsAndPQs.HeapNode;
-import java.util.ArrayDeque;
-import java.util.Queue;
-import java.util.Set;
-import java.util.Stack;
+
+import java.util.*;
 
 /**
  *

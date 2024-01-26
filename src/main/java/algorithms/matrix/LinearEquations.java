@@ -46,7 +46,7 @@ public class LinearEquations {
        U*x=y    (uses back substitution with these results).
        A*x=b    (then solves x_i=(y_i - summation_j=i_to_{n-1}(u_i_j*x_j))/u_i_i).
      runtime complexity is O(n^2) for backward and forward substitutions.
-     * The method follows Cormet et al. Chap 28.3.
+     * The method follows Cormen et al. Chap 28.3.
      @param ell is an nxn lower triangular matrix using row major format.
      @param u is an nxn upper triangular matrix using row major format.
      @param p is an array of length n holding permutation vector columns. 
@@ -94,7 +94,7 @@ public class LinearEquations {
      */
     public static double[] solveXFromLUDecomposition(double[][] a, double[] b) {
 
-        //TODO: overload mehod to implement Golub and van Loan Theorem 4.2-1
+        //TODO: overload method to implement Golub and van Loan Theorem 4.2-1
 
         int n = a.length;
         
@@ -456,7 +456,7 @@ public class LinearEquations {
         
     /**
      * for a nonsingular symmetric matrix A (with real numbers in matrix of size nXn), 
-     * perform and L-D-L decomposition which is a 
+     * perform an L-D-L decomposition which is a 
      * variation of L-U decomposition.  Computes a unit lower triangular matrix
      * L and a diagonal matrix D = diag(d1, d2, ...d_n) such that
      * A = L*D*L^T.

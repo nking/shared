@@ -30,7 +30,7 @@ import java.util.logging.Logger;
  *    Find-minimum is O(1) amortized time because there is always an instance
  * reference to it.
  *
- *    Insert, decrease key work in constant amortized time.
+ *    Insert, decrease key work in constant amortized time, O(1).
  *
  *    Delete and delete minimum work in O(log n) amortized time.
  *

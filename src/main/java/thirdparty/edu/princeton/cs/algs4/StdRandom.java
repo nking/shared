@@ -392,7 +392,7 @@ public final class StdRandom {
 
     /**
      * Rearranges the elements of the specified array in uniformly random order.
-     *
+     * see also Shuffle.fisherYates(...).
      @param  a the array to shuffle
      * @throws NullPointerException if <tt>a</tt> is <tt>null</tt>
      */
@@ -409,6 +409,7 @@ public final class StdRandom {
 
     /**
      * Rearranges the elements of the specified array in uniformly random order.
+     * see also Shuffle.fisherYates(...).
      *
      @param  a the array to shuffle
      * @throws NullPointerException if <tt>a</tt> is <tt>null</tt>
@@ -426,6 +427,7 @@ public final class StdRandom {
 
     /**
      * Rearranges the elements of the specified array in uniformly random order.
+     * see also Shuffle.fisherYates(...).
      *
      @param  a the array to shuffle
      * @throws NullPointerException if <tt>a</tt> is <tt>null</tt>
@@ -444,7 +446,6 @@ public final class StdRandom {
 
     /**
      * Rearranges the elements of the specified subarray in uniformly random order.
-     *
      @param  a the array to shuffle
      @param  lo the left endpoint (inclusive)
      @param  hi the right endpoint (inclusive)
@@ -467,7 +468,6 @@ public final class StdRandom {
 
     /**
      * Rearranges the elements of the specified subarray in uniformly random order.
-     *
      @param  a the array to shuffle
      @param  lo the left endpoint (inclusive)
      @param  hi the right endpoint (inclusive)
@@ -489,7 +489,7 @@ public final class StdRandom {
 
     /**
      * Rearranges the elements of the specified subarray in uniformly random order.
-     *
+     * see also Shuffle.fisherYates(...).
      @param  a the array to shuffle
      @param  lo the left endpoint (inclusive)
      @param  hi the right endpoint (inclusive)

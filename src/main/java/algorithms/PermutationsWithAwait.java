@@ -6,7 +6,7 @@ import java.math.BigInteger;
 import java.util.concurrent.Semaphore;
 
 /**
- a thread-safe class to permute numbers given in an array.
+ a thread-safe class to permute numbers of an array.
    <pre>
    The permute code is adapted from 
         from https://en.wikipedia.org/wiki/Heap%27s_algorithm
@@ -14,9 +14,7 @@ import java.util.concurrent.Semaphore;
         Sedgewick, Robert. "a talk on Permutation Generation Algorithms
         http://www.cs.princeton.edu/~rs/talks/perms.pdf
    
-   I added the semaphore model in order to be able to iterate on demand through end of 
-   permutations.  In this way, the method does not return all permutations at once and
-   hence is not limiting the sequence length to avoid running out of memory.
+   I added the semaphore model to lazily generate the permutations to make smaller memory footprint.
    This method can be used by different threads to each fetch unique permutations.
 
    I adapted the semaphore model from Chap 12.1 of "Java Concurrency in Practice"
@@ -30,9 +28,12 @@ import java.util.concurrent.Semaphore;
        p.getNext(perm);
    </pre>
 
+ @author nichole
  */
 public final class PermutationsWithAwait {
 
+    //a semaphore maintains a set of permits.   it's often used to restrict the number of threads that can access a
+    // resource at a time.
     private final Semaphore availableItem, computationLock;
     
     /**
@@ -58,11 +59,9 @@ public final class PermutationsWithAwait {
    which further references:
         Sedgewick, Robert. "a talk on Permutation Generation Algorithms
         http://www.cs.princeton.edu/~rs/talks/perms.pdf
-   
-   I added the semaphore model in order to be able to iterate on demand through end of 
-   permutations.  In this way, the method does not return all permutations at once and
-   hence is not limiting the sequence length to avoid running out of memory.
-   This method can be used by different threads to each fetch unique permutations.
+
+     I added the semaphore model to lazily generate the permutations to make smaller memory footprint.
+     This method can be used by different threads to each fetch unique permutations.
 
    I adapted the semaphore model from Chap 12.1 of "Java Concurrency in Practice"
    by Goetz et al.

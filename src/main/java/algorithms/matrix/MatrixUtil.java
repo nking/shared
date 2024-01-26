@@ -1698,6 +1698,45 @@ public class MatrixUtil {
     </pre>
    .
     */
+
+    /*
+    (add MIT reference here for 
+    Inverse and PseudoInverses
+
+    A is an [mxn] matrix
+
+    2-sided inverse:
+       A * A^-1 = I = A^-1 * A
+       rank r = m = n
+       matrix has full rank
+
+    Left inverse:
+       A is full column rank matrix, that is, 
+       rank r = n
+       the null space of A contains just the zero vector
+       A * x = b has exactly 1 solution or is not solvable
+       the columns of A are independent
+       A^T*A is [nxn] and invertible
+          (A^T*A)^-1 * (A^T*A) = I
+       left inverse = (A^T*A)^-1 * A^T
+           note that there may be other left inverses
+
+    Right inverse:
+       A is full row rank matrix, that is
+       rank r = m
+       the null space of A^T contains just the zero vector
+       the rows of A are independent
+       A * x = b has at least 1 solution
+       the null space has n - m free variables and if n>m has 
+          infinitely many solutions
+       right inverse = A^T * (A * A^T)^-1
+
+    Pseudo inverse:
+       = V * Sigma^+  * U^T
+       where SVD(A) = U, Sigma, V^T  (that is, A = U * Sigma * V^T)
+       and Sigma^* = Sigma with each element on the diagonal inverted,
+           that is Sigma^* = diagonal matrix with [1/Sigma[0][0], 1./Sigma[1][1], ...]
+    */
     
     /**
      * calculate the pseudo-inverse of matrix a for cases when the rank of a
