@@ -111,6 +111,17 @@ public class ConnectedValuesGroupFinder2 implements IConnectedValuesGroupFinder 
      */
     public List<TLongSet> findGroups(int[][] data) {
 
+        /*
+        TODO: consider editing this to remove the merging in processPair
+        (1) in processPair, comment out the merge block:
+            if (pixKeyMap.containsKey(uPoint) && pixKeyMap.containsKey(vPoint)) {
+                ... in the worse case, this can increase the runtime complexity to O(N*log_2(N))
+            } ...
+        (2) replace prune with a method that will use a BFS search over every
+            node in pixKeyMap to aggregate the associated nodes for a
+            runtime complexity O(|V|+|E|)
+         */
+
         findClustersIterative(data);
 
         List<TLongSet> groupList = prune();

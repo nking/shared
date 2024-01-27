@@ -252,3 +252,6 @@
 
    "Narrow sieves for parameterized paths and packings", Bjorklund et al. 2010
 
+-- low priority:
+   implement the TODO in ConnectedValuesGroupFinder2
+   regarding removal of merging, and adding BFS over nodes to aggregate
