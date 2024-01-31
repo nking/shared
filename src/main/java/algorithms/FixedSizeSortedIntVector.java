@@ -190,6 +190,7 @@ public class FixedSizeSortedIntVector {
         } else if (insIdx < availSlot) {
 
             // move all items from insIdx to availSlot down by 1
+            //TODO: review runtime complexity estimate
             for (int i = (availSlot - 1); i >= insIdx; i--) {
                 a[i + 1] = a[i];
             }

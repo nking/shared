@@ -30,6 +30,8 @@ important applications in finding the critical path in scheduling problems.
 proof of NP-hardness:
       reduction from Hamiltonian path problem (i.e. a cycle that includes all vertices once).
       Decision version: if input graph G has a path of k or more edges.
+
+ NOTE: the edges can be negative with this algorithm.
       
  * @author nichole
  */
@@ -44,7 +46,7 @@ public class LongestPath {
      * runtime complexity is O(|V| + |E|).
      *
      @param g input weighted DAG where key = a directed edge of vertexes (u,v)
-     * and key = weight of the key edge where the weights are non-negative).
+     * and key = weight of the key edge where the weights are integers and can be negative).
      @return vertex indexes of longest path through the DAG.
      */
     public static int[] solve(TObjectDoubleMap<PairInt> g) {
@@ -69,7 +71,7 @@ public class LongestPath {
      * runtime complexity is O(|V| + |E|)
      *
      @param g input weighted DAG where key = a directed edge of vertexes (u,v)
-     * and key = weight of the key edge where the weights are non-negative).
+     * and key = weight of the key edge where the weights are integers and can be negative).
      @param srcIdx the graph vertex index for the start (a.k.a. source) node.
      @return vertex indexes of longest path through the DAG.
      */
@@ -99,7 +101,7 @@ public class LongestPath {
      * </pre>
      *
      @param g input weighted DAG where key = a directed edge of vertexes (u,v)
-     * and key = weight of the key edge where the weights are non-negative).
+     * and key = weight of the key edge where the weights are integers and can be negative).
      @param nodes an adjacency list extracted from graph g.
      @param tsIdxs the topologically sorted vertexes of graph g.
      @param srcIdx the graph vertex index for the start (a.k.a. source) node.
