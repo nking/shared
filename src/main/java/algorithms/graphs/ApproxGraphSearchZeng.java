@@ -46,6 +46,9 @@ in information theory, GED is seeking the matched configuration of vertices
    that has maximum a posteriori probability w.r.t. the available vertex
    attribute information.
 
+ NOTE: There is a neural netowrk approach to predicting subgraph isomorphism
+ using ordered subgraph anchor embeddings.  See Stanford 224W lecture on Nueral Subgraph Matching.
+
  * @author nichole
  */
 public class ApproxGraphSearchZeng {
