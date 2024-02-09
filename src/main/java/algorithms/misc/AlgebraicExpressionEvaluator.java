@@ -193,6 +193,7 @@ public class AlgebraicExpressionEvaluator {
         while (i < j && Character.isSpaceChar(chars[i])) ++i;
         outputIdxs[0] = i;
         if (chars[i] == '-') ++i;
+        if (chars[i] == '+') ++i;
         if (chars[i] == '.') ++i;
         while (((i+1) < j) && (Character.isDigit(chars[i+1]) || chars[i+1] == '.' )) ++i;
 
