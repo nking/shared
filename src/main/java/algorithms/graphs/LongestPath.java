@@ -86,7 +86,8 @@ public class LongestPath {
         
         //O(V + E)
         TopologicalSort ts = new TopologicalSort(nodes);
-                
+
+        // these are the reverse of the sorted final traversal times indexes
         int[] tsIdxs = ts.sort();
         
         return solve(g, nodes, tsIdxs, srcIdx);

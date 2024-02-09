@@ -447,6 +447,7 @@ public class Primes {
         boolean is32Bit = ((arch != null) && arch.equals("64")) ? false : true;
         
         if (is32Bit) {
+            //Integer.MAX_VALUE is prime
             return 2147483647l;
         } else {
             return 9223372036854775783l;
@@ -466,7 +467,7 @@ public class Primes {
         if (n < 2) {
             throw new UnsupportedOperationException("n must be > 1");
         } else if (n == 2) {
-            return new int[]{};
+            return new int[]{2};
         } else if (n == 3) {
             return new int[]{3};
         }
@@ -487,6 +488,9 @@ public class Primes {
         b.clearBit(2);
 
         return b.getSetBits();
+    }
+    public static long getMarsennePrime(int powerOf2) {
+        return MiscMath0.getMarsennePrime(powerOf2);
     }
     
 }

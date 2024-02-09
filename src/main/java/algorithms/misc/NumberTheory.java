@@ -50,6 +50,11 @@ public class NumberTheory {
             a = swap;
         }
         return Math.max(a, -a);
+        /*while (b != 0) {
+            if (a > b) a = a - b;
+            else b = b - a;
+        }
+        return a;*/
     }
     
     /**
@@ -208,6 +213,8 @@ public class NumberTheory {
      * the least common multiple, lowest common multiple, or smallest common 
      * multiple of two integers a and b, usually denoted by lcm(a, b), 
      * is the smallest positive integer that is divisible by both a and b.
+     *
+     * e.g. for a=12, b=18, result= 12/2 * 18/2 = 6*6 = 36
      * <pre>
      * reference:
      * https://en.m.wikipedia.org/wiki/Least_common_multiple
