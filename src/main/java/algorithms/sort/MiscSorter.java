@@ -43,6 +43,24 @@ public class MiscSorter {
         
         return indexes;
     }
+
+    public static class SortMetaData {
+        int[] indexes = null;
+        int numberOfInversions = -1;
+    }
+
+    public static SortMetaData mergeSortCountInversions(double[] a1) {
+        int[] indexes = new int[a1.length];
+        for (int i = 0; i < indexes.length; ++i) {
+            indexes[i] = i;
+        }
+
+        SortMetaData d = new SortMetaData();
+        d.indexes = indexes;
+        d.numberOfInversions = sortBy1stArg(a1, indexes, 0, a1.length - 1, true);
+
+        return d;
+    }
     
     /**
      * use merge sort to sort a1 in increasing value order and return the 
@@ -1447,33 +1465,37 @@ public class MiscSorter {
      @param a2 array of points to apply a1 sorting to also
      @param idxLo
      @param idxHi 
-     @param ascendingSort 
+     @param ascendingSort
+     @return number of inversions
      */
-    private static void sortBy1stArg(double[] a1, int[] a2, int idxLo, 
+    private static int sortBy1stArg(double[] a1, int[] a2, int idxLo,
         int idxHi, boolean ascendingSort) {
+
+        int nInv = 0;
         
         if (idxLo < idxHi) {
 
             int indexMid = (idxLo + idxHi) >> 1;
-            
-            sortBy1stArg(a1, a2, idxLo, indexMid, ascendingSort);
-            
-            sortBy1stArg(a1, a2, indexMid + 1, idxHi, ascendingSort);
-            
-            mergeBy1stArg(a1, a2, idxLo, indexMid, idxHi, ascendingSort);
+
+            nInv += sortBy1stArg(a1, a2, idxLo, indexMid, ascendingSort);
+
+            nInv += sortBy1stArg(a1, a2, indexMid + 1, idxHi, ascendingSort);
+
+            nInv += mergeBy1stArg(a1, a2, idxLo, indexMid, idxHi, ascendingSort);
         }
+        return nInv;
     }
     
-    private static void mergeBy1stArg(double[] a1, int[] a2, 
+    private static int mergeBy1stArg(double[] a1, int[] a2,
         int idxLo, int idxMid, int idxHi, boolean ascendingSort) {
         if (ascendingSort) {
-            mergeBy1stArgIncr(a1, a2, idxLo, idxMid, idxHi);
+            return mergeBy1stArgIncr(a1, a2, idxLo, idxMid, idxHi);
         } else {
-            mergeBy1stArgDecr(a1, a2, idxLo, idxMid, idxHi);
+            return mergeBy1stArgDecr(a1, a2, idxLo, idxMid, idxHi);
         }
     }
 
-    private static void mergeBy1stArgDecr(double[] a1, int[] a2, 
+    private static int mergeBy1stArgDecr(double[] a1, int[] a2,
         int idxLo, int idxMid, int idxHi) {
 
         int nLeft = idxMid - idxLo + 1;
@@ -1501,6 +1523,9 @@ public class MiscSorter {
         int leftPos = 0;
         int rightPos = 0;
 
+        int nInv = 0;
+        int leftLen = a1Left.length - 1;
+
         for (int k = idxLo; k <= idxHi; k++) {
             double l = a1Left[leftPos];
             double r = a1Right[rightPos];
@@ -1512,11 +1537,13 @@ public class MiscSorter {
                 a2[k] = a2Right[rightPos];
                 a1[k] = a1Right[rightPos];
                 rightPos++;
+                nInv += (leftLen - leftPos);
             }
         }
+        return nInv;
     }
     
-    private static void mergeBy1stArgIncr(double[] a1, int[] a2, 
+    private static int mergeBy1stArgIncr(double[] a1, int[] a2,
         int idxLo, int idxMid, int idxHi) {
 
         int nLeft = idxMid - idxLo + 1;
@@ -1544,10 +1571,13 @@ public class MiscSorter {
         int leftPos = 0;
         int rightPos = 0;
 
+        int nInv = 0;
+        int leftLen = a1Left.length - 1;
+
         for (int k = idxLo; k <= idxHi; k++) {
             double l = a1Left[leftPos];
             double r = a1Right[rightPos];
-            if (l < r) {
+            if (l <= r) {
                 a2[k] = a2Left[leftPos];
                 a1[k] = a1Left[leftPos];
                 leftPos++;
@@ -1556,8 +1586,11 @@ public class MiscSorter {
                 a2[k] = a2Right[rightPos];
                 a1[k] = a1Right[rightPos];
                 rightPos++;
+
+                nInv += (leftLen - leftPos);
             }
         }
+        return nInv;
     }
 
     /**
