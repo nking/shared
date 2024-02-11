@@ -33,18 +33,20 @@ import java.util.logging.Logger;
  * Runtime complexity is O(|E| + |V|) (average?), and the worse case runtime
  * complexity is one in which the graph is completely connected, strongly,
  * O(|V|*(2 + 5w)) where w is the word size in bits.
- * 
- * https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm
- * 
- * Further information on use in processing very large datasets such as 
- * in transitive closure is in the book "Mining of Massive Datasets" 
- * by Jure Leskovec, Anand Rajaraman, Jeff Ullman
- * http://infolab.stanford.edu/~ullman/mmds/ch10n.pdf
- * A strongly connected component (SCC) of a graph is a set of nodes S such that:
+
+ <pre>
+ references:
+  https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm
+
+ Further information on use in processing very large datasets such as
+ in transitive closure is in Chapter 10 of the book "Mining of Massive Datasets"
+ by Jure Leskovec, Anand Rajaraman, Jeff Ullman
+ http://infolab.stanford.edu/~ullman/mmds/ch10n.pdf
+ A strongly connected component (SCC) of a graph is a set of nodes S such that:
       1. Every node in S reaches every other node in S.
       2. S is maximal, in the sense that there is no node outside S that both
          reaches every node in S and is reached by every node in S.
-* 
+ </pre>
  * 
  * first implemented in project
      https://github.com/nking/curvature-scale-space-corners-and-transformations
@@ -65,18 +67,18 @@ public class StronglyConnectedComponents {
     private int[] td;
     
     /**
-    lowLink represents the smallest index of any node known to be reachable 
-       from v through v's DFS subtree, including v itself.
-    Therefore v must be left on the stack if v.lowlink less than v.index, 
-    whereas v must be removed as the root of a strongly connected component 
-    if v.lowlink equals v.index. 
+    lowLink represents the smallest discovered index of any node known to be reachable
+     from v through v's DFS subtree, including v itself.
+    Therefore v must be left on the stack if lowlink[v] less than td[v],
+    else v must be removed as the root of a strongly connected component
+    if lowlink[v] equals td[v].
      
-    The value v.lowlink is computed during the depth-first search from v,
+    The value lowlink[v] is computed during the depth-first search from v,
     as this finds the nodes that are reachable from v.
      */
     private int[] lowLink;
     private int[] onStack;
-    
+
     private int time;
     private List<SimpleLinkedListNode> scc;
     private int[] inSCC;
@@ -110,9 +112,11 @@ public class StronglyConnectedComponents {
         inSCC = new int[g.length];
         time = 0;
         stack = new Stack<Integer>();
-        
+
         for (int i = 0; i < g.length; ++i) {
-            strongConnect(i);
+            if (lowLink[i] == -1) {
+                strongConnect(i);
+            }
         }
         
         return scc;
@@ -123,7 +127,7 @@ public class StronglyConnectedComponents {
         td[u] = time;
         lowLink[u] = time;
         time++;
-        
+
         stack.push(u);
         onStack[u] = 1;
         
