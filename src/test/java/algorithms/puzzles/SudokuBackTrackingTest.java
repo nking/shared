@@ -19,8 +19,11 @@ public class SudokuBackTrackingTest extends TestCase {
         //board = getBoard2();
         //expected = getSoln2();
 
-        board = getBoard4();
-        expected = getSoln4();
+        //board = getBoard4();
+        //expected = getSoln4();
+
+        board = getBoard5();
+        expected = getSoln5();
 
         System.out.printf("board=\n");
         for (int i = 0; i < board.length; ++i) {
@@ -165,4 +168,30 @@ public class SudokuBackTrackingTest extends TestCase {
         return b;
     }
 
+    public static char[][] getBoard5() {
+        char[][] b = new char[9][];
+        b[0]=new char[]{'.','.','.','.','.','.','.','1','2'};
+        b[1]=new char[]{'.','.','.','.','.','.','.','.','3'};
+        b[2]=new char[]{'.','.','2','3','.','.','4','.','.'};
+        b[3]=new char[]{'.','.','1','8','.','.','.','.','5'};
+        b[4]=new char[]{'.','6','.','.','7','.','8','.','.'};
+        b[5]=new char[]{'.','.','.','.','.','9','.','.','.'};
+        b[6]=new char[]{'.','.','8','5','.','.','.','.','.'};
+        b[7]=new char[]{'9','.','.','.','4','.','5','.','.'};
+        b[8]=new char[]{'4','7','.','.','.','6','.','.','.'};
+        return b;
+    }
+    public static char[][] getSoln5() {
+        char[][] b = new char[9][9];
+        b[0]=new char[]{'8','3','9','4','6','5','7','1','2'};
+        b[1]=new char[]{'1','4','6','7','8','2','9','5','3'};
+        b[2]=new char[]{'7','5','2','3','9','1','4','8','6'};
+        b[3]=new char[]{'3','9','1','8','2','4','6','7','5'};
+        b[4]=new char[]{'5','6','4','1','7','3','8','2','9'};
+        b[5]=new char[]{'2','8','7','6','5','9','3','4','1'};
+        b[6]=new char[]{'6','2','8','5','3','7','1','9','4'};
+        b[7]=new char[]{'9','1','3','2','4','8','5','6','7'};
+        b[8]=new char[]{'4','7','5','9','1','6','2','3','8'};
+        return b;
+    }
 }

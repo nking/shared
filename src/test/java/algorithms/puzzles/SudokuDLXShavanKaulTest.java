@@ -4,7 +4,6 @@ import junit.framework.TestCase;
 
 public class SudokuDLXShavanKaulTest extends TestCase {
 
-
     public void test0() {
 
         char[][] board;
@@ -16,8 +15,8 @@ public class SudokuDLXShavanKaulTest extends TestCase {
         board = SudokuBackTrackingTest.getBoard3();
         expected = SudokuBackTrackingTest.getSoln3();
 
-        board = SudokuBackTrackingTest.getBoard4();
-        expected = SudokuBackTrackingTest.getSoln4();
+        board = SudokuBackTrackingTest.getBoard5();
+        expected = SudokuBackTrackingTest.getSoln5();
 
         System.out.printf("board=\n");
         for (int i = 0; i < board.length; ++i) {
@@ -26,6 +25,7 @@ public class SudokuDLXShavanKaulTest extends TestCase {
             }
             System.out.printf("\n");
         }
+
         System.out.printf("expected=\n");
         for (int i = 0; i < board.length; ++i) {
             for (int j = 0; j < board[i].length; ++j) {
