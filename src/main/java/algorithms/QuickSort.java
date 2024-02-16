@@ -2718,7 +2718,7 @@ public class QuickSort {
         return store;
     }
     
-    private static int partitionBy1stThen2nd(int[] a, int[] b,
+    public static int partitionBy1stThen2nd(int[] a, int[] b,
         int idxLo, int idxHi) {
         
         int x = a[idxHi];
@@ -2735,12 +2735,14 @@ public class QuickSort {
             }
             if (doSwap) {
                 store++;
-                int swap = a[store];
-                a[store] = a[i];
-                a[i] = swap;
-                int swap2 = b[store];
-                b[store] = b[i];
-                b[i] = swap2;
+                if (store != i) {
+                    int swap = a[store];
+                    a[store] = a[i];
+                    a[i] = swap;
+                    int swap2 = b[store];
+                    b[store] = b[i];
+                    b[i] = swap2;
+                }
             }
         }
         store++;
