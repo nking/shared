@@ -6,6 +6,11 @@ import java.util.*;
 
 public class SudokuBackTrackingTest extends TestCase {
 
+    /*
+    for more tests, see
+    http://forum.enjoysudoku.com/the-hardest-sudokus-new-thread-t6539.html#p65791
+     */
+
     public void test0() throws InterruptedException {
 
         char[][] board;
