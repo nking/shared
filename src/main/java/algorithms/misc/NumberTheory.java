@@ -50,11 +50,6 @@ public class NumberTheory {
             a = swap;
         }
         return Math.max(a, -a);
-        /*while (b != 0) {
-            if (a > b) a = a - b;
-            else b = b - a;
-        }
-        return a;*/
     }
     
     /**

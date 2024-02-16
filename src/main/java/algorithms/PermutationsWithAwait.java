@@ -194,8 +194,8 @@ public final class PermutationsWithAwait {
                     //Reset the state and simulate popping the stack by incrementing the pointer.
                     c[i] = 0;
                     i++;
-                }
-            }
+                } // end if
+            }// end while
         }
     }
 }

@@ -5,14 +5,16 @@ import java.util.*;
 /**
  * A backtracking solver that in practice, completes in less time than 9! by recalculating the ordering of indexes.
  * It could be improved.
+ *
+ * NOTE: the code expects a solvable board.
+
  @author Nichole King
 
  * Another approach to this problem is
  * SudokuDLXShavanKaul which uses the Dancking Links datastructure of Knuth's
- and aan exact cover of constraints approach..
+ and an exact cover of constraints approach..
  */
 public class SudokuBackTracking {
-
 
     protected static int ONE = (int)'1';
     protected boolean solved = false;
