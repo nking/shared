@@ -346,6 +346,13 @@ public class SudokuBackTracking {
         int nextIdx;
         int[] indexes;
     }
+
+    /**
+     * given a solvable board, modifies the board to hold the solution.
+     * @param board input incomplete but solvable board.
+     * empty cells should have a '.'.
+     *              the numbers 1 through 9 are represented as their characters.
+     */
     public void solveSudoku(char[][] board) {
         solved = false;
         this.board = board;
