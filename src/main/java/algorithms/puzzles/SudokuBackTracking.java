@@ -342,10 +342,6 @@ public class SudokuBackTracking {
             return true;
         }
     }
-    public static class NR {
-        int nextIdx;
-        int[] indexes;
-    }
 
     /**
      * given a solvable board, modifies the board to hold the solution.
@@ -363,63 +359,11 @@ public class SudokuBackTracking {
 
         int[] indexes = calcOrder(sections.sections)[0];
 
-        // solve non-recursively until we have no more single possibilities for a point
-        NR nr = nonRecursive(0, indexes, sections);
-        indexes = nr.indexes;
-
-        recursion(nr.nextIdx, indexes, sections);
+        recursion(0, indexes, sections);
 
         assert(solved);
 
         System.out.printf("nIter=%d\n", nIter);
-    }
-
-    protected NR nonRecursive(int idx, int[] indexes, Sections sections) {
-        // handle the first cases with possible values length == 1
-        int sectIdx;
-        int row;
-        int col;
-        int rowSect;
-        int colSect;
-        int[] possible;
-        int v;
-
-        while (idx < indexes.length) {
-            ++nIter;
-            sectIdx = indexes[idx];
-            row = calcRowIdx(sectIdx);
-            col = calcColIdx(sectIdx);
-            rowSect = row/3;
-            colSect = col/3;
-            possible = Section.intersectionOfRemaining(row, col, sections.sections);
-            if (possible.length > 1) {
-                int[][] indexesAndN = calcOrder(sections.sections);
-                if (indexesAndN[1][0] > 1) {
-                    NR nr = new NR();
-                    nr.nextIdx = idx;
-                    nr.indexes = indexes;
-                    return nr;
-                }
-                int[] indexes2 = new int[indexes.length];
-                // copy indexes[0:idx-1] into indexes3
-                System.arraycopy(indexes, 0, indexes2, 0, idx);
-                System.arraycopy(indexesAndN[0], 0, indexes2, idx, indexesAndN[0].length);
-                // redo this inx position for reordered list:
-                indexes = indexes2;
-                continue;
-            }
-            assert(possible.length == 1);
-            v = possible[0];
-
-            boolean[] b = sections.sections[rowSect][colSect].removeFromRemaining(row, col, v);
-            boolean[] b1 = sections.removeSameRowOtherCols(row, col, v);
-            boolean[] b2 = sections.removeSameColOtherRows(row, col, v);
-            ++idx;
-        }
-        NR nr = new NR();
-        nr.nextIdx = idx;
-        nr.indexes = indexes;
-        return nr;
     }
 
     protected void recursion(int idx, int[] indexes, Sections sections) {

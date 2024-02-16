@@ -537,6 +537,14 @@ public class SudokuDLXShavanKaul {
         System.out.print(text);
     }
 
+    public char[][] getSolution() {
+        char[][] board = new char[N][N];
+        for (int i = 0; i < N; i++)
+            for (int j = 0; j < N; j++)
+                board[i][j] = (char)(Grid[i][j] + '0');
+        return board;
+    }
+
 
     /* The print() function outputs the Sudoku grid to the standard output, using
      * a bit of extra formatting to make the result clearly readable. */

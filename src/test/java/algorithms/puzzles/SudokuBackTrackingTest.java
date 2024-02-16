@@ -13,59 +13,77 @@ public class SudokuBackTrackingTest extends TestCase {
 
     public void test0() throws InterruptedException {
 
+        boolean doPrint = false;
         char[][] board;
         char[][] expected;
+        for (int ii = 0; ii < 5; ++ii) {
 
-        //board = getBoard1();
-        //expected = getSoln1();
-        //board = getBoard3();
-        //expected = getSoln3();
-
-        //board = getBoard2();
-        //expected = getSoln2();
-
-        //board = getBoard4();
-        //expected = getSoln4();
-
-        board = getBoard5();
-        expected = getSoln5();
-
-        System.out.printf("board=\n");
-        for (int i = 0; i < board.length; ++i) {
-            for (int j = 0; j < board[i].length; ++j) {
-                System.out.printf("%3s", board[i][j]);
+            switch (ii) {
+                case 0:
+                    board = getBoard1();
+                    expected = getSoln1();
+                    break;
+                case 1:
+                    board = getBoard2();
+                    expected = getSoln2();
+                    break;
+                case 2:
+                    board = getBoard3();
+                    expected = getSoln3();
+                    break;
+                case 3:
+                    board = getBoard4();
+                    expected = getSoln4();
+                    break;
+                case 4:
+                    board = getBoard5();
+                    expected = getSoln5();
+                    break;
+                default:
+                    throw new IllegalArgumentException("i not recognized");
             }
-            System.out.printf("\n");
-        }
-        System.out.printf("expected=\n");
-        for (int i = 0; i < board.length; ++i) {
-            for (int j = 0; j < board[i].length; ++j) {
-                System.out.printf("%3s", expected[i][j]);
-            }
-            System.out.printf("\n");
-        }
 
-        SudokuBackTracking sudoku = new SudokuBackTracking();
-        sudoku.solveSudoku(board);
-
-        System.out.printf("result=\n");
-        for (int i = 0; i < board.length; ++i) {
-            for (int j = 0; j < board[i].length; ++j) {
-                System.out.printf("%3s", board[i][j]);
-            }
-            System.out.printf("\n");
-        }
-        for (int i = 0; i < board.length; ++i) {
-            for (int j = 0; j < board[i].length; ++j) {
-                if (expected[i][j] != board[i][j]) {
-                    System.out.printf("Error at [%d][%d]\n", i, j);
+            if (doPrint) {
+                System.out.printf("board=\n");
+                for (int i = 0; i < board.length; ++i) {
+                    for (int j = 0; j < board[i].length; ++j) {
+                        System.out.printf("%3s", board[i][j]);
+                    }
+                    System.out.printf("\n");
                 }
-                assertTrue(expected[i][j] == board[i][j]);
+                System.out.printf("expected=\n");
+                for (int i = 0; i < board.length; ++i) {
+                    for (int j = 0; j < board[i].length; ++j) {
+                        System.out.printf("%3s", expected[i][j]);
+                    }
+                    System.out.printf("\n");
+                }
+            }
+
+            SudokuBackTracking sudoku = new SudokuBackTracking();
+            sudoku.solveSudoku(board);
+
+            if (doPrint) {
+                System.out.printf("result=\n");
+                for (int i = 0; i < board.length; ++i) {
+                    for (int j = 0; j < board[i].length; ++j) {
+                        System.out.printf("%3s", board[i][j]);
+                    }
+                    System.out.printf("\n");
+                }
+            }
+            for (int i = 0; i < board.length; ++i) {
+                for (int j = 0; j < board[i].length; ++j) {
+                    if (expected[i][j] != board[i][j]) {
+                        System.out.printf("Error at [%d][%d]\n", i, j);
+                    }
+                    assertTrue(expected[i][j] == board[i][j]);
+                }
             }
         }
     }
 
-    protected char[][] getBoard1() {
+    protected static char[][] getBoard1() {
         char[][] b = new char[9][];
         b[0]= new char[]{'5','3','.','.','7','.','.','.','.'};
         b[1]= new char[]{'6','.','.','1','9','5','.','.','.'};
@@ -78,7 +96,7 @@ public class SudokuBackTrackingTest extends TestCase {
         b[8]= new char[]{'.','.','.','.','8','.','.','7','9'};
         return b;
     }
-    protected char[][] getSoln1() {
+    protected static char[][] getSoln1() {
         char[][] b = new char[9][];
         b[0]=new char[]{'5','3','4','6','7','8','9','1','2'};
         b[1]=new char[]{'6','7','2','1','9','5','3','4','8'};
