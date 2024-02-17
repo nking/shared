@@ -58,9 +58,11 @@
         <echo message="compile:                    compile source files"/>
         <echo message="compileTests:               compile test files"/>
         <echo message="runTests:                   run tests"/>
-        <echo message="runTest:                    run test with -Dtest=fqn of test"/>
+        <echo message="runTest:                    run test with -Dtest=fqn of test.  compiles all files."/>
+        <echo message="runTest2:                   run test with -Dtest=fqn of test. recompiles only changed files"/>
         <echo message="debugTests:                 run tests and use jdwp"/>
-        <echo message="debugTest:                  debug test with -Dtest= fqn of test and jdwp"/>
+        <echo message="debugTest:                  debug test with -Dtest= fqn of test and jdwp. compiles all files"/>
+        <echo message="debugTest2:                 debug test with -Dtest= fqn of test and jdwp. recompiles only changed files"/>
         <echo message="javadoc:                    create javadocs"/>
         <echo message="runCoverage                 create code coverage reports"/>
         <echo message="package                     build jar with compiled classes"/>
@@ -202,6 +204,7 @@
             <batchtest fork="yes" todir="${tests.out.dir}">
                 <fileset dir="${tests.out.dir}">
                     <include name="**/*Test*.class"/>
+                    <exclude name="**/A0*Test*.class"/>
                     <exclude name= "**/*$*.class"/>
                 </fileset>
             </batchtest>
@@ -218,6 +221,37 @@
             Note that to set jvm properties, set the shell variable JAVA_OPTS.
                 Example:
                     export JAVA_OPTS=-Xms1024m
+        </fail>
+        <copy file="${resources.dir}/logging.properties" todir="${src.out.dir}" />
+        <copy file="${resources.dir}/CMAEvolutionStrategy.properties" todir="${src.out.dir}" />
+        <junit fork="yes" showoutput="false" filtertrace="off" printsummary="yes" haltonerror="true" haltonfailure="true">
+            <assertions enablesystemassertions="true">
+                <enable/>
+            </assertions>
+            <classpath>
+                <pathelement location="${tests.out.dir}"/>
+                <path refid="test.classpath"/>
+            </classpath>
+            <formatter type="plain" usefile="true"/>
+            <jvmarg value="-enableassertions" />
+            <jvmarg value="-Xmx2048m" />
+            <jvmarg value="-XX:MaxPermSize=512m" />
+            <sysproperty key="java.util.logging.config.file" value="${src.out.dir}/logging.properties"/>
+            <test name="${test}" fork="yes" haltonfailure="yes">
+                <formatter type="plain" usefile="false"/>
+            </test>
+        </junit>
+    </target>
+
+    <target name="runTest2" if="junit.present" depends="debug,compile,JUnit,compileTests">
+        <record name="${logfile}" append="yes" loglevel="debug"/>
+        <fail unless="test">
+            Requires -Dtest=class
+            Example:
+            -Dtest=algorithms.compression.huffman.HuffmanTest
+            Note that to set jvm properties, set the shell variable JAVA_OPTS.
+            Example:
+            export JAVA_OPTS=-Xms1024m
         </fail>
         <copy file="${resources.dir}/logging.properties" todir="${src.out.dir}" />
         <copy file="${resources.dir}/CMAEvolutionStrategy.properties" todir="${src.out.dir}" />
