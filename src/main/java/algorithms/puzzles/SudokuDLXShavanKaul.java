@@ -14,6 +14,8 @@ import java.util.*;
  * <p>
  * The author wrote an article on building it - it took a month to build.
  * https://shivankaul.com/blog/sudoku
+ *
+ * Nichole King: I made small edits to datastructures to update the code.
  */
 
 public class SudokuDLXShavanKaul {
@@ -25,14 +27,6 @@ public class SudokuDLXShavanKaul {
     /* The grid contains all the numbers in the Sudoku puzzle.  Numbers which have
      * not yet been revealed are stored as 0. */
     int Grid[][];
-
-    public static class CluesIntArray {
-        int[] a;
-
-        public CluesIntArray(int[] b) {
-            this.a = b;
-        }
-    }
 
     /* The solve() method should remove all the unknown characters ('x') in the Grid
      * and replace them with the numbers from 1-9 that satisfy the Sudoku puzzle. */
@@ -104,17 +98,23 @@ public class SudokuDLXShavanKaul {
         private void run(int[][] initialMatrix) {
             //e.g. SIZE=3, N=9
             // byte[][] matrix = new byte[N * N * N][4 * N * N];
-            byte[][] matrix = createMatrix(initialMatrix); // create the sparse matrix. We use the type byte to speed things up. I tried using
+            // create the sparse matrix. We use the type byte to speed things up. I tried using
             // using all the primitive types, expecting the same results in terms
             // of speed; the only performance boost should have been in terms of space.
             // Yet, there was a marked difference in the running times. Hence, I used byte[][] whenever possible.
-            ColumnNode doubleLinkedList = createDoubleLinkedLists(matrix);   // create the circular doubly-linked toroidal list
-            search(0); // start the Dancing Links process of searching and covering and uncovering recursively
+            // r.t.c. is O(N^3):
+            byte[][] matrix = createMatrix(initialMatrix);
+            // create the circular doubly-linked toroidal list
+            // r.t.c. is O(N^6):
+            ColumnNode doubleLinkedList = createDoubleLinkedLists(matrix);
+            // start the Dancing Links process of searching and covering and uncovering recursively
+            search(0);
         }
 
         // data structures
-        class Node  // we define a node that knows about four other nodes, as well as its column head
-        {
+
+        // we define a node that knows about four other nodes, as well as its column head
+        class Node {
             Node left;
             Node right;
             Node up;
@@ -122,14 +122,14 @@ public class SudokuDLXShavanKaul {
             ColumnNode head;
         }
 
-        class ColumnNode extends Node // a special kind of node that contains information about that column
-        {
+        // a special kind of node that contains information about that column
+        class ColumnNode extends Node {
             int size = 0;
             ColumnID info;
         }
 
-        class ColumnID  // helps us store information about that column
-        {
+        //// helps us store information about that column
+        class ColumnID {
             /**
              * 0: we're in the row constraint
              * 1: ''' column '''
@@ -137,30 +137,32 @@ public class SudokuDLXShavanKaul {
              * 3: ... cell ...
              */
             int constraint = -1;
+            /**
+             * number is the value in the Sudoku board
+             */
             int number = -1;
+            /**
+             * position in the range [0,81] inclusive
+             */
             int position = -1;
         }
 
         // create a sparse matrix for Grid
         private byte[][] createMatrix(int[][] initialMatrix) {
-            int[][] clues = null; // stores the numbers that are already given on the board i.e. the 'clues'
-            ArrayList<CluesIntArray> cluesList = new ArrayList<>(); // the list used to get the clues. Because we use a raw ArrayList, we later have to cast to int[] before storing in clues
+            // stores the numbers that are already given on the board i.e. the 'clues'
+            int[][] clues = new int[N*N][3];
             int counter = 0;
-            for (int r = 0; r < N; r++) // iterates over the rows of Grid
-            {
-                for (int c = 0; c < N; c++) // iterates over the columns of Grid
-                {
-                    if (initialMatrix[r][c] > 0) // if the number on the Grid is != 0 (the number is a clue and not a blank space to solved for), then store it
-                    {
-                        cluesList.add(new CluesIntArray(new int[]{initialMatrix[r][c], r, c})); // store the number, the row number and the column number
+            for (int r = 0; r < N; r++) { // iterates over the rows of Grid
+                for (int c = 0; c < N; c++) { // iterates over the columns of Grid
+                    if (initialMatrix[r][c] > 0) {
+                        // if the number on the Grid is != 0 (the number is a clue and not a blank space to solved for), then store it
+                        // store the number, the row number and the column number
+                        clues[counter] = new int[]{initialMatrix[r][c], r, c};
                         counter++;
                     }
                 }
             }
-            clues = new int[counter][]; // store the clues once we've gotten them
-            for (int i = 0; i < counter; i++) {
-                clues[i] = cluesList.get(i).a;
-            }
+            int cluesLenth = counter;
 
             // Now, we build our sparse matrix
             byte[][] matrix = new byte[N * N * N][4 * N * N];
@@ -173,9 +175,10 @@ public class SudokuDLXShavanKaul {
                 for (int r = 0; r < N; r++) {
                     // iterator over all the possible columns c
                     for (int c = 0; c < N; c++) {
-                        if (!filled(d, r, c, clues)) // if the cell is not already filled
-                        {
-                            // this idea for this way of mapping the sparse matrix is taken from the Python implementation: https://code.google.com/p/narorumo/wiki/SudokuDLX
+                        // if the cell is not already filled
+                        if (!filled(d, r, c, clues, cluesLenth)) {
+                            // this idea for this way of mapping the sparse matrix is taken from the Python implementation:
+                            // https://code.google.com/p/narorumo/wiki/SudokuDLX
                             int rowIndex = c + (N * r) + (N * N * d);
                             // there are four 1s in each row, one for each constraint
                             int blockIndex = ((c / SIZE) + ((r / SIZE) * SIZE));
@@ -196,10 +199,10 @@ public class SudokuDLXShavanKaul {
         }
 
         // check if the cell to be filled is already filled with a digit. The idea for this is credited to Alex Rudnick as cited above
-        private boolean filled(int digit, int row, int col, int[][] prefill) {
+        private boolean filled(int digit, int row, int col, int[][] prefill, int prefillLength) {
             boolean filled = false;
             if (prefill != null) {
-                for (int i = 0; i < prefill.length; i++) {
+                for (int i = 0; i < prefillLength; i++) {
                     int d = prefill[i][0] - 1;
                     int r = prefill[i][1];
                     int c = prefill[i][2];
@@ -229,10 +232,12 @@ public class SudokuDLXShavanKaul {
         // the first constraint is row constraint, the second is col, the third is block, and the fourth is cell.
         // Every constraint contains N^2 columns for every cell
         // The idea for this is taken from Jonathan Chu's explanation (cited above)
+        // runtime complexity is O(N^6)
         private ColumnNode createDoubleLinkedLists(byte[][] matrix) {
             root = new ColumnNode(); // the root is used as an entry-way to the linked list i.e. we access the list through the root
             // create the column heads
             ColumnNode curColumn = root;
+            // r.t.c. O(N * N * N):
             for (int col = 0; col < matrix[0].length; col++) // getting the column heads from the sparse matrix and filling in the information about the
             // constraints. We iterate for all the column heads, thus going through all the items in the first row of the sparse matrix
             {
@@ -263,12 +268,13 @@ public class SudokuDLXShavanKaul {
                 curColumn = (ColumnNode) curColumn.right;
                 curColumn.info = id; // the information about the column is set to the new column
                 curColumn.head = curColumn;
-            }
+            } // end for loop over col
             curColumn.right = root; // making the list circular i.e. the right-most ColumnHead is linked to the root
             root.left = curColumn;
 
             // Once all the ColumnHeads are set, we iterate over the entire matrix
             // Iterate over all the rows
+            //O(N * N * N * 4 * N * N *( N at most)) ~ O(N^6)
             for (int row = 0; row < matrix.length; row++) {
                 // iterator over all the columns
                 curColumn = (ColumnNode) root.right;
@@ -302,7 +308,7 @@ public class SudokuDLXShavanKaul {
                     lastCreatedElement.right = firstElement;
                     firstElement.left = lastCreatedElement;
                 }
-            }
+            } // end for over rows
             curColumn = (ColumnNode) root.right;
             // link the last column elements with the corresponding columnHeads
             for (int i = 0; i < matrix[0].length; i++) {
@@ -314,6 +320,16 @@ public class SudokuDLXShavanKaul {
                 curColumn.up = colElement;
                 curColumn = (ColumnNode) curColumn.right;
             }
+            ColumnNode nd = (ColumnNode)root.right;
+            int ii = 0;
+            while (nd != null && nd.info != null) {
+                if (nd.info.number == 2) {
+                    int t = 1;
+                }
+                nd = (ColumnNode)nd.right;
+                ++ii;
+            }
+
             return root; // We've made the doubly-linked list; we return the root of the list
         }
 
@@ -392,8 +408,8 @@ public class SudokuDLXShavanKaul {
             ColumnNode smallest = rightOfRoot;
             while (rightOfRoot.right != root) {
                 rightOfRoot = (ColumnNode) rightOfRoot.right;
-                if (rightOfRoot.size < smallest.size) // choosing which column has the lowest size
-                {
+                // choosing which column has the lowest size
+                if (rightOfRoot.size < smallest.size) {
                     smallest = rightOfRoot;
                 }
             }

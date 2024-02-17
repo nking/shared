@@ -26,3 +26,7 @@ TEST-*txt
 tt
 tmp_tmp*
 tmp_tmp*/*
+tests/A0*
+tests/A?Test*
+tests/A??Test*
+tests/ATest*

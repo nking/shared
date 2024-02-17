@@ -11,8 +11,63 @@ import java.util.*;
  @author Nichole King
 
  * Another approach to this problem is
- * SudokuDLXShavanKaul which uses the Dancking Links datastructure of Knuth's
+ * SudokuDLXShavanKaul which uses the Dancing Links datastructure of Knuth's
  and an exact cover of constraints approach..
+
+ Here are some brief notes on what would be faster with a Dancing Links representation and
+ exact cover matrix(es) rather than the sets and maps that I'm using below.
+
+ The Knuth repesentation of the exact cover problem reformats a problem into a binary matrix where,
+ for any column, only 1 row can be set for that column.
+
+ The Soduko problem constraints would need such a matrix for the number '1',
+ and a similar matrix for the number '2', etc.
+ where columns are column numbers 0:8 of the board and rows are row numbers 0:8 of the board.
+
+ The 3x3 sections would each need a matrix, but the columns would be numbers 1-9 (or mapped to 0:8)
+ and the rows would be the internal indexes of the 3x3 section mapped to values 0:8.
+
+ So the total number of exact set format style matrices would be:
+ 9 matrices of 9x9, 1 for each number
+ 9 matrices of 9x9, 1 for each 3x3 section of the board.
+ = 18 matrices of 9x9 for a dense representation.
+
+ Dancing Links makes a sparse representation of each of those matrices by using linked lists
+ with each node having up, down, left, right nodes where up, down are along columns and left, right
+ are along rows.  Each row is a circularly doubly linked list and so is each column.
+
+ those matrices hold candidate values, that is, remaining possible values.
+
+ The matrices, combined into one matrix, can be formatted as described by
+ https://www.ocf.berkeley.edu/~jchu/publicportal/sudoku/sudoku.paper.html
+ He also gives an example of the initial matrix for a 4x4 suduko before
+ modifying it for a given puzzle board:
+ https://www.ocf.berkeley.edu/~jchu/publicportal/sudoku/4x4.dlx.64x64.xls
+
+ The column titles are:
+ row 1				row 2				row 3				row 4				row 1				row 2				row 3				row 4				col 1				col 2				co3				col 4				region 1				region 2				region 3				region 4
+ each having 4 columns in the title.
+ The rows are:
+ (cand,r,c)
+ (1,1,1)
+ (2,1,1)
+ (3,1,1)
+ (4,1,1)
+ (1,1,2)
+ (2,1,2)
+ (3,1,2)
+ (4,1,2)
+ etc... 64 rows and 64 columns where cand is a possible value.
+
+ The sparse representation, if used here, would make the Section methods
+ addToRemaining(), removeFromRemaining(), populateMinRemaining()
+ faster.
+
+ The SudukoDLXShavanKaul use of Dancing Links (DLX) uses one matrix for all constraints
+ and uses an encoding to store the initial grid information.
+
+ A brief comparison of test results shows that the SudukoDLXShavanKaul code is about
+ 5 times faster than this SudukoBackTracking code implemented below.
  */
 public class SudokuBackTracking {
 
