@@ -14,12 +14,12 @@ public class TreeTraversal {
      * root, left subtree, right subtree.
      <pre>
        e.g.
-               0
-            1         2
-           3  4      5  6
-         7  
-        
-      visits: 0, 1, 3, 7, 4, 2, 5, 6
+                            7
+                3                        11
+           1         5              9         13
+        0   2     4   6           8   10    12
+
+     visits: 7, 3, 1, 0, 2,5,4,6,11,9,8,10,13,12
      </pre>
      @param root root of tree
      */
@@ -34,13 +34,12 @@ public class TreeTraversal {
     /**
      * left subtree, root, right subtree
      <pre>
-                0
-            1           2
-           3  4      5     6
-         7     10     8      11
-                        9   12 13
+                           7
+                3                        11
+           1         5              9         13
+        0   2     4   6           8   10    12
                         
-     visits: 7, 3, 1, 4, 10, 0, 5, 8, 9, 2, 6, 12, 11, 13
+     visits: 0,1,2,3,4,5,6,7,8,9,10,11,12,13
      </pre>
      @param root tree root
      */
@@ -56,12 +55,13 @@ public class TreeTraversal {
      * left subtree, right subtree, root
      <pre>
        e.g.
-                  0
-            1         2
-           3  4      5  6
-         7  
-        
-     visits: 7, 3, 4, 1, 5, 6, 2, 0
+                           7
+                3                        11
+           1         5              9         13
+        0   2     4   6           8   10    12
+
+     visits: 0, 2, 1, 4, 6, 5,3, 8, 10, 9, 12, 13, 11, 7
+
      </pre>
      @param root tree root
      */
@@ -76,13 +76,13 @@ public class TreeTraversal {
     /**
      * root, left subtree, right subtree
      <pre>
-                0
-            1           2
-           3  4      5     6
-         7     10     8      11
-                        9   12 13
-                        
-     visits: 0, 1, 3, 7, 4, 10, 2, 5, 8, 9, 6, 11, 12, 13
+                           7
+                3                        11
+           1         5              9         13
+        0   2     4   6           8   10    12
+
+     visits: 7, 3, 1, 0, 2,5,4,6,11,9,8,10,13,12
+
      </pre>
      @param node
      */
@@ -105,14 +105,12 @@ public class TreeTraversal {
      * left subtree, root, right subtree
      <pre>
      e.g.
-                0
-            1           2
-           3  4      5     6
-         7     10     8      11
-                        9   12 13
-                        
-     recursive visits: 7, 3, 1, 4, 10, 0, 5, 8, 9, 2, 6, 12, 11, 13
-     iterative visits: 7, 3, 1, 4, 10, 0, 5, 8, 9, 2, 6, 12, 11, 13
+                           7
+                3                        11
+           1         5              9         13
+        0   2     4   6           8   10    12
+
+     visits: 0,1,2,3,4,5,6,7,8,9,10,11,12,13
      </pre>
      @param node
      */
@@ -143,12 +141,12 @@ public class TreeTraversal {
         }
     }
     /* left subtree, root, right subtree
-                0
-            1           2
-           3  4      5     6
-         7     10     8      11
-                        9   12 13
-    7, 3, 1, 4, 10, 0, 5, 8, 9, 2, 6, 12, 11, 13
+                           7
+                3                        11
+           1         5              9         13
+        0   2     4   6           8   10    12
+
+    visits: 0,1,2,3,4,5,6,7,8,9,10,11,12,13
          */
 
     /**
@@ -196,13 +194,13 @@ public class TreeTraversal {
      * left subtree, right subtree, root
      <pre>
        e.g.
-                0
-            1           2
-           3  4      5     6
-         7     10     8      11
-                        9   12 13
-                       
-      7, 3, 10, 4, 1, 9, 8, 5, 12, 13, 11, 6, 2, 0
+                           7
+                3                        11
+           1         5              9         13
+        0   2     4   6           8   10    12
+
+     visits: 0, 2, 1, 4, 6, 5,3, 8, 10, 9, 12, 13, 11, 7
+
      </pre>
      this is actually bottom-up post-order iterative while recursive
      is top-down.
@@ -235,13 +233,13 @@ public class TreeTraversal {
      * a.k.a. breadth first traversal
      <pre>
        e.g.
-               0
-            1           2
-           3  4      5     6
-         7     10     8      11
-                        9   12 13
-                       
-     0, 1, 2, 3, 4, 5, 6, 7, 10, 8, 11, 9, 12, 13           
+                           7
+                3                        11
+           1         5              9         13
+        0   2     4   6           8   10    12
+
+     visits: 7, 3, 11, 1, 5, 9, 13, 0, 2, 4, 6, 8, 10, 12
+
      </pre>
      @param node tree root
      */
@@ -312,16 +310,15 @@ public class TreeTraversal {
      * get the reverse level-order traversal of tree node.
      * implemented as post-order traversal but using a queue for the first
      * stack:
-     * adapted from https://www.geeksforgeeks.org/inorder-tree-traversal-without-recursion/?ref=gcse 
+     * adapted from https://www.geeksforgeeks.org/inorder-tree-traversal-without-recursion/?ref=gcse
      <pre>
        e.g.
-                  0
-             1           2
-           3  4      5     6
-         7     10     8      11
-                        9   12 13
-                        * 
-      13, 12, 9, 11, 8, 10, 7, 6, 5, 4, 3, 2, 1, 0
+                            7
+                3                        11
+           1         5              9         13
+        0   2     4   6           8   10    12
+
+     visits: 12, 10, 8, 6, 4, 2, 0, 13, 9, 5, 1, 11, 3, 7
      </pre>
      @param node
      */
@@ -387,13 +384,12 @@ public class TreeTraversal {
      * a.k.a. breadth first traversal
      <pre>
        e.g.
-               0
-            1           2
-           3  4      5     6
-         7     10     8      11
-                        9   12 13
-                       
-     0, 1, 2, 3, 4, 5, 6, 7, 10, 8, 11, 9, 12, 13           
+                            7
+                3                        11
+           1         5              9         13
+        0   2     4   6           8   10    12
+
+     visits: 7, 3, 11, 1, 5, 9, 13, 0, 2, 4, 6, 8, 10, 12
      </pre>
      @param node n-ary tree root
      @return 

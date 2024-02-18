@@ -807,6 +807,14 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
         }
     }
 
+    public void printLevelOrderTraversal() {
+        List<RBNode> nodes = getLevelOrderTraversalIterative(root);
+        for (RBNode node : nodes) {
+            RBNode p = findParent(node, nodes);
+            System.out.println("node=" + node.toString(p));
+        }
+    }
+
     /**
      *
      @param topNode
@@ -924,11 +932,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
      @return 
     */
     protected List<RBNode> getLevelOrderTraversalIterative(RBNode node) {
-       
-        if (isEmpty()) {
-            return new ArrayList<RBNode>();
-        }
-        
+
         List<RBNode> array = new ArrayList<RBNode>();
         int count = 0;
         
@@ -936,31 +940,19 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
             return array;
         }
         
-        // can use stacks or queues interchangeably here, but if prefer 
-        //   left to right norder, will want queues.
-        java.util.Queue<RBNode> level = new ArrayDeque<RBNode>();
-        java.util.Queue<RBNode> nextLevel = new ArrayDeque<RBNode>();
-        
-        level.add(node);
-        
-        while (true) {
-            while (!level.isEmpty()) {
-                node = level.poll();
-                array.add(node);
-                if (node.left != null) {
-                    nextLevel.add(node.left);
-                }
-                if (node.right != null) {
-                    nextLevel.add(node.right);
-                } 
+        java.util.Queue<RBNode> q = new ArrayDeque<RBNode>();
+        q.add(node);
+        while (!q.isEmpty()) {
+            node = q.poll();
+            array.add(node);
+            if (node.left != null) {
+                q.add(node.left);
             }
-            if (nextLevel.isEmpty()) {
-                break;
+            if (node.right != null) {
+                q.add(node.right);
             }
-            level.addAll(nextLevel);
-            nextLevel.clear();
         }
-                
+
         return array;
     }
     

@@ -27,7 +27,7 @@ public class NumberTheory {
         int t;
         while (b != 0) {
             t = b;
-            b = Math.floorMod(a, b);//a % b;
+            b = Math.floorMod(a, b);//a % b;  a - floorDiv(a, b) * b
             a = t;
         }
         return Math.max(a, -a);

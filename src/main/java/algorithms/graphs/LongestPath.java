@@ -177,7 +177,7 @@ public class LongestPath {
                 while (iter.hasNext()) {
                     u = iter.next();
                     wUV = g.get(new PairInt(u, v));
-                    assert(g.containsKey(new PairInt(u, v)));
+                    assert(g.containsKey(new PairInt(u, v)));//for trove because has default
                     d = dist[u] + wUV;
                     if (d > distV) {
                         distV = d;
