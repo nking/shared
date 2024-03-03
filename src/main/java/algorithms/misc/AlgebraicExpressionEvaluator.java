@@ -106,15 +106,15 @@ public class AlgebraicExpressionEvaluator {
                     t.left = nStack.pop();
      =>              nStack.push(t);
                 }
-                cStack.pop();//this is opening parenthesis
+                cStack.pop();//this is the opening parenthesis
             } else if c is an operator {
                 while (!cStack.isEmpty() && cStack.peek != '(' && obeys precedence) {
-                    t = new OpPair(charStack.pop());
-                    t.right = nodeStack.pop();
-                    t.left = nodeStack.pop();
+                    t = new OpPair(cStack.pop());
+                    t.right = nStack.pop();
+                    t.left = nStack.pop();
       -->            nStack.push(t);
                 }
-                charStack.push(new CRange(i, i));
+                cStack.push(new CRange(i, i));
             } else {
                 c is a number
       =>          nStack.push(new OPair(i,i))

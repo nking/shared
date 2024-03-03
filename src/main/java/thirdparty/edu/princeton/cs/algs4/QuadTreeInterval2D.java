@@ -236,15 +236,15 @@ public class QuadTreeInterval2D<T extends Comparable<T>, Value>  {
         if (h.SW != null && (cX <= 0) && (cY <= 0)) {
             //System.out.println("->SW parent=" + h.toString());
             query2D(h.SW, srch, output);
-        }
+        } else
         if (h.NW != null && (cX <= 0) && (cY >= 0)) { 
             //System.out.println("->NW parent=" + h.toString());
             query2D(h.NW, srch, output);
-        }
+        } else
         if (h.SE != null && (cX >= 0) && (cY <= 0)) { 
             //System.out.println("->SE parent=" + h.toString());
             query2D(h.SE, srch, output);
-        }
+        } else
         if (h.NE != null && (cX >= 0) && (cY >= 0)) { 
             //System.out.println("->NE parent=" + h.toString());
             query2D(h.NE, srch, output);

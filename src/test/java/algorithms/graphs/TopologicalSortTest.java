@@ -75,7 +75,11 @@ public class TopologicalSortTest extends TestCase {
         //System.out.println("result = " + Arrays.toString(result));
         
         assertTrue(Arrays.equals(expResult, result));
-        
+
+        int[] result2 = ts.sortKahn();
+        // another valid ordering
+        int[] expResult2 = new int[]{0, 4, 5, 8, 2, 1, 6, 3, 7};
+        assertTrue(Arrays.equals(expResult2, result2));
     }
     
     /**
@@ -136,6 +140,7 @@ public class TopologicalSortTest extends TestCase {
         TopologicalSort ts = new TopologicalSort(connected);
         
         int[] result = ts.sort();
+        int[] result2 = ts.sortKahn();
         
         /*
         expected=[6, 4, 3, 5, 1, 0, 7, 2]
@@ -145,11 +150,11 @@ public class TopologicalSortTest extends TestCase {
         1
         0 7 2
         */
-        System.out.println("expected=" + Arrays.toString(expResult));
-        System.out.println("result=  " + Arrays.toString(result));
+        //System.out.println("expected=" + Arrays.toString(expResult));
+        //System.out.println("result=  " + Arrays.toString(result));
 
         //assertTrue(Arrays.equals(expResult, result));
-        
+        assertTrue(Arrays.equals(expResult, result2));
     }
    
     public void testSort2() {
@@ -222,8 +227,11 @@ public class TopologicalSortTest extends TestCase {
         
         int[] result = ts.sort();
         
-        System.out.println("expected=" + Arrays.toString(expResult));
+        //System.out.println("expected=" + Arrays.toString(expResult));
         System.out.println("result=  " + Arrays.toString(result));
+
+        int[] result2 = ts.sortKahn();
+        assertNotNull(result2);
 
         //assertTrue(Arrays.equals(expResult, result));
     }
