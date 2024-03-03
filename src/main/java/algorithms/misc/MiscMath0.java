@@ -1042,7 +1042,7 @@ public class MiscMath0 {
      */
     public static boolean isAPowerOf2(int n) {
         // bitmask test e.g. 128 & 0x7f = 0
-        return ((n == 0) || ((n & (n - 1)) == 0));
+        return ((n > 0) && ((n & (n - 1)) == 0));
     }
     
     /**

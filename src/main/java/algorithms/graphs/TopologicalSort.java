@@ -2,6 +2,10 @@ package algorithms.graphs;
 
 import algorithms.util.SimpleLinkedListNode;
 
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Queue;
+
 /**
  * From Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms",
  * Topological sort sorts a DAG (directed acyclic graph) by vertices such that
@@ -86,6 +90,62 @@ public class TopologicalSort {
             a[idx2] = swap;
             idx2--;
         }
+    }
+
+    /**
+     * use Kahn's method to solve for the topoligcal sorting.
+     <pre>
+     https://en.m.wikipedia.org/wiki/Topological_sorting
+     https://www.interviewkickstart.com/learn/kahns-algorithm-topological-sorting
+     </pre>
+     * @return the topologically sorted keys of the DAG, or null if a cycle was detected
+     */
+    public int[] sortKahn() {
+        SimpleLinkedListNode[] dag = directedEdges.clone();
+        int n = dag.length;
+
+        int i, v;
+        SimpleLinkedListNode next;
+        int[] inDeg = new int[n];
+        for (i = 0; i < n; ++i) {
+            next = dag[i];
+            while (next != null && next.getNumberOfKeys() > 0) {
+                v = next.getKey();
+                inDeg[v]++;
+                next = next.getNext();
+            }
+        }
+
+        // prime the queue with nodes that have no incoming edges
+        Queue<Integer> q = new ArrayDeque<>();
+        for (i = 0; i < n; ++i) {
+            if (inDeg[i] == 0) q.add(i);
+        }
+
+        int[] r = new int[n];
+        Arrays.fill(r, -1);
+        int iR = -1;
+        while (!q.isEmpty()) {
+            i = q.poll();
+            r[++iR] = i;
+
+            next = dag[i];
+            while (next != null && next.getNumberOfKeys() > 0) {
+                v = next.getKey();
+                --inDeg[v];
+                if (inDeg[v] == 0) {
+                    q.add(v);
+                }
+                next = next.getNext();
+            }
+            dag[i] = null;
+        }
+
+        if (iR != (n-1)) {
+            return null;
+        }
+
+        return r;
     }
     
 }
