@@ -565,6 +565,14 @@ public class Coloring {
 
     // NOTE:  A stable set is also known as an independent set, coclique or anticliqu.
     //        It is a set of vertices in a graph, no two of which are adjacent.
+
+    /**
+     *
+     @param adjMap the graph represented as an adjacency map
+     @param c is the colorMap the output map having key=vertex, value= color where the range of color is [0, k)
+     @param revAdjMap
+     @param k
+     */
     private static void findStableSet(Map<Integer, Set<Integer>> adjMap,
                                       Map<Integer, Set<Integer>> revAdjMap, final int k, Map<Integer, Integer> c) {
 

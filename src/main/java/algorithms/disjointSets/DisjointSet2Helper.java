@@ -7,7 +7,9 @@ import java.util.List;
  * a disjoint set implemented as a forest.
  * 
  * based upon pseudocode from "Introduction to Algorithms" by Cormen, Leiserson, Rivest, and Stein
-  
+
+ The method uses nodes to allow for any range of values and ability to carry additional data.
+
    first implemented in project
      https://github.com/nking/curvature-scale-space-corners-and-transformations
      w/ Copyright (c) 2014 Climb With Your Feet

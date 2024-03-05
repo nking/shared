@@ -101,6 +101,23 @@ public class TopologicalSort {
      * @return the topologically sorted keys of the DAG, or null if a cycle was detected
      */
     public int[] sortKahn() {
+
+        /*
+        (0) initialize an empty array "out" to hold results
+        (1) make an array
+             of inDegree in O(n) by traversing each vertec
+        (2) initialize a queue
+             with all vertexes that have inDegree = 0
+        (3) while !q.isEmpty()
+             index = q.poll()
+             write index to out
+             for all neighbors of index:
+                 reduce the neigbhor inDeg by 1.
+                 if their inDeg is now 0, q.offer( neighbor )
+        (4) if out is not full, return null,
+            wlse return out
+         */
+
         SimpleLinkedListNode[] dag = directedEdges.clone();
         int n = dag.length;
 

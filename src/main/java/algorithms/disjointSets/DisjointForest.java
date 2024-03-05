@@ -159,11 +159,10 @@ public class DisjointForest<T> {
     
     /**
      * append the shorter list onto the end of the longer list.
-     * The amortized runtime complexity is O(1) due to the path compression
-     * in findSet.
-     * The method is also known as "union-find" because it uses findSet 
-     * as the first steps before link.
-     * 
+     * The amortized runtime complexity would be O(1) due to the path compression
+     * in findSet but we are moving nodes between sets so the worse case runtime
+     * complexity is O(n) for this context.
+     *
      @param x disjoint set x
      @param y disjoint set y
      @return the union of x and y
@@ -187,7 +186,7 @@ public class DisjointForest<T> {
         RootedTreeDisjointSet<T> tY = removeTreeFromForest(y);
         
         DisjointSet2Node<T> parent = link(x, y);
-        
+
         if (tX.nodes.size() <= tY.nodes.size()) {
             tX.nodes.addAll(tY.nodes);
             trees.put(parent, tX);
@@ -365,6 +364,7 @@ public class DisjointForest<T> {
          */
         protected DisjointSet2Node<T> parent = null;
 
+        // adding this makes union O(n) instead of O(1)
         private Set<DisjointSet2Node<T>> nodes = null;
 
         /**
