@@ -361,6 +361,8 @@ public class Primes {
      * <pre>
      * Reference:
      * Joye, Paillier, and Vaudenay "Efficient Generation of Prime Numbers"
+     *
+     * see comments from from Aho & Ullman above
      * </pre>
      @param bitLength
      @param rand
@@ -469,15 +471,16 @@ public class Primes {
         } else if (n == 2) {
             return new int[]{2};
         } else if (n == 3) {
-            return new int[]{3};
+            return new int[]{2,3};
         }
         VeryLongBitString b = new VeryLongBitString(n);
-        int i;
-        for (i = 2; i < n; ++i) {
-            b.setBit(i);
-        }
+        b.setAllBits();
+        b.clearBit(0);
+        b.clearBit(1);
+
+        int sqrtN = (int)Math.ceil(Math.sqrt(n));
         int j;
-        for (i = 2; i < (int)Math.sqrt(n); ++i) {
+        for (int i = 2; i < sqrtN; ++i) {
             if (b.isSet(i)) {
                 for (j = i*i; j < n && j <= (Integer.MAX_VALUE - i); j+=i) {
                     // remove all multiples of i
@@ -485,7 +488,6 @@ public class Primes {
                 }
             }
         }
-        b.clearBit(2);
 
         return b.getSetBits();
     }

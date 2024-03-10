@@ -199,10 +199,32 @@ public class PrimesTest extends TestCase {
 
     public void testAllPrimesLessThanN() {
         int[] primes;
-        int n = Integer.MAX_VALUE - 2; // ~1e8 primes
-        //n = n / 10; // ~1e7 primes
-        //n = n / 100; // ~1e6 primes
-        primes = Primes.allPrimesLessThanN(n);
-        System.out.println("# primes=" + primes.length);
+        int[] ns = new int[]{15};
+        int[] expPrimes = new int[]{2,3,5,7,11,13};
+        for (int n : ns) {
+            primes = Primes.allPrimesLessThanN(n);
+            double p6 = primes.length*0.06;
+            System.out.println("# primes=" + primes.length);
+            System.out.printf("primes=%s\n", Arrays.toString(primes));
+            int nEst6Percent = Primes.numberOfPrimes(n);
+            int diff = Math.abs(primes.length - nEst6Percent);
+            System.out.printf("nEst=%d, nP=%d, diff=%d, p6=%.4f\n", nEst6Percent, primes.length, diff, p6);
+            assertTrue(Arrays.equals(expPrimes, primes));
+        }
+
+        ns = new int[]{1<<24};//1<<30};
+        for (int n : ns) {
+
+            primes = Primes.allPrimesLessThanN(n);
+            double p7 = primes.length*0.07;
+            System.out.println("# primes=" + primes.length);
+            int nEst6Percent = Primes.numberOfPrimes(n);
+            int diff = Math.abs(primes.length - nEst6Percent);
+            System.out.printf("n=%d, nPrimesEst=%d, nP=%d, diff=%d, p7=%.4f\n", n, nEst6Percent, primes.length, diff, p7);
+            assertTrue(diff <= p7);
+        }
+
+
+
     }
 }

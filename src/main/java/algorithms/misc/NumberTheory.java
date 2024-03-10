@@ -30,7 +30,6 @@ public class NumberTheory {
             b = Math.floorMod(a, b);//a % b;  a - floorDiv(a, b) * b
             a = t;
         }
-        Object obj;
         return Math.max(a, -a);
     }
 
