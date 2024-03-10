@@ -45,9 +45,9 @@ public class VeryLongBitStringTest extends TestCase {
         bitstring = new VeryLongBitString(Integer.MAX_VALUE);
         assertTrue(bitstring.getRowNumber(65) == 1);
         
-        assertTrue(bitstring.getRowNumber((64*5) + 2) == 5);
+        assertTrue(bitstring.getRowNumber((VeryLongBitString.ITEM_BIT_LENGTH*5) + 2) == 5);
         
-        assertTrue(bitstring.getRowNumber((64*5) -1) == 4);
+        assertTrue(bitstring.getRowNumber((VeryLongBitString.ITEM_BIT_LENGTH*5) -1) == 4);
         
         int itemIdx = bitstring.getRowNumber(1);
         int bitIdx = bitstring.getBitIdx(1, itemIdx);
@@ -58,14 +58,15 @@ public class VeryLongBitStringTest extends TestCase {
         itemIdx = bitstring.getRowNumber(65);
         bitIdx = bitstring.getBitIdx(65, itemIdx);
         assertTrue(itemIdx == 1);
-        assertTrue(bitIdx == 1);
+        assertTrue(bitIdx == 2);
         
-        int nBit = 64 + (64/2);
+        int nBit = (int)(VeryLongBitString.ITEM_BIT_LENGTH + (VeryLongBitString.ITEM_BIT_LENGTH/2));
         itemIdx = bitstring.getRowNumber(nBit);
         bitIdx = bitstring.getBitIdx(nBit, itemIdx);
         assertTrue(itemIdx == 1);
-        assertTrue(bitIdx == (64/2));
-        
+        int b = nBit - (int)VeryLongBitString.ITEM_BIT_LENGTH;
+        b = b % (int)VeryLongBitString.ITEM_BIT_LENGTH;
+        assertTrue(bitIdx == b);
     }
     
     public void testSetBit() throws Exception {
@@ -170,7 +171,7 @@ public class VeryLongBitStringTest extends TestCase {
         
         int nTests = 100;
         
-        int maxNBits = 3*64;
+        int maxNBits = (int)(3*VeryLongBitString.ITEM_BIT_LENGTH);
         
         // testing w/ BigInteger as a bootstrap
         
@@ -223,7 +224,7 @@ public class VeryLongBitStringTest extends TestCase {
         log.info("seed=" + seed);
         
         int nTests = 100;
-        int maxNBits = (2 * 64) + (64/2);
+        int maxNBits = (int)((2 * VeryLongBitString.ITEM_BIT_LENGTH) + (VeryLongBitString.ITEM_BIT_LENGTH/2));
         VeryLongBitString bitstring = null;
                
         for (int i = 0; i < nTests; i++) {
@@ -572,5 +573,27 @@ public class VeryLongBitStringTest extends TestCase {
         b = bs.nextHighestBitSet(63 + 64);
         System.out.println("b=" + b);
         assertEquals(64 + 64, b);
+    }
+
+    public void testSetAllBits() {
+        int[] ns = new int[]{62 /*, 63, 64, 65*/};
+        for (int n : ns) {
+            VeryLongBitString bs = new VeryLongBitString(n);
+            bs.setAllBits();
+            int msb = bs.highestBitSet();
+            int lsb = bs.leastBitSet();
+            System.out.printf("n=%d\n", n);
+            System.out.println(bs.toStringWithRuler());
+
+            assertEquals(0, lsb);
+            System.out.println("msb=" + msb);
+            //assertEquals(0, bs.leastBitSet());
+        }
+        /*setAllBits
+        getNSetBits
+        testHighestBitSet
+        testLeastBitSet
+        toString
+         */
     }
 }
