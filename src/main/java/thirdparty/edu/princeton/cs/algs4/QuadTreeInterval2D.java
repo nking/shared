@@ -77,8 +77,7 @@ public class QuadTreeInterval2D<T extends Comparable<T>, Value>  {
         remove(root, box, parents);
     }
     
-    private void remove(Node<T> h, Interval2D<T> box, 
-        List<Node<T>> parents) {
+    private void remove(Node<T> h, Interval2D<T> box, List<Node<T>> parents) {
                 
         boolean isH = (h != null) && h.xy.equals(box);
         boolean isRoot = isH && h.equals(root);
@@ -88,10 +87,10 @@ public class QuadTreeInterval2D<T extends Comparable<T>, Value>  {
             if (parents.isEmpty() && !isRoot) {
                 return;
             } else if (isRoot) {
-                List<Interval2D<T>> boxes = new
-                    ArrayList<Interval2D<T>>();
+                List<Interval2D<T>> boxes = new ArrayList<Interval2D<T>>();
                 List<Value> values = new ArrayList<Value>();
                 getAllNodes(boxes, values);
+
                 root = null;
                 for (int i = 0; i < boxes.size(); ++i) {
                     if (!boxes.get(i).equals(box)) {
@@ -196,8 +195,7 @@ public class QuadTreeInterval2D<T extends Comparable<T>, Value>  {
         return output;
     }
 
-    private void query2D(Node<T> h, Interval2D<T> srch,
-        List<Interval2D<T>> output) {
+    private void query2D(Node<T> h, Interval2D<T> srch, List<Interval2D<T>> output) {
       
         /*
         TODO:
@@ -236,15 +234,15 @@ public class QuadTreeInterval2D<T extends Comparable<T>, Value>  {
         if (h.SW != null && (cX <= 0) && (cY <= 0)) {
             //System.out.println("->SW parent=" + h.toString());
             query2D(h.SW, srch, output);
-        } else
+        }
         if (h.NW != null && (cX <= 0) && (cY >= 0)) { 
             //System.out.println("->NW parent=" + h.toString());
             query2D(h.NW, srch, output);
-        } else
+        }
         if (h.SE != null && (cX >= 0) && (cY <= 0)) { 
             //System.out.println("->SE parent=" + h.toString());
             query2D(h.SE, srch, output);
-        } else
+        }
         if (h.NE != null && (cX >= 0) && (cY >= 0)) { 
             //System.out.println("->NE parent=" + h.toString());
             query2D(h.NE, srch, output);
