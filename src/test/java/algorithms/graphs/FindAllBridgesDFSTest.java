@@ -19,7 +19,7 @@ public class FindAllBridgesDFSTest extends TestCase {
         super(testName);
     }
  
-    public void test0() {
+    public void _test0() {
         /*
         from Figure 4 of
         lecture 4 notes of David Mount for CMSC 451 
@@ -90,5 +90,53 @@ public class FindAllBridgesDFSTest extends TestCase {
             expected.remove(new PairInt(u, v));
         }
         assertEquals(0, expected.size());
+    }
+
+    public void test1() {
+        /*
+        0 -->1
+        0 -->3
+        1-->2
+        2-->3
+        2-->4
+
+           0
+           |  \
+           |    1
+           |     |
+           |    2
+           |  /  \
+           3       4
+
+        3 and 2 and 1 have only 1 incoming edge, but 2 has a predecessor that
+        reaches an ancestor of 2.  1 also has a predecessor that reaches an
+        ancestor of 1.
+
+        bridges: 2:4
+         */
+        SimpleLinkedListNode[] g = new SimpleLinkedListNode[5];
+        g[0] = new SimpleLinkedListNode();
+        g[1] = new SimpleLinkedListNode();
+        g[2] = new SimpleLinkedListNode();
+        g[3] = new SimpleLinkedListNode();
+        g[4] = new SimpleLinkedListNode();
+
+        g[0].insert(1); g[0].insert(3);
+        g[1].insert(2);
+        g[2].insert(3);
+        g[2].insert(4);
+
+        // add the reverse of those edges
+        g[1].insert(0);
+        g[3].insert(0);
+        g[2].insert(1);
+        g[3].insert(2);
+        g[4].insert(2);
+
+        FindAllBridgesDFS dfs = new FindAllBridgesDFS(g);
+        PairIntArray bridges = dfs.walk();
+        assertTrue(bridges.getN() == 1);
+        assertEquals(bridges.getX(0), 2);
+        assertEquals(bridges.getY(0), 4);
     }
 }

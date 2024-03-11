@@ -6,19 +6,23 @@ import algorithms.util.SimpleLinkedListNode;
 import java.util.Arrays;
 
 /**
- * Find all bridges using DFS.
- * 
+ Find all bridges using DFS.
+
+ note that the input graph must be an undirected graph.
+
+ <pre>
+ definitions:
+ A bridge is any edge whose removal results in a disconnected graph.
+ tree edges connect a parent with its child in the DFS tree.
+ back edges connect a (non-parent) ancestor with a (non-child) descendant.
+ 2-Edge Connected: A graph is 2-edge connected if it contains no bridges
+ </pre>
+
  * An edge (u,v) is a bridge if and only if it is a tree edge and (assuming 
  * that u is the parent of v) there is no back edge within v’s subtree that 
  * leads to a vertex whose discovery time is strictly smaller than v’s 
  * discovery time.
-
-   definitions:
-   Bridge is any edge whose removal results in a disconnected graph.
-   tree edges connect a parent with its child in the DFS tree.
-   back edges connect a (non-parent) ancestor with a (non-child) descendant.
-   2-Edge Connected: A graph is 2-edge connected if it contains no bridges
-    
+ *
    average runtime is approx O(|E|), worst case runtime: O(|V| + |E|)
    worst case space needed: O(|V|).
 
@@ -79,27 +83,28 @@ public class FindAllBridgesDFS {
      * taking any one back edge from either u or any of its descendants.
      */
     protected final int[] tdLow;
-
     /**
      *
      */
     protected int time = 0;
+
+    // bridges
+    protected PairIntArray b = new PairIntArray();
     
     /**
-     @param directedEdges  adjacency matrix with connected i to j indicated 
-     * by the index and each node in the linked list, respectively.
-     * Note that the key of each node is expected to be the same as it's index
-     * in the adjacency matrix.
-     * For example, adjacent to node 3 is found via directedEdges[3] as all in 
+     @param undirectedEdges  an undirected graph represented as an adjacency list.
+     the array index is one vertex of an edge and the linked list value of that
+     array at a given index, is the other vertex of the edges.
+     * For example, adjacent to node 3 is found via undirectedEdges[3] as all in
      * the linked list.
      */
-    public FindAllBridgesDFS(SimpleLinkedListNode[] directedEdges) {
-        if (directedEdges == null) {
-            throw new IllegalArgumentException("directedEdges cannot be null");
+    public FindAllBridgesDFS(SimpleLinkedListNode[] undirectedEdges) {
+        if (undirectedEdges == null) {
+            throw new IllegalArgumentException("undirectedEdges cannot be null");
         }
-        g = directedEdges.clone();
+        g = undirectedEdges.clone();
         for (int i = 0; i < g.length; ++i) {
-            g[i] = new SimpleLinkedListNode(directedEdges[i]);
+            g[i] = new SimpleLinkedListNode(undirectedEdges[i]);
         }
         this.visited = new int[g.length];
         this.td = new int[g.length];
@@ -120,13 +125,18 @@ public class FindAllBridgesDFS {
                 visit(u);
             }
         }
-        PairIntArray b = new PairIntArray();
+
+        /*
+        // if not using the tree edge conditional to find the bridges, can find them here
         for (v = 0; v < g.length; v++) {
             if ((td[v] == tdLow[v]) && predecessor[v] != -1) {
+            // could also use: if (predecessor[v] != -1 && td[predecessor[v]] < tdLow[v]) {
                 // found a bridge
+                // there are no descendants of v who are also descendants of an ancestor of v
                 b.add(predecessor[v], v);
             }
         }
+        */
         return b;
     }
     
@@ -160,6 +170,12 @@ public class FindAllBridgesDFS {
                 visit(v);
                 // tree edge
                 tdLow[u] = Math.min(tdLow[u], tdLow[v]);  // update Low[u]
+                if (td[u] < tdLow[v]) {
+                    // added this shortcut from https://www.geeksforgeeks.org/bridge-in-a-graph/
+                    //System.out.printf("bridge: %d,%d\n", u, v);
+                    // there are no descendants of v who are also descendants of an ancestor of v
+                    b.add(u, v);
+                }
             } else if (predecessor[u] != v) {
                 // back edge
                 tdLow[u] = Math.min(tdLow[u], td[v]);       // update Low[u]
