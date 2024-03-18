@@ -9,7 +9,7 @@ import gnu.trove.map.hash.TObjectIntHashMap;
 import java.util.Arrays;
 
 /**
- * solves the single source shortest paths problem.
+ * solves the single source to all destinations shortest paths problem.
  * 
  * It can handle <em>negative edge weights</em>, but if there is a negative cycle, it returns false.
  * It solves the problem using dynamic programming (= dividing the problem into
@@ -74,8 +74,7 @@ public class BellmanFord {
     }
         
     /**
-     * find the single shortest paths in dAG with edge weights w starting from s.
-     * 
+     * find the single shortest paths from start s to all destinations in dAG with edge weights w.
      @return returns false if a negative cycle is present, else returns true 
      * and the results are usable.
      */

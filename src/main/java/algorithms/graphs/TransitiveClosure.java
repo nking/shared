@@ -26,15 +26,9 @@ import java.util.Arrays;
  * @author nichole
  */
 public class TransitiveClosure {
-    
-    /**
-     *
-     */
+
     protected boolean debug = false;
-    
-    /**
-     *
-     */
+
     public TransitiveClosure() {
     }
     
@@ -68,10 +62,10 @@ public class TransitiveClosure {
             }
         }
       
-        for (int k = 0; k < n; k++) {
+        for (int j = 0; j < n; j++) {
             
             if (debug) {
-                System.out.println("k=" + k);
+                System.out.println("j=" + j);
                 for (int i = 0; i < n; i++) {
                     System.out.println("t i=" + i + " : " + Arrays.toString(t[i]));
                 }
@@ -79,10 +73,10 @@ public class TransitiveClosure {
             
             boolean s0, s1;
             for (int i = 0; i < n; i++) {
-                for (int j = 0; j < n; j++) {
-                    s0 = t[i][j];
-                    s1 = t[i][k] && t[k][j];
-                    t[i][j] = s0 | s1;
+                for (int k = 0; k < n; k++) {
+                    s0 = t[i][k];
+                    s1 = t[i][j] && t[j][k];
+                    t[i][k] = s0 | s1;
                 }
             }
             
