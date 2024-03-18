@@ -2,7 +2,7 @@ package algorithms;
 
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-import java.util.HashSet;
+
 import java.util.Set;
 import junit.framework.TestCase;
 

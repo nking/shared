@@ -25,7 +25,67 @@ import java.util.Arrays;
  * @author nichole
  */
 public class MiscSorter {
-    
+
+    /**
+     * copies the input array into an array of size one more column dimension and in that added dimension,
+     * stores the original indexes.
+     * @param a array whose rows will be sorted by column index. a cannot be jagged, that is, all rows must be same length;
+     * @param sortByCol sort the rows of the array by this column index
+     * @return a sorted array of size [a.length][a[0].length + 1] where the last column has been added to hold the
+     * original row indexes.
+     */
+    public static int[][] ascSort(int[][] a, int sortByCol) {
+        int n = a.length;
+        int m = a[0].length;
+        int[][] out = new int[n][m + 1];
+        for(int i = 0; i < n; ++i) {
+            System.arraycopy(a[i], 0, out[i], 0, m);
+            out[i][m] = i;
+        }
+        Arrays.sort(out, (a1, a2)->(a1[sortByCol] - a2[sortByCol]));
+        return out;
+    }
+
+    /**
+     * copies the input array into an array of size one more column dimension and in that added dimension,
+     * stores the original indexes.
+     * @param a array whose rows will be sorted by column index. a cannot be jagged, that is, all rows must be same length;
+     * @param sortByCol sort the rows of the array by this column index
+     * @return a sorted array of size [a.length][a[0].length + 1] where the last column has been added to hold the
+     * original row indexes.
+     */
+    public static double[][] ascSort(double[][] a, int sortByCol) {
+        int n = a.length;
+        int m = a[0].length;
+        double[][] out = new double[n][m + 1];
+        for(int i = 0; i < n; ++i) {
+            System.arraycopy(a[i], 0, out[i], 0, m);
+            out[i][m] = i;
+        }
+        Arrays.sort(out, (a1, a2)->(Double.compare(a1[sortByCol], a2[sortByCol])));
+        return out;
+    }
+
+    /**
+     * copies the input array into an array of size one more column dimension and in that added dimension,
+     * stores the original indexes.
+     * @param a array whose rows will be sorted by column index. a cannot be jagged, that is, all rows must be same length;
+     * @param sortByCol sort the rows of the array by this column index
+     * @return a sorted array of size [a.length][a[0].length + 1] where the last column has been added to hold the
+     * original row indexes.
+     */
+    public static float[][] ascSort(float[][] a, int sortByCol) {
+        int n = a.length;
+        int m = a[0].length;
+        float[][] out = new float[n][m + 1];
+        for(int i = 0; i < n; ++i) {
+            System.arraycopy(a[i], 0, out[i], 0, m);
+            out[i][m] = i;
+        }
+        Arrays.sort(out, (a1, a2)->(Float.compare(a1[sortByCol], a2[sortByCol])));
+        return out;
+    }
+
     /**
      * use merge sort to sort a1 in decreasing value order and return the 
      * indexes of the original a1 indexes in the sorted order.

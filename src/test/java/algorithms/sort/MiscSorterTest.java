@@ -3,6 +3,7 @@ package algorithms.sort;
 import java.security.SecureRandom;
 import java.util.Arrays;
 
+import algorithms.matrix.MatrixUtil;
 import algorithms.util.FormatArray;
 import junit.framework.TestCase;
 
@@ -545,6 +546,87 @@ public class MiscSorterTest extends TestCase {
             diff = Math.abs(expectedA[i] - a1[i]);
             assertTrue(diff < tol);
             assertEquals(expectedI[i], indexes[i]);
+        }
+    }
+
+    public void testAscSort() {
+        double[][] a0 = new double[1][];
+        a0[0] = new double[]{10, 8, 9, 7, 6, 4, 5, 3, 2, 0, 1};
+        double[][] a = MatrixUtil.transpose(a0);
+
+        //0   1  2  3  4  5  6  7  8  9  10
+        int[] expectedI = new int[]{9, 10, 8, 7, 5, 6, 4, 3, 1, 2, 0};
+        double[] expectedA = new double[]{0, 1,2,3,4,5,6, 7, 8,9, 10};
+        double[][] expected = new double[11][2];
+        for (int i = 0; i < expectedI.length; ++i) {
+            expected[i][0] = expectedA[i];
+            expected[i][1] = expectedI[i];
+        }
+
+        double[][] r = MiscSorter.ascSort(a, 0);
+
+        double tol = 1.e-15;
+
+        double diff;
+        for (int i = 0; i < expected.length; ++i) {
+            diff = Math.abs(expected[i][0] - r[i][0]);
+            assertTrue(diff < tol);
+            diff = Math.abs(expected[i][1] - r[i][1]);
+            assertTrue(diff < tol);
+        }
+    }
+
+    public void testAscSort1() {
+        int[][] a0 = new int[1][];
+        a0[0] = new int[]{10, 8, 9, 7, 6, 4, 5, 3, 2, 0, 1};
+        int[][] a = MatrixUtil.transpose(a0);
+        //0   1  2  3  4  5  6  7  8  9  10
+        int[] expectedI = new int[]{9, 10, 8, 7, 5, 6, 4, 3, 1, 2, 0};
+        int[] expectedA = new int[]{0, 1,2,3,4,5,6, 7, 8,9, 10};
+        int[][] expected = new int[11][2];
+        for (int i = 0; i < expectedI.length; ++i) {
+            expected[i][0] = expectedA[i];
+            expected[i][1] = expectedI[i];
+        }
+
+        int[][] r = MiscSorter.ascSort(a, 0);
+
+        double tol = 1.e-15;
+
+        double diff;
+        for (int i = 0; i < expected.length; ++i) {
+            diff = Math.abs(expected[i][0] - r[i][0]);
+            assertTrue(diff < tol);
+            diff = Math.abs(expected[i][1] - r[i][1]);
+            assertTrue(diff < tol);
+        }
+    }
+
+
+    public void testAscSort2() {
+        float[][] a0 = new float[1][];
+        a0[0] = new float[]{10, 8, 9, 7, 6, 4, 5, 3, 2, 0, 1};
+        float[][] a = MatrixUtil.transpose(a0);
+
+        //0   1  2  3  4  5  6  7  8  9  10
+        float[] expectedI = new float[]{9, 10, 8, 7, 5, 6, 4, 3, 1, 2, 0};
+        float[] expectedA = new float[]{0, 1,2,3,4,5,6, 7, 8,9, 10};
+        float[][] expected = new float[11][2];
+        for (int i = 0; i < expectedI.length; ++i) {
+            expected[i][0] = expectedA[i];
+            expected[i][1] = expectedI[i];
+        }
+
+        float[][] r = MiscSorter.ascSort(a, 0);
+
+        double tol = 1.e-15;
+
+        double diff;
+        for (int i = 0; i < expected.length; ++i) {
+            diff = Math.abs(expected[i][0] - r[i][0]);
+            assertTrue(diff < tol);
+            diff = Math.abs(expected[i][1] - r[i][1]);
+            assertTrue(diff < tol);
         }
     }
     
