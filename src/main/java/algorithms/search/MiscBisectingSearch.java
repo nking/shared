@@ -19,6 +19,19 @@ public class MiscBisectingSearch {
      * which is beyond the indexes of list 'a'.
      * if this method returns a value < a.size(), it is where this item can
      * be inserted or can replace an item.
+     <pre>
+     e.g.
+        a = [2,2];
+
+        srch = 1;
+        bisectRightForIncreasingList(a, srch) = 0;
+
+        srch = 2;
+        bisectRightForIncreasingList(a, srch) = 2;
+
+        srch = 5;
+        bisectRightForIncreasingList(a, srch) = 2;
+     </pre>
      * @param a an ascending ordered list (non-decreasing, adjacent values can be ==).
      * @param srch the value to search for in a
      * @return the position in list 'a',
@@ -49,6 +62,19 @@ public class MiscBisectingSearch {
 
      * if this method returns a value < a.size(), it is where this item can
      * be inserted or can replace an item.
+     <pre>
+     e.g.
+        a = [2, 2];
+
+        srch = 1;
+        bisectLeftForIncreasingList(a, srch) = 0
+
+        srch = 2;
+        bisectLeftForIncreasingList(a, srch) = 0
+
+        srch = 5;
+        bisectLeftForIncreasingList(a, srch) = 2
+     </pre>
      * @param a an ascending ordered list (non-decreasing, adjacent values can be ==).
      * @param srch the value to search for in a
      * @return the position in list 'a',

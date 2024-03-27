@@ -3,6 +3,7 @@ package algorithms.search;
 import junit.framework.TestCase;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MiscBisectingSearchTest extends TestCase {
@@ -22,6 +23,11 @@ public class MiscBisectingSearchTest extends TestCase {
         srch = 2;
         res = MiscBisectingSearch.bisectRightForIncreasingList(toList(a), srch);
         assertEquals(eRes, res);
+
+        eRes = 2;
+        srch = 5;
+        res = MiscBisectingSearch.bisectRightForIncreasingList(toList(a), srch);
+        assertEquals(eRes, res);
     }
 
     public void testLeftIncr() {
@@ -36,6 +42,12 @@ public class MiscBisectingSearchTest extends TestCase {
 
         eRes = 0;
         srch = 2;
+        res = MiscBisectingSearch.bisectLeftForIncreasingList(toList(a), srch);
+        assertEquals(eRes, res);
+
+        a = new int[]{2, 2,6,8};
+        srch = 10;
+        eRes = 4;
         res = MiscBisectingSearch.bisectLeftForIncreasingList(toList(a), srch);
         assertEquals(eRes, res);
     }
