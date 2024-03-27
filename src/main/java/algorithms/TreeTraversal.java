@@ -439,9 +439,10 @@ public class TreeTraversal {
     }
 
     /**
-     * find the successor node to npde.
+     * find the successor node to node in a binary search tree.
      <pre>
-     following CLRS chap 12.
+     following CLRS chap 12
+     (Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms")
      </pre>
      * @param node
      * @return
@@ -463,9 +464,10 @@ public class TreeTraversal {
     }
 
     /**
-     find the predeccesor node to node.
+     find the predeccesor node to node in a binary search tree.
      <pre>
-     following CLRS chap 12.
+     following CLRS chap 12
+     ( Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms")
 
      e.g.
      the predecessor of 5 is 4.
@@ -494,9 +496,10 @@ public class TreeTraversal {
     }
 
     /**
-      find the minimum node under node.
+      find the minimum node under node in a binary search tree.
      <pre>
-     following CLRS chap 12.
+     following CLRS chap 12
+     (Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms")
 
      e.g.
      the minimum node under 11 is 8
@@ -517,9 +520,10 @@ public class TreeTraversal {
     }
 
     /**
-      find the maximum node under node.
+      find the maximum node under node in a binary search tree.
      <pre>
-     following CLRS chap 12.
+     following CLRS chap 12
+     (Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms")
 
      e.g.
      the maximum node under 3 is 6
