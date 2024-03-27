@@ -438,4 +438,104 @@ public class TreeTraversal {
         return out;
     }
 
+    /**
+     * find the successor node to npde.
+     <pre>
+     following CLRS chap 12.
+     </pre>
+     * @param node
+     * @return
+     */
+    public BinaryTreeNode successor(BinaryTreeNode node) {
+        if (node.getRight() != null) {
+            // left most node in right subtree
+            return minimum(node.getRight());
+        }
+
+        // find lowest ancestor of node whose left child is an ancestor of node.
+        BinaryTreeNode parent = node.getParent();
+        BinaryTreeNode child = node;
+        while (parent != null && child == parent.getRight()) {
+            child = parent;
+            parent = parent.getParent();
+        }
+        return parent;
+    }
+
+    /**
+     find the predeccesor node to node.
+     <pre>
+     following CLRS chap 12.
+
+     e.g.
+     the predecessor of 5 is 4.
+     if 4 were null, the predecessor of 5 is 3.
+                            7
+                3                        11
+           1         5              9         13
+        0   2     4   6           8   10    12
+     </pre>
+     * @param node
+     * @return
+     */
+    public BinaryTreeNode predeccesor(BinaryTreeNode node) {
+        if (node.getLeft() != null) {
+            // max in left subtree
+            return maximum(node.getLeft());
+        }
+        // find max in parent left subtree
+        BinaryTreeNode parent = node.getParent();
+        BinaryTreeNode child = node;
+        while (parent != null && child == parent.getLeft()) {
+            child = parent;
+            parent = parent.getParent();
+        }
+        return parent;
+    }
+
+    /**
+      find the minimum node under node.
+     <pre>
+     following CLRS chap 12.
+
+     e.g.
+     the minimum node under 11 is 8
+
+                            7
+                3                        11
+           1         5              9         13
+        0   2     4   6           8   10    12
+     </pre>
+     * @param node
+     * @return
+     */
+    public BinaryTreeNode minimum(BinaryTreeNode node) {
+        while (node.getLeft() != null) {
+            node = node.getLeft();
+        }
+        return node;
+    }
+
+    /**
+      find the maximum node under node.
+     <pre>
+     following CLRS chap 12.
+
+     e.g.
+     the maximum node under 3 is 6
+
+                            7
+                3                        11
+           1         5              9         13
+        0   2     4   6           8   10    12
+     </pre>
+     * @param node
+     * @return
+     */
+    public BinaryTreeNode maximum(BinaryTreeNode node) {
+        while (node.getRight() != null) {
+            node = node.getRight();
+        }
+        return node;
+    }
 }

@@ -114,17 +114,17 @@ public class TreeTraversalTest extends TestCase {
         nodes[4].addChild(nodes[9]);
         nodes[9].addChild(nodes[15]);
         
-        System.out.println("NAry-tree reversed level order traversal");
+        //System.out.println("NAry-tree reversed level order traversal");
         TreeTraversal tt = new TreeTraversal();
         DoublyLinkedList<NAryTreeNode> rlo = tt.getReverseLevelOrderIterative2(nodes[0]);
         assertEquals(n, rlo.size());
         NAryTreeNode current = rlo.peekFirst();
         for (i = 0; i < rlo.size(); ++i) {
-            System.out.printf("%d, ", current.getData());
+            //System.out.printf("%d, ", current.getData());
     //        assertEquals(n-i-1, current.getData());
             current = (NAryTreeNode) current.next;
         }
-        System.out.println();
+        //System.out.println();
     }
 
     public void testNAryLevelOrder() {
@@ -173,7 +173,7 @@ public class TreeTraversalTest extends TestCase {
         nodes[4].addChild(nodes[9]);
         nodes[9].addChild(nodes[15]);
         
-        System.out.println("NAry-tree level order traversal");
+        //System.out.println("NAry-tree level order traversal");
         TreeTraversal tt = new TreeTraversal();
         DoublyLinkedList<NAryTreeNode> rlo = tt.getLevelOrderIterative(nodes[0]);
         assertEquals(n, rlo.size());
@@ -193,9 +193,112 @@ public class TreeTraversalTest extends TestCase {
             assertTrue(expectedLevel.remove(current.getData()));
             current = (NAryTreeNode) current.next;
         }
-        System.out.println();
+        //System.out.println();
         for (j = 0; j < expectedLevels.length; ++j) {
             assertTrue(expectedLevels[j].isEmpty());
         }
+    }
+
+    /**
+     test data for tree:
+                            7
+                3                        11
+           1         5              9         13
+        0   2     4   6               10    12
+     * @return
+     */
+    public void testPredecessor() {
+        TreeTraversal traversal = new TreeTraversal();
+        BinaryTreeNode root = getTree0();
+        BinaryTreeNode r;
+
+        // get pred of node 9
+        r = traversal.predeccesor(root.getRight().getLeft());
+        assertEquals(7, r.getData());
+        // get pred of node 5
+        r = traversal.predeccesor(root.getLeft().getRight());
+        assertEquals(4, r.getData());
+
+        // get pred of root
+        r = traversal.predeccesor(root);
+        assertEquals(6, r.getData());
+
+        // pred for 0
+        r = traversal.predeccesor(root.getLeft().getLeft().getLeft());
+        assertNull(r);
+    }
+
+    /**
+     test data for tree:
+                            7
+                3                        11
+           1         5              9         13
+        0   2     4   6               10    12
+     * @return
+     */
+    public void testSuccessor() {
+        TreeTraversal traversal = new TreeTraversal();
+        BinaryTreeNode root = getTree0();
+        BinaryTreeNode r;
+
+        // get successor of node 9
+        r = traversal.successor(root.getRight().getLeft());
+        assertEquals(10, r.getData());
+
+        // get successor of node 10
+        r = traversal.successor(root.getRight().getLeft().getRight());
+        assertEquals(11, r.getData());
+
+        // remove node 6
+        root.getLeft().getRight().setRight(null);
+        // get successor of node 5
+        r = traversal.successor(root.getLeft().getRight());
+        assertEquals(7, r.getData());
+
+        // get successor of root
+        r = traversal.successor(root);
+        assertEquals(9, r.getData());
+
+        // get successor of 13
+        r = traversal.successor(root.getRight().getRight());
+        assertNull(r);
+    }
+
+    /**
+                            7
+                3                        11
+           1         5              9         13
+        0   2     4   6               10    12
+     * @return
+     */
+    public BinaryTreeNode getTree0() {
+        BinaryTreeNode root = new BinaryTreeNode(7);
+        addLeft(root, 3);
+        addLeft(root.getLeft(),1);
+        addRight(root.getLeft(),5);
+        addLeft(root.getLeft().getLeft(),0);
+        addRight(root.getLeft().getLeft(),2);
+        addLeft(root.getLeft().getRight(),4);
+        addRight(root.getLeft().getRight(),6);
+
+        addRight(root, 11);
+        addLeft(root.getRight(),9);
+        addRight(root.getRight(),13);
+        //addLeft(root.getRight().getLeft(), 8); removing x for unit test branch
+        addRight(root.getRight().getLeft(), 10);
+        addLeft(root.getRight().getRight(),12);
+        return root;
+    }
+    protected BinaryTreeNode addLeft(BinaryTreeNode node, int val) {
+        BinaryTreeNode node2 = new BinaryTreeNode(val);
+        node.setLeft(node2);
+        node2.setParent(node);
+        return node;
+    }
+    protected BinaryTreeNode addRight(BinaryTreeNode node, int val) {
+        BinaryTreeNode node2 = new BinaryTreeNode(val);
+        node.setRight(node2);
+        node2.setParent(node);
+        return node;
     }
 }
