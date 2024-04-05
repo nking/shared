@@ -1084,7 +1084,7 @@ public class MiscMath0 {
      @return 
      */
     public static int numberOfBits(int v) {
-        
+        if (v == Integer.MAX_VALUE || v == Integer.MIN_VALUE) return 31;
         if (v < 0) {
             v *= -1;
         } else if (v == 0) {
@@ -1100,12 +1100,64 @@ public class MiscMath0 {
      @return 
      */
     public static int numberOfBits(long v) {
+        if (v == Long.MAX_VALUE || v == Long.MIN_VALUE) return 63;
         if (v < 0) {
             v *= -1;
         } else if (v == 0) {
             return 1;
         }
         return 64 -  Long.numberOfLeadingZeros(v);
+    }
+
+    public static int MSBWithoutBuiltIn(long v) {
+        if (v == 0) return 0;
+        if (v == Long.MAX_VALUE || v == Long.MIN_VALUE) return 63;
+        if (v < 0) {
+            v *= -1;
+        }
+        // bisecting left search to find power of 2
+        int lo = 0, hi = 63;
+        int mid;
+        while (lo <= hi) {
+            mid = lo + (hi - lo)/2;
+            if ((1L<<mid) < v) {
+                lo = mid + 1;
+            } else {
+                hi = mid - 1;
+            }
+        }
+        return Math.max(lo, hi) - 1;
+    }
+    public static int LSB(long v) {
+        if (v == 0) return 0;
+        return Long.numberOfTrailingZeros(v);
+    }
+    public static int LSBWithoutBuiltIn1(long v) {
+        if (v == 0) return 0;
+        int power = (int)(v & -v);
+        return (int)(Math.log(power)/Math.log(2));
+    }
+    public static int LSBWithoutBuilt1n2(long v) {
+        if (v == 0) return 0;
+        int power = (int)(v & -v);
+        // bisecting search to find power of 2
+        int lo = 0, hi = 63;
+        int mid;
+        long t;
+        // power=16 0b10000
+        // 0 63, mid=31, p>>31 = 0,
+        while (power > 0) {
+            mid = lo + (hi - lo)/2;
+            t = power >> mid;
+            if (t == 1L) {
+                return mid;
+            } else if (t > 0) {
+                lo = mid + 1;
+            } else {
+                hi = mid - 1;
+            }
+        }
+        throw new IllegalStateException("error in algorithm");
     }
 
     /**
@@ -1425,11 +1477,43 @@ public class MiscMath0 {
         }
         return f;
     }
+
+    /**
+     * calc binomial coefficient C(n, k), a.k.a. "n choose k" = (n!/(k!*(n-k)!)
+     * runtime complexity is O(n*k).
+     * Use computeNDivKTimesNMinusK(n,k) instead because its runtime complexity is O(k).
+     * This is here as a dynamic programming exercise.
+     * @param n
+     * @param k
+     * @return
+     */
+    private static long calcBinomialCoeff(final int n, final int k) {
+        if (k <= 0) {
+            throw new IllegalArgumentException("k must be >= 0");
+        }
+        if (n<k) {
+            throw new IllegalArgumentException("n must be >= k");
+        }
+        long[] prev = new long[k + 1];
+        long[] curr = new long[k + 1];
+        int j;
+        for (int i = 0; i <= n; ++i) {
+            for (j = 0; j <= Math.min(i, k); ++j) {
+                // base cases:
+                if (j == 0 || j == i) curr[j] = 1;
+                    // add prev k entry
+                else curr[j] = prev[j - 1] + prev[j];
+            }
+            prev = Arrays.copyOf(curr, curr.length);
+        }
+        return curr[k];
+    }
     
      /**
-     * compute n!/k!(n-k)!.  Note that if n or k are larger than 12,
-     * computeNDivKTimesNMinusKBigIntegerExact is used and in that case,
-     * if the result is larger than Long.MAX_VALUE an exception is thrown.
+     * compute n!/k!(n-k)!.
+     * if the result is larger than Long.MAX_VALUE the method throws an ArithmeticException.
+      *
+      * runtime complexity is O(k)
      *
      * (Aho and Ullman "Foundations of Computer Science")
      @param n
@@ -1438,26 +1522,25 @@ public class MiscMath0 {
      * @throws ArithmeticException thrown when result is out of range of type long
      */
     public static long computeNDivKTimesNMinusK(int n, int k) {
+        if (k <= 0) {
+            throw new IllegalArgumentException("k must be >= 0");
+        }
+        if (n<k) {
+            throw new IllegalArgumentException("n must be >= k");
+        }
 
         if (n == k) {
             return 1;
-        }
-        
-        if (k > 12 || n > 12) {
-            BigInteger result = computeNDivKTimesNMinusKBigInteger(n, k);
-            if (result.bitLength() > 63) {
-                throw new ArithmeticException("the result will not fit in a long");
-            }
-            return result.longValue();
         }
 
         int i;
         double result = 1;
         for (i = n; i > (n-k); i--) {
-            result *= i;
+            result = result*i;
+            if (result < 0) throw new ArithmeticException("the result will not fit in a long.  Use computeNDivKTimesNMinusKBigInteger instead.");
             result /= (i - n + k);
         }
-        
+
         return Math.round(result);
     }
     
@@ -1477,12 +1560,14 @@ public class MiscMath0 {
         long result = 1;
         for (int i = n; i > (n-k); i--) {
             result *= i;
+            if (result < 0) throw new ArithmeticException("the result will not fit in a long");
         }
         return result;
     }
     
     /**
-     * compute n!/k!(n-k)!
+     * compute n!/k!(n-k)!.
+     * runtime complexity is O(k).
      @param n
      @param k
      @return 

@@ -330,21 +330,7 @@ public class Huffman {
         //NOTE: could use java's BigInteger, but that creates a new BigInteger 
         //      for every modifying operation such as setBit().
         VeryLongBitString encoded = new VeryLongBitString(nE);
-       
-        /*
-        network data is usually passed as big endian
-            example integer: 0A0B0C0D
 
-                       Big        Little 
-                       Endian:    Endian:
-            memory
-            address
-                a     0A           0D
-              a+1     0B           0C
-              a+2     0C           0B
-              a+3     0D           0A
-        */
-         
         int cP;
         int s;
         long b = 0;
@@ -355,6 +341,8 @@ public class Huffman {
             s = codeSymbolMap.get(cP);
             
             nB = MiscMath0.numberOfBits(s);
+
+            //TODO: revisit one day
             
             // set bits, reversing them from b to b+nB for the bit-string tree path
             // _ _ _ _ _ _  b=0, nB=3   7 6 5 4 3 2 1 0

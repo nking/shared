@@ -119,7 +119,7 @@ public class SubsetChooser {
 
         count = 1;
 
-        // n!/(k!(n-k)!)
+        // n!/(k!(n-k)!).  r.t.c. is O(k)
         np = MiscMath0.computeNDivKTimesNMinusK(n, k);
 
         if (n < 64) {
@@ -242,8 +242,11 @@ public class SubsetChooser {
     private long nextSubset64(long x0) {
 
         long y = x0 & -x0;  // = the least significant one bit of x0
-        long c = x0 + y;
+        long c = x0 + y; // set the next 0 bit that is higher than y
 
+        // c^x0 isolates all the bits from y to c as all 1s.
+        // y is a power of 2, so (c ^ x0)/y down shifts (c ^ x0) by LSB(x0).
+        // then >>2 down shifts twice more to get the pattern to add to c
         x0 = c + (((c ^ x0) / y) >> 2);
 
         count++;

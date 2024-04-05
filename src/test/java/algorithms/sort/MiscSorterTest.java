@@ -549,6 +549,28 @@ public class MiscSorterTest extends TestCase {
         }
     }
 
+    public void testAscSortArrays() {
+        int[] a = new int[]{10, 3, 6, 5};
+        int[] eI = new int[]{1,3,2,0};
+        int[] i = MiscSorter.returnSortedIndexes(a, true);
+        assertTrue(Arrays.equals(eI, i));
+
+        eI = new int[]{0,2,3,1};
+        i = MiscSorter.returnSortedIndexes(a, false);
+        assertTrue(Arrays.equals(eI, i));
+    }
+
+    public void testAscSortArrays2() {
+        double[] a = new double[]{10, 3, 6, 5};
+        int[] eI = new int[]{1,3,2,0};
+        int[] i = MiscSorter.returnSortedIndexes(a, true);
+        assertTrue(Arrays.equals(eI, i));
+
+        eI = new int[]{0,2,3,1};
+        i = MiscSorter.returnSortedIndexes(a, false);
+        assertTrue(Arrays.equals(eI, i));
+    }
+
     public void testAscSort() {
         double[][] a0 = new double[1][];
         a0[0] = new double[]{10, 8, 9, 7, 6, 4, 5, 3, 2, 0, 1};
@@ -660,6 +682,16 @@ public class MiscSorterTest extends TestCase {
             for (int i = 0; i < n; ++i) {
                 assertTrue(a1[i] >= prev);
                 idx = indexes[i];
+                diff = Math.abs(a1[i] - orig[idx]);
+                assertTrue(diff < tol);
+                prev = a1[i];
+            }
+
+            int[] indexes2 = MiscSorter.returnSortedIndexes(orig, true);
+            prev = Double.NEGATIVE_INFINITY;
+            for (int i = 0; i < n; ++i) {
+                assertTrue(a1[i] >= prev);
+                idx = indexes2[i];
                 diff = Math.abs(a1[i] - orig[idx]);
                 assertTrue(diff < tol);
                 prev = a1[i];

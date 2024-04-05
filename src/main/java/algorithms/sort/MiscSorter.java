@@ -5,7 +5,20 @@ import algorithms.util.AngleUtil;
 import algorithms.util.FormatArray;
 
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
+/*
+TODO: revise most of this to use lambdas (streaming api) to sort indexes then
+use on the multiple arrays.
+e.g.
+get indexes for a descending sort of arrayA:
+
+int[] sortedIdxs
+                = IntStream.range(0, n).boxed()
+                .sorted((i, j)-> Integer.compare(arrayA[j], arrayA[i]))
+                .mapToInt(ele->ele).toArray();
+
+ */
 /**
  * 
    first implemented in project
@@ -25,6 +38,41 @@ import java.util.Arrays;
  * @author nichole
  */
 public class MiscSorter {
+
+    public static int[] returnSortedIndexes(int[] a, boolean ascending) {
+
+        // range:
+        //     Returns a sequential ordered IntStream from startInclusive (inclusive)
+        //     to endExclusive (exclusive) by an incremental step of 1.
+        // boxed:
+        //     Returns a Stream consisting of the elements of this stream, each boxed to an Integer
+        // sorted:
+        //     Returns a stream consisting of the elements of this stream, sorted according to the provided Comparator
+        // mapToInt:
+        //     Returns an IntStream consisting of the results of applying the given function to the elements of this stream
+        // toArray:
+        //     Returns an array containing the elements of this stream.
+
+        if (ascending) {
+            return IntStream.range(0, a.length).boxed()
+                    .sorted((i, j)-> Integer.compare(a[i], a[j]))
+                    .mapToInt(ele->ele).toArray();
+        }
+        return IntStream.range(0, a.length).boxed()
+                .sorted((i, j)-> Integer.compare(a[j], a[i]))
+                .mapToInt(ele->ele).toArray();
+    }
+
+    public static int[] returnSortedIndexes(double[] a, boolean ascending) {
+        if (ascending) {
+            return IntStream.range(0, a.length).boxed()
+                    .sorted((i, j)-> Double.compare(a[i], a[j]))
+                    .mapToInt(ele->ele).toArray();
+        }
+        return IntStream.range(0, a.length).boxed()
+                .sorted((i, j)-> Double.compare(a[j], a[i]))
+                .mapToInt(ele->ele).toArray();
+    }
 
     /**
      * copies the input array into an array of size one more column dimension and in that added dimension,

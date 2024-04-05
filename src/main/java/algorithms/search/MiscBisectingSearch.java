@@ -85,6 +85,7 @@ public class MiscBisectingSearch {
     }
 
     /**
+     * find the least index such that values at higher indexes are GEQ srch.
      * bisecting search tailored to find the position in list 'a',
      * such that all elements at indexes >= the returned position are GEQ srch.
      * This is the same as a ceiling(srch) function which

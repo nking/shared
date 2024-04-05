@@ -591,7 +591,7 @@ public class MatrixUtil {
         a*p0 + b*p3 + c*p6    a*p1 + b*p4 + c*p7    a*p2 + b*p5 + c*p8
         d*p0 + d*p3 + e*p6    d*p1 + d*p4 + e*p7    d*p2 + e*p5 + f*p8
         */
-        
+
         for (int mrow = 0; mrow < mrows; mrow++) {
             for (int ncol = 0; ncol < ncols; ncol++) {
                 double sum = 0;                

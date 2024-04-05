@@ -15,8 +15,54 @@ import java.util.Arrays;
 import java.util.Stack;
 
 /**
+<pre>
 
- * The dynamic approach needs to store the partial sums as the path lengthens
+ A completely dynamic solution requires a large amount of memory (see statement below).
+ It isn't recommended to solve TSP using dynamic programming.  This code is here as an exercise.
+
+ To solve TSP by dynamic programming, we break the code into sub-problems and resuse those calculations in making
+ larger subproblems which solve the problem.
+
+ For TSP, pick any city as a starting point as we will return to it and all cities must be included.
+ e.g. nCities = 5.
+
+ calculate and store each pair first which is nCities^2
+     calc 0:1, 0:2, 0:3, 0:4 and store each
+          1:1, 1:2, 1:3, 1:4
+     ... all pairs
+
+ calculate the combining of those pairs and store each.
+ call this stage n=2 pairs.  nCities^2*(3)
+     0:1 + 1:2  nCities = 4, so we have (nCities-(n=1))=3 to add to each n=2 item
+     0:1 + 1:3
+     0:1 + 1:4
+     0:2 + 2:1
+     0:2 + 2:3
+     etc.
+
+ calculate the combining of n=3 pairs by using the n=2 pairs and the n=1 pairs.  nCities^2*(3)*(2)
+     n=2           n=1
+     (0:1 + 1:2) + (2:3)   nCities = 4, so we have (nCities-(n=2))=2 to add to each n=2 item
+     (0:1 + 1:2) + (2:4)
+     (0:1 + 1:3) + (3:2)   next n=2 item
+     (0:1 + 1:3) + (3:4)
+     ...
+     (0:2 + 2:1) + (1:3)  next n=2 item
+     (0:2 + 2:1) + (1:4)
+ ...
+
+ calculate the combining of n=4 pairs by using the n=3 pairs and the n=1 pairs
+ OR calculate using the n=2 pairs combined with the n=2 pairs.
+ the approach of n=3 pairs and n=1 pairs is nCities^2*(3)*(2) because only have one choice of missing city
+ the approach of n=2 pairs combined with n=2 pairs is the same runtime complexity.
+
+ The details of how to store the data are present below.
+ We need to track what indexes are included in partial solutions and which indexes are missing
+ from those solutions.
+
+ The implementation could be improved, but owrking through it served its purpose already.
+
+  The dynamic approach needs to store the partial sums as the path lengthens
      (without the start node).
     
   data structure requirements for memo:
@@ -47,7 +93,7 @@ import java.util.Stack;
          holds the individual values for the keys in the concatenated key.
      - would need a wrapper class to manage the integrity of the array of BigInteger or
        VeryLongBitString and the 2 dimensional array of path sums.
-
+</pre>
  * @author nichole
  */
 public abstract class AbstractTSP {

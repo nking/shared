@@ -355,6 +355,26 @@ public class MiscMath0Test extends TestCase {
         }
     }
 
+    public void testMSB_LSB() {
+        long t0 = (1L<<4)+1;
+        assertEquals(4, MiscMath0.MSBWithoutBuiltIn(t0));
+        assertEquals(5, MiscMath0.numberOfBits(t0));
+        assertEquals(4, MiscMath0.MSBWithoutBuiltIn(-1*t0));
+        assertEquals(5, MiscMath0.numberOfBits(-1*t0));
+
+        assertEquals(63, MiscMath0.MSBWithoutBuiltIn(Long.MAX_VALUE));
+        assertEquals(63, MiscMath0.MSBWithoutBuiltIn(Long.MIN_VALUE));
+
+        long t1 = 0b10010000;
+        assertEquals(4, MiscMath0.LSB(t1));
+        assertEquals(4, MiscMath0.LSBWithoutBuiltIn1(t1));
+        assertEquals(4, MiscMath0.LSBWithoutBuilt1n2(t1));
+
+        assertEquals(4, MiscMath0.LSB(-1*t1));
+        assertEquals(4, MiscMath0.LSBWithoutBuiltIn1(-1*t1));
+        assertEquals(4, MiscMath0.LSBWithoutBuilt1n2(-1*t1));
+    }
+
     public void testBitReverse() throws Exception {
 
         int max = 1 << 4;
