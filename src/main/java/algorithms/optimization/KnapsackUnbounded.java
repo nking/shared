@@ -25,20 +25,29 @@ public class KnapsackUnbounded {
 
         // tab[wc] holds the largest sum of values for the items whose weights sum to wc
         int[] tab = new int[target + 1];
+        int sentinel = -1;
+        Arrays.fill(tab, sentinel);
+        tab[0] = 0;
 
         int i, wc, wc2;
         for (i = 0; i < n; i++) {
             if (weights[i] > target) continue;
+
             for (wc = 1; wc <= target; wc++) {
                 wc2 = wc - weights[i];
-                //System.out.printf("i=%d, wc=%d, wc2=%d, weights[i]=%d  tab=%s\n", i, wc, wc2, weights[i], Arrays.toString(tab));
-                if (wc2 >= 0 && ((wc2 % weights[i])==0))  {
-                    tab[wc] = Math.max(tab[wc], tab[wc2] + values[i]);
-                    //System.out.printf("    tab[%d]=%d\n", wc, tab[wc]);
+
+                if (wc2 >= 0) {
+                    // exact value:
+                    // update only when wc2 >= 0 have previous entry to add to or wc==0)
+                    if (tab[wc2] != sentinel) {
+                        tab[wc] = Math.max(tab[wc], tab[wc2] + values[i]);
+                    } else if (wc2 == 0) {
+                        tab[wc] = Math.max(tab[wc], values[i]);
+                    }
                 }
             }
         }
-        return tab[target];
+        return tab[target] == sentinel ? 0 : tab[target];
     }
 
     /**

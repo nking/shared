@@ -72,7 +72,7 @@ public class KnapsackBoundedTest extends TestCase {
         assertEquals(expAns, ans);
     }
 
-    public void estMaxValueForTarget() {
+    public void testMaxValueForTarget() {
 
         int[] w, v, q;
         int target, ans, expAns;

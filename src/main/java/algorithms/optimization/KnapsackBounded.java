@@ -98,7 +98,7 @@ public class KnapsackBounded {
 
                     if (wc2 == 0)  {
                         currTab[wc] = Math.max(currTab[wc], q * values[i - 1]);
-                    } else if (wc2 > 0  /*&& ((wc2 % weights[i - 1])==0)*/) {
+                    } else if (wc2 > 0) {
                         // add to previous weight entry which has already met quantities limit
                         currTab[wc] = Math.max(currTab[wc], prevTab[wc2] + q * values[i-1]);
                     }

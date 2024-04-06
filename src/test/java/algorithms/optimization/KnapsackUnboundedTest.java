@@ -9,10 +9,19 @@ public class KnapsackUnboundedTest extends TestCase {
         int[] w, v;
         int target, ans, expAns;
 
+        w = new int[]{5, 11, 30};
+        v = new int[]{11, 10, 30};
+        target = 26;
+        expAns = 43;//11 + 15 = 3 5's + 1 10 = 3*11 + 1*10 = 33+10=43
+        System.out.printf("\ntarget=%d\n  weights=%s\n values=%s\n",
+                target, Arrays.toString(w), Arrays.toString(v));
+        ans = KnapsackUnbounded.maxValueForTarget(v, w, target);
+        assertEquals(expAns, ans);
+
         w = new int[]{5, 10, 30};
         v = new int[]{11, 10, 30};
         target = 8;
-        expAns = 0;
+        expAns = 0; //
         System.out.printf("\ntarget=%d\n  values=%s\n  weights=%s\n", target, Arrays.toString(v), Arrays.toString(w));
         ans = KnapsackUnbounded.maxValueForTarget(v, w, target);
         assertEquals(expAns, ans);
