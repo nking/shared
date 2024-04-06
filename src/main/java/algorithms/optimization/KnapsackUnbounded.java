@@ -38,7 +38,7 @@ public class KnapsackUnbounded {
 
                 if (wc2 >= 0) {
                     // exact value:
-                    // update only when wc2 >= 0 have previous entry to add to or wc==0)
+                    // update only when wc2 >= 0 have previous entry to add to, or wc==0 which is no remaining sum and exact value
                     if (tab[wc2] != sentinel) {
                         tab[wc] = Math.max(tab[wc], tab[wc2] + values[i]);
                     } else if (wc2 == 0) {
