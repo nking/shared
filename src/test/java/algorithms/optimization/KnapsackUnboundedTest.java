@@ -48,6 +48,15 @@ public class KnapsackUnboundedTest extends TestCase {
         int[] w, v;
         int target, ans, expAns;
 
+        w = new int[]{5, 11, 30};
+        v = new int[]{11, 23, 30};
+        target = 26;
+        expAns = 56;// 2 11's = 46. 5 5's =55;  3 5's and 1 11 = 33+23=56
+        System.out.printf("\ncapacity=%d\n  weights=%s\n values=%s\n",
+                target, Arrays.toString(w), Arrays.toString(v));
+        ans = KnapsackUnbounded.maxValueForCapacity(v, w, target);
+        assertEquals(expAns, ans);
+
         w = new int[]{5, 10, 30};
         v = new int[]{11, 10, 30};
         target = 8;
