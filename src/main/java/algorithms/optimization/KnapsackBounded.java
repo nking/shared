@@ -44,14 +44,12 @@ public class KnapsackBounded {
                     wc2 = wc - q * weights[i - 1];
 
                     if (wc2 >= 0) {
-                        currTab[wc] = Math.max(currTab[wc], q * values[i-1]);
+                        currTab[wc] = Math.max(currTab[wc], prevTab[wc2] + q * values[i-1]);
                     } else {
                         currTab[wc] = Math.max(currTab[wc], prevTab[wc]);
                     }
                 }
             }
-            //System.out.printf("%d) prevTab=%s\n", i, Arrays.toString(prevTab));
-            //System.out.printf("%d) currTab=%s\n", i, Arrays.toString(currTab));
         }
 
         //System.out.printf("\nprevTab=%s\n", Arrays.toString(prevTab));

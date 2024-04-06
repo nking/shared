@@ -12,6 +12,16 @@ public class KnapsackBoundedTest extends TestCase {
         int capacity, ans, expAns;
 
         w = new int[]{5, 10, 30};
+        v = new int[]{11, 23, 30};
+        q = new int[]{2, 2, 2};
+        capacity = 16;
+        expAns = 34;  // 1 5 and 1 10 = 11+23=34
+        System.out.printf("\ncapacity=%d\n  weights=%s\n values=%s\n   quantities=%s\n",
+                capacity, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
+        ans = KnapsackBounded.maxValueForCapacity(v, w, q, capacity);
+        assertEquals(expAns, ans);
+
+        w = new int[]{5, 10, 30};
         v = new int[]{11, 10, 30};
         q = new int[]{1, 2, 2};
         capacity = 8;
