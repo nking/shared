@@ -10,7 +10,7 @@ public class KnapsackUnbounded {
     /**
      * find maximum value from summing the values associated with an unbounded quantity
      * of weights that sum to exactly EQ target.
-     * @param values values for items. values and weights describe the same items.
+     * @param values non-negative values for items. values and weights describe the same items.
      * @param weights non-negative array of weights for items
      * @param target the exact sum that a combination of an unbounded number of weights should sum to
      * @return
@@ -53,7 +53,7 @@ public class KnapsackUnbounded {
     /**
      * find maximum value from summing the values associated with an unbounded quantity of
      * weights that sum to LEQ to capacity.
-     * @param values values for items. values and weights describe the same items.
+     * @param values non-negative values for items. values and weights describe the same items.
      * @param weights non-negative array of weights for items
      * @param capacity upper limit to the sum of weights for an unbounded number of items
      * @return
