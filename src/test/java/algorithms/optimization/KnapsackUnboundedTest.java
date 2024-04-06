@@ -139,6 +139,12 @@ public class KnapsackUnboundedTest extends TestCase {
         expAns = 1;
         ans = KnapsackUnbounded.numberOfWaysForTarget(w, target);
         assertEquals(expAns, ans);
+
+        w = new int[]{2,7};
+        target = 4;
+        expAns = 1;
+        ans = KnapsackUnbounded.numberOfWaysForTarget(w, target);
+        assertEquals(expAns, ans);
     }
 
 }
