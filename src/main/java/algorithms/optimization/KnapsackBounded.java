@@ -19,7 +19,7 @@ public class KnapsackBounded {
      * @param capacity upper limit to the sum of weights for bounded quantities of items
      * @return
      */
-    public static int maxValueForCapacity(int[] values, int[] weights, int[] quantities, int capacity) {
+    public static int maxValueForCapacity2(int[] values, int[] weights, int[] quantities, int capacity) {
 
         int n = weights.length;
 
@@ -58,6 +58,11 @@ public class KnapsackBounded {
         return currTab[capacity];
     }
 
+    public static int maxValueForCapacity(int[] values, int[] weights, int[] quantities, int capacity) {
+
+        return maxValue(values, weights, quantities, capacity, false);
+    }
+
     /**
      * find maximum value from summing the values associated with bounded quantities
      * of weights that sum to exactly EQ target.
@@ -72,6 +77,10 @@ public class KnapsackBounded {
      * @return
      */
     public static int maxValueForTarget(int[] values, int[] weights, int[] quantities, int target) {
+        return maxValue(values, weights, quantities, target, true);
+    }
+
+    public static int maxValue(int[] values, int[] weights, int[] quantities, int target, boolean solveForExact) {
         int n = weights.length;
 
         if (values.length != n) {
@@ -83,23 +92,38 @@ public class KnapsackBounded {
 
         int[] prevTab = null;
         int[] currTab = new int[target + 1];
+        int sentinel = Integer.MIN_VALUE;
+        Arrays.fill(currTab, sentinel);
+        currTab[0] = 0;
 
         int wc, q, wc2;
         for (int i = 1; i <= n; ++i) {
             if (weights[i-1] > target) continue;
+
             prevTab = currTab;
             currTab = new int[currTab.length];
+            Arrays.fill(currTab, sentinel);
+            currTab[0] = 0;
+
             for (wc = 1; wc <= target; ++wc) {
                 //for (wc = capacity; wc >= 1; --wc) {
                 for (q = 1; q <= quantities[i - 1]; ++q) {
                     wc2 = wc - q * weights[i - 1];
 
-                    if (wc2 == 0)  {
+                    //System.out.printf("i=%d, wc=%d, q=%d, wc2=%d, weights[i-1]=%d\n",
+                    //        i, wc, q,  wc2, weights[i-1]);
+
+                    if (wc2 == 0) {
                         currTab[wc] = Math.max(currTab[wc], q * values[i - 1]);
-                    } else if (wc2 > 0) {
-                        // add to previous weight entry which has already met quantities limit
-                        currTab[wc] = Math.max(currTab[wc], prevTab[wc2] + q * values[i-1]);
+                    } else if (wc2 > 0)  {
+                        int s = (prevTab[wc2] == sentinel) ? sentinel : prevTab[wc2] + q * values[i-1];
+                        currTab[wc] = Math.max(currTab[wc], s);
+                    } else {
+                        // carry forward best of prev and curr
+                        currTab[wc] = Math.max(currTab[wc], prevTab[wc]);
                     }
+
+                    //System.out.printf("    currTab[wc]=%d\n", currTab[wc]);
                 }
             }
             //System.out.printf("%d) prevTab=\n%s\n", i, Arrays.toString(prevTab));
@@ -110,13 +134,88 @@ public class KnapsackBounded {
         //    System.out.printf("\nprevTab=\n%s\n", Arrays.toString(prevTab));
         //System.out.printf("currTab=\n%s\n", Arrays.toString(currTab));
 
-        return currTab[target];
+        if (solveForExact) {
+            return currTab[target] == sentinel ? 0 : currTab[target];
+        }
+
+        // search backwards for max
+        int max = currTab[target];
+        int i = target;
+        while (i > 0) {
+            max = Math.max(max, currTab[--i]);
+        }
+
+        return max == sentinel ? 0 : max;
     }
 
-    /*
     public static int minNumberOfItemsForTarget(int[] weights, int[] quantities, int target) {
+        return minNumberOfItems(weights, quantities, target, true);
+    }
 
-    }*/
+    public static int minNumberOfItemsForCapacity(int[] weights, int[] quantities, int capacity) {
+        return minNumberOfItems(weights, quantities, capacity, false);
+    }
+
+    public static int minNumberOfItems(int[] weights, int[] quantities, int target, boolean solveForExact) {
+
+        int n = weights.length;
+        int[] prevTab = null;
+        int[] currTab = new int[target + 1];
+        int sentinel = Integer.MAX_VALUE;
+        Arrays.fill(currTab, sentinel);
+        currTab[0] = 0;
+
+        int wc, q, wc2;
+        for (int i = 1; i <= n; ++i) {
+            if (weights[i-1] > target) continue;
+
+            prevTab = currTab;
+            currTab = new int[currTab.length];
+            Arrays.fill(currTab, sentinel);
+            currTab[0] = 0;
+
+            for (wc = 1; wc <= target; ++wc) {
+                for (q = 1; q <= quantities[i - 1]; ++q) {
+                    wc2 = wc - q * weights[i - 1];
+
+                    //System.out.printf("i=%d, wc=%d, q=%d, wc2=%d, weights[i-1]=%d\n",
+                    //        i, wc, q,  wc2, weights[i-1]);
+
+                    /*
+                    for each item with wc2==0, replace current tab[wc] if LT
+                                       wc2>0, add to previous remaining (wc2) if exists
+                                       wc2<0, carry forward prev wc
+                     */
+                    if (wc2 == 0) {
+                        currTab[wc] = Math.min(currTab[wc], q);
+                    } else if (wc2 > 0)  {
+                        int s = (prevTab[wc2] == sentinel) ? sentinel : q + prevTab[wc2];
+                        currTab[wc] = Math.min(currTab[wc], s);
+                    } else {
+                        // carry forward best of prev and curr
+                        currTab[wc] = Math.min(currTab[wc], prevTab[wc]);
+                    }
+
+                    //System.out.printf("    prevTab=%s\n", toString(prevTab));
+                    //System.out.printf("    currTab=%s\n", toString(currTab));
+                }
+            }
+        }
+        //System.out.printf("currTab=%s\n", toString(currTab));
+
+        if (solveForExact) {
+            return currTab[target] == sentinel ? 0 : currTab[target];
+        }
+
+        // search backwards for last sum entered
+        int last = currTab[target];
+        int i = target;
+        while (i > 0 && currTab[i] == sentinel) {
+            --i;
+        }
+
+        return currTab[i] == sentinel ? 0 : currTab[i];
+    }
 
     public static int numberOfWaysForTarget(int[] weights, int[] quantities, int target) {
 
@@ -176,6 +275,22 @@ public class KnapsackBounded {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < tab.length; ++i) {
             sb.append(String.format("%d) %s\n", i, Arrays.toString(tab[i])));
+        }
+        sb.delete(sb.length()-1, sb.length());
+        return sb.toString();
+    }
+
+    private static String toString(int[] tab) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < tab.length; ++i) {
+            if (tab[i] == Integer.MAX_VALUE) {
+                sb.append("1000");
+            } else if (tab[i] == Integer.MIN_VALUE) {
+                sb.append("-1");
+            } else {
+                sb.append(tab[i]);
+            }
+            sb.append(",");
         }
         sb.delete(sb.length()-1, sb.length());
         return sb.toString();
