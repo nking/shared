@@ -186,12 +186,16 @@ public class KnapsackUnboundedTest extends TestCase {
         //System.out.printf("\ncapacity=%d, weights=%s\n", capacity, java.util.Arrays.toString(w));
         ans = KnapsackUnbounded.minNumberOfItemsForCapacity(w, capacity);
         assertEquals(expAns, ans);
+        ans = KnapsackUnbounded.minNumberOfItemsForCapacity2(w, capacity);
+        assertEquals(expAns, ans);
 
         w = new int[]{1, 5, 10};
         capacity = 8;
         expAns = 4;
         //System.out.printf("\ncapacity=%d, weights=%s\n", capacity, java.util.Arrays.toString(w));
         ans = KnapsackUnbounded.minNumberOfItemsForCapacity(w, capacity);
+        assertEquals(expAns, ans);
+        ans = KnapsackUnbounded.minNumberOfItemsForCapacity2(w, capacity);
         assertEquals(expAns, ans);
 
         w = new int[]{1, 5};
@@ -200,12 +204,16 @@ public class KnapsackUnboundedTest extends TestCase {
         //System.out.printf("\ncapacity=%d, weights=%s\n", capacity, java.util.Arrays.toString(w));
         ans = KnapsackUnbounded.minNumberOfItemsForCapacity(w, capacity);
         assertEquals(expAns, ans);
+        ans = KnapsackUnbounded.minNumberOfItemsForCapacity2(w, capacity);
+        assertEquals(expAns, ans);
 
         w = new int[]{1, 5, 7, 10};
         capacity = 12;
         expAns = 2;
         //System.out.printf("\ncapacity=%d, weights=%s\n", capacity, java.util.Arrays.toString(w));
         ans = KnapsackUnbounded.minNumberOfItemsForCapacity(w, capacity);
+        assertEquals(expAns, ans);
+        ans = KnapsackUnbounded.minNumberOfItemsForCapacity2(w, capacity);
         assertEquals(expAns, ans);
 
         w = new int[]{2, 5, 10};
@@ -214,12 +222,16 @@ public class KnapsackUnboundedTest extends TestCase {
         //System.out.printf("\ncapacity=%d, weights=%s\n", capacity, java.util.Arrays.toString(w));
         ans = KnapsackUnbounded.minNumberOfItemsForCapacity(w, capacity);
         assertEquals(expAns, ans);
+        ans = KnapsackUnbounded.minNumberOfItemsForCapacity2(w, capacity);
+        assertEquals(expAns, ans);
 
         w = new int[]{1, 5, 7, 10};
         capacity = 7;
         expAns = 1;
         //System.out.printf("\ncapacity=%d, weights=%s\n", capacity, java.util.Arrays.toString(w));
         ans = KnapsackUnbounded.minNumberOfItemsForCapacity(w, capacity);
+        assertEquals(expAns, ans);
+        ans = KnapsackUnbounded.minNumberOfItemsForCapacity2(w, capacity);
         assertEquals(expAns, ans);
 
         w = new int[]{1, 5, 7, 10};
@@ -228,12 +240,16 @@ public class KnapsackUnboundedTest extends TestCase {
         //System.out.printf("\ncapacity=%d, weights=%s\n", capacity, java.util.Arrays.toString(w));
         ans = KnapsackUnbounded.minNumberOfItemsForCapacity(w, capacity);
         assertEquals(expAns, ans);
+        ans = KnapsackUnbounded.minNumberOfItemsForCapacity2(w, capacity);
+        assertEquals(expAns, ans);
 
         w = new int[]{1, 5, 7, 10};
         capacity = 28;
         expAns = 4;
         //System.out.printf("\ncapacity=%d, weights=%s\n", capacity, java.util.Arrays.toString(w));
         ans = KnapsackUnbounded.minNumberOfItemsForCapacity(w, capacity);
+        assertEquals(expAns, ans);
+        ans = KnapsackUnbounded.minNumberOfItemsForCapacity2(w, capacity);
         assertEquals(expAns, ans);
     }
 

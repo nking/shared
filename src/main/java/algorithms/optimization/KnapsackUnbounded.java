@@ -117,7 +117,21 @@ public class KnapsackUnbounded {
      * @return
      */
     public static int minNumberOfItemsForTarget(int[] weights, int target) {
+        return minNumberOfItems(weights, target, true);
+    }
 
+    /**
+     * find the minimum number of items whose weights sum to LEQ capacity.
+     * @param weights non-negative array of item weights
+     * @param capacity the sum that a combination of and unbounded quantity of weights should sum to if possible, else
+     *                 the min for the greatest lower sum which was met.
+     * @return
+     */
+    public static int minNumberOfItemsForCapacity(int[] weights, int capacity) {
+        return minNumberOfItems(weights, capacity, false);
+    }
+
+    public static int minNumberOfItems(int[] weights, int target, boolean solveForExact) {
         int n = weights.length;
 
         // tab[wc] holds the min number of items for the items whose weights sum to wc
@@ -131,7 +145,13 @@ public class KnapsackUnbounded {
             if (weights[i] > target) continue;
             for (wc = 1; wc <= target; wc++) {
                 wc2 = wc - weights[i];
-                if (wc2 >= 0) {
+                /*if (wc2 >= 0) {
+                    int s = (tab[wc2] == sentinel) ? sentinel : 1 + tab[wc2];
+                    tab[wc] = Math.min(tab[wc], s);
+                }*/
+                if (wc2 == 0) {
+                    tab[wc] = Math.min(tab[wc], 1);
+                } else if (wc2 > 0)  {
                     int s = (tab[wc2] == sentinel) ? sentinel : 1 + tab[wc2];
                     tab[wc] = Math.min(tab[wc], s);
                 }
@@ -140,10 +160,28 @@ public class KnapsackUnbounded {
             }
         }
         //System.out.printf("tab=%s\n", Arrays.toString(tab));
-        return tab[target] == sentinel ? 0 : tab[target];
+        if (solveForExact) {
+            return tab[target] == sentinel ? 0 : tab[target];
+        }
+
+        // search backwards for last sum entered
+        int last = tab[target];
+        i = target;
+        while (i > 0 && tab[i] == sentinel) {
+            --i;
+        }
+
+        return tab[i] == sentinel ? 0 : tab[i];
     }
 
-    public static int minNumberOfItemsForCapacity(int[] weights, int capacity) {
+    /**
+     * find the minimum number of items whose weights sum to LEQ capacity.
+     * @param weights non-negative array of item weights
+     * @param capacity the sum that a combination of and unbounded quantity of weights should sum to if possible, else
+     *                 the min for the greatest lower sum which was met.
+     * @return
+     */
+    public static int minNumberOfItemsForCapacity2(int[] weights, int capacity) {
 
         int n = weights.length;
 
