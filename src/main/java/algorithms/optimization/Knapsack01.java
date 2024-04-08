@@ -107,7 +107,8 @@ public class Knapsack01 {
             for (wc = 1; wc <= capacity; wc++) {
                 wc2 = wc-weights[i-1];
                 t = prevTab[wc];
-                if (wc2 >= 0) { // to avoid exceeding capacity
+                // compare to previous wc.  0-1 means we cannot add to current wc2
+                if (wc2 >= 0) {
                     currTab[wc] = Math.max(t, prevTab[wc2] + values[i-1]);
                 } else {
                     currTab[wc] = t;
@@ -128,7 +129,8 @@ public class Knapsack01 {
      * of 0 or 1 for each item.
      * @param values non-negative values for items. values and weights describe the same items.
      * @param weights non-negative array of weights for items
-     * @param target the exact sum that a combination of an unbounded number of weights should sum to
+     * @param target the exact sum of weights for the minimum number of items which sum to that
+     *               weight.  each item can only be added up to a quantity of 1.
      * @return the maximum value for items whose weights sum up to exactly equal target.
      */
     public static int maxValueForTarget(int[] values, int[] weights, int target) {
@@ -164,6 +166,77 @@ public class Knapsack01 {
         }
 
         return currTab[target] == sentinel ? 0 : currTab[target];
+    }
+
+    /**
+     * find the minimum number of items whose weights sum to LEQ capacity.
+     * @param weights non-negative array of item weights
+     * @param capacity the largest sum of weights for the minimum number of items which sum to that
+     * weight.  each item can only be added up to a quantity of 1.  if capacity isn't achieved, the solution
+     *                 for the next lowest summed amount is returned.
+     * @return
+     */
+    public static int minNumberOfItemsForCapacity(int[] weights, int capacity) {
+        return minNumberOfItems(weights, capacity, false);
+    }
+
+    /**
+     * find the minimum number of items whose weights sum to exact target.
+     * @param weights non-negative array of item weights
+     * @param target the sum of weights for the minimum number of items which sum to that
+     * target.
+     * @return
+     */
+    public static int minNumberOfItemsForTarget(int[] weights, int target) {
+        return minNumberOfItems(weights, target, true);
+    }
+
+    public static int minNumberOfItems(int[] weights, int target, boolean solveForExact) {
+        int n = weights.length;
+
+        // tab[wc] holds the min number of items for the items whose weights sum to wc
+        int[] prevTab = null;
+        int[] currTab = new int[target + 1];
+        int sentinel = Integer.MAX_VALUE;
+        Arrays.fill(currTab, sentinel);
+        currTab[0] = 0;
+
+        int i, wc, wc2;
+        for (i = 0; i < n; i++) {
+            if (weights[i] > target) continue;
+            prevTab = currTab;
+            currTab = new int[target + 1];
+            Arrays.fill(currTab, sentinel);
+            currTab[0] = 0;
+
+            for (wc = 1; wc <= target; wc++) {
+                wc2 = wc - weights[i];
+
+                if (wc2 == 0) {
+                    currTab[wc] = Math.min(currTab[wc], 1);
+                } else if (wc2 > 0)  {
+                    int s = (prevTab[wc2] == sentinel) ? sentinel : 1 + prevTab[wc2];
+                    currTab[wc] = Math.min(currTab[wc], s);
+                } else {
+                    currTab[wc] = prevTab[wc];
+                }
+
+                //System.out.printf("i=%d, wc=%d, wc2=%d, weights[i]=%d  tab=%s\n", i, wc, wc2, weights[i], Arrays.toString(tab));
+            }
+        }
+        //System.out.printf("tab=%s\n", Arrays.toString(tab));
+        if (solveForExact) {
+            return currTab[target] == sentinel ? 0 : currTab[target];
+        }
+
+        // search backwards for last sum entered
+        int last = currTab[target];
+        i = target;
+        while (i > 0 && currTab[i] == sentinel) {
+            --i;
+        }
+
+        return currTab[i] == sentinel ? 0 : currTab[i];
     }
 
     public static int numberOfWaysForTarget(int[] weights, int target) {

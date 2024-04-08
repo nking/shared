@@ -105,7 +105,7 @@ public class Knapsack01Test extends TestCase {
         //        capacity, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
         ans = Knapsack01.numberOfWaysForTarget(w, target);
         assertEquals(expAns, ans);
-if (true) return;
+
         w = new int[]{5, 10, 30};
         target = 16;
         expAns = 0;
@@ -120,6 +120,72 @@ if (true) return;
         //System.out.printf("\target=%d\n  weights=%s\n values=%s\n   quantities=%s\n",
         //        capacity, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
         ans = Knapsack01.numberOfWaysForTarget(w, target);
+        assertEquals(expAns, ans);
+    }
+
+    public void testMinNumberOfItemsForTarget() {
+        int[] w;
+        int target, ans, expAns;
+
+        w = new int[]{5, 10, 30};
+        target = 15;
+        expAns = 2;
+        //System.out.printf("\target=%d\n  weights=%s\n values=%s\n   quantities=%s\n",
+        //        capacity, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
+        ans = Knapsack01.minNumberOfItemsForTarget(w, target);
+        assertEquals(expAns, ans);
+
+        w = new int[]{5, 10, 30};
+        target = 16;
+        expAns = 0;
+        //System.out.printf("\target=%d\n  weights=%s\n values=%s\n   quantities=%s\n",
+        //        capacity, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
+        ans = Knapsack01.minNumberOfItemsForTarget(w, target);
+        assertEquals(expAns, ans);
+
+        w = new int[]{5, 10, 30, 40};
+        target = 45;
+        expAns = 2;
+        //System.out.printf("\target=%d\n  weights=%s\n values=%s\n   quantities=%s\n",
+        //        capacity, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
+        ans = Knapsack01.minNumberOfItemsForTarget(w, target);
+        assertEquals(expAns, ans);
+    }
+
+    public void testMinNumberOfItemsForCapacity() {
+        int[] w;
+        int target, ans, expAns;
+
+        w = new int[]{5, 10, 30};
+        target = 15;
+        expAns = 2;
+        //System.out.printf("\target=%d\n  weights=%s\n values=%s\n   quantities=%s\n",
+        //        capacity, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
+        ans = Knapsack01.minNumberOfItemsForCapacity(w, target);
+        assertEquals(expAns, ans);
+
+        w = new int[]{5, 10, 30};
+        target = 16;
+        expAns = 2;
+        //System.out.printf("\target=%d\n  weights=%s\n values=%s\n   quantities=%s\n",
+        //        capacity, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
+        ans = Knapsack01.minNumberOfItemsForCapacity(w, target);
+        assertEquals(expAns, ans);
+
+        w = new int[]{5, 10, 30, 40};
+        target = 45;
+        expAns = 2;
+        //System.out.printf("\target=%d\n  weights=%s\n values=%s\n   quantities=%s\n",
+        //        capacity, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
+        ans = Knapsack01.minNumberOfItemsForCapacity(w, target);
+        assertEquals(expAns, ans);
+
+        w = new int[]{5, 10, 30, 40};
+        target = 4;
+        expAns = 0;
+        //System.out.printf("\target=%d\n  weights=%s\n values=%s\n   quantities=%s\n",
+        //        capacity, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
+        ans = Knapsack01.minNumberOfItemsForCapacity(w, target);
         assertEquals(expAns, ans);
     }
     
