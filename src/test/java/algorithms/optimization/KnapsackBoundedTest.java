@@ -173,7 +173,43 @@ public class KnapsackBoundedTest extends TestCase {
     }
 
     public void testNumberOfWaysForTarget() {
-        //TODO
+        int[] w, q;
+        int target, ans, expAns;
+
+        w = new int[]{1, 2, 5, 10};
+        q = new int[]{11, 5, 2, 1};
+        target = 11;
+        expAns = 12;//[10,1], [5,5,1],[5,2,2,2],[5,2,2,1,1],[5,2,1,1,1,1],[5,1,1,1,1,1,1],
+        //[2,2,2,2,2,1], [2,2,2,2,1,1,1], [2,2,2,1,1,1,1,1], [2,2,1,1,1,1,1,1,1]
+        // [2,1,1,1,1,1,1,1,1,1], [11 1's]
+        //System.out.printf("\ntarget=%d, weights=%s\n", target, java.util.Arrays.toString(w));
+        ans = KnapsackBounded.numberOfWaysForTarget(w, q, target);
+        assertEquals(expAns, ans);
+
+        w = new int[]{1, 2, 5, 10};
+        q = new int[]{3, 5, 1, 1};
+        target = 11;
+        expAns = 5;//[10,1], [5,2,2,2],[5,2,2,1,1],
+                //[2,2,2,2,2,1], [2,2,2,2,1,1,1],
+        //System.out.printf("\ntarget=%d, weights=%s\n", target, java.util.Arrays.toString(w));
+        ans = KnapsackBounded.numberOfWaysForTarget(w, q, target);
+        assertEquals(expAns, ans);
+
+        w = new int[]{1, 2, 5, 10};
+        q = new int[]{3, 2, 1, 1};
+        target = 11;
+        expAns = 2;//[10,1], [5,2,2,1,1],
+        //System.out.printf("\ntarget=%d, weights=%s\n", target, java.util.Arrays.toString(w));
+        ans = KnapsackBounded.numberOfWaysForTarget(w, q, target);
+        assertEquals(expAns, ans);
+
+        w = new int[]{2, 5, 10};
+        q = new int[]{2, 1, 1};
+        target = 11;
+        expAns = 0;
+        //System.out.printf("\ntarget=%d, weights=%s\n", target, java.util.Arrays.toString(w));
+        ans = KnapsackBounded.numberOfWaysForTarget(w, q, target);
+        assertEquals(expAns, ans);
     }
 
     public void testMinNumberOfItemsForTarget() {

@@ -13,7 +13,7 @@ public class KnapsackUnbounded {
      * @param values non-negative values for items. values and weights describe the same items.
      * @param weights non-negative array of weights for items
      * @param target the exact sum that a combination of an unbounded number of weights should sum to
-     * @return
+     * @return the maximum value for items whose weights sum up to exactly equal target.
      */
     public static int maxValueForTarget(int[] values, int[] weights, int target) {
         return maxValue(values, weights, target, true);

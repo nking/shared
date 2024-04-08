@@ -259,7 +259,7 @@ public class KnapsackBounded {
         for (int i = 0; i < n; ++i) {
             for (int wc = target; wc > 0; --wc) {
                 for (int q = 1; q <= quantities[i]; ++q) {
-                    // the remaining sum after q coins subtracted
+                    // wc2 is the remaining sum after q coins subtracted
                     int wc2 = wc - weights[i] * q;
                     if (wc2 < 0) break;
                     // adds counts from current sum and remaining sum

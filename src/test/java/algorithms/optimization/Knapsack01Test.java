@@ -11,6 +11,88 @@ public class Knapsack01Test extends TestCase {
     public Knapsack01Test(String testName) {
         super(testName);
     }
+
+    public void testMaxValueForTarget() {
+        int[] w, v;
+        int target, ans, expAns;
+
+        w = new int[]{5, 10, 30};
+        v = new int[]{11, 23, 30};
+        target = 15;
+        expAns = 34;
+        //System.out.printf("\target=%d\n  weights=%s\n values=%s\n   quantities=%s\n",
+        //        capacity, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
+        ans = Knapsack01.maxValueForTarget(v, w, target);
+        assertEquals(expAns, ans);
+
+        w = new int[]{5, 10, 30};
+        v = new int[]{11, 23, 30};
+        target = 16;
+        expAns = 0;
+        //System.out.printf("\target=%d\n  weights=%s\n values=%s\n   quantities=%s\n",
+        //        capacity, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
+        ans = Knapsack01.maxValueForTarget(v, w, target);
+        assertEquals(expAns, ans);
+
+        w = new int[]{5, 10, 30, 40};
+        v = new int[]{11, 23, 30, 40};
+        target = 45;
+        expAns = 64;
+        //System.out.printf("\target=%d\n  weights=%s\n values=%s\n   quantities=%s\n",
+        //        capacity, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
+        ans = Knapsack01.maxValueForTarget(v, w, target);
+        assertEquals(expAns, ans);
+
+        w = new int[]{5, 10, 30, 40};
+        v = new int[]{11, 23, 30, 40};
+        target = 10;
+        expAns = 23;
+        //System.out.printf("\target=%d\n  weights=%s\n values=%s\n   quantities=%s\n",
+        //        capacity, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
+        ans = Knapsack01.maxValueForTarget(v, w, target);
+        assertEquals(expAns, ans);
+
+    }
+    public void testMaxValueForCapacity() {
+        int[] w, v;
+        int capacity, ans, expAns;
+
+        w = new int[]{5, 10, 30};
+        v = new int[]{11, 23, 30};
+        capacity = 16;
+        expAns = 34;
+        //System.out.printf("\target=%d\n  weights=%s\n values=%s\n   quantities=%s\n",
+        //        capacity, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
+        ans = Knapsack01.maxValueForCapacity(v, w, capacity);
+        assertEquals(expAns, ans);
+
+        w = new int[]{5, 10, 30};
+        v = new int[]{11, 23, 30};
+        capacity = 15;
+        expAns = 34;
+        //System.out.printf("\target=%d\n  weights=%s\n values=%s\n   quantities=%s\n",
+        //        capacity, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
+        ans = Knapsack01.maxValueForCapacity(v, w, capacity);
+        assertEquals(expAns, ans);
+
+        w = new int[]{5, 10, 30};
+        v = new int[]{11, 23, 30};
+        capacity = 4;
+        expAns = 0;
+        //System.out.printf("\target=%d\n  weights=%s\n values=%s\n   quantities=%s\n",
+        //        capacity, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
+        ans = Knapsack01.maxValueForCapacity(v, w, capacity);
+        assertEquals(expAns, ans);
+
+        w = new int[]{5, 10, 30};
+        v = new int[]{11, 23, 30};
+        capacity = 8;
+        expAns = 11;
+        //System.out.printf("\target=%d\n  weights=%s\n values=%s\n   quantities=%s\n",
+        //        capacity, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
+        ans = Knapsack01.maxValueForCapacity(v, w, capacity);
+        assertEquals(expAns, ans);
+    }
     
     public void test011() {
 
@@ -24,7 +106,7 @@ public class Knapsack01Test extends TestCase {
 
         int expSumValue = 46;
 
-        int result = Knapsack01.solveDynamically0(ratingsOfObjectOfInterest, distances, capacity);
+        int result = Knapsack01.maxValueForCapacity(ratingsOfObjectOfInterest, distances, capacity);
 
         assertTrue(result == expSumValue);
         
@@ -65,15 +147,15 @@ public class Knapsack01Test extends TestCase {
         int result;
         int expSumValue = 1030;
 
-        result = Knapsack01.solveDynamically0(values, weights, 400);
+        result = Knapsack01.maxValueForCapacity(values, weights, 400);
         
-        System.out.println("result: " +result);
+        //System.out.println("result: " +result);
 
         assertTrue(result == expSumValue);
         
         result = Knapsack01.approxDynamically(values, weights, 400);
 
-        System.out.println("result approx: " +result);
+       // System.out.println("result approx: " +result);
                 
     }
         

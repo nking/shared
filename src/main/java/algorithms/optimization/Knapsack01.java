@@ -84,10 +84,6 @@ public class Knapsack01 {
      * 
      * The worse case runtime complexity is O(n*W) where n is the number of
      * the items and W is the capacity.
-     * 
-     * If the minimum value in the weights array is larger than 1, it is used
-     * as an interval in summing up to the capacity, hence reduces the runtime
-     * complexity by roughly that as a factor.
      *
      * NOTE: consider reducing weights and capacity by the Greatest Common Denominator
      * between capacity and weights.
@@ -97,28 +93,24 @@ public class Knapsack01 {
      @param capacity
      @return 
      */
-    public static int solveDynamically(int[] values, int[] weights, int capacity) {
-
-        return solveDynamically0(values, weights, capacity);
-    }
-    
-    static int solveDynamically0(int[] values, int[] weights, int capacity) {
+    public static int maxValueForCapacity(int[] values, int[] weights, int capacity) {
 
         int n = values.length;
-        
-        int[][] memo = new int[n + 1][capacity + 1];
-        for (int i = 0; i < memo.length; i++) {
-            memo[i] = new int[capacity + 1];
-        }
-        int i, wc, t, c;
+
+        int[] prevTab = null;
+        int[] currTab = new int[capacity + 1];
+
+        int i, wc, t, c, wc2;
         for (i = 1; i <= n; i++) {
+            prevTab = currTab;
+            currTab = new int[capacity + 1];
             for (wc = 1; wc <= capacity; wc++) {
-                t = memo[i-1][wc];
-                if (wc >= weights[i-1]) { // to avoid exceeding capacity
-                    c = memo[i-1][wc-weights[i-1]] + values[i-1];
-                    memo[i][wc] = Math.max(c, t);
+                wc2 = wc-weights[i-1];
+                t = prevTab[wc];
+                if (wc2 >= 0) { // to avoid exceeding capacity
+                    currTab[wc] = Math.max(t, prevTab[wc2] + values[i-1]);
                 } else {
-                    memo[i][wc] = t;
+                    currTab[wc] = t;
                 }
             }
         }
@@ -128,7 +120,50 @@ public class Knapsack01 {
         System.out.printf("memo=\n%s\n", FormatArray.toString(memo, "%d"));
         System.out.flush();*/
 
-        return memo[memo.length - 1][memo[0].length - 1];
+        return currTab[capacity];
+    }
+
+    /**
+     * find maximum value or sum of items whose weights sum to exactly equal the target, but with the restricted quantity
+     * of 0 or 1 for each item.
+     * @param values non-negative values for items. values and weights describe the same items.
+     * @param weights non-negative array of weights for items
+     * @param target the exact sum that a combination of an unbounded number of weights should sum to
+     * @return the maximum value for items whose weights sum up to exactly equal target.
+     */
+    public static int maxValueForTarget(int[] values, int[] weights, int target) {
+
+        int n = values.length;
+
+        int[] prevTab = null;
+        int[] currTab = new int[target + 1];
+        int sentinel = Integer.MIN_VALUE;
+        Arrays.fill(currTab, sentinel);
+        currTab[0] = 0;
+
+        int i, wc,c, wc2;
+        for (i = 1; i <= n; i++) {
+            prevTab = currTab;
+            currTab = new int[target + 1];
+            Arrays.fill(currTab, sentinel);
+            currTab[0] = 0;
+
+            for (wc = 1; wc <= target; wc++) {
+                wc2 = wc-weights[i-1];
+
+                if (wc2 == 0) {
+                    currTab[wc] = Math.max(prevTab[wc],  values[i - 1]);
+                } else if (wc2 > 0)  {
+                    int s = (prevTab[wc2] == sentinel) ? sentinel : prevTab[wc2] + values[i-1];
+                    currTab[wc] = Math.max(prevTab[wc], s);
+                } else {
+                    currTab[wc] = prevTab[wc];
+                }
+
+            }
+        }
+
+        return currTab[target] == sentinel ? 0 : currTab[target];
     }
     
     /**
@@ -158,8 +193,8 @@ public class Knapsack01 {
         
         int[] ws = getIntervals(capacity, factor);
         
-        System.out.printf("capacity=%d, factor=%d, q1Diff=%d, intervals=%s\n", capacity,
-            factor, q1, Arrays.toString(ws));
+        //System.out.printf("capacity=%d, factor=%d, q1Diff=%d, intervals=%s\n", capacity,
+        //    factor, q1, Arrays.toString(ws));
                 
         int[][] memo = new int[n + 1][ws.length + 1];
         for (i = 0; i < memo.length; i++) {
@@ -181,7 +216,7 @@ public class Knapsack01 {
             }
         }
 
-        System.out.printf("memo=\n%s\n", FormatArray.toString(memo, "%d"));
+        //System.out.printf("memo=\n%s\n", FormatArray.toString(memo, "%d"));
         
         return memo[memo.length - 1][memo[0].length - 1];
     }
@@ -211,8 +246,8 @@ public class Knapsack01 {
             diffs[i-1] = d;
         }
         int q1 = diffs[(int)(diffs.length*.25)];
-        System.out.printf("median diff=%d  Q1 diff = %d\n", diffs[diffs.length/2],
-            q1);
+        //System.out.printf("median diff=%d  Q1 diff = %d\n", diffs[diffs.length/2],
+        //    q1);
         return q1;
     }
 
