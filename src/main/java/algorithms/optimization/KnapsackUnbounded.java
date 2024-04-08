@@ -145,10 +145,6 @@ public class KnapsackUnbounded {
             if (weights[i] > target) continue;
             for (wc = 1; wc <= target; wc++) {
                 wc2 = wc - weights[i];
-                /*if (wc2 >= 0) {
-                    int s = (tab[wc2] == sentinel) ? sentinel : 1 + tab[wc2];
-                    tab[wc] = Math.min(tab[wc], s);
-                }*/
                 if (wc2 == 0) {
                     tab[wc] = Math.min(tab[wc], 1);
                 } else if (wc2 > 0)  {
@@ -165,7 +161,6 @@ public class KnapsackUnbounded {
         }
 
         // search backwards for last sum entered
-        int last = tab[target];
         i = target;
         while (i > 0 && tab[i] == sentinel) {
             --i;

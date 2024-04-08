@@ -101,15 +101,15 @@ public class Knapsack01 {
         int[] currTab = new int[capacity + 1];
 
         int i, wc, t, c, wc2;
-        for (i = 1; i <= n; i++) {
+        for (i = 0; i < n; i++) {
             prevTab = currTab;
             currTab = new int[capacity + 1];
             for (wc = 1; wc <= capacity; wc++) {
-                wc2 = wc-weights[i-1];
+                wc2 = wc-weights[i];
                 t = prevTab[wc];
                 // compare to previous wc.  0-1 means we cannot add to current wc2
                 if (wc2 >= 0) {
-                    currTab[wc] = Math.max(t, prevTab[wc2] + values[i-1]);
+                    currTab[wc] = Math.max(t, prevTab[wc2] + values[i]);
                 } else {
                     currTab[wc] = t;
                 }
@@ -230,7 +230,6 @@ public class Knapsack01 {
         }
 
         // search backwards for last sum entered
-        int last = currTab[target];
         i = target;
         while (i > 0 && currTab[i] == sentinel) {
             --i;

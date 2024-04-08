@@ -34,17 +34,17 @@ public class KnapsackBounded {
         int[] currTab = new int[capacity + 1];
 
         int wc, q, wc2;
-        for (int i = 1; i <= n; ++i) {
-            //if (weights[i-1] > capacity) continue; TODO: to use this, need to access by sorted weights and init tab to only use weights <= capacity
+        for (int i = 0; i < n; ++i) {
+            //if (weights[i1] > capacity) continue; TODO: to use this, need to access by sorted weights and init tab to only use weights <= capacity
             prevTab = currTab;
             currTab = new int[currTab.length];
             for (wc = 1; wc <= capacity; ++wc) {
             //for (wc = capacity; wc >= 1; --wc) {
-                for (q = 1; q <= quantities[i - 1]; ++q) {
-                    wc2 = wc - q * weights[i - 1];
+                for (q = 1; q <= quantities[i]; ++q) {
+                    wc2 = wc - q * weights[i];
 
                     if (wc2 >= 0) {
-                        currTab[wc] = Math.max(currTab[wc], prevTab[wc2] + q * values[i-1]);
+                        currTab[wc] = Math.max(currTab[wc], prevTab[wc2] + q * values[i]);
                     } else {
                         currTab[wc] = Math.max(currTab[wc], prevTab[wc]);
                     }
@@ -97,8 +97,8 @@ public class KnapsackBounded {
         currTab[0] = 0;
 
         int wc, q, wc2;
-        for (int i = 1; i <= n; ++i) {
-            if (weights[i-1] > target) continue;
+        for (int i = 0; i < n; ++i) {
+            if (weights[i] > target) continue;
 
             prevTab = currTab;
             currTab = new int[currTab.length];
@@ -107,16 +107,16 @@ public class KnapsackBounded {
 
             for (wc = 1; wc <= target; ++wc) {
                 //for (wc = capacity; wc >= 1; --wc) {
-                for (q = 1; q <= quantities[i - 1]; ++q) {
-                    wc2 = wc - q * weights[i - 1];
+                for (q = 1; q <= quantities[i]; ++q) {
+                    wc2 = wc - q * weights[i];
 
-                    //System.out.printf("i=%d, wc=%d, q=%d, wc2=%d, weights[i-1]=%d\n",
-                    //        i, wc, q,  wc2, weights[i-1]);
+                    //System.out.printf("i=%d, wc=%d, q=%d, wc2=%d, weights[i]=%d\n",
+                    //        i, wc, q,  wc2, weights[i]);
 
                     if (wc2 == 0) {
-                        currTab[wc] = Math.max(currTab[wc], q * values[i - 1]);
+                        currTab[wc] = Math.max(currTab[wc], q * values[i]);
                     } else if (wc2 > 0)  {
-                        int s = (prevTab[wc2] == sentinel) ? sentinel : prevTab[wc2] + q * values[i-1];
+                        int s = (prevTab[wc2] == sentinel) ? sentinel : prevTab[wc2] + q * values[i];
                         currTab[wc] = Math.max(currTab[wc], s);
                     } else {
                         // carry forward best of prev and curr
@@ -166,8 +166,8 @@ public class KnapsackBounded {
         currTab[0] = 0;
 
         int wc, q, wc2;
-        for (int i = 1; i <= n; ++i) {
-            if (weights[i-1] > target) continue;
+        for (int i = 0; i < n; ++i) {
+            if (weights[i] > target) continue;
 
             prevTab = currTab;
             currTab = new int[currTab.length];
@@ -175,11 +175,11 @@ public class KnapsackBounded {
             currTab[0] = 0;
 
             for (wc = 1; wc <= target; ++wc) {
-                for (q = 1; q <= quantities[i - 1]; ++q) {
-                    wc2 = wc - q * weights[i - 1];
+                for (q = 1; q <= quantities[i]; ++q) {
+                    wc2 = wc - q * weights[i];
 
-                    //System.out.printf("i=%d, wc=%d, q=%d, wc2=%d, weights[i-1]=%d\n",
-                    //        i, wc, q,  wc2, weights[i-1]);
+                    //System.out.printf("i=%d, wc=%d, q=%d, wc2=%d, weights[i]=%d\n",
+                    //        i, wc, q,  wc2, weights[i]);
 
                     /*
                     for each item with wc2==0, replace current tab[wc] if LT
@@ -208,7 +208,6 @@ public class KnapsackBounded {
         }
 
         // search backwards for last sum entered
-        int last = currTab[target];
         int i = target;
         while (i > 0 && currTab[i] == sentinel) {
             --i;
