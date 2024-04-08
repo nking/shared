@@ -159,18 +159,21 @@ public class KnapsackUnboundedTest extends TestCase {
         w = new int[]{2,7};
         target = 28;
         expAns = 3;
+        //System.out.printf("\ntarget=%d, weights=%s\n", target, java.util.Arrays.toString(w));
         ans = KnapsackUnbounded.numberOfWaysForTarget(w, target);
         assertEquals(expAns, ans);
 
         w = new int[]{2,7};
         target = 7;
         expAns = 1;
+        //System.out.printf("\ntarget=%d, weights=%s\n", target, java.util.Arrays.toString(w));
         ans = KnapsackUnbounded.numberOfWaysForTarget(w, target);
         assertEquals(expAns, ans);
 
         w = new int[]{2,7};
         target = 4;
         expAns = 1;
+        //System.out.printf("\ntarget=%d, weights=%s\n", target, java.util.Arrays.toString(w));
         ans = KnapsackUnbounded.numberOfWaysForTarget(w, target);
         assertEquals(expAns, ans);
     }

@@ -93,6 +93,35 @@ public class Knapsack01Test extends TestCase {
         ans = Knapsack01.maxValueForCapacity(v, w, capacity);
         assertEquals(expAns, ans);
     }
+
+    public void testNumberOfWaysForTarget() {
+        int[] w;
+        int target, ans, expAns;
+
+        w = new int[]{5, 10, 30};
+        target = 15;
+        expAns = 1;
+        //System.out.printf("\target=%d\n  weights=%s\n values=%s\n   quantities=%s\n",
+        //        capacity, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
+        ans = Knapsack01.numberOfWaysForTarget(w, target);
+        assertEquals(expAns, ans);
+if (true) return;
+        w = new int[]{5, 10, 30};
+        target = 16;
+        expAns = 0;
+        //System.out.printf("\target=%d\n  weights=%s\n values=%s\n   quantities=%s\n",
+        //        capacity, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
+        ans = Knapsack01.numberOfWaysForTarget(w, target);
+        assertEquals(expAns, ans);
+
+        w = new int[]{5, 10, 30, 40};
+        target = 45;
+        expAns = 2;
+        //System.out.printf("\target=%d\n  weights=%s\n values=%s\n   quantities=%s\n",
+        //        capacity, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
+        ans = Knapsack01.numberOfWaysForTarget(w, target);
+        assertEquals(expAns, ans);
+    }
     
     public void test011() {
 

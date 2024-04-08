@@ -165,6 +165,32 @@ public class Knapsack01 {
 
         return currTab[target] == sentinel ? 0 : currTab[target];
     }
+
+    public static int numberOfWaysForTarget(int[] weights, int target) {
+
+        int n = weights.length;
+
+        if (weights.length != n) {
+            throw new IllegalStateException("values and weights must be same length");
+        }
+
+        int[] tab = new int[target + 1];
+        tab[0] = 1;
+        int wc, wc2;
+        for (int i = 0; i < n; ++i) {
+            // since tab holds current and prev, need to traverse weights from high to low
+            // to avoid including an updated low wc2 in current wc
+            for (wc = target; wc > 0; --wc) {
+                wc2 = wc - weights[i];
+                if (wc2 >= 0) {
+                    // adds counts from remaining sum
+                    tab[wc] += tab[wc2];
+                }
+            }
+        }
+        //System.out.printf("tab=%s\n", Arrays.toString(tab));
+        return tab[target];
+    }
     
     /**
      * a quick look at integrating over weight intervals of the size of the smallest

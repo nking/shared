@@ -225,10 +225,10 @@ public class KnapsackUnbounded {
         int wc, wc2;
         for (int i = 0; i < n; ++i) {
             if (weights[i] > target) continue;
+            // traverse wc from 1 to target to be able to add current wc2 counts to current count sum
             for (wc = 1; wc <= target; ++wc) {
                 // the remaining sum after weight subtracted
                 wc2 = wc - weights[i];
-                //System.out.printf("i=%d, wc=%d, wc2=%d, weights[i]=%d  tab=%s\n", i, wc, wc2, weights[i], Arrays.toString(tab));
                 if (wc2 >= 0) {
                     // adds counts from remaining sum
                     tab[wc] += tab[wc2];
