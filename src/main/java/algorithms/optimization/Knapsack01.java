@@ -125,6 +125,44 @@ public class Knapsack01 {
     }
 
     /**
+     * solve the knapsack 0-1 problem with values and weights of items and capacity
+     * for the knapsack.
+     * Each item is put into the knapsack 0 or 1 times to maximize the total
+     * value in the sack while keeping the total weight equal to or less than
+     * capacity.
+     *
+     * The worse case runtime complexity is O(n*W) where n is the number of
+     * the items and W is the capacity.
+     *
+     * NOTE: consider reducing weights and capacity by the Greatest Common Denominator
+     * between capacity and weights.
+     *
+     @param values
+     @param weights
+     @param capacity
+     @return
+     */
+    public static int maxValueForCapacity2(int[] values, int[] weights, int capacity) {
+
+        int n = values.length;
+
+        int[] tab = new int[capacity + 1];
+
+        int i, wc, t, c, wc2;
+        for (i = 0; i < n; i++) {
+            // since tab holds current and prev i results,
+            // need to traverse weights from high to low
+            // to avoid including an updated low wc2 in current wc
+            for (wc = capacity; wc >= weights[i]; --wc) {
+                wc2 = wc - weights[i];
+                tab[wc] = Math.max(tab[wc], tab[wc2] + values[i]);
+            }
+        }
+
+        return tab[capacity];
+    }
+
+    /**
      * find maximum value or sum of items whose weights sum to exactly equal the target, but with the restricted quantity
      * of 0 or 1 for each item.
      * @param values non-negative values for items. values and weights describe the same items.
@@ -250,7 +288,8 @@ public class Knapsack01 {
         tab[0] = 1;
         int wc, wc2;
         for (int i = 0; i < n; ++i) {
-            // since tab holds current and prev, need to traverse weights from high to low
+            // since tab holds current and prev i results,
+            // need to traverse weights from high to low
             // to avoid including an updated low wc2 in current wc
             for (wc = target; wc > 0; --wc) {
                 wc2 = wc - weights[i];

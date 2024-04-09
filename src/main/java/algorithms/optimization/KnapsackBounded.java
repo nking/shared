@@ -39,7 +39,6 @@ public class KnapsackBounded {
             prevTab = currTab;
             currTab = new int[currTab.length];
             for (wc = 1; wc <= capacity; ++wc) {
-            //for (wc = capacity; wc >= 1; --wc) {
                 for (q = 1; q <= quantities[i]; ++q) {
                     wc2 = wc - q * weights[i];
 
@@ -106,7 +105,6 @@ public class KnapsackBounded {
             currTab[0] = 0;
 
             for (wc = 1; wc <= target; ++wc) {
-                //for (wc = capacity; wc >= 1; --wc) {
                 for (q = 1; q <= quantities[i]; ++q) {
                     wc2 = wc - q * weights[i];
 
@@ -256,9 +254,10 @@ public class KnapsackBounded {
         int[] tab = new int[target + 1];
         tab[0] = 1;
         for (int i = 0; i < n; ++i) {
-            // since tab holds current and prev, need to traverse weights from high to low
+            // since tab holds current and prev i results,
+            // need to traverse weights from high to low
             // to avoid including an updated low wc2 in current wc
-            for (int wc = target; wc > 0; --wc) {
+            for (int wc = target; wc >= weights[i]; --wc) {
                 for (int q = 1; q <= quantities[i]; ++q) {
                     // wc2 is the remaining sum after q coins subtracted
                     int wc2 = wc - weights[i] * q;

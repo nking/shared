@@ -47,7 +47,7 @@ public class KnapsackUnbounded {
         int i, wc, wc2;
         for (i = 0; i < n; i++) {
             if (weights[i] > target) continue;
-
+            // traverse wc from 1 to target to be able to add current wc2 counts to current count sum
             for (wc = 1; wc <= target; wc++) {
                 wc2 = wc - weights[i];
 
@@ -96,6 +96,8 @@ public class KnapsackUnbounded {
         int i, wc, wc2;
         for (i = 0; i < n; i++) {
             if (weights[i] > capacity) continue;
+            // cannot traverse weight sum in reverse order here.
+            // traverse wc from 1 to target to be able to add current wc2 counts to current count sum
             for (wc = 1; wc <= capacity; wc++) {
                 wc2 = wc - weights[i];
 
@@ -192,7 +194,6 @@ public class KnapsackUnbounded {
             for (wc = 1; wc <= capacity; wc++) {
                 wc2 = wc - weights[i];
                 if (wc2 >= 0) {
- //considering add a 1 when sentinel
                     int s = (tab[wc2] == sentinel) ? sentinel : 1 + tab[wc2];
                     tab[wc] = Math.min(tab[wc], s);
                 }
@@ -204,6 +205,7 @@ public class KnapsackUnbounded {
     /**
      * count the number of ways that a combination of an unbounded quantity of weights
      * can sum up to exactly EQ target.
+     * The combinations are counted as sets, that is, same numbers in a set are counted only once.
      * @param target the exact sum that a combination of and unbounded quantity of weights should sum to
      * @param weights non-negative array of item weights
      * @return
@@ -222,6 +224,38 @@ public class KnapsackUnbounded {
             if (weights[i] > target) continue;
             // traverse wc from 1 to target to be able to add current wc2 counts to current count sum
             for (wc = 1; wc <= target; ++wc) {
+                // the remaining sum after weight subtracted
+                wc2 = wc - weights[i];
+                if (wc2 >= 0) {
+                    // adds counts from remaining sum
+                    tab[wc] += tab[wc2];
+                }
+            }
+        }
+        //System.out.printf("tab=%s\n", Arrays.toString(tab));
+        return tab[target];
+    }
+
+    /**
+     * count the number of ways that a combination of an unbounded quantity of weights
+     * can sum up to exactly EQ target, where the sequences are counted rather than sets,
+     * e.g. [1,2] is counted and [2,1] is counted.
+     * @param target the exact sum that a combination of and unbounded quantity of weights should sum to
+     * @param weights non-negative array of item weights
+     * @return
+     */
+    public static int numberOfSequencesForTarget(int[] weights, int target) {
+
+        int n = weights.length;
+
+        // tab[wc] holds the number of ways that the item weights sum to wc.
+
+        int[] tab = new int[target + 1];
+        tab[0] = 1;
+
+        int i, wc, wc2;
+        for (wc = 1; wc <= target; ++wc) {
+            for (i = 0; i < n; ++i) {
                 // the remaining sum after weight subtracted
                 wc2 = wc - weights[i];
                 if (wc2 >= 0) {

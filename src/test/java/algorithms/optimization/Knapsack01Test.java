@@ -65,6 +65,8 @@ public class Knapsack01Test extends TestCase {
         //        capacity, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
         ans = Knapsack01.maxValueForCapacity(v, w, capacity);
         assertEquals(expAns, ans);
+        ans = Knapsack01.maxValueForCapacity2(v, w, capacity);
+        assertEquals(expAns, ans);
 
         w = new int[]{5, 10, 30};
         v = new int[]{11, 23, 30};
@@ -73,6 +75,8 @@ public class Knapsack01Test extends TestCase {
         //System.out.printf("\target=%d\n  weights=%s\n values=%s\n   quantities=%s\n",
         //        capacity, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
         ans = Knapsack01.maxValueForCapacity(v, w, capacity);
+        assertEquals(expAns, ans);
+        ans = Knapsack01.maxValueForCapacity2(v, w, capacity);
         assertEquals(expAns, ans);
 
         w = new int[]{5, 10, 30};
@@ -83,6 +87,8 @@ public class Knapsack01Test extends TestCase {
         //        capacity, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
         ans = Knapsack01.maxValueForCapacity(v, w, capacity);
         assertEquals(expAns, ans);
+        ans = Knapsack01.maxValueForCapacity2(v, w, capacity);
+        assertEquals(expAns, ans);
 
         w = new int[]{5, 10, 30};
         v = new int[]{11, 23, 30};
@@ -91,6 +97,8 @@ public class Knapsack01Test extends TestCase {
         //System.out.printf("\target=%d\n  weights=%s\n values=%s\n   quantities=%s\n",
         //        capacity, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
         ans = Knapsack01.maxValueForCapacity(v, w, capacity);
+        assertEquals(expAns, ans);
+        ans = Knapsack01.maxValueForCapacity2(v, w, capacity);
         assertEquals(expAns, ans);
     }
 
