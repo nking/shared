@@ -110,6 +110,8 @@ public class KnapsackBoundedTest extends TestCase {
         //        target, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
         ans = KnapsackBounded.maxValueForTarget(v, w, q, target);
         assertEquals(expAns, ans);
+        ans = KnapsackBounded.maxValueForTarget2(v, w, q, target);
+        assertEquals(expAns, ans);
 
         w = new int[]{5, 10, 30};
         v = new int[]{11, 10, 30};
@@ -119,6 +121,8 @@ public class KnapsackBoundedTest extends TestCase {
         //System.out.printf("\ntarget=%d\n  weights=%s\n values=%s\n   quantities=%s\n",
         //        target, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
         ans = KnapsackBounded.maxValueForTarget(v, w, q, target);
+        assertEquals(expAns, ans);
+        ans = KnapsackBounded.maxValueForTarget2(v, w, q, target);
         assertEquals(expAns, ans);
 
         w = new int[]{5, 10, 30};
@@ -130,6 +134,8 @@ public class KnapsackBoundedTest extends TestCase {
         //        target, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
         ans = KnapsackBounded.maxValueForTarget(v, w, q, target);
         assertEquals(expAns, ans);
+        ans = KnapsackBounded.maxValueForTarget2(v, w, q, target);
+        assertEquals(expAns, ans);
 
         w = new int[]{5, 10, 30};
         v = new int[]{11, 10, 30};
@@ -139,6 +145,8 @@ public class KnapsackBoundedTest extends TestCase {
         //System.out.printf("\ntarget=%d\n  weights=%s\n values=%s\n   quantities=%s\n",
         //        target, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
         ans = KnapsackBounded.maxValueForTarget(v, w, q, target);
+        assertEquals(expAns, ans);
+        ans = KnapsackBounded.maxValueForTarget2(v, w, q, target);
         assertEquals(expAns, ans);
 
         w = new int[]{5, 10, 30};
@@ -150,6 +158,8 @@ public class KnapsackBoundedTest extends TestCase {
         //        target, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
         ans = KnapsackBounded.maxValueForTarget(v, w, q, target);
         assertEquals(expAns, ans);
+        ans = KnapsackBounded.maxValueForTarget2(v, w, q, target);
+        assertEquals(expAns, ans);
 
         w = new int[]{5, 10, 30};
         v = new int[]{11, 10, 30};
@@ -160,6 +170,8 @@ public class KnapsackBoundedTest extends TestCase {
         //        target, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
         ans = KnapsackBounded.maxValueForTarget(v, w, q, target);
         assertEquals(expAns, ans);
+        ans = KnapsackBounded.maxValueForTarget2(v, w, q, target);
+        assertEquals(expAns, ans);
 
         w = new int[]{10, 30};
         v = new int[]{10, 30};
@@ -169,6 +181,8 @@ public class KnapsackBoundedTest extends TestCase {
         //System.out.printf("\ntarget=%d\n  weights=%s\n values=%s\n   quantities=%s\n",
         //        target, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
         ans = KnapsackBounded.maxValueForTarget(v, w, q, target);
+        assertEquals(expAns, ans);
+        ans = KnapsackBounded.maxValueForTarget2(v, w, q, target);
         assertEquals(expAns, ans);
     }
 
@@ -224,6 +238,8 @@ public class KnapsackBoundedTest extends TestCase {
         //System.out.printf("\ntarget=%d, weights=%s\n", target, java.util.Arrays.toString(w));
         ans = KnapsackBounded.minNumberOfItemsForTarget(w, q, target);
         assertEquals(expAns, ans);
+        ans = KnapsackBounded.minNumberOfItemsForTarget2(w, q, target);
+        assertEquals(expAns, ans);
 
         w = new int[]{1, 2, 5, 10};
         q = new int[]{3, 2, 1, 1};
@@ -231,6 +247,8 @@ public class KnapsackBoundedTest extends TestCase {
         expAns = 3; // 2, 2, 5
         //System.out.printf("\ntarget=%d, weights=%s\n", target, java.util.Arrays.toString(w));
         ans = KnapsackBounded.minNumberOfItemsForTarget(w, q, target);
+        assertEquals(expAns, ans);
+        ans = KnapsackBounded.minNumberOfItemsForTarget2(w, q, target);
         assertEquals(expAns, ans);
 
         w = new int[]{1, 2, 5, 10};
@@ -240,6 +258,8 @@ public class KnapsackBoundedTest extends TestCase {
         //System.out.printf("\ntarget=%d, weights=%s\n", target, java.util.Arrays.toString(w));
         ans = KnapsackBounded.minNumberOfItemsForTarget(w, q, target);
         assertEquals(expAns, ans);
+        ans = KnapsackBounded.minNumberOfItemsForTarget2(w, q, target);
+        assertEquals(expAns, ans);
 
         w = new int[]{5, 10};
         q = new int[]{1, 1};
@@ -247,6 +267,8 @@ public class KnapsackBoundedTest extends TestCase {
         expAns = 0;
         //System.out.printf("\ntarget=%d, weights=%s\n", target, java.util.Arrays.toString(w));
         ans = KnapsackBounded.minNumberOfItemsForTarget(w, q, target);
+        assertEquals(expAns, ans);
+        ans = KnapsackBounded.minNumberOfItemsForTarget2(w, q, target);
         assertEquals(expAns, ans);
 
         w = new int[]{5, 10};
@@ -256,7 +278,8 @@ public class KnapsackBoundedTest extends TestCase {
         //System.out.printf("\ntarget=%d, weights=%s\n", target, java.util.Arrays.toString(w));
         ans = KnapsackBounded.minNumberOfItemsForTarget(w, q, target);
         assertEquals(expAns, ans);
-
+        ans = KnapsackBounded.minNumberOfItemsForTarget2(w, q, target);
+        assertEquals(expAns, ans);
     }
 
     public void testMinNumberOfItemsForCapacity() {
@@ -272,6 +295,8 @@ public class KnapsackBoundedTest extends TestCase {
         //System.out.printf("\ncapacity=%d\nweights=%s\nq=%s\n", capacity, Arrays.toString(w), Arrays.toString(q));
         ans = KnapsackBounded.minNumberOfItemsForCapacity(w, q, capacity);
         assertEquals(expAns, ans);
+        ans = KnapsackBounded.minNumberOfItemsForCapacity2(w, q, capacity);
+        assertEquals(expAns, ans);
 
         w = new int[]{1, 2, 5, 10};
         q = new int[]{3, 1, 1, 1};
@@ -279,6 +304,8 @@ public class KnapsackBoundedTest extends TestCase {
         expAns = 4; // 1,1,2,5
         //System.out.printf("\ncapacity=%d\nweights=%s\nq=%s\n", capacity, Arrays.toString(w), Arrays.toString(q));
         ans = KnapsackBounded.minNumberOfItemsForCapacity(w, q, capacity);
+        assertEquals(expAns, ans);
+        ans = KnapsackBounded.minNumberOfItemsForCapacity2(w, q, capacity);
         assertEquals(expAns, ans);
 
         w = new int[]{5, 10};
@@ -288,6 +315,8 @@ public class KnapsackBoundedTest extends TestCase {
         //System.out.printf("\ncapacity=%d\nweights=%s\nq=%s\n", capacity, Arrays.toString(w), Arrays.toString(q));
         ans = KnapsackBounded.minNumberOfItemsForCapacity(w, q, capacity);
         assertEquals(expAns, ans);
+        ans = KnapsackBounded.minNumberOfItemsForCapacity2(w, q, capacity);
+        assertEquals(expAns, ans);
 
         w = new int[]{5, 10};
         q = new int[]{1, 1};
@@ -295,6 +324,8 @@ public class KnapsackBoundedTest extends TestCase {
         expAns = 1;//10
         //System.out.printf("\ncapacity=%d\nweights=%s\nq=%s\n", capacity, Arrays.toString(w), Arrays.toString(q));
         ans = KnapsackBounded.minNumberOfItemsForCapacity(w, q, capacity);
+        assertEquals(expAns, ans);
+        ans = KnapsackBounded.minNumberOfItemsForCapacity2(w, q, capacity);
         assertEquals(expAns, ans);
 
         w = new int[]{5, 10};
@@ -304,7 +335,8 @@ public class KnapsackBoundedTest extends TestCase {
         //System.out.printf("\ncapacity=%d\nweights=%s\nq=%s\n", capacity, Arrays.toString(w), Arrays.toString(q));
         ans = KnapsackBounded.minNumberOfItemsForCapacity(w, q, capacity);
         assertEquals(expAns, ans);
-
+        ans = KnapsackBounded.minNumberOfItemsForCapacity2(w, q, capacity);
+        assertEquals(expAns, ans);
     }
 
 }

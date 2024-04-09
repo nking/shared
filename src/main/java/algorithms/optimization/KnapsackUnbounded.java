@@ -153,8 +153,6 @@ public class KnapsackUnbounded {
                     int s = (tab[wc2] == sentinel) ? sentinel : 1 + tab[wc2];
                     tab[wc] = Math.min(tab[wc], s);
                 }
-
-                //System.out.printf("i=%d, wc=%d, wc2=%d, weights[i]=%d  tab=%s\n", i, wc, wc2, weights[i], Arrays.toString(tab));
             }
         }
         //System.out.printf("tab=%s\n", Arrays.toString(tab));

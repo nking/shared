@@ -1,0 +1,68 @@
+see shared/src/main/algorithms/optimization/Knapsack*
+
+===========================================================
+minimum number of items for target:
+    Given a set of n items, each with a mass,
+    determine the number of each item to include in a collection
+    so that the total weight W is exactly equal to a given target 
+    and the total number of items is as small as possible.
+  
+basic outline for all target methods:
+
+    int[] tab = new int[target + 1];
+    int sentinel = Integer.MAX_VALUE;
+    Arrays.fill(tab, sentinel);
+    tab[0] = 0;
+
+    int i, wc, t, c, wc2;
+    for (i = 0; i < n; i++) {
+    ... specialized weight logic for each knapsack type ...
+    }
+    return tab[target] == sentinel ? 0 : tab[target];
+
+0-1:
+        // since tab holds current i and previous i results,
+        // need to traverse weights from high to low
+        // to avoid including an updated low wc2 in current wc
+        for (wc = capacity; wc >= weights[i]; --wc) {
+            wc2 = wc - weights[i];
+            if (wc2 == 0) {
+                tab[wc] = Math.min(tab[wc], 1);
+            } else if (wc2 > 0)  {
+                int s = (tab[wc2] == sentinel) ? sentinel : 1 + tab[wc2];
+                tab[wc] = Math.min(tab[wc], s);
+            }
+        }
+    }
+
+Bounded:
+        // since tab holds current i and previous i results,
+        // need to traverse weights from high to low
+        // to avoid including an updated low wc2 in current wc
+        for (wc = target; wc >= weights[i]; --wc) {
+            for (q = 1; q <= quantities[i]; ++q) {
+                wc2 = wc - q * weights[i];
+                if (wc2 == 0) {
+                    tab[wc] = Math.min(tab[wc], q);
+                } else if (wc2 > 0)  {
+                    int s = (tab[wc2] == sentinel) ? sentinel : q + tab[wc2];
+                    tab[wc] = Math.min(tab[wc], s);
+                }
+            }
+        }
+
+Unbounded:
+        if (weights[i] > capacity) continue;
+        // cannot traverse weight sum in reverse order here.
+        // traverse wc from 1 to target to be able to 
+        // add current wc2 counts to current count sum
+        for (wc = 1; wc <= target; wc++) {
+            wc2 = wc - weights[i];
+            if (wc2 == 0) {
+                tab[wc] = Math.min(tab[wc], 1);
+            } else if (wc2 > 0)  {
+                int s = (tab[wc2] == sentinel) ? sentinel : 1 + tab[wc2];
+                tab[wc] = Math.min(tab[wc], s);
+            }
+        }
+

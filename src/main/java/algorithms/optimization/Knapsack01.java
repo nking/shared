@@ -100,18 +100,17 @@ public class Knapsack01 {
         int[] prevTab = null;
         int[] currTab = new int[capacity + 1];
 
-        int i, wc, t, c, wc2;
+        int i, wc, c, wc2;
         for (i = 0; i < n; i++) {
             prevTab = currTab;
             currTab = new int[capacity + 1];
             for (wc = 1; wc <= capacity; wc++) {
                 wc2 = wc-weights[i];
-                t = prevTab[wc];
                 // compare to previous wc.  0-1 means we cannot add to current wc2
                 if (wc2 >= 0) {
-                    currTab[wc] = Math.max(t, prevTab[wc2] + values[i]);
+                    currTab[wc] = Math.max(prevTab[wc], prevTab[wc2] + values[i]);
                 } else {
-                    currTab[wc] = t;
+                    currTab[wc] = prevTab[wc];
                 }
             }
         }
@@ -207,6 +206,43 @@ public class Knapsack01 {
     }
 
     /**
+     * find maximum value or sum of items whose weights sum to exactly equal the target, but with the restricted quantity
+     * of 0 or 1 for each item.
+     * @param values non-negative values for items. values and weights describe the same items.
+     * @param weights non-negative array of weights for items
+     * @param target the exact sum of weights for the minimum number of items which sum to that
+     *               weight.  each item can only be added up to a quantity of 1.
+     * @return the maximum value for items whose weights sum up to exactly equal target.
+     */
+    public static int maxValueForTarget2(int[] values, int[] weights, int target) {
+
+        int n = values.length;
+
+        int[] tab = new int[target + 1];
+        int sentinel = Integer.MIN_VALUE;
+        Arrays.fill(tab, sentinel);
+        tab[0] = 0;
+
+        int i, wc, c, wc2;
+        for (i = 0; i < n; i++) {
+            // since tab holds current and prev i results,
+            // need to traverse weights from high to low
+            // to avoid including an updated low wc2 in current wc
+            for (wc = target; wc >= weights[i]; --wc) {
+                wc2 = wc-weights[i];
+                if (wc2 == 0) {
+                    tab[wc] = Math.max(tab[wc],  values[i]);
+                } else if (wc2 > 0)  {
+                    int s = (tab[wc2] == sentinel) ? sentinel : tab[wc2] + values[i];
+                    tab[wc] = Math.max(tab[wc], s);
+                }
+            }
+        }
+
+        return tab[target] == sentinel ? 0 : tab[target];
+    }
+
+    /**
      * find the minimum number of items whose weights sum to LEQ capacity.
      * @param weights non-negative array of item weights
      * @param capacity the largest sum of weights for the minimum number of items which sum to that
@@ -274,6 +310,51 @@ public class Knapsack01 {
         }
 
         return currTab[i] == sentinel ? 0 : currTab[i];
+    }
+
+    public static int minNumberOfItemsForCapacity2(int[] weights, int capacity) {
+        return minNumberOfItems2(weights, capacity, false);
+    }
+
+    public static int minNumberOfItemsForTarget2(int[] weights, int target) {
+        return minNumberOfItems2(weights, target, true);
+    }
+
+    public static int minNumberOfItems2(int[] weights, int capacity, boolean solveForTarget) {
+        int n = weights.length;
+
+        // tab[wc] holds the min number of items for the items whose weights sum to wc
+        int[] tab = new int[capacity + 1];
+        int sentinel = Integer.MAX_VALUE;
+        Arrays.fill(tab, sentinel);
+        tab[0] = 0;
+
+        int i, wc, wc2;
+        for (i = 0; i < n; i++) {
+            // since tab holds current and prev i results,
+            // need to traverse weights from high to low
+            // to avoid including an updated low wc2 in current wc
+            for (wc = capacity; wc >= weights[i]; --wc) {
+                wc2 = wc - weights[i];
+                if (wc2 == 0) {
+                    tab[wc] = Math.min(tab[wc], 1);
+                } else if (wc2 > 0)  {
+                    int s = (tab[wc2] == sentinel) ? sentinel : 1 + tab[wc2];
+                    tab[wc] = Math.min(tab[wc], s);
+                }
+            }
+        }
+
+        i = capacity;
+        if (solveForTarget) {
+            return tab[i] == sentinel ? 0 : tab[i];
+        }
+
+        while (i > 0 && tab[i] == sentinel) {
+            --i;
+        }
+        //System.out.printf("tab=%s\n", Arrays.toString(tab));
+        return tab[i] == sentinel ? 0 : tab[i];
     }
 
     public static int numberOfWaysForTarget(int[] weights, int target) {

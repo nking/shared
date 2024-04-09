@@ -71,6 +71,42 @@ public class KnapsackBounded {
         return maxValue(values, weights, quantities, target, true);
     }
 
+    public static int maxValueForTarget2(int[] values, int[] weights, int[] quantities, int target) {
+        int n = weights.length;
+
+        if (values.length != n) {
+            throw new IllegalStateException("values and weights must be same length");
+        }
+        if (quantities.length != n) {
+            throw new IllegalStateException("quantities and weights must be same length");
+        }
+
+        int[] tab = new int[target + 1];
+        int sentinel = Integer.MIN_VALUE;
+        Arrays.fill(tab, sentinel);
+        tab[0] = 0;
+
+        int wc, q, wc2;
+        for (int i = 0; i < n; ++i) {
+            // since tab holds current and prev i results,
+            // need to traverse weights from high to low
+            // to avoid including an updated low wc2 in current wc
+            for (wc = target; wc >= weights[i]; --wc) {
+                for (q = 1; q <= quantities[i]; ++q) {
+                    wc2 = wc - q * weights[i];
+                    if (wc2 == 0) {
+                        tab[wc] = Math.max(tab[wc], q * values[i]);
+                    } else if (wc2 > 0)  {
+                        int s = (tab[wc2] == sentinel) ? sentinel : tab[wc2] + q * values[i];
+                        tab[wc] = Math.max(tab[wc], s);
+                    }
+                }
+            }
+        }
+
+        return tab[target] == sentinel ? 0 : tab[target];
+    }
+
     public static int maxValue(int[] values, int[] weights, int[] quantities, int target, boolean solveForExact) {
         int n = weights.length;
 
@@ -146,6 +182,14 @@ public class KnapsackBounded {
         return minNumberOfItems(weights, quantities, capacity, false);
     }
 
+    public static int minNumberOfItemsForTarget2(int[] weights, int[] quantities, int target) {
+        return minNumberOfItems2(weights, quantities, target, true);
+    }
+
+    public static int minNumberOfItemsForCapacity2(int[] weights, int[] quantities, int capacity) {
+        return minNumberOfItems2(weights, quantities, capacity, false);
+    }
+
     public static int minNumberOfItems(int[] weights, int[] quantities, int target, boolean solveForExact) {
 
         int n = weights.length;
@@ -204,6 +248,42 @@ public class KnapsackBounded {
         }
 
         return currTab[i] == sentinel ? 0 : currTab[i];
+    }
+
+    public static int minNumberOfItems2(int[] weights, int[] quantities, int target, boolean solveForExact) {
+
+        int n = weights.length;
+        int[] tab = new int[target + 1];
+        int sentinel = Integer.MAX_VALUE;
+        Arrays.fill(tab, sentinel);
+        tab[0] = 0;
+
+        int wc, q, wc2;
+        for (int i = 0; i < n; ++i) {
+            for (wc = target; wc >= weights[i]; --wc) {
+                for (q = 1; q <= quantities[i]; ++q) {
+                    wc2 = wc - q * weights[i];
+                    if (wc2 == 0) {
+                        tab[wc] = Math.min(tab[wc], q);
+                    } else if (wc2 > 0)  {
+                        int s = (tab[wc2] == sentinel) ? sentinel : q + tab[wc2];
+                        tab[wc] = Math.min(tab[wc], s);
+                    }
+                }
+            }
+        }
+
+        if (solveForExact) {
+            return tab[target] == sentinel ? 0 : tab[target];
+        }
+
+        // search backwards for last sum entered
+        int i = target;
+        while (i > 0 && tab[i] == sentinel) {
+            --i;
+        }
+
+        return tab[i] == sentinel ? 0 : tab[i];
     }
 
     public static int numberOfWaysForTarget(int[] weights, int[] quantities, int target) {
