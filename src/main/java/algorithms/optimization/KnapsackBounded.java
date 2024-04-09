@@ -30,31 +30,23 @@ public class KnapsackBounded {
             throw new IllegalStateException("quantities and weights must be same length");
         }
 
-        int[] prevTab = null;
-        int[] currTab = new int[capacity + 1];
+        int[] tab = new int[capacity + 1];
 
         int wc, q, wc2;
         for (int i = 0; i < n; ++i) {
-            //if (weights[i1] > capacity) continue; TODO: to use this, need to access by sorted weights and init tab to only use weights <= capacity
-            prevTab = currTab;
-            currTab = new int[currTab.length];
-            for (wc = 1; wc <= capacity; ++wc) {
+            // since tab holds current and prev i results,
+            // need to traverse weights from high to low
+            // to avoid including an updated low wc2 in current wc
+            for (wc = capacity; wc >= weights[i]; --wc) {
                 for (q = 1; q <= quantities[i]; ++q) {
                     wc2 = wc - q * weights[i];
-
                     if (wc2 >= 0) {
-                        currTab[wc] = Math.max(currTab[wc], prevTab[wc2] + q * values[i]);
-                    } else {
-                        currTab[wc] = Math.max(currTab[wc], prevTab[wc]);
+                        tab[wc] = Math.max(tab[wc], tab[wc2] + q * values[i]);
                     }
                 }
             }
         }
-
-        //System.out.printf("\nprevTab=%s\n", Arrays.toString(prevTab));
-        //System.out.printf("currTab=%s\n", Arrays.toString(currTab));
-
-        return currTab[capacity];
+        return tab[capacity];
     }
 
     public static int maxValueForCapacity(int[] values, int[] weights, int[] quantities, int capacity) {
