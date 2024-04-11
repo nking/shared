@@ -1,0 +1,50 @@
+package algorithms.disjointSets;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * a version of Tarjan's Disjoint Forest, union find for a fixed number of vertices
+ */
+public class UnionFind {
+    protected final int[] parent;
+    protected final int[] rank;
+    protected int nComponents = 0;
+    protected final int n;
+
+    public UnionFind(int n) {
+        this.n = n;
+        rank = new int[n];
+        parent = new int[n];
+        for (int i = 0; i < n; ++i) {
+            parent[i] = i;
+        }
+        nComponents = n;
+    }
+
+    public int find(int i) {
+        // path compression while searching up until parent[ii]==ii
+        if (parent[i] != i) {
+            parent[i] = find(parent[i]);
+        }
+        return parent[i];
+    }
+
+    public boolean union(int i, int j) {
+        int pI = find(i);
+        int pJ = find(j);
+        if (pI == pJ) return false;
+
+        if (rank[pI] > rank[pJ]) {
+            parent[pJ] = pI;
+        } else if (rank[pJ] > rank[pI]) {
+            parent[pI] = pJ;
+        } else {
+            // choose pI
+            parent[pJ] = pI;
+            ++rank[pI];
+        }
+        --nComponents;
+        return true;
+    }
+}

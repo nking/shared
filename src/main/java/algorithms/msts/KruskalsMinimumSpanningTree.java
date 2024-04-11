@@ -2,6 +2,7 @@ package algorithms.msts;
 
 import algorithms.disjointSets.DisjointForest;
 import algorithms.disjointSets.DisjointSet2Node;
+import algorithms.disjointSets.UnionFind;
 import algorithms.sort.MiscSorter;
 import algorithms.util.PairInt;
 import algorithms.util.SimpleLinkedListNode;
@@ -9,6 +10,11 @@ import gnu.trove.iterator.TObjectDoubleIterator;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectDoubleMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.IntStream;
 
 /**
 *
@@ -102,6 +108,37 @@ public class KruskalsMinimumSpanningTree {
             nMSTEdges, edgeWeights.size(), sum);
         
         return a;
+    }
+
+    /**
+     * given an edge weights matrix, return the edge indexes that make a minimum spanning tree.
+     * @param edgeWeights edge weights given in format where each row contains
+     *                    the 2 vertex numbers of the edge and the edge weight.
+     *                    e.g. row 0 = [1,4, 100] states that edge 0 has
+     *                    start vertex 1 and end vertex 4 and weight 100.
+     * @return
+     */
+    public static List<Integer> mst(int[][] edgeWeights) {
+        // [x,y, w]  sort by col2
+        int n = edgeWeights.length;
+        int[] sortedIdxs
+                = IntStream.range(0, n).boxed()
+                .sorted((i, j)-> Integer.compare(edgeWeights[i][2], edgeWeights[j][2]))
+                .mapToInt(ele->ele).toArray();
+
+        List<Integer> mstEdgeIndexes = new ArrayList<>();
+        UnionFind uF = new UnionFind(n);
+        for (int i = 0; i < n; ++i) {
+            int idx = sortedIdxs[i];
+            int u =edgeWeights[idx][0];
+            int v = edgeWeights[idx][1];
+            if (uF.find(u) != uF.find(v)) {
+                mstEdgeIndexes.add(idx);
+                uF.union(u, v);
+            }
+        }
+
+        return mstEdgeIndexes;
     }
 
     static PairInt[] sortWeightsNonDecreasing(

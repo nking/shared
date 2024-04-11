@@ -58,25 +58,9 @@ public class DisjointSet2Helper {
      @return
      */
     public <T> DisjointSet2Node<T> findSet(DisjointSet2Node<T> x) {
-                
-        // iterative
         if (!x.equals(x.getParent())) {
-            
-            List<DisjointSet2Node<T>> update = new ArrayList<DisjointSet2Node<T>>();
-            
-            DisjointSet2Node<T> parent = x;
-            while (!parent.equals(parent.getParent())) {
-                update.add(parent);
-                parent = parent.getParent();
-            }
-            
-            // update the nodes with parent
-            for (DisjointSet2Node<T> node : update) {
-                node.setParent(parent);
-            }
- 
+            x.setParent(findSet(x.getParent()));
         }
-        
         return x.getParent();
     }
     

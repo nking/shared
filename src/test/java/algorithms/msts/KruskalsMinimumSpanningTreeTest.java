@@ -7,6 +7,12 @@ import gnu.trove.map.TObjectDoubleMap;
 import gnu.trove.map.hash.TObjectDoubleHashMap;
 import junit.framework.TestCase;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 /**
  *
  * @author nichole
@@ -49,7 +55,7 @@ public class KruskalsMinimumSpanningTreeTest extends TestCase {
     
     public void test0() {
         /*
-        Following example in Cormen, Leiserson, Rivest, and Stein Chap 24, MST, Fig 23.4.
+        Following example in Cormen, Leiserson, Rivest, and Stein Chap 23, MST, Fig 23.4.
         
                  / [b] --- 8 ----/[c]-- 7  -- [d]\
                4    |          2     \         |    9
@@ -63,6 +69,7 @@ public class KruskalsMinimumSpanningTreeTest extends TestCase {
         
         int n = 9;
         int idx;
+        int expectedWeightSum = 37;
         
         SimpleLinkedListNode[] graph = new SimpleLinkedListNode[n]; 
         for (idx = 0; idx < n; ++idx) {
@@ -76,53 +83,88 @@ public class KruskalsMinimumSpanningTreeTest extends TestCase {
                  \ [h] / -- 1  --[g]-- 2 -- \ [f]/
         */
         TObjectDoubleMap<PairInt> edgeWeights = new TObjectDoubleHashMap<PairInt>();
-        
+
+        int[][] weights = new int[14][];
         graph[a].insert(b); graph[a].insert(h);
         edgeWeights.put(new PairInt(a, b), 4);
         edgeWeights.put(new PairInt(a, h), 8);
-        
+        weights[0] = new int[]{a, b, 4};
+        weights[1] = new int[]{a, h, 8};
+
         graph[b].insert(c); graph[b].insert(h);
         edgeWeights.put(new PairInt(b, c), 8);
         edgeWeights.put(new PairInt(b, h), 11);
+        weights[2] = new int[]{b, c, 8};
+        weights[3] = new int[]{b, h, 11};
         
         graph[c].insert(d); graph[c].insert(f); graph[c].insert(i);
         edgeWeights.put(new PairInt(c, d), 7);
         edgeWeights.put(new PairInt(c, f), 4);
         edgeWeights.put(new PairInt(c, i), 2);
-        
+        weights[4] = new int[]{c, d, 7};
+        weights[5] = new int[]{c, f, 4};
+        weights[6] = new int[]{c, i, 2};
+
         graph[d].insert(e); graph[d].insert(f);
         edgeWeights.put(new PairInt(d, e), 9);
         edgeWeights.put(new PairInt(d, f), 14);
-        
+        weights[7] = new int[]{d, e, 9};
+        weights[8] = new int[]{d, f, 14};
+
         graph[e].insert(f);
         edgeWeights.put(new PairInt(e, f), 10);
-        
+        weights[9] = new int[]{e, f, 10};
+
         graph[f].insert(g);
         edgeWeights.put(new PairInt(f, g), 2);
+        weights[10] = new int[]{f, g, 2};
         
         graph[g].insert(h); graph[g].insert(i);
         edgeWeights.put(new PairInt(g, h), 1);
         edgeWeights.put(new PairInt(g, i), 6);
-        
+        weights[11] = new int[]{g, h, 1};
+        weights[12] = new int[]{g, i, 6};
+
         graph[h].insert(i);
         edgeWeights.put(new PairInt(h, i), 7);
+        weights[13] = new int[]{h, i, 7};
         
         TIntObjectMap<SimpleLinkedListNode> mst = KruskalsMinimumSpanningTree.
            mst(graph, edgeWeights);
-        
+
+        // has 1 and 7 extra (1 has a,h) (7 has d,e)
+        List<Integer> mst2 = KruskalsMinimumSpanningTree.mst(weights);
+        Set<Integer> v2 = new HashSet<>();
+        for (int _idx : mst2) {
+            v2.add(weights[_idx][0]);
+            v2.add(weights[_idx][2]);
+        }
+
+        Set<Integer> expected = new HashSet<Integer>(
+                Arrays.stream(new int[]{0, 1, 4, 5, 6, 7, 10, 11}).boxed().collect(Collectors.toList()));
+        assertTrue(mst2.removeAll(expected));
+        assertTrue(mst2.isEmpty());
+
         /*
-        a to b
-        c to d, c to f, c to i
-        f to g
-        g to h
-        */
+        0=a to b
+        1=a to h
+        4,5,6 = c to d,f,i
+        7=d to e
+        11=h to g
+        10=g to f
+         */
+
         assertTrue(mst.containsKey(a));
         assertTrue(mst.get(a).contains(b));
+        assertTrue(mst.get(a).contains(h));
         
         assertTrue(mst.containsKey(c));
         assertTrue(mst.get(c).contains(d));
         assertTrue(mst.get(c).contains(f));
         assertTrue(mst.get(c).contains(i));
+
+        assertTrue(mst.containsKey(d));
+        assertTrue(mst.get(d).contains(e));
         
         assertTrue(mst.containsKey(f));
         assertTrue(mst.get(f).contains(g));

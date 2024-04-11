@@ -18,6 +18,8 @@ public class MiscBisectingSearchTest extends TestCase {
         srch = 1;
         res = MiscBisectingSearch.bisectRightForIncreasingList(toList(a), srch);
         assertEquals(eRes, res);
+        res = MiscBisectingSearch.bisectRightForIncreasingList(a, srch);
+        assertEquals(eRes, res);
 
         eRes = 2;
         srch = 2;
