@@ -24,7 +24,7 @@ import java.util.logging.Logger;
  * 
  * The runtime complexity is O(V + E) due to use of a YFastTrie as the min-priority heap.
  * Note that if the heap wrapper has to choose a Fibonacci instead due to
- * memory constraints, the runtime complexity is O(V*log_2V + E) instead.
+ * memory constraints, the runtime complexity is O(V*log_2(E) + E) instead.
 
    implemented from
    "Position Paper: Dijkstra’s Algorithm versus Uniform Cost Search or a Case Against Dijkstra’s Algorithm"
