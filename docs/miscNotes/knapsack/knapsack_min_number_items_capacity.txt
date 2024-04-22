@@ -57,11 +57,10 @@ Bounded:
         }
 
 Unbounded:
-        if (weights[i] > capacity) continue;
         // cannot traverse weight sum in reverse order here.
         // traverse wc from 1 to target to be able to 
         // add current wc2 counts to current count sum
-        for (wc = 1; wc <= target; wc++) {
+        for (wc = weights[i]; wc <= target; wc++) {
             wc2 = wc - weights[i];
             if (wc2 == 0) {
                 tab[wc] = Math.min(tab[wc], 1);

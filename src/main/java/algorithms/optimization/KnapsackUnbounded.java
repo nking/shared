@@ -46,9 +46,8 @@ public class KnapsackUnbounded {
 
         int i, wc, wc2;
         for (i = 0; i < n; i++) {
-            if (weights[i] > target) continue;
             // traverse wc from 1 to target to be able to add current wc2 counts to current count sum
-            for (wc = 1; wc <= target; wc++) {
+            for (wc = weights[i]; wc <= target; wc++) {
                 wc2 = wc - weights[i];
 
                 if (wc2 == 0) {
@@ -95,17 +94,15 @@ public class KnapsackUnbounded {
 
         int i, wc, wc2;
         for (i = 0; i < n; i++) {
-            if (weights[i] > capacity) continue;
             // cannot traverse weight sum in reverse order here.
             // traverse wc from 1 to target to be able to add current wc2 counts to current count sum
-            for (wc = 1; wc <= capacity; wc++) {
+            for (wc = weights[i]; wc <= capacity; wc++) {
                 wc2 = wc - weights[i];
 
                 //System.out.printf("i=%d, wc=%d, wc2=%d, weights[i]=%d  tab=%s\n", i, wc, wc2, weights[i], Arrays.toString(tab));
 
-                if (wc2 >= 0) {
-                    tab[wc] = Math.max(tab[wc], tab[wc2] + values[i]);
-                }
+                tab[wc] = Math.max(tab[wc], tab[wc2] + values[i]);
+
                 //System.out.printf("    tab[%d]=%d\n", wc, tab[wc]);
             }
         }
@@ -144,8 +141,7 @@ public class KnapsackUnbounded {
 
         int i, wc, wc2;
         for (i = 0; i < n; i++) {
-            if (weights[i] > target) continue;
-            for (wc = 1; wc <= target; wc++) {
+            for (wc = weights[i]; wc <= target; wc++) {
                 wc2 = wc - weights[i];
                 if (wc2 == 0) {
                     tab[wc] = Math.min(tab[wc], 1);
@@ -219,15 +215,12 @@ public class KnapsackUnbounded {
 
         int wc, wc2;
         for (int i = 0; i < n; ++i) {
-            if (weights[i] > target) continue;
             // traverse wc from 1 to target to be able to add current wc2 counts to current count sum
-            for (wc = 1; wc <= target; ++wc) {
+            for (wc = weights[i]; wc <= target; ++wc) {
                 // the remaining sum after weight subtracted
                 wc2 = wc - weights[i];
-                if (wc2 >= 0) {
-                    // adds counts from remaining sum
-                    tab[wc] += tab[wc2];
-                }
+                // adds counts from remaining sum
+                tab[wc] += tab[wc2];
             }
         }
         //System.out.printf("tab=%s\n", Arrays.toString(tab));
@@ -252,6 +245,8 @@ public class KnapsackUnbounded {
         tab[0] = 1;
 
         int i, wc, wc2;
+        // to count sequences instead of sets, inner loop is indexes to include all prev calc items
+        // in current weight count
         for (wc = 1; wc <= target; ++wc) {
             for (i = 0; i < n; ++i) {
                 // the remaining sum after weight subtracted
