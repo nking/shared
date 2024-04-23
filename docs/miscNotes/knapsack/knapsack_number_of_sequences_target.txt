@@ -1,0 +1,34 @@
+see shared/src/main/algorithms/optimization/Knapsack*
+
+===========================================================
+number of sequences that sum to target:
+    Given a set of n items, each with a mass,
+    determine the number of sequences that
+    have a total weight W is exactly equal to a given target.
+  
+basic outline for all target methods:
+
+    int[] tab = new int[target + 1];
+    tab[0] = 1;
+
+    int i, wc, t, c, wc2;
+
+0-1:
+    // to count sequences instead of sets, inner loop is indexes to include all prev calc items
+    // in current weight count
+    for (i = 0; i < n; ++i) {
+        for (wc = weights[i]; wc <= target; ++wc) {
+            wc2 = wc - weights[i];
+            if (wc2 >= 0) {
+                // adds counts from remaining sum
+                tab[wc] += tab[wc2];
+            }
+        }
+    }
+
+Bounded:
+    takes extra book keeping to store the quantities for each set solution,
+    then counts each solution and adjusts for multiplicities (sets -> permutations).
+
+Unbounded:
+    not yet implemented

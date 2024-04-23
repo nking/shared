@@ -372,7 +372,7 @@ public class Knapsack01 {
             // since tab holds current and prev i results,
             // need to traverse weights from high to low
             // to avoid including an updated low wc2 in current wc
-            for (wc = target; wc > 0; --wc) {
+            for (wc = target; wc >= weights[i]; --wc) {
                 wc2 = wc - weights[i];
                 if (wc2 >= 0) {
                     // adds counts from remaining sum
@@ -380,6 +380,40 @@ public class Knapsack01 {
                 }
             }
         }
+        //System.out.printf("tab=%s\n", Arrays.toString(tab));
+        return tab[target];
+    }
+
+    /**
+     * count the number of ways that a combination of an unbounded quantity of weights
+     * can sum up to exactly EQ target, where the sequences are counted rather than sets,
+     * e.g. [1,2] is counted and [2,1] is counted.
+     * @param target the exact sum that a combination of and unbounded quantity of weights should sum to
+     * @param weights non-negative array of item weights
+     * @return
+     */
+    public static int numberOfSequencesForTarget(int[] weights, int target) {
+
+        int n = weights.length;
+
+        // tab[wc] holds the number of ways that the item weights sum to wc.
+
+        int[] tab = new int[target + 1];
+        tab[0] = 1;
+
+        int i, wc, wc2;
+        // to count sequences instead of sets, inner loop is indexes to include all prev calc items
+        // in current weight count
+        for (i = 0; i < n; ++i) {
+            for (wc = weights[i]; wc <= target; ++wc) {
+                wc2 = wc - weights[i];
+                if (wc2 >= 0) {
+                    // adds counts from remaining sum
+                    tab[wc] += tab[wc2];
+                }
+            }
+        }
+
         //System.out.printf("tab=%s\n", Arrays.toString(tab));
         return tab[target];
     }

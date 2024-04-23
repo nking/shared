@@ -1,7 +1,8 @@
 package algorithms.optimization;
 
-import java.util.Arrays;
-import java.util.List;
+import algorithms.misc.MiscMath0;
+
+import java.util.*;
 
 public class KnapsackBounded {
 
@@ -341,6 +342,94 @@ public class KnapsackBounded {
         }
         //System.out.printf("tab=%s\n", Arrays.toString(tab));
         return tab[target];
+    }
+
+    /**
+     * count the number of ways that a combination of an unbounded quantity of weights
+     * can sum up to exactly EQ target, where the sequences are counted rather than sets,
+     * e.g. [1,2] is counted and [2,1] is counted.
+     * @param target the exact sum that a combination of and unbounded quantity of weights should sum to
+     * @param weights non-negative array of item weights
+     * @return
+     */
+    public static long numberOfSequencesForTarget(int[] weights, int[] quantities, int target) {
+
+        int n = weights.length;
+
+        // tab[wc] holds the number of ways that the item weights sum to wc.
+
+        // tabQ[target+1][items.length]
+        Map<Integer, List<int[]>> tabQ = new HashMap<>();
+        //int[][] tabQ = new int[target+1][n];
+
+        int[] tab = new int[target + 1];
+        tab[0] = 1;
+
+        for (int i = 0; i < n; ++i) {
+            // since tab holds current and prev i results,
+            // need to traverse weights from high to low
+            // to avoid including an updated low wc2 in current wc
+            for (int wc = target; wc >= weights[i]; --wc) {
+                for (int q = 1; q <= quantities[i]; ++q) {
+                    // wc2 is the remaining sum after q coins subtracted
+                    int wc2 = wc - weights[i] * q;
+                    if (wc2 < 0) break;
+                    // adds counts from current sum and remaining sum
+
+                    /*tabQ[wc] is a list of existing solution quantities
+                    tabQ[wc2] is what to copy and add q to the copy at element [i]
+                    store copy as new list in tabQ[wc]*/
+
+                    // make a copy of it.
+                    List<int[]> copy = new ArrayList<>();
+                    for (int[] a : tabQ.getOrDefault(wc2, new ArrayList<>())) {
+                        copy.add(Arrays.copyOf(a, a.length));
+                    }
+                    if (!tabQ.containsKey(wc2)) {
+                        if (wc2 == 0) {
+                            int[] tq = new int[n];
+                            tq[i] += q;
+                            copy.add(tq);
+                        }
+                    } else {
+                        for (int[] tq : copy) {
+                            tq[i] += q;
+                        }
+                    }
+                    // add the updated quantites from remainder wc2 and q to current solution quantities
+                    tabQ.putIfAbsent(wc, new ArrayList<>());
+                    tabQ.get(wc).addAll(copy);
+                }
+            }
+        }
+
+        // handle multiplicities of the solutions
+        List<int[]> tabQs = tabQ.get(target);
+        if (tabQs == null || tabQs.isEmpty()) return 0;
+
+        //TODO: use BigInteer if needed
+        long result = 0;
+        for (int[] tq : tabQs) {
+            int count = 0;
+            for (int q : tq) {
+                count += q;
+            }
+            // count the multiplicities
+            long denomMult = 1;
+            for (int q : tq) {
+                if (q > 1) {
+                    denomMult *= MiscMath0.factorial(q);
+                }
+            }
+            long nQ = MiscMath0.factorial(count)/denomMult;
+            result += nQ;
+            //System.out.printf("tq=%s, count=%d, count!=%d, denom=%d, ==> %d\n",
+            //        Arrays.toString(tq), count, MiscMath0.factorial(count),
+            //        denomMult, nQ);
+        }
+
+        //System.out.printf("tab=%s\n", Arrays.toString(tab));
+        return result;
     }
 
     private static String toString(int[][] tab) {
