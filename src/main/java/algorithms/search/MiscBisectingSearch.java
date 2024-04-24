@@ -1,6 +1,5 @@
 package algorithms.search;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -30,7 +29,7 @@ public class MiscBisectingSearch {
      * @param srch
      * @return
      */
-    public static int successorForIncreasingList(int[] a, int srch) {
+    public static int successor(int[] a, int srch) {
         int lo = 0;
         int hi = a.length - 1;
         while (lo <= hi) {
@@ -66,7 +65,7 @@ public class MiscBisectingSearch {
      * @param srch
      * @return
      */
-    public static int successorForIncreasingList(List<Integer> a, int srch) {
+    public static int successor(List<Integer> a, int srch) {
         int lo = 0;
         int hi = a.size() - 1;
         while (lo <= hi) {
@@ -116,10 +115,10 @@ public class MiscBisectingSearch {
      * finds the smallest index for which value == srch, or if doesn't exist,
      *      finds the largest index for which the value is LT srch.
      */
-    public static int bisectRightForIncreasingList(int[] a, int srch) {
-        return bisectRightForIncreasingList(a, srch, 0, a.length - 1);
+    public static int floor(int[] a, int srch) {
+        return floor(a, srch, 0, a.length - 1);
     }
-    public static int bisectRightForIncreasingList(int[] a, int srch, int lo, int hi) {
+    public static int floor(int[] a, int srch, int lo, int hi) {
         if (srch < a[lo]) {
             return -1;
         }
@@ -127,7 +126,7 @@ public class MiscBisectingSearch {
             int mid = lo + (hi - lo) / 2;
             if (a[mid] == srch) {
                 //we want the smallest index whose value == srch, so search further in lower half of array
-                int idx = bisectRightForIncreasingList(a, srch, lo, mid - 1);
+                int idx = floor(a, srch, lo, mid - 1);
                 if (idx == -1 || a[idx] < srch) return mid;
                 return idx;
             } else if (a[mid] < srch) {
@@ -175,10 +174,10 @@ public class MiscBisectingSearch {
      * finds the smallest index for which value == srch, or if doesn't exist,
      *      finds the largest index for which the value is LT srch.
      */
-    public static int bisectRightForIncreasingList(List<Integer> a, int srch) {
-        return bisectRightForIncreasingList(a, srch, 0, a.size() - 1);
+    public static int floor(List<Integer> a, int srch) {
+        return floor(a, srch, 0, a.size() - 1);
     }
-    public static int bisectRightForIncreasingList(List<Integer> a, int srch, int lo, int hi) {
+    public static int floor(List<Integer> a, int srch, int lo, int hi) {
         if (srch < a.get(lo)) {
             return -1;
         }
@@ -186,7 +185,7 @@ public class MiscBisectingSearch {
             int mid = lo + (hi - lo) / 2;
             if (a.get(mid) == srch) {
                 //we want the smallest index whose value == srch, so search further in lower half of array
-                int idx = bisectRightForIncreasingList(a, srch, lo, mid - 1);
+                int idx = floor(a, srch, lo, mid - 1);
                 if (idx == -1 || a.get(idx) < srch) return mid;
                 return idx;
             } else if (a.get(mid) < srch) {
@@ -217,8 +216,8 @@ public class MiscBisectingSearch {
      * @param srch the value to search for in a
      * @return
      */
-    public static int bisectLeftForIncreasingList(List<Integer> a, int srch) {
-        return bisectLeftForIncreasingList(a, srch, 0, a.size() - 1);
+    public static int ceiling(List<Integer> a, int srch) {
+        return ceiling(a, srch, 0, a.size() - 1);
     }
 
     /**
@@ -242,7 +241,7 @@ public class MiscBisectingSearch {
      * @param hi largest index of search range
      * @return
      */
-    public static int bisectLeftForIncreasingList(List<Integer> a, int srch, int lo, int hi) {
+    public static int ceiling(List<Integer> a, int srch, int lo, int hi) {
         //System.out.printf("a=%s, srch=%d, lo=%d, hi=%d\n",
         //        Arrays.toString(a.stream().mapToInt(Integer::intValue).toArray()),
         //        srch, lo, hi);
@@ -256,7 +255,7 @@ public class MiscBisectingSearch {
             if (a.get(mid) == srch) {
                 if (mid + 1 > hi) return mid;
                 //we want the largest index whose value == srch, so search further in higher half of array
-                int idx = bisectLeftForIncreasingList(a, srch, mid+1, hi);
+                int idx = ceiling(a, srch, mid+1, hi);
                 if (idx == -1 || idx == hi+1 || a.get(idx) > srch) return mid;
                 return idx;
             } else if (a.get(mid) < srch) {
@@ -289,8 +288,8 @@ public class MiscBisectingSearch {
      * @param hi largest index of search range
      * @return
      */
-    public static int bisectLeftForIncreasingList(int[] a, int srch) {
-        return bisectLeftForIncreasingList(a, srch, 0, a.length - 1);
+    public static int ceiling(int[] a, int srch) {
+        return ceiling(a, srch, 0, a.length - 1);
     }
 
     /**
@@ -314,7 +313,7 @@ public class MiscBisectingSearch {
      * @param hi largest index of search range
      * @return
      */
-    public static int bisectLeftForIncreasingList(int[] a, int srch, int lo, int hi) {
+    public static int ceiling(int[] a, int srch, int lo, int hi) {
 
         if (srch > a[hi]) {
             return a.length;
@@ -326,7 +325,7 @@ public class MiscBisectingSearch {
             if (a[mid] == srch) {
                 if (mid + 1 > hi) return mid;
                 //we want the largest index whose value == srch, so search further in higher half of array
-                int idx = bisectLeftForIncreasingList(a, srch, mid+1, hi);
+                int idx = ceiling(a, srch, mid+1, hi);
                 if (idx == -1 || idx == hi+1 || a[idx] > srch) return mid;
                 return idx;
             } else if (a[mid] < srch) {
@@ -338,20 +337,20 @@ public class MiscBisectingSearch {
         return Math.min(lo, hi);
     }
 
-    public static int predecessorForIncreasingList(int[] a, int srch) {
+    public static int predecessor(int[] a, int srch) {
 
         // range of values from floor is [-1, a.length-1]
-        int floorIdx = MiscBisectingSearch.bisectRightForIncreasingList(a, srch);
+        int floorIdx = MiscBisectingSearch.floor(a, srch);
 
         if (floorIdx == -1) return floorIdx;
         if (a[floorIdx] == srch) return floorIdx - 1;
         return floorIdx;
     }
 
-    public static int predecessorForIncreasingList(List<Integer> a, int srch) {
+    public static int predecessor(List<Integer> a, int srch) {
 
         // range of values from floor is [-1, a.length-1]
-        int floorIdx = MiscBisectingSearch.bisectRightForIncreasingList(a, srch);
+        int floorIdx = MiscBisectingSearch.floor(a, srch);
 
         if (floorIdx == -1) return floorIdx;
         if (a.get(floorIdx) == srch) return floorIdx - 1;
