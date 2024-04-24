@@ -8,50 +8,160 @@ import java.util.List;
 
 public class MiscBisectingSearchTest extends TestCase {
 
-    public void testRightIncr() {
+    public void testFloor() {
+        // all indexes <= returned index hold values LEQ srch key
 
         int[] a;
-        int eRes, res, srch;
+        int expAns, ans, srch;
 
-        a = new int[]{2, 2};
-        eRes = 0;
-        srch = 1;
-        res = MiscBisectingSearch.bisectRightForIncreasingList(toList(a), srch);
-        assertEquals(eRes, res);
-        res = MiscBisectingSearch.bisectRightForIncreasingList(a, srch);
-        assertEquals(eRes, res);
-
-        eRes = 2;
+        a = new int[]{0,1,2,2,3};
         srch = 2;
-        res = MiscBisectingSearch.bisectRightForIncreasingList(toList(a), srch);
-        assertEquals(eRes, res);
+        expAns = 2;
+        ans = MiscBisectingSearch.bisectRightForIncreasingList(a, srch);
+        assertEquals(expAns, ans);
+        ans = MiscBisectingSearch.bisectRightForIncreasingList(toList(a), srch);
+        assertEquals(expAns, ans);
 
-        eRes = 2;
+        a = new int[]{0,3,4,4,6};
         srch = 5;
-        res = MiscBisectingSearch.bisectRightForIncreasingList(toList(a), srch);
-        assertEquals(eRes, res);
+        expAns = 3;
+        ans = MiscBisectingSearch.bisectRightForIncreasingList(a, srch);
+        assertEquals(expAns, ans);
+        ans = MiscBisectingSearch.bisectRightForIncreasingList(toList(a), srch);
+        assertEquals(expAns, ans);
+
+        a = new int[]{2,3,4,4,6};
+        srch = 0;
+        expAns = -1;
+        ans = MiscBisectingSearch.bisectRightForIncreasingList(a, srch);
+        assertEquals(expAns, ans);
+        ans = MiscBisectingSearch.bisectRightForIncreasingList(toList(a), srch);
+        assertEquals(expAns, ans);
+
+        a = new int[]{2,3,4,4,6};
+        srch = 7;
+        expAns = 4;
+        ans = MiscBisectingSearch.bisectRightForIncreasingList(a, srch);
+        assertEquals(expAns, ans);
+        ans = MiscBisectingSearch.bisectRightForIncreasingList(toList(a), srch);
+        assertEquals(expAns, ans);
+
     }
 
-    public void testLeftIncr() {
+    public void testSuccessorForIncreasingList() {
+
+        // all indexes < returned index hold values LT srch key
+
         int[] a;
-        int eRes, res, srch;
+        int expAns, ans, srch;
 
         a = new int[]{2, 2};
-        eRes = 0;
         srch = 1;
-        res = MiscBisectingSearch.bisectLeftForIncreasingList(toList(a), srch);
-        assertEquals(eRes, res);
+        expAns = 0;
 
-        eRes = 0;
+        ans = MiscBisectingSearch.successorForIncreasingList(toList(a), srch);
+        assertEquals(expAns, ans);
+        ans = MiscBisectingSearch.successorForIncreasingList(a, srch);
+        assertEquals(expAns, ans);
+
         srch = 2;
-        res = MiscBisectingSearch.bisectLeftForIncreasingList(toList(a), srch);
-        assertEquals(eRes, res);
+        expAns = 2; // beyond array indexes
+        ans = MiscBisectingSearch.successorForIncreasingList(toList(a), srch);
+        assertEquals(expAns, ans);
 
-        a = new int[]{2, 2,6,8};
+        srch = 5;
+        expAns = 2; // beyond array indexes
+        ans = MiscBisectingSearch.successorForIncreasingList(toList(a), srch);
+        assertEquals(expAns, ans);
+
+        a = new int[]{0,1,2,2,3};
+        srch = 2;
+        expAns = 4;
+        ans = MiscBisectingSearch.successorForIncreasingList(a, srch);
+        assertEquals(expAns, ans);
+
+        a = new int[]{0,3,4,4,6};
+        srch = 5;
+        expAns = 4;
+        ans = MiscBisectingSearch.successorForIncreasingList(a, srch);
+        assertEquals(expAns, ans);
+
+        a = new int[]{2,3,4,4,6};
+        srch = 0;
+        expAns = 0;
+        ans = MiscBisectingSearch.successorForIncreasingList(a, srch);
+        assertEquals(expAns, ans);
+    }
+
+    public void testCeiling() {
+
+        // all indexes < returned index hold values LT srch key
+
+        int[] a;
+        int expAns, ans, srch;
+
+        a = new int[]{1, 2, 3, 3, 4};
+        srch = 3;
+        expAns = 3;
+        ans = MiscBisectingSearch.bisectLeftForIncreasingList(toList(a), srch);
+        assertEquals(expAns, ans);
+        ans = MiscBisectingSearch.bisectLeftForIncreasingList(a, srch);
+        assertEquals(expAns, ans);
+
+        srch = 4;
+        expAns = 4;
+        ans = MiscBisectingSearch.bisectLeftForIncreasingList(toList(a), srch);
+        assertEquals(expAns, ans);
+        ans = MiscBisectingSearch.bisectLeftForIncreasingList(a, srch);
+        assertEquals(expAns, ans);
+
         srch = 10;
-        eRes = 4;
-        res = MiscBisectingSearch.bisectLeftForIncreasingList(toList(a), srch);
-        assertEquals(eRes, res);
+        expAns = 5;
+        ans = MiscBisectingSearch.bisectLeftForIncreasingList(toList(a), srch);
+        assertEquals(expAns, ans);
+        ans = MiscBisectingSearch.bisectLeftForIncreasingList(a, srch);
+        assertEquals(expAns, ans);
+
+        srch = 0;
+        expAns = 0;
+        ans = MiscBisectingSearch.bisectLeftForIncreasingList(toList(a), srch);
+        assertEquals(expAns, ans);
+        ans = MiscBisectingSearch.bisectLeftForIncreasingList(a, srch);
+        assertEquals(expAns, ans);
+    }
+
+    public void testPredecessor() {
+        int[] a;
+        int expAns, ans, srch;
+
+        a = new int[]{1, 2, 3, 3, 4};
+        srch = 3;
+        expAns = 1;
+        ans = MiscBisectingSearch.predecessorForIncreasingList(a, srch);
+        assertEquals(expAns, ans);
+        ans = MiscBisectingSearch.predecessorForIncreasingList(toList(a), srch);
+        assertEquals(expAns, ans);
+
+        srch = 4;
+        expAns = 3;
+        ans = MiscBisectingSearch.predecessorForIncreasingList(a, srch);
+        assertEquals(expAns, ans);
+        ans = MiscBisectingSearch.predecessorForIncreasingList(toList(a), srch);
+        assertEquals(expAns, ans);
+
+        srch = 10;
+        expAns = 4;
+        ans = MiscBisectingSearch.predecessorForIncreasingList(a, srch);
+        assertEquals(expAns, ans);
+        ans = MiscBisectingSearch.predecessorForIncreasingList(toList(a), srch);
+        assertEquals(expAns, ans);
+
+        srch = 0;
+        expAns = -1;
+        ans = MiscBisectingSearch.predecessorForIncreasingList(a, srch);
+        assertEquals(expAns, ans);
+        ans = MiscBisectingSearch.predecessorForIncreasingList(toList(a), srch);
+        assertEquals(expAns, ans);
     }
 
     protected List<Integer> toList(int[] a) {

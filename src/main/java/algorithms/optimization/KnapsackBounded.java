@@ -347,7 +347,7 @@ public class KnapsackBounded {
     /**
      * count the number of ways that a combination of an unbounded quantity of weights
      * can sum up to exactly EQ target, where the sequences are counted rather than sets,
-     * e.g. [1,2] is counted and [2,1] is counted.
+     * e.g. [1,2] is counted and [2,1] is counted, though [1,1] is counted once.
      * @param target the exact sum that a combination of and unbounded quantity of weights should sum to
      * @param weights non-negative array of item weights
      * @return
@@ -377,7 +377,7 @@ public class KnapsackBounded {
                     // adds counts from current sum and remaining sum
 
                     /*tabQ[wc] is a list of existing solution quantities
-                    tabQ[wc2] is what to copy and add q to the copy at element [i]
+                    tabQ[wc2] is what to copy and add q to the copy at element [i].
                     store copy as new list in tabQ[wc]*/
 
                     // make a copy of it.
@@ -387,6 +387,7 @@ public class KnapsackBounded {
                     }
                     if (!tabQ.containsKey(wc2)) {
                         if (wc2 == 0) {
+                            // this is the complement to the initialization of tab[0]=1
                             int[] tq = new int[n];
                             tq[i] += q;
                             copy.add(tq);

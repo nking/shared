@@ -2,7 +2,9 @@ package algorithms.optimization;
 
 import junit.framework.TestCase;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class KnapsackBoundedTest extends TestCase {
 
@@ -199,6 +201,22 @@ public class KnapsackBoundedTest extends TestCase {
         //System.out.printf("\ntarget=%d, weights=%s\n", target, java.util.Arrays.toString(w));
         ans = KnapsackBounded.numberOfWaysForTarget(w, q, target);
         assertEquals(expAns, ans);
+        //[10,1],   => math.factorial(2)
+        // [5,5,1],  => math.factorial(3)/(math.factorial(2))
+        // [5,2,2,2], => math.factorial(4)/(math.factorial(3))
+        // [5,2,2,1,1], => math.factorial(5)/(math.factorial(2)*math.factorial(2))
+        // [5,2,1,1,1,1], => math.factorial(6)/(math.factorial(4))
+        // [5,1,1,1,1,1,1], => math.factorial(7)/(math.factorial(6))
+        //[2,2,2,2,2,1], => math.factorial(6)/(math.factorial(5))
+        // [2,2,2,2,1,1,1], => math.factorial(7)/(math.factorial(3)*math.factorial(4))
+        // [2,2,2,1,1,1,1,1], => math.factorial(8)/(math.factorial(3)*math.factorial(5))
+        // [2,2,1,1,1,1,1,1,1] => math.factorial(9)/(math.factorial(2)*math.factorial(7))
+        // [2,1,1,1,1,1,1,1,1,1], => math.factorial(10)/(math.factorial(9))
+        // [11 1's] => 1
+        // math.factorial(2) + (math.factorial(3)/(math.factorial(2))) + (math.factorial(4)/(math.factorial(3))) + (math.factorial(5)/(math.factorial(2)*math.factorial(2))) + (math.factorial(6)/(math.factorial(4))) + (math.factorial(7)/(math.factorial(6))) + (math.factorial(6)/(math.factorial(5))) + (math.factorial(7)/(math.factorial(3)*math.factorial(4))) + (math.factorial(8)/(math.factorial(3)*math.factorial(5))) + (math.factorial(9)/(math.factorial(2)*math.factorial(7))) + (math.factorial(10)/(math.factorial(9))) + 1
+        //expAns = 220;
+        //ans = KnapsackBounded.numberOfSequencesForTarget(w, q, target);
+        //assertEquals(expAns, ans);
 
         w = new int[]{1, 2, 5, 10};
         q = new int[]{3, 5, 1, 1};
@@ -209,6 +227,32 @@ public class KnapsackBoundedTest extends TestCase {
         ans = KnapsackBounded.numberOfWaysForTarget(w, q, target);
         assertEquals(expAns, ans);
 
+        w = new int[]{1,2};
+        q = new int[]{1,1};
+        target = 3;
+        expAns = 1;//[1,2]
+        ans = KnapsackBounded.numberOfWaysForTarget(w, q, target);
+        assertEquals(expAns, ans);
+        //System.out.printf("\nw=%s\nq=%s\ntarget=%d\n", Arrays.toString(w), Arrays.toString(q), target);
+        // [1,2] =>2
+        long expAns2 = 2;
+        long ans2 = KnapsackBounded.numberOfSequencesForTarget(w, q, target);
+        assertEquals(expAns2, ans2);
+
+        w = new int[]{1,2};
+        q = new int[]{3,1};
+        target = 3;
+        expAns = 2;//[1,2]
+        ans = KnapsackBounded.numberOfWaysForTarget(w, q, target);
+        assertEquals(expAns, ans);
+        // [1,2] => 12,21
+        // [1,1,1] => 1
+        //System.out.printf("\nw=%s\nq=%s\ntarget=%d\n", Arrays.toString(w), Arrays.toString(q), target);
+        expAns2 = 3;
+        System.out.printf("q=3,1\n");
+        ans2 = KnapsackBounded.numberOfSequencesForTarget(w, q, target);
+        assertEquals(expAns2, ans2);
+
         w = new int[]{1, 2, 5, 10};
         q = new int[]{3, 2, 1, 1};
         target = 11;
@@ -216,6 +260,12 @@ public class KnapsackBoundedTest extends TestCase {
         //System.out.printf("\ntarget=%d, weights=%s\n", target, java.util.Arrays.toString(w));
         ans = KnapsackBounded.numberOfWaysForTarget(w, q, target);
         assertEquals(expAns, ans);
+        // 10,1 => 2
+        // [5,2,2,1,1] => math.factorial(5)/(math.factorial(2)*math.factorial(2)) = 30
+        //System.out.printf("\nw=%s\nq=%s\ntarget=%d\n", Arrays.toString(w), Arrays.toString(q), target);
+        expAns2 = 32;
+        ans2 = KnapsackBounded.numberOfSequencesForTarget(w, q, target);
+        assertEquals(expAns2, ans2);
 
         w = new int[]{2, 5, 10};
         q = new int[]{2, 1, 1};

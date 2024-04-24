@@ -121,6 +121,9 @@ public class Knapsack01Test extends TestCase {
         //        capacity, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
         ans = Knapsack01.numberOfWaysForTarget(w, target);
         assertEquals(expAns, ans);
+        expAns = 2;
+        ans = Knapsack01.numberOfSequencesForTarget(w, target);
+        assertEquals(expAns, ans);
 
         w = new int[]{5, 10, 30};
         target = 16;
@@ -128,6 +131,9 @@ public class Knapsack01Test extends TestCase {
         //System.out.printf("\target=%d\n  weights=%s\n values=%s\n   quantities=%s\n",
         //        capacity, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
         ans = Knapsack01.numberOfWaysForTarget(w, target);
+        assertEquals(expAns, ans);
+        expAns = 0;
+        ans = Knapsack01.numberOfSequencesForTarget(w, target);
         assertEquals(expAns, ans);
 
         w = new int[]{5, 10, 30, 40};
@@ -137,6 +143,12 @@ public class Knapsack01Test extends TestCase {
         //        capacity, Arrays.toString(w), Arrays.toString(v), Arrays.toString(q));
         ans = Knapsack01.numberOfWaysForTarget(w, target);
         assertEquals(expAns, ans);
+        // 5,10,30  => 3!=6
+        // 5, 40    => 2!=2
+        expAns = 8;
+        ans = Knapsack01.numberOfSequencesForTarget(w, target);
+        assertEquals(expAns, ans);
+
     }
 
     public void testMinNumberOfItemsForTarget() {

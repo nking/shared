@@ -402,7 +402,7 @@ public class Knapsack01 {
         tab[0] = 1;
 
         int i, wc, wc2;
-        // to count sequences instead of sets, inner loop is indexes to include all prev calc items
+        // to count sequences instead of sets, outer loop is indexes to include all prev calc items
         // in current weight count
         for (i = 0; i < n; ++i) {
             for (wc = weights[i]; wc <= target; ++wc) {

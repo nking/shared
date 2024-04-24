@@ -162,12 +162,22 @@ public class KnapsackUnboundedTest extends TestCase {
         //System.out.printf("\ntarget=%d, weights=%s\n", target, java.util.Arrays.toString(w));
         ans = KnapsackUnbounded.numberOfWaysForTarget(w, target);
         assertEquals(expAns, ans);
+        // count sequences instead of sets:
+        // 4 7s         => 1 seq
+        // 14 2's       => 1 seq
+        // 2 7's, 7 2's =>  9!/(2!*7!) = 36 sequences
+        expAns = 38;
+        ans = KnapsackUnbounded.numberOfSequencesForTarget(w, target);
+        assertEquals(expAns, ans);
 
         w = new int[]{2,7};
         target = 7;
         expAns = 1;
         //System.out.printf("\ntarget=%d, weights=%s\n", target, java.util.Arrays.toString(w));
         ans = KnapsackUnbounded.numberOfWaysForTarget(w, target);
+        assertEquals(expAns, ans);
+        expAns = 1;
+        ans = KnapsackUnbounded.numberOfSequencesForTarget(w, target);
         assertEquals(expAns, ans);
 
         w = new int[]{2,7};
@@ -176,6 +186,21 @@ public class KnapsackUnboundedTest extends TestCase {
         //System.out.printf("\ntarget=%d, weights=%s\n", target, java.util.Arrays.toString(w));
         ans = KnapsackUnbounded.numberOfWaysForTarget(w, target);
         assertEquals(expAns, ans);
+        expAns = 1;
+        ans = KnapsackUnbounded.numberOfSequencesForTarget(w, target);
+        assertEquals(expAns, ans);
+
+        w = new int[]{2,7};
+        target = 5;
+        expAns = 0;
+        //System.out.printf("\ntarget=%d, weights=%s\n", target, java.util.Arrays.toString(w));
+        ans = KnapsackUnbounded.numberOfWaysForTarget(w, target);
+        assertEquals(expAns, ans);
+        expAns = 0;
+        ans = KnapsackUnbounded.numberOfSequencesForTarget(w, target);
+        assertEquals(expAns, ans);
+
+
     }
 
     public void testMinNumberOfItemsForCapacity() {

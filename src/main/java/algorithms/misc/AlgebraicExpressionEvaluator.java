@@ -89,8 +89,8 @@ public class AlgebraicExpressionEvaluator {
      */
     protected OpPair buildExprTree(char[] chars, int i, int j) {
 
-        //nodeStack is the equiv of the postfix format string
-        Stack<OpPair> nodeStack = new Stack<>();
+        //numberStack is the equiv of the postfix format string
+        Stack<OpPair> numberStack = new Stack<>();
         Stack<CRange> charStack = new Stack<>();
 
         OpPair t;
@@ -138,9 +138,9 @@ public class AlgebraicExpressionEvaluator {
                 while (!charStack.isEmpty() && isNotLeftParenthesis(charStack.peek(), chars)) {
 
                     t = new OpPair(charStack.pop());
-                    t.right = nodeStack.pop();
-                    t.left = nodeStack.pop();
-                    nodeStack.push(t);
+                    t.right = numberStack.pop();
+                    t.left = numberStack.pop();
+                    numberStack.push(t);
                 }
                 // pop the opening parenthesis:
                 charStack.pop();
@@ -155,10 +155,10 @@ public class AlgebraicExpressionEvaluator {
                     || (chars[i] == '^' && priorityisGT(charStack.peek(), i, chars)))) {
 
                     t = new OpPair(charStack.pop());
-                    t.right = nodeStack.pop();
-                    t.left = nodeStack.pop();
+                    t.right = numberStack.pop();
+                    t.left = numberStack.pop();
 
-                    nodeStack.push(t);
+                    numberStack.push(t);
                 }
                 charStack.push(new CRange(i, i));
             } else {
@@ -172,7 +172,7 @@ public class AlgebraicExpressionEvaluator {
                 i = i01[1];
 
                 t = new OpPair(new CRange(i01[0], i01[1]));
-                nodeStack.push(t);
+                numberStack.push(t);
             }
 
             ++i;
@@ -182,8 +182,8 @@ public class AlgebraicExpressionEvaluator {
         // the Accept stage of shift-reduce parsing
 
         assert(charStack.isEmpty());
-        assert(nodeStack.size() == 1);
-        return nodeStack.pop();
+        assert(numberStack.size() == 1);
+        return numberStack.pop();
     }
 
     protected void parseForNumber(int i, int j, char[] chars, int[] outputIdxs) {
