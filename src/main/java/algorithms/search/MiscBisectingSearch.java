@@ -1,5 +1,6 @@
 package algorithms.search;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -35,6 +36,37 @@ public class MiscBisectingSearch {
         while (lo <= hi) {
             int mid = lo + (hi - lo) / 2;
             if (a[mid] <= srch) {
+                lo = mid + 1;
+            } else {
+                hi = mid - 1;
+            }
+        }
+        return lo;
+    }
+
+    /**
+     * finds the position that smallest index that srch should in inserted into
+     * to maintain the order.  If srch is equal to values in the array, this method returns
+     * the smallest index for values equal to srch.
+     * If srch is not in the array, this method returns where it could be inserted.
+     * The method returns indexes in the range [-1, a.length], inclusive.
+     * The return value of -1 means that srch is smaller than all values in the array.
+     * The return valye of a.length means that srch is larger than all values in the array.
+     *
+     * Note that one could instead use the java.util.Arrays.binarySearch(...) and if the index is
+     * negative, you can convert it with mult by -1 and then subtract 1 (
+     * i.e. idx = -(insertion point) - 1, so insertion point = -idx - 1.
+     * @param a
+     * @param srch
+     * @return
+     */
+    public static int findInsertIndex(int[] a, int srch) {
+        int lo = 0;
+        int hi = a.length - 1;
+        while (lo <= hi) {
+            int mid = lo + (hi - lo) / 2;
+            // NOTE: the successor method uses <= here:
+            if (a[mid] < srch) {
                 lo = mid + 1;
             } else {
                 hi = mid - 1;
@@ -114,10 +146,51 @@ public class MiscBisectingSearch {
      * @return the floor index, that is,
      * finds the smallest index for which value == srch, or if doesn't exist,
      *      finds the largest index for which the value is LT srch.
+     *      range of values from floor is [-1, a.length-1] inclusive.
      */
     public static int floor(int[] a, int srch) {
         return floor(a, srch, 0, a.length - 1);
     }
+
+    /**
+     Finds the smallest index for which value == srch, or if doesn't exist,
+     finds the largest index for which the value is LT srch.
+
+     * This is a floor function.
+     *
+     * If the method returns -1, the srch is smaller than all elements in the
+     * array.
+     * if srch is larger than every element in list 'a', this method will return
+     * the last index of a.
+     <pre>
+     e.g.
+
+     a = [0,1,2,2,3]
+     srch = 2
+     returns  2
+
+     a = [0,3,4,4,6};
+     srch = 5;
+     returns 3
+
+     a = [2,3,4,4,6};
+     srch = 0;
+     returns -1
+
+     a = [2,3,4,4,6};
+     srch = 7;
+     returs 4
+
+     </pre>
+     * @param a an ascending ordered list (non-decreasing, adjacent values can be ==).
+     * @param srch the value to search for in a
+     * @param lo smallest index for search range
+     * @param hi largets index for search range, inclusive.
+     * @return the floor index, that is,
+     * finds the smallest index for which value == srch, or if doesn't exist,
+     *      finds the largest index for which the value is LT srch.
+     *      range of values from floor is [-1, a.length-1] inclusive.
+     */
     public static int floor(int[] a, int srch, int lo, int hi) {
         if (srch < a[lo]) {
             return -1;
