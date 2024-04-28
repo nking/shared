@@ -28,7 +28,8 @@ public class MiscBisectingSearch {
      </pre>
      * @param a
      * @param srch
-     * @return
+     * @return smallest index i such that a[i] is GT srch.
+     * range of returned value is is [0, n] where n is a.length.
      */
     public static int successor(int[] a, int srch) {
         int lo = 0;
@@ -45,20 +46,18 @@ public class MiscBisectingSearch {
     }
 
     /**
-     * finds the position that smallest index that srch should in inserted into
-     * to maintain the order.  If srch is equal to values in the array, this method returns
-     * the smallest index for values equal to srch.
-     * If srch is not in the array, this method returns where it could be inserted.
+     * find the least index i whose value a]i] EQ srch, else finds the least index i
+     * whose value a[i] is GT srch.
      * The method returns indexes in the range [-1, a.length], inclusive.
-     * The return value of -1 means that srch is smaller than all values in the array.
      * The return valye of a.length means that srch is larger than all values in the array.
      *
      * Note that one could instead use the java.util.Arrays.binarySearch(...) and if the index is
      * negative, you can convert it with mult by -1 and then subtract 1 (
-     * i.e. idx = -(insertion point) - 1, so insertion point = -idx - 1.
+     * i.e. idx = -(insertion point) - 1, so insertion point = -idx - 1).
      * @param a
      * @param srch
      * @return
+     * range is [0, n] inclusive where n = a.length.
      */
     public static int findInsertIndex(int[] a, int srch) {
         int lo = 0;
@@ -67,6 +66,35 @@ public class MiscBisectingSearch {
             int mid = lo + (hi - lo) / 2;
             // NOTE: the successor method uses <= here:
             if (a[mid] < srch) {
+                lo = mid + 1;
+            } else {
+                hi = mid - 1;
+            }
+        }
+        return lo;
+    }
+
+    /**
+     * find the least index i whose value a]i] EQ srch, else finds the least index i
+     * whose value a[i] is GT srch.
+     * The method returns indexes in the range [-1, a.length], inclusive.
+     * The return valye of a.length means that srch is larger than all values in the array.
+     *
+     * Note that one could instead use the java.util.Arrays.binarySearch(...) and if the index is
+     * negative, you can convert it with mult by -1 and then subtract 1 (
+     * i.e. idx = -(insertion point) - 1, so insertion point = -idx - 1).
+     * @param a
+     * @param srch
+     * @return
+     * range is [0, n] inclusive where n = a.length.
+     */
+    public static int findInsertIndex(List<Integer> a, int srch) {
+        int lo = 0;
+        int hi = a.size() - 1;
+        while (lo <= hi) {
+            int mid = lo + (hi - lo) / 2;
+            // NOTE: the successor method uses <= here:
+            if (a.get(mid) < srch) {
                 lo = mid + 1;
             } else {
                 hi = mid - 1;
@@ -95,7 +123,8 @@ public class MiscBisectingSearch {
      </pre>
      * @param a
      * @param srch
-     * @return
+     * @return smallest index i such that a[i] is GT srch.
+     * range of returned value is is [0, n] where n is a.length.
      */
     public static int successor(List<Integer> a, int srch) {
         int lo = 0;
@@ -199,8 +228,13 @@ public class MiscBisectingSearch {
             int mid = lo + (hi - lo) / 2;
             if (a[mid] == srch) {
                 //we want the smallest index whose value == srch, so search further in lower half of array
+                if (mid == lo) {
+                    return mid;
+                }
                 int idx = floor(a, srch, lo, mid - 1);
-                if (idx == -1 || a[idx] < srch) return mid;
+                if (idx == -1 || a[idx] < srch) {
+                    return mid;
+                }
                 return idx;
             } else if (a[mid] < srch) {
                 lo = mid + 1;
@@ -271,8 +305,8 @@ public class MiscBisectingSearch {
     }
 
     /**
-     * find the largest index whose value matches srch,
-     * else if no value == srch this method returns the smallest index whose
+     * find the largest index i whose value a[i] EQ srch,
+     * else if no value exists this method returns the smallest index whose
      * value is GT srch.  if all values in the array are less than srch, the
      * method returns index == array size which is beyond bounds of array.
      <pre>
@@ -288,14 +322,17 @@ public class MiscBisectingSearch {
      * @param a an ascending ordered list (non-decreasing, adjacent values can be ==).
      * @param srch the value to search for in a
      * @return
+    the greatest index i for which a[i] == srch, else if no such value exists,
+    the index for the smallest value GT srch.
+    range is [0, n] inclusive where n = a.length.
      */
     public static int ceiling(List<Integer> a, int srch) {
         return ceiling(a, srch, 0, a.size() - 1);
     }
 
     /**
-     * find the largest index whose value matches srch,
-     * else if no value == srch this method returns the smallest index whose
+     * find the largest index i whose value a[i] EQ srch,
+     * else if no value exists this method returns the smallest index whose
      * value is GT srch.  if all values in the array are less than srch, the
      * method returns index == array size which is beyond bounds of array.
      <pre>
@@ -313,6 +350,9 @@ public class MiscBisectingSearch {
      * @param lo smallest index of search range
      * @param hi largest index of search range
      * @return
+    the greatest index i for which a[i] == srch, else if no such value exists,
+    the index for the smallest value GT srch.
+    range is [0, n] inclusive where n = a.length.
      */
     public static int ceiling(List<Integer> a, int srch, int lo, int hi) {
         //System.out.printf("a=%s, srch=%d, lo=%d, hi=%d\n",
@@ -326,11 +366,14 @@ public class MiscBisectingSearch {
         while (lo <= hi) {
             int mid = lo + (hi - lo) / 2;
             if (a.get(mid) == srch) {
-                if (mid + 1 > hi) return mid;
+                if (mid + 1 > hi){
+                    return mid;
+                }
                 //we want the largest index whose value == srch, so search further in higher half of array
-                int idx = ceiling(a, srch, mid+1, hi);
+                /*int idx = ceiling(a, srch, mid+1, hi);
                 if (idx == -1 || idx == hi+1 || a.get(idx) > srch) return mid;
-                return idx;
+                return idx;*/
+                lo = mid + 1;
             } else if (a.get(mid) < srch) {
                 lo = mid + 1;
             } else {
@@ -341,8 +384,8 @@ public class MiscBisectingSearch {
     }
 
     /**
-     * find the largest index whose value matches srch,
-     * else if no value == srch this method returns the smallest index whose
+     find the largest index i whose value a[i] EQ srch,
+     * else if no value exists this method returns the smallest index whose
      * value is GT srch.  if all values in the array are less than srch, the
      * method returns index == array size which is beyond bounds of array.
      <pre>
@@ -360,14 +403,17 @@ public class MiscBisectingSearch {
      * @param lo smallest index of search range
      * @param hi largest index of search range
      * @return
+     the greatest index i for which a[i] == srch, else if no such value exists,
+     the index for the smallest value GT srch.
+     range is [0, n] inclusive where n = a.length.
      */
     public static int ceiling(int[] a, int srch) {
         return ceiling(a, srch, 0, a.length - 1);
     }
 
     /**
-     * find the largest index whose value matches srch,
-     * else if no value == srch this method returns the smallest index whose
+     * find the largest index i whose value a[i] EQ srch,
+     * else if no value exists this method returns the smallest index whose
      * value is GT srch.  if all values in the array are less than srch, the
      * method returns index == array size which is beyond bounds of array.
      <pre>
@@ -384,7 +430,9 @@ public class MiscBisectingSearch {
      * @param srch the value to search for in a
      * @param lo smallest index of search range
      * @param hi largest index of search range
-     * @return
+     * @return the greatest index i for which a[i] == srch, else if no such value exists,
+     * the index for the smallest value GT srch.
+     * range is [0, n] inclusive where n = a.length.
      */
     public static int ceiling(int[] a, int srch, int lo, int hi) {
 
@@ -396,11 +444,16 @@ public class MiscBisectingSearch {
         while (lo <= hi) {
             int mid = lo + (hi - lo) / 2;
             if (a[mid] == srch) {
-                if (mid + 1 > hi) return mid;
+                if (mid + 1 > hi) {
+                    return mid;
+                }
                 //we want the largest index whose value == srch, so search further in higher half of array
-                int idx = ceiling(a, srch, mid+1, hi);
-                if (idx == -1 || idx == hi+1 || a[idx] > srch) return mid;
-                return idx;
+                /*int idx = ceiling(a, srch, mid+1, hi);
+                if (idx == -1 || idx == hi+1 || a[idx] > srch) {
+                    return mid;
+                }
+                return idx;*/
+                lo = mid + 1;
             } else if (a[mid] < srch) {
                 lo = mid + 1;
             } else {
@@ -410,16 +463,34 @@ public class MiscBisectingSearch {
         return Math.min(lo, hi);
     }
 
+    /**
+     * find the greatest index i whose value a[i] is LT srch.
+     * @param a list sorted by ascending values
+     * @param srch value to srch for predecessor of.
+     * @return the greatest index i whose value a[i] is LT srch.
+     * range is [-1, n-1] where n = a.length.
+     */
     public static int predecessor(int[] a, int srch) {
 
         // range of values from floor is [-1, a.length-1]
         int floorIdx = MiscBisectingSearch.floor(a, srch);
 
-        if (floorIdx == -1) return floorIdx;
-        if (a[floorIdx] == srch) return floorIdx - 1;
+        if (floorIdx == -1) {
+            return floorIdx;
+        }
+        if (a[floorIdx] == srch) {
+            return floorIdx - 1;
+        }
         return floorIdx;
     }
 
+    /**
+     * find the greatest index i whose value a[i] is LT srch.
+     * @param a list sorted by ascending values
+     * @param srch value to srch for predecessor of.
+     * @return the greatest index i whose value a[i] is LT srch.
+     * range is [-1, n-1] where n = a.length.
+     */
     public static int predecessor(List<Integer> a, int srch) {
 
         // range of values from floor is [-1, a.length-1]
@@ -429,4 +500,6 @@ public class MiscBisectingSearch {
         if (a.get(floorIdx) == srch) return floorIdx - 1;
         return floorIdx;
     }
+
+    //TODO: add patience search and use cases for it
 }
