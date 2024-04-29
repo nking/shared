@@ -93,41 +93,10 @@ import java.util.List;
 
  ------------
 
- If the problem wanted an ascending ordering of GEQ instead of GT, items with same values
- get placed in separate piles.
- Also, we need to use more than one list of piles and the problem becomes potentially
-
- sort ascending of a[i][0], the tie breakers are descending on a[i][1].
+ for an ascending sort in which each column is GEQ the same column for the previous element,
+ we use patience sort similarly, but have an additional dimension.
+ If we store all possible equences, the problem becomes exponential.
  
- then loop from largest index to smallest.
-
- for a = [ [1,1], [2,2], [2,3], [4,1], [5,1], [5,2], [6,3] ]
- 
- [6,3] is placed a new pile in a new list.
- [5,2]  2 < 3, so add to pile 0
- [5,1]  1 < 2, so add to pile 0
- [2,3]  3 > 2, so needs a new pile
-               (we can also store with it, the largest index from in pile 0
-                 for which the a[i][1] is GEQ 3, ar alternatively add
-               all of pile 0 up to and including that found index)
- [2,2] 2 < 3 so can be placed in pile 1
- [1,1] can be placed in pile 0 and in pile 1
-
-            pile 0   pile 1
-            [6,3]    [2,3], 0
-            [5,2]    [2,2]
-            [5,1]    [1,1]
-            [4,1]
-            [1.1]
-
- Then we see that the longest increasing sequence is pile 0 read in reverse,
- and there is only 1 LIS.
- The length of the LIS is 5.
-
- ---------
- redo same alg but loop from 0 to largest index.
- sort asc by a[i][0], break ties with asc by a[i][1]
-
  example a = [ [1,1], [2,2], [2,3], [4,1], [5,1], [5,2], [6,3] ]
 
  [1,1] through [2,3] placement follow patience rules.
