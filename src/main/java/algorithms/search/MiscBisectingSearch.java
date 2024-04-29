@@ -501,5 +501,4 @@ public class MiscBisectingSearch {
         return floorIdx;
     }
 
-    //TODO: add patience search and use cases for it
 }
