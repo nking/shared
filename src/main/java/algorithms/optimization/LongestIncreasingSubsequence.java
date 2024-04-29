@@ -127,9 +127,9 @@ import java.util.List;
                   [6,3]
 
  The longest sequence which is increasing, but not strictly increasing for both columns of array 'a'
- is then in pile 1.
+ is then in pile 1 for this example.
  The length of the LIS is 5.
- There is only 1 way to compose it.
+ There is only 1 way to compose the LIS for this example.
 
  The worse case runtime complexity would be O(n^2 * log(n))
  for all items in their own piles, e.g. [1,4], [2, 2], [3,1].
