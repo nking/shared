@@ -95,8 +95,8 @@ import java.util.List;
 
  for an ascending sort in which each column is GEQ the same column for the previous element,
  we use patience sort similarly, but have an additional dimension.
- If we store all possible equences, the problem becomes exponential.
- 
+ If we store all possible sequences, the problem becomes exponential.
+
  example a = [ [1,1], [2,2], [2,3], [4,1], [5,1], [5,2], [6,3] ]
 
  [1,1] through [2,3] placement follow patience rules.
@@ -104,31 +104,32 @@ import java.util.List;
        successor search in pile 0 returns index=1.
        so we copy pile 0 up to index 1 into a new pile and add [4,1] to it
        (or keep reference to previous pile last index to include)
- [5,1] needs to be compared to pile 0 and pile 1
-       for pile 0, it cannot be added to end, so we successor search and get index=1,
-       so we make a new pile and place pile 0 up to index i in it and add [5,1] to it.
-       for pile 1, we can add to end.
- [5,2] needs to be compared to pile 0, pile 1, and pile 2.
-       for pile 0, succ search returns index = 2, so we make a new pile for it with pile 0 < index
-       for pile 1, we can add to end.
-       for pile 2, we can add to end.
- [6,3] needs to be compared to pile 0, pile 1, pile 2, and pile 3.
-       for pile 0, can add to end.
-       for pile 1, can add to end.
+ [5,1] needs to be compared to pile 1 and pile 0
+       for pile 1 we can add it to end.
+       for pile 0, a succ search return index 1 and we see that in pile 1 already
+                   so we do nothing wile pile 0 results.
+ [5,2] needs to be compared to pile 1, and pile 0
+       for pile 1, we can add to end and note that pile 1 ref to pile 0 is (0)
+       for pile 0, succ search returns index = 2, and that is greater than the pile 0, 0
+           reference in pile 1, so we create a new pile 2, add the pile 0 items (or reference)
+           and then add [5,2]] to pile 2
+ [6,3] needs to be compared to pile 2, pile 1, and pile 0
        for pile 2, can add to end.
-       for pile 3, can add to end.
+       for pile 1, can add to end.
+       for pile 0, can add to end.
 
-     pile 0    pile 1   pile 2  pile 3
-     [1,1]     [1,1]    [1,1]   [1,1]
-     [2,2]     [4,1]    [5,1]   [2,2]
-     [2,3]     [5,1]    [5,2]    [5,2]
-     [6,3]     [5,2]    [6,3]    [6.3]
-               [6,3]
+     pile 0       pile 1                       pile 2
+     [1,1]        [1,1] ref (pile0, idx 0)     [1,1]
+     [2,2]        [4,1]                        [2,2] ref (pile0, idx 1)
+     [2,3]        [5,1]                        [5,2]
+     [6,3]        [5,2]                        [6,3]
+                  [6,3]
 
  The longest sequence which is increasing, but not strictly increasing for both columns of a
  is then in pile 1.
  The length of the LIS is 5.
  There is only 1 way to compose it.
+
 
  </pre>
 
