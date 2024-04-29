@@ -95,7 +95,8 @@ import java.util.List;
 
  for an ascending sort in which each column is GEQ the same column for the previous element,
  we use patience sort similarly, but have an additional dimension.
- If we store all possible sequences, the problem becomes exponential.
+ If we store all possible sequences, the problem becomes compuationally large, but still
+ O(n^2 * log(n)) at worst.
 
  example a = [ [1,1], [2,2], [2,3], [4,1], [5,1], [5,2], [6,3] ]
 
@@ -125,11 +126,13 @@ import java.util.List;
      [6,3]        [5,2]                        [6,3]
                   [6,3]
 
- The longest sequence which is increasing, but not strictly increasing for both columns of a
+ The longest sequence which is increasing, but not strictly increasing for both columns of array 'a'
  is then in pile 1.
  The length of the LIS is 5.
  There is only 1 way to compose it.
 
+ The worse case runtime complexity would be O(n^2 * log(n))
+ for all items in their own piles, e.g. [1,4], [2, 2], [3,1].
 
  </pre>
 
