@@ -363,6 +363,7 @@ public class MiscBisectingSearch {
         } else if (srch < a.get(lo)) {
             return lo;
         }
+        int lastEq = hi;
         while (lo <= hi) {
             int mid = lo + (hi - lo) / 2;
             if (a.get(mid) == srch) {
@@ -371,8 +372,11 @@ public class MiscBisectingSearch {
                 }
                 //we want the largest index whose value == srch, so search further in higher half of array
                 /*int idx = ceiling(a, srch, mid+1, hi);
-                if (idx == -1 || idx == hi+1 || a.get(idx) > srch) return mid;
+                if (idx == -1 || idx == hi+1 || a.get(idx) > srch) {
+                    return mid;
+                }
                 return idx;*/
+                lastEq = mid;
                 lo = mid + 1;
             } else if (a.get(mid) < srch) {
                 lo = mid + 1;
@@ -380,7 +384,7 @@ public class MiscBisectingSearch {
                 hi = mid - 1;
             }
         }
-        return Math.min(lo, hi);
+        return Math.min(lastEq, lo);//Math.min(lo, hi);
     }
 
     /**
@@ -435,12 +439,12 @@ public class MiscBisectingSearch {
      * range is [0, n] inclusive where n = a.length.
      */
     public static int ceiling(int[] a, int srch, int lo, int hi) {
-
         if (srch > a[hi]) {
             return a.length;
         } else if (srch < a[lo]) {
             return lo;
         }
+        int lastEq = hi;
         while (lo <= hi) {
             int mid = lo + (hi - lo) / 2;
             if (a[mid] == srch) {
@@ -453,6 +457,7 @@ public class MiscBisectingSearch {
                     return mid;
                 }
                 return idx;*/
+                lastEq = mid;
                 lo = mid + 1;
             } else if (a[mid] < srch) {
                 lo = mid + 1;
@@ -460,7 +465,7 @@ public class MiscBisectingSearch {
                 hi = mid - 1;
             }
         }
-        return Math.min(lo, hi);
+        return Math.min(lastEq, lo);//Math.min(lo, hi);
     }
 
     /**

@@ -205,6 +205,30 @@ public class MiscBisectingSearchTest extends TestCase {
         int[] a;
         int expAns, ans, srch;
 
+        a = new int[]{2};
+        srch = 1;
+        expAns = 0;
+        ans = MiscBisectingSearch.ceiling(a, srch);
+        assertEquals(expAns, ans);
+        ans = MiscBisectingSearch.ceiling(toList(a), srch);
+        assertEquals(expAns, ans);
+
+        a = new int[]{1,7};
+        srch = 6;
+        expAns = 1;
+        ans = MiscBisectingSearch.ceiling(a, srch);
+        assertEquals(expAns, ans);
+        ans = MiscBisectingSearch.ceiling(toList(a), srch);
+        assertEquals(expAns, ans);
+
+        a = new int[]{-1,-1,0,0,0,1,7,9,};
+        srch = 6;
+        expAns = 6;
+        ans = MiscBisectingSearch.ceiling(a, srch);
+        assertEquals(expAns, ans);
+        ans = MiscBisectingSearch.ceiling(toList(a), srch);
+        assertEquals(expAns, ans);
+
         a = new int[]{1, 2, 3, 3, 4};
         srch = 3;
         expAns = 3;
@@ -233,6 +257,39 @@ public class MiscBisectingSearchTest extends TestCase {
         assertEquals(expAns, ans);
         ans = MiscBisectingSearch.ceiling(a, srch);
         assertEquals(expAns, ans);
+
+        a = new int[]{1, 2, 3, 3, 3, 3, 3, 4, 4};
+        srch = 3;
+        expAns = 6;
+        ans = MiscBisectingSearch.ceiling(toList(a), srch);
+        assertEquals(expAns, ans);
+        ans = MiscBisectingSearch.ceiling(a, srch);
+        assertEquals(expAns, ans);
+
+        a = new int[]{1, 2, 3, 3, 3, 3, 3, 4};
+        srch = 3;
+        expAns = 6;
+        ans = MiscBisectingSearch.ceiling(toList(a), srch);
+        assertEquals(expAns, ans);
+        ans = MiscBisectingSearch.ceiling(a, srch);
+        assertEquals(expAns, ans);
+
+        a = new int[]{2, 3, 3, 3, 3, 3, 4, 4};
+        srch = 3;
+        expAns = 5;
+        ans = MiscBisectingSearch.ceiling(toList(a), srch);
+        assertEquals(expAns, ans);
+        ans = MiscBisectingSearch.ceiling(a, srch);
+        assertEquals(expAns, ans);
+
+        a = new int[]{3, 3, 3, 3, 3, 4, 4};
+        srch = 3;
+        expAns = 4;
+        ans = MiscBisectingSearch.ceiling(toList(a), srch);
+        assertEquals(expAns, ans);
+        ans = MiscBisectingSearch.ceiling(a, srch);
+        assertEquals(expAns, ans);
+
     }
 
     public void testPredecessor() {
