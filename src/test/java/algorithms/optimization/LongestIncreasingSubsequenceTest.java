@@ -24,6 +24,21 @@ public class LongestIncreasingSubsequenceTest extends TestCase {
         };*/
 
         /*
+         a = [3,2,1,7,6,9,8]
+         we would have piles:
+         pile 0   pile 1    pile 2
+         3        7         9
+         2        6         8
+         1
+
+         The length of the longest increasing subsequence is 3.
+
+         Every LIS is (3,7,9), (3,7,8), (3,6,9), (3,6,8)
+         (2,7,9), (2,7,8), (2,6,9), (2,6,8)
+         (1,7,9), (1,7,8), (1,6,9), (1,6,8)
+
+         There are 12 of LIS (3*2*2=12)
+
         by value:
         (3,7,9), (3,7,8), (3,6,9), (3,6,8)
          (2,7,9), (2,7,8), (2,6,9), (2,6,8)
@@ -137,12 +152,47 @@ public class LongestIncreasingSubsequenceTest extends TestCase {
         assertNotNull(m);
         assertTrue(expected.remove(m));
 
-        int size = LongestIncreasingSubsequence.findSizeStrictlyIncreasing(a);
-        assertEquals(3, size);
-
         int[] ans2 = LongestIncreasingSubsequence.findSizeAndNumberStrictlyIncreasing(a);
-        assertEquals(ans2[0], size);
+        assertEquals(ans2[0], 3);
         assertEquals(ans2[1], 12);
+
+    }
+
+    public void testFindAllStringtlyIncreasing() {
+        List<int[]> ans;
+        int[][] a;
+
+        a = new int[4][];
+        a[0] = new int[]{4,1};
+        a[1] = new int[]{2,3};
+        a[2] = new int[]{2,2};
+        a[3] = new int[]{6,3};
+
+        ans = LongestIncreasingSubsequence.findAllStrictlyIncreasing(a);
+
+        /*
+        [[2,3], [6,3]], = [1,3]
+        [[2,2], [6,3]], = [2,3]
+        [[4,1], [6,3]]. = [0,3]
+        */
+        assertEquals(3, ans.size());
+        Set<int[]> expected = new HashSet<>();
+        expected.add(new int[]{1,3});
+        expected.add(new int[]{2,3});
+        expected.add(new int[]{0,3});
+
+        for (int[] ai : ans) {
+            int[] m = null;
+            for (int[] s : expected) {
+                if (Arrays.equals(ai, s)) {
+                    m = s;
+                    break;
+                }
+            }
+            assertNotNull(m);
+            assertTrue(expected.remove(m));
+        }
+        assertTrue(expected.isEmpty());
 
     }
 
