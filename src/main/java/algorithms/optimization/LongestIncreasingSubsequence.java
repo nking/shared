@@ -334,8 +334,7 @@ public class LongestIncreasingSubsequence {
 
     /**
      * given a list of integers, return the indexes of the longest increasing subsequence
-     * within the list, items are stricly increasing.  If there is more than one sequence
-     * with same max length, return one of them.
+     * within the list, items are non-decreasing. 
      <pre>
 
      example: a = [7,6, 2,2,1,7,6]
