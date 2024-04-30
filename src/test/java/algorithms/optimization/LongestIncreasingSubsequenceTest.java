@@ -158,7 +158,7 @@ public class LongestIncreasingSubsequenceTest extends TestCase {
 
     }
 
-    public void testFindAllStringtlyIncreasing() {
+    public void testFindAllStrictlyIncreasing() {
         List<int[]> ans;
         int[][] a;
 
@@ -193,6 +193,14 @@ public class LongestIncreasingSubsequenceTest extends TestCase {
             assertTrue(expected.remove(m));
         }
         assertTrue(expected.isEmpty());
+
+        List<Integer> ans2 = LongestIncreasingSubsequence.findAnyStrictlyIncreasing(a);
+        assertEquals(2, ans2.size());
+        assertEquals(0, ans2.get(0).intValue());
+        assertEquals(3, ans2.get(1).intValue());
+        int[] ans3 = LongestIncreasingSubsequence.findSizeAndNumberStrictlyIncreasing(a);
+        assertEquals(2, ans3[0]);
+        assertEquals(3, ans3[1]);
 
     }
 

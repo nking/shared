@@ -343,18 +343,27 @@ public class LongestIncreasingSubsequence {
     }
 
     /**
+     find the longest strictly increasing subsequence of a where columns 0
+     and columns 1 of row i are greater than columns 0 and 1, respectively of
+     row (i-1).
      * The runtime complexity is O(k * n * log(n)) where n = a.length and k
      *      is the product of the number of sequences in each pile.
      *      The space complexity is O(k*n).
      * If only 1 LIS is needed not the entire enumeration,
-     * or only the size of LIS is needed, can use methods (insert here)
+     * or only the size of LIS is needed, can use methods
+     * findAnyStrictlyIncreasing or findSizeAndNumberStrictlyIncreasing
      * for smaller runtime complexities of O(n * log(n)).
-     @param a an array of integers
+     @param a 2 dimensional array of length n X 2.  Though, rows of a can be longer than 2,
+      *          only the first 2 columns of a row are used in comparisons.
      @return list of indexes of each longest LIS of maximum length
      */
     public static List<int[]> findAllStrictlyIncreasing(int[][] a) {
 
         int n = a.length;
+
+        if (a[0].length < 2) {
+            throw new IllegalStateException("each row length must be at least 2");
+        }
 
         // created indexes sorted on ascending a[i][0] with tie breaking descending
         // sort on a[i][1]
@@ -408,8 +417,6 @@ public class LongestIncreasingSubsequence {
             // sorted already by a[i][0], now find where a[i][1] fits in patience piles
             v2 = aI[1];
 
-            System.out.printf("idx=%d, aI=%s\n", idx, Arrays.toString(aI));
-
             if (pileReps.isEmpty() || v2 > pileReps.get(pileReps.size() - 1)) {
                 // create new pile if v > last element
                 pileReps.add(v2);
@@ -439,8 +446,137 @@ public class LongestIncreasingSubsequence {
     }
 
     /**
-     * given a list of integers, return the indexes of the longest increasing subsequence
-     * within the list, items are non-decreasing.
+     find the longest strictly increasing subsequence of a where
+     columns 0 and 1 of row a[i] are greater than columns 0 and 1, respectively,
+     of row[i-1].
+     If more than one sequence of indexes exists for the maximum length,
+     only the last is returned.
+     * The runtime complexity is O(n * log(n)) where n = a.length.
+     * The space complexity is O(n).
+     @param a 2 dimensional array of length n X 2.  Though, rows of a can be longer than 2,
+      *          only the first 2 columns of a row are used in comparisons.
+     @return indexes of one of the longest increasing subsequences
+     */
+    public static List<Integer> findAnyStrictlyIncreasing(int[][] a) {
+
+        int n = a.length;
+
+        if (a[0].length < 2) {
+            throw new IllegalStateException("each row length must be at least 2");
+        }
+
+        // created indexes sorted on ascending a[i][0] with tie breaking descending
+        // sort on a[i][1]
+
+        // nice and compact, but produces Integer Objects in between, so this can be improved by writing a custom sort method
+        int[] sortedIdxs = IntStream.range(0, n)
+                .boxed() // produces Stream<Integer> needed for Comparator
+                .sorted((i, j) -> {
+                    int c = Integer.compare(a[i][0], a[j][0]);
+                    if (c != 0) {
+                        return c;
+                    }
+                    return Integer.compare(a[j][1], a[i][1]);
+                })
+                .mapToInt(element -> element).toArray();
+
+        List<Integer> pileReps = new ArrayList<>();
+        List<Integer> pileRepIdxs = new ArrayList<>();
+        int v2;
+        int idx;
+        int[] aI;
+        for (int i0 = 0; i0 < n; ++i0) {
+            idx = sortedIdxs[i0];
+            aI = a[idx];
+
+            // sorted already by a[i][0], now find where a[i][1] fits in patience piles
+            v2 = aI[1];
+
+            if (pileReps.isEmpty() || v2 > pileReps.get(pileReps.size() - 1)) {
+                // create new pile if v > last element
+                pileReps.add(v2);
+                pileRepIdxs.add(idx);
+            } else {
+                int _idx = MiscBisectingSearch.ceiling(pileReps, v2);
+                assert(_idx >-1 && _idx < pileReps.size());
+                pileReps.set(_idx, v2);
+                pileRepIdxs.set(_idx, idx);
+            }
+        }
+
+        return pileRepIdxs;
+    }
+
+    /**
+     find the length and number of longest strictly increasing subsequence of a where
+     columns 0 and 1 of row a[i] are greater than columns 0 and 1, respectively,
+     of row[i-1].
+     The runtime complexity is O(n * log(n)) where n = a.length.
+     The space complexity is O(n).
+     * @param a 2 dimensional array of length n X 2.  Though, rows of a can be longer than 2,
+     *          only the first 2 columns of a row are used in comparisons.
+     * @return the size of the LIS and the number of them as an integer array.
+     */
+    public static int[] findSizeAndNumberStrictlyIncreasing(int[][] a) {
+
+        int n = a.length;
+
+        if (a[0].length < 2) {
+            throw new IllegalStateException("each row length must be at least 2");
+        }
+
+        // created indexes sorted on ascending a[i][0] with tie breaking descending
+        // sort on a[i][1]
+
+        // nice and compact, but produces Integer Objects in between, so this can be improved by writing a custom sort method
+        int[] sortedIdxs = IntStream.range(0, n)
+                .boxed() // produces Stream<Integer> needed for Comparator
+                .sorted((i, j) -> {
+                    int c = Integer.compare(a[i][0], a[j][0]);
+                    if (c != 0) {
+                        return c;
+                    }
+                    return Integer.compare(a[j][1], a[i][1]);
+                })
+                .mapToInt(element -> element).toArray();
+
+        List<Integer> pileReps = new ArrayList<>();
+        List<List<Integer>> pileIdxs = new ArrayList<>();
+        int v2;
+        int idx;
+        int[] aI;
+        for (int i0 = 0; i0 < n; ++i0) {
+            idx = sortedIdxs[i0];
+            aI = a[idx];
+
+            // sorted already by a[i][0], now find where a[i][1] fits in patience piles
+            v2 = aI[1];
+
+            if (pileReps.isEmpty() || v2 > pileReps.get(pileReps.size() - 1)) {
+                // create new pile if v > last element
+                pileReps.add(v2);
+                pileIdxs.add(new ArrayList<>());
+                pileIdxs.get(pileIdxs.size() - 1).add(idx);
+            } else {
+                int _idx = MiscBisectingSearch.ceiling(pileReps, v2);
+                assert(_idx >-1 && _idx < pileReps.size());
+                pileReps.set(_idx, v2);
+                pileIdxs.get(_idx).add(idx);
+            }
+        }
+
+        int nSize = 1;
+        for (int i = 0; i < pileIdxs.size(); ++i) {
+            nSize *= pileIdxs.get(i).size();
+        }
+
+        return new int[]{pileReps.size(), nSize};
+    }
+
+    /**
+     given a list of integers, return the indexes of the longest increasing subsequence
+     within the list, items are non-decreasing.
+
      <pre>
 
      example: a = [7,6, 2,2,1,7,6]
@@ -461,16 +597,23 @@ public class LongestIncreasingSubsequence {
      list 0
      pile 0   line 1
      7         7
-     6         cannot add 2nd 6 here as it is not >= 7, so it gets a new list
-     2
-     1
+     6
+     2         cannot add 2nd 2 as it is not >= top of pile 0 = 7, so it gets a new list
+     1         cannot add 2nd 6 as it is not >= top of pile 0 = 7, so it gets a new list
 
-     start new list 1
+     list 1 for 2nd 2 that can't be added to list 0
      pile 0    pile 1   pile 2
-     2          2        7
-                         6
+     2          2
+                cannot add 1 because it is not >= top of pile 0 = 2 so it gets a new list
+                          7
+                          6
 
-     start new list 2
+     list 2 for 1 that cant be added to list 1
+     pile 0    pile 1
+     1          7
+                6
+
+     list 3 for 6 that cant be added to list 0
      pile 0    pile 1
      6          6
      2
