@@ -338,30 +338,38 @@ public class LongestIncreasingSubsequence {
      * with same max length, return one of them.
      <pre>
 
-     example: a = [2,2,1,7,6]
-
-     patience piles by value:
-         pile 0   pile 1   pile 2
-         2          2        7
-                    1        6
-
-     resulting sequences by value:
-     [2,2,7], [2,2,6], [2,1,7], [2,1,6]
-
-     resulting sequences by index:
-     [0,1,3], [0,1,4], [0,2,3], [0,2,4]
-
-     ----
      example: a = [7,6, 2,2,1,7,6]
+
      expected sequences:
      7,7
      6,7
+     6,6
      2,2,7   <== LIS
      2,2,6   <== LIS
      2,7
      2,6
      1,7
      1,6
+
+     needs multiple lists of patience piles
+
+     list 0
+     pile 0   line 1
+     7         7
+     6         cannot add 2nd 6 here as it is not >= 7, so it gets a new list
+     2
+     1
+
+     start new list 1
+     pile 0    pile 1   pile 2
+     2          2        7
+                1        6
+
+     start new list 2
+     pile 0    pile 1
+     6          6
+     2
+     1
 
      </pre>
      * @param a
