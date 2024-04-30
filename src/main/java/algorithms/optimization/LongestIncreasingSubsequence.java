@@ -341,17 +341,17 @@ public class LongestIncreasingSubsequence {
      example: a = [7,6, 2,2,1,7,6]
 
      expected sequences:
-     7,7
-     6,7
-     6,6
-     2,2,7   <== LIS
-     2,2,6   <== LIS
-     2,7
-     2,6
-     1,7
-     1,6
+      7,7
+      6,7
+      6,6
+      2,2,7   <== LIS
+      2,2,6   <== LIS
+      2,7
+      2,6
+      1,7
+      1,6
 
-     needs multiple lists of patience piles
+     needs multiple lists of patience piles and to remember top and bottom of pile
 
      list 0
      pile 0   line 1
@@ -363,7 +363,7 @@ public class LongestIncreasingSubsequence {
      start new list 1
      pile 0    pile 1   pile 2
      2          2        7
-                1        6
+                         6
 
      start new list 2
      pile 0    pile 1
