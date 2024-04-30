@@ -22,9 +22,9 @@ import java.util.List;
  * As one iterates over the input list, the number  is compared to the
  * leftmost pile for which the pile's smallest card is LEQ (for ascending sort, or GEQ for descending sort)
  * that number,
- * and the card is added to that pile or formd a new pile to right of it if cannot add to a left.
+ * and the card is added to that pile or forms a new pile to right of it if cannot add to a left pile.
  *
- * Note that one can make version for strictly increasing or decreasing also.
+ * Note that there are versions for strictly increasing, or non-decreasing.
 
  <pre>
  for length of longest incr subseq, ascending sort example:
@@ -34,9 +34,11 @@ import java.util.List;
    2      7         9
    1      3
 
- The length of the longest increasing subsequence is 3.
  Every LIS is (2,7,9), (2,3,9), (1,7,9), (1,3,9).
+ The length of the longest increasing subsequence is 3.
  There are 4 of LIS (2*2*1=4)
+
+ Another example:
 
  a = [3,2,1,7,6,9,8]
  we would have piles:
@@ -45,11 +47,11 @@ import java.util.List;
  2        6         8
  1
 
- The length of the longest increasing subsequence is 3.
-
  Every LIS is (3,7,9), (3,7,8), (3,6,9),(3,6,8)
  (2,7,9), (2,7,8), (2,6,9),(2,6,8)
  (1,7,9), (1,7,8), (1,6,9),(1,6,8)
+
+ The length of the longest increasing subsequence is 3.
 
  There are 12 of LIS (3*2*2=12)
 
@@ -162,7 +164,7 @@ public class LongestIncreasingSubsequence {
      * @param a
      * @return
      */
-    public static List<Integer> findGTAny(int[] a) {
+    public static List<Integer> findAnyStrictlyIncreasing(int[] a) {
 
         List<Integer> pileReps = new ArrayList<>();
         List<Integer> pileRepIdxs = new ArrayList<>();
@@ -192,7 +194,7 @@ public class LongestIncreasingSubsequence {
      * @param a
      * @return
      */
-    public static List<int[]> findGTAll(int[] a) {
+    public static List<int[]> findAllStrictlyIncreasing(int[] a) {
 
         List<Integer> pileReps = new ArrayList<>();
         List<List<Integer>> pileIdxs = new ArrayList<>();
@@ -247,7 +249,7 @@ public class LongestIncreasingSubsequence {
      * @return an array of length 2 holding as first item, the max size of longest increasing subequence
      * and as second item, the number of max size LISes.
      */
-    public static int[] findGTSizeAndNumber(int[] a) {
+    public static int[] findSizeAndNumberStrictlyIncreasing(int[] a) {
 
          /*
          a = [3,2,1,7,6,9,8]
@@ -296,7 +298,7 @@ public class LongestIncreasingSubsequence {
      * @return an array of length 2 holding as first item, the max size of longest increasing subequence
      * and as second item, the number of max size LISes.
      */
-    public static int findGTSize(int[] a) {
+    public static int findSizeStrictlyIncreasing(int[] a) {
 
          /*
          a = [3,2,1,7,6,9,8]
@@ -351,56 +353,24 @@ public class LongestIncreasingSubsequence {
 
      ----
      example: a = [7,6, 2,2,1,7,6]
-     pile 0  pile 1
-     7
-     6
+     expected sequences:
+     7,7
+     6,7
+     2,2,7   <== LIS
+     2,2,6   <== LIS
+     2,7
+     2,6
+     1,7
+     1,6
 
      </pre>
      * @param a
      * @return
      */
-    public static List<int[]> findStrictlyIncrAll(int[] a) {
+    public static List<int[]> _findAll(int[] a) {
 
-        /*
-        patience piles by value:
-         pile 0   pile 1   pile 2
-         2          2        7
-                    1        6
-         */
+        throw new UnsupportedOperationException("not ready for use");
 
-        List<Integer> pileReps = new ArrayList<>();
-        List<List<Integer>> pileIdxs = new ArrayList<>();
-        int v;
-        for (int i = 0; i < a.length; ++i) {
-            v = a[i];
-            if (pileReps.isEmpty() || v >= pileReps.get(pileReps.size() - 1)) {
-                // create new pile if v >= last element
-                pileReps.add(v);
-                pileIdxs.add(new ArrayList<>());
-                pileIdxs.get(pileIdxs.size() - 1).add(i);
-            } else {
-                // v is LT last element
-                int idx = pileReps.size() - 1;
-                //int idx = MiscBisectingSearch.ceiling(pileReps, v, );
-                //assert(idx >-1 && idx < pileReps.size());
-                pileReps.set(idx, v);
-                pileIdxs.get(idx).add(i);
-            }
-        }
-
-        // return every combination of pileIdxs
-
-        List<int[]> out = new ArrayList<>();
-        int[] curr = new int[pileIdxs.size()];
-        combineRecursively(0, curr, out, pileIdxs);
-
-        int nSize = 1;
-        for (int i = 0; i < pileIdxs.size(); ++i) {
-            nSize *= pileIdxs.get(i).size();
-        }
-        assert(out.size() == nSize);
-
-        return out;
     }
 
 }

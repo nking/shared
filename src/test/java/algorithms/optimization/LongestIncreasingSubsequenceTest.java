@@ -3,16 +3,15 @@ package algorithms.optimization;
 import junit.framework.TestCase;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class LongestIncreasingSubsequenceTest extends TestCase {
 
-    public void testFindGTAll() {
+    public void testFindAll() {
         int[] a;
         List<int[]> ans;
 
         a = new int[]{3,2,1,7,6,9,8};
-        ans = LongestIncreasingSubsequence.findGTAll(a);
+        ans = LongestIncreasingSubsequence.findAllStrictlyIncreasing(a);
 
         /*
         Comparator<int[]> comp = new Comparator<int[]>() {
@@ -63,12 +62,12 @@ public class LongestIncreasingSubsequenceTest extends TestCase {
         assertTrue(expected.isEmpty());
     }
 
-    public void testFindGTAll2() {
+    public void testFindAll2() {
         int[] a;
         List<int[]> ans;
 
         a = new int[]{2,2,1,7,6};
-        ans = LongestIncreasingSubsequence.findGTAll(a);
+        ans = LongestIncreasingSubsequence.findAllStrictlyIncreasing(a);
 
         /*
              2      7
@@ -102,52 +101,12 @@ public class LongestIncreasingSubsequenceTest extends TestCase {
         assertTrue(expected.isEmpty());
     }
 
-    public void testFindStrictlyAll2() {
-        int[] a;
-        List<int[]> ans;
-
-        a = new int[]{2,2,1,7,6};
-        ans = LongestIncreasingSubsequence.findStrictlyIncrAll(a);
-
-        /*
-             patience piles by value:
-             pile 0   pile 1   pile 2
-             2          2        7
-                        1        6
-
-         resulting sequences by value:
-         [2,2,7], [2,2,6], [2,1,7], [2,1,6]
-
-         resulting sequences by index:
-         [0,1,3], [0,1,4], [0,2,3], [0,2,4]
-         */
-        // cannot build with a comparator
-        Set<int[]> expected = new HashSet<>();
-        expected.add(new int[]{0, 1, 3});
-        expected.add(new int[]{0, 1, 4});
-        expected.add(new int[]{0, 2, 3});
-        expected.add(new int[]{0, 2, 4});
-
-        for (int[] ai : ans) {
-            int[] m = null;
-            for (int[] s : expected) {
-                if (Arrays.equals(ai, s)) {
-                    m = s;
-                    break;
-                }
-            }
-            assertNotNull(m);
-            assertTrue(expected.remove(m));
-        }
-        assertTrue(expected.isEmpty());
-    }
-
-    public void testFindGTAny() {
+    public void testFindAny() {
         int[] a;
         List<Integer> ans;
 
         a = new int[]{3, 2, 1, 7, 6, 9, 8};
-        ans = LongestIncreasingSubsequence.findGTAny(a);
+        ans = LongestIncreasingSubsequence.findAnyStrictlyIncreasing(a);
 
         Set<int[]> expected = new HashSet<>();
         expected.add(new int[]{0,3,5});
@@ -178,10 +137,10 @@ public class LongestIncreasingSubsequenceTest extends TestCase {
         assertNotNull(m);
         assertTrue(expected.remove(m));
 
-        int size = LongestIncreasingSubsequence.findGTSize(a);
+        int size = LongestIncreasingSubsequence.findSizeStrictlyIncreasing(a);
         assertEquals(3, size);
 
-        int[] ans2 = LongestIncreasingSubsequence.findGTSizeAndNumber(a);
+        int[] ans2 = LongestIncreasingSubsequence.findSizeAndNumberStrictlyIncreasing(a);
         assertEquals(ans2[0], size);
         assertEquals(ans2[1], 12);
 
