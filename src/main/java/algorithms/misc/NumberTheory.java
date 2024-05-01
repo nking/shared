@@ -17,7 +17,7 @@ public class NumberTheory {
     /**
      * return the greatest common denominator of the 2 integers.
      *
-     * runtime complexity is (?)
+     * runtime complexity is less than the number of base10 digits in a.
      * 
      @param a
      @param b

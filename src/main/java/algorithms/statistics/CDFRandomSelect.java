@@ -113,10 +113,9 @@ public class CDFRandomSelect {
         else if srch is not == to a point in the CDF,
         we pick the next highest value in the CDF.
 
-        For a single objective, we always pick the next highest
-        point in the CDF and for srch value, we use
-        /srch - eps which is slightly smaller than srch
-        and choose successor
+        For a single objective instead of 1 for EQ and 1 for LT,
+        we can use srch - very small number and perform a successor
+        search for that.
          */
         
         if (cdf == null || cdf.length == 0) {
