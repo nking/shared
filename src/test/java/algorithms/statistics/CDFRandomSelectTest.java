@@ -24,37 +24,45 @@ public class CDFRandomSelectTest extends TestCase {
         int idx;
         
         double tol = 3.e-5;
-        
-        cdf = new double[]{ 1., 2., 3., 3.1, 4.};
-        srch = 3.04;
-        idx = CDFRandomSelect.binarySearchForNearest(cdf, srch, tol);
+
+        double _n=4.0;
+        cdf = new double[]{ 1./_n, 2./_n, 3./_n, 3./_n, 3./_n, 3.1/_n, 4./_n};
+        srch = 3.0/_n;
+        idx = CDFRandomSelect.binarySearchForQuantile(cdf, srch);
+        assertEquals(2, idx);
+
+        cdf = new double[]{ 1./4., 2./4., 3./4., 3.1/4., 4./4.};
+        srch = 3.04/4.;
+        idx = CDFRandomSelect.binarySearchForQuantile(cdf, srch);
+        assertEquals(3, idx);
+
+        srch = 3.0/4.;
+        idx = CDFRandomSelect.binarySearchForQuantile(cdf, srch);
         assertEquals(2, idx);
         
-        srch = 1.04;
-        idx = CDFRandomSelect.binarySearchForNearest(cdf, srch, tol);
+        srch = 1.0/4.;
+        idx = CDFRandomSelect.binarySearchForQuantile(cdf, srch);
+        assertEquals(0, idx);
+
+        srch = 1.04/4.;
+        idx = CDFRandomSelect.binarySearchForQuantile(cdf, srch);
+        assertEquals(1, idx);
+        
+        srch = 0.04/4.;
+        idx = CDFRandomSelect.binarySearchForQuantile(cdf, srch);
         assertEquals(0, idx);
         
-        srch = 0.04;
-        idx = CDFRandomSelect.binarySearchForNearest(cdf, srch, tol);
-        assertEquals(0, idx);
-        
-        srch = 3.15;
-        idx = CDFRandomSelect.binarySearchForNearest(cdf, srch, tol);
-        assertEquals(3, idx);
-        
-        srch = 3.6;
-        idx = CDFRandomSelect.binarySearchForNearest(cdf, srch, tol);
+        srch = 3.15/4.;
+        idx = CDFRandomSelect.binarySearchForQuantile(cdf, srch);
         assertEquals(4, idx);
         
-        srch = 5.0;
-        idx = CDFRandomSelect.binarySearchForNearest(cdf, srch, tol);
+        srch = 3.6/4.;
+        idx = CDFRandomSelect.binarySearchForQuantile(cdf, srch);
         assertEquals(4, idx);
         
-        for (int i = 0; i < cdf.length; ++i) {
-            srch = cdf[i] + tol/2.;
-            idx = CDFRandomSelect.binarySearchForNearest(cdf, srch, tol);
-            assertEquals(i, idx);
-        }
+        srch = 5.0/4.;
+        idx = CDFRandomSelect.binarySearchForQuantile(cdf, srch);
+        assertEquals(4, idx);
     }
     
     public void test1() {

@@ -5,6 +5,8 @@ import algorithms.misc.HistogramHolder;
 import algorithms.misc.MiscMath0;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Arrays;
+
 import junit.framework.TestCase;
 
 /**
@@ -61,13 +63,8 @@ public class UnivariateNormalDistributionTest extends TestCase {
         
         // largest difference w/ expected gaussian(mean, sigma)
         double ksStat = Double.NEGATIVE_INFINITY;
-        double diff, y;
         for (int i = 0; i < fhSum.length; ++i) {
-            y = expectedCDF[i];
-            diff = Math.abs(cdf[i] - y);
-            if (diff > ksStat) {
-                ksStat = diff;
-            }
+            ksStat = Math.max(ksStat, Math.abs(cdf[i] - expectedCDF[i]));
         }
         
         //H0:  the data are normally distributed
@@ -86,7 +83,8 @@ public class UnivariateNormalDistributionTest extends TestCase {
         // if ksStat < crit, do not reject null hypothesis (which is that
         //    the generated samples come from a gaussian distribution of mean, sigma.
         double crit = 1.36/Math.sqrt(n);
-        System.out.printf("ksStat=%.3f, crit=%.3f\n", ksStat, crit);
+        System.out.printf("ksStat=%.3f, crit=%.3f, sample Avg and stdev=%s\n", ksStat, crit,
+            Arrays.toString(avgAndStDev));
         crit += 1E-3;// giving it a small tolerance
         assertTrue(ksStat < crit);
     }

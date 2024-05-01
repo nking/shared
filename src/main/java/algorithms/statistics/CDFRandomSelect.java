@@ -57,7 +57,7 @@ public class CDFRandomSelect {
         int[] selected = new int[k];
         
         for (int i = 0; i < k; ++i) {
-            selected[i] = binarySearchForNearest(cdf, rand.nextDouble(), tolerance);
+            selected[i] = binarySearchForQuantile(cdf, rand.nextDouble());
         }
         
         return selected;
@@ -83,7 +83,7 @@ public class CDFRandomSelect {
         
         for (int i = 0; i < k; ++i) {
             a = rand.nextDouble();
-            selected[i] = binarySearchForNearest(cdf, a, tolerance);
+            selected[i] = binarySearchForQuantile(cdf, a);
             if (a > cdf[selected[i]] && selected[i] > 0) {
                 selected[i]--;
             }
@@ -93,83 +93,62 @@ public class CDFRandomSelect {
     }
  
     /**
-     * find the nearest value to srch in the array cdf using binary search.
+     * Find the least index in the CDF where the probability is >= srch.
+     * This is the quantile for the inverse mapping of the probability srcn.
      * 
      * The runtime is O(lg_2(cdf.length)).
      * 
      @param cdf cumulative distribution function.  NOTE that the values should
      * be normalized such that the last item is 1.
-     @param srch number to search for nearest value of in cdf.
-     @param tol tolerance for the comparison to equals in comparisons of doubles.
+     @param srch the probability to search for in the CDF.
      @return index in the cdf distribution whose array value is nearest to
      * srch.
     */
-    public static int binarySearchForNearest(double[] cdf, final double srch, 
-        final double tol) {
+    public static int binarySearchForQuantile(double[] cdf, final double srch) {
+
+        /*
+        if srch is equal to a point in the cdf,
+        then we take the floor of that value to find
+        the least index with that same value
+        else if srch is not == to a point in the CDF,
+        we pick the next highest value in the CDF.
+
+        For a single objective, we always pick the next highest
+        point in the CDF and for srch value, we use
+        /srch - eps which is slightly smaller than srch
+        and choose successor
+         */
         
         if (cdf == null || cdf.length == 0) {
             throw new IllegalArgumentException("cdf cannot be null or length 0");
         }
-        
-        if (tol < 0) {
-            throw new IllegalArgumentException("tolerance cannot be negative");
-        }
-        
+
         int n = cdf.length;
+
+        // assuming machine precision is ~ 1E-11, use larger val for eps
+        double srch2 = srch - 5E-10;
            
         int lowIdx = 0;
         int highIdx = n - 1;
-        int midIdx = lowIdx + (int)((highIdx - lowIdx)/2.);
-        
-        double v;
-        int comp;
-        
-        while (lowIdx != highIdx && highIdx > lowIdx) {
+        int midIdx;
 
-            midIdx = lowIdx + (int)((highIdx - lowIdx)/2.);
-            
-            v = cdf[midIdx];
-            
-            //-1, 0 or 1 when v is less than, equal to, or greater than value.
-            comp = (Math.abs(v - srch) < tol) ? 0 : (v < srch) ? -1 : 1;
+        while (lowIdx <= highIdx) {
 
-            if (comp > 0) {
+            midIdx = lowIdx + ((highIdx - lowIdx)/2);
 
-                if (highIdx == midIdx) {
-                    highIdx--;
-                } else {
-                    highIdx = midIdx;
-                }
-
-            } else if (comp < 0) {
-                if (lowIdx == midIdx) {
-                    lowIdx++;
-                } else {
-                    lowIdx = midIdx;
-                }
-
+            if (cdf[midIdx] <= srch2) {
+                lowIdx = midIdx + 1;
             } else {
-                // is equal
-                return midIdx;
+                highIdx = midIdx - 1;
             }
+
         }
 
-        //compare difference of midIdx to predecessor and successor
-        int minIdx = midIdx;
-        double diff = Math.abs(cdf[midIdx] - srch);
-        
-        if ((midIdx + 1) < n) {
-            if (Math.abs(cdf[midIdx + 1] - srch) < diff) {
-                minIdx = midIdx + 1;
-            }
-        }
-        if ((midIdx - 1) >= 0) {
-            if ( Math.abs(cdf[midIdx - 1] - srch) < diff) {
-                minIdx = midIdx - 1;
-            }
+        if (lowIdx == n) {
+            lowIdx = n - 1;
         }
         
-        return minIdx;
+        return lowIdx;
     }
             
     /**

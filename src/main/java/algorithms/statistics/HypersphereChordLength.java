@@ -778,7 +778,7 @@ public class HypersphereChordLength {
 
         // alpha=0.05 (probability of Type I error)
         // confidence level or a confidence coefficient, (1 - α)100% = 95%
-        idx = CDFRandomSelect.binarySearchForNearest(cdf, 0.95, tol);
+        idx = CDFRandomSelect.binarySearchForQuantile(cdf, 0.95);
         // confidence interval is interval in x capturing 95% of area 
         //     under curve, e.g. N(0,1): mu +- 1.96*sigma/sqrt(n)
         
