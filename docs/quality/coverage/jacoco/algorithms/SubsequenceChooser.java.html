@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SubsequenceChooser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms</a> &gt; <span class="el_source">SubsequenceChooser.java</span></div><h1>SubsequenceChooser.java</h1><pre class="source lang-java linenums">package algorithms;
+
+import algorithms.misc.MiscMath0;
+import gnu.trove.map.TIntIntMap;
+import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.set.hash.TIntHashSet;
+
+import java.math.BigInteger;
+import java.util.Arrays;
+
+public class SubsequenceChooser {
+
+<span class="fc" id="L13">    private int outIdx = 0;</span>
+
+<span class="fc" id="L15">    public SubsequenceChooser() {</span>
+<span class="fc" id="L16">    }</span>
+
+    public int[][] calcSubSequences(int[] a, int k) {
+<span class="fc" id="L19">        int n = a.length;</span>
+<span class="pc bpc" id="L20" title="1 of 2 branches missed.">        if (n &lt; 1) {</span>
+<span class="nc" id="L21">            throw new IllegalArgumentException(&quot;n must be larger than 0&quot;);</span>
+        }
+<span class="pc bpc" id="L23" title="1 of 2 branches missed.">        if (k &lt; 1) {</span>
+<span class="nc" id="L24">            throw new IllegalArgumentException(&quot;k must be larger than 0&quot;);</span>
+        }
+<span class="pc bpc" id="L26" title="1 of 2 branches missed.">        if (k &gt; n) {</span>
+<span class="nc" id="L27">            throw new IllegalArgumentException(&quot;k must be less than or equal to n&quot;);</span>
+        }
+        // n!/(n-k)!
+<span class="fc" id="L30">        long nnk = MiscMath0.computeNDivNMinusK(n, k);</span>
+<span class="pc bpc" id="L31" title="1 of 2 branches missed.">        if (nnk &gt; Integer.MAX_VALUE) {</span>
+<span class="nc" id="L32">            throw new IllegalArgumentException(&quot;the number of combinations is larger than max length of an array,&quot; +</span>
+                    &quot;so this algorithm needs to be adjusted to return one element at a time&quot;);
+        }
+<span class="fc" id="L35">        int np = (int)nnk;</span>
+<span class="fc" id="L36">        int[][] out = new int[np][k];</span>
+<span class="fc" id="L37">        this.outIdx = 0;</span>
+
+<span class="fc" id="L39">        recurseSeq(a, new int[k], 0, out, new TIntHashSet());</span>
+
+<span class="fc" id="L41">        return out;</span>
+    }
+
+    private void recurseSeq(int[] a, int[] s, int i, int[][] out, TIntHashSet drawn) {
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        if (i &gt;= s.length) {</span>
+<span class="fc" id="L46">            out[outIdx] = Arrays.copyOf(s, s.length);</span>
+<span class="fc" id="L47">            ++outIdx;</span>
+<span class="fc" id="L48">            return;</span>
+        }
+
+<span class="fc bfc" id="L51" title="All 2 branches covered.">        for (int j = 0; j &lt; a.length; ++j) {</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">            if (drawn.contains(a[j])) continue;</span>
+<span class="fc" id="L53">            s[i] = a[j];</span>
+<span class="fc" id="L54">            drawn.add(a[j]);</span>
+<span class="fc" id="L55">            recurseSeq(a, s, i+1, out, drawn);</span>
+<span class="fc" id="L56">            drawn.remove(a[j]);</span>
+        }
+<span class="fc" id="L58">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

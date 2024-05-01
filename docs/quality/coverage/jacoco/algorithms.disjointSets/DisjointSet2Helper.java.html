@@ -7,7 +7,9 @@ import java.util.List;
  * a disjoint set implemented as a forest.
  * 
  * based upon pseudocode from &quot;Introduction to Algorithms&quot; by Cormen, Leiserson, Rivest, and Stein
-  
+
+ The method uses nodes to allow for any range of values and ability to carry additional data.
+
    first implemented in project
      https://github.com/nking/curvature-scale-space-corners-and-transformations
      w/ Copyright (c) 2014 Climb With Your Feet
@@ -18,7 +20,7 @@ import java.util.List;
  
  * @author nichole
  */
-<span class="fc" id="L21">public class DisjointSet2Helper {</span>
+<span class="fc" id="L23">public class DisjointSet2Helper {</span>
 
      /**
      * make a set out of the given node.
@@ -28,9 +30,9 @@ import java.util.List;
      @return
      */
     public &lt;T&gt; DisjointSet2Node&lt;T&gt; makeSet(DisjointSet2Node&lt;T&gt; x) {
-<span class="fc" id="L31">        x.setParent(x);</span>
-<span class="fc" id="L32">        x.setRank(0);</span>
-<span class="fc" id="L33">        return x;</span>
+<span class="fc" id="L33">        x.setParent(x);</span>
+<span class="fc" id="L34">        x.setRank(0);</span>
+<span class="fc" id="L35">        return x;</span>
     }
     
     /**
@@ -56,26 +58,10 @@ import java.util.List;
      @return
      */
     public &lt;T&gt; DisjointSet2Node&lt;T&gt; findSet(DisjointSet2Node&lt;T&gt; x) {
-                
-        // iterative
 <span class="fc bfc" id="L61" title="All 2 branches covered.">        if (!x.equals(x.getParent())) {</span>
-            
-<span class="fc" id="L63">            List&lt;DisjointSet2Node&lt;T&gt;&gt; update = new ArrayList&lt;DisjointSet2Node&lt;T&gt;&gt;();</span>
-            
-<span class="fc" id="L65">            DisjointSet2Node&lt;T&gt; parent = x;</span>
-<span class="fc bfc" id="L66" title="All 2 branches covered.">            while (!parent.equals(parent.getParent())) {</span>
-<span class="fc" id="L67">                update.add(parent);</span>
-<span class="fc" id="L68">                parent = parent.getParent();</span>
-            }
-            
-            // update the nodes with parent
-<span class="fc bfc" id="L72" title="All 2 branches covered.">            for (DisjointSet2Node&lt;T&gt; node : update) {</span>
-<span class="fc" id="L73">                node.setParent(parent);</span>
-<span class="fc" id="L74">            }</span>
- 
+<span class="fc" id="L62">            x.setParent(findSet(x.getParent()));</span>
         }
-        
-<span class="fc" id="L78">        return x.getParent();</span>
+<span class="fc" id="L64">        return x.getParent();</span>
     }
     
     /**
@@ -90,22 +76,22 @@ import java.util.List;
      */
     private &lt;T&gt; DisjointSet2Node&lt;T&gt; link(DisjointSet2Node&lt;T&gt; x, DisjointSet2Node&lt;T&gt; y) {
         
-<span class="fc bfc" id="L93" title="All 2 branches covered.">        if (x.equals(y)) {</span>
-<span class="fc" id="L94">            return x;</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">        if (x.equals(y)) {</span>
+<span class="fc" id="L80">            return x;</span>
         }
         
         DisjointSet2Node&lt;T&gt; parent;
-<span class="pc bpc" id="L98" title="1 of 2 branches missed.">        if (x.getRank() &gt;= y.getRank()) {</span>
-<span class="fc" id="L99">            parent = x;</span>
-<span class="fc" id="L100">            y.setParent(parent);</span>
-<span class="fc bfc" id="L101" title="All 2 branches covered.">            if (x.getRank() == y.getRank()) {</span>
-<span class="fc" id="L102">                parent.setRank(parent.getRank() + 1);</span>
+<span class="pc bpc" id="L84" title="1 of 2 branches missed.">        if (x.getRank() &gt;= y.getRank()) {</span>
+<span class="fc" id="L85">            parent = x;</span>
+<span class="fc" id="L86">            y.setParent(parent);</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">            if (x.getRank() == y.getRank()) {</span>
+<span class="fc" id="L88">                parent.setRank(parent.getRank() + 1);</span>
             }
         } else {
-<span class="nc" id="L105">            parent = y;</span>
-<span class="nc" id="L106">            x.setParent(parent);</span>
+<span class="nc" id="L91">            parent = y;</span>
+<span class="nc" id="L92">            x.setParent(parent);</span>
         }
-<span class="fc" id="L108">        return parent;</span>
+<span class="fc" id="L94">        return parent;</span>
     }
     
     /**
@@ -120,17 +106,17 @@ import java.util.List;
      */
     private &lt;T&gt; DisjointSet2Node&lt;T&gt; linkChooseY(DisjointSet2Node&lt;T&gt; x, DisjointSet2Node&lt;T&gt; y) {
         
-<span class="pc bpc" id="L123" title="1 of 2 branches missed.">        if (x.equals(y)) {</span>
-<span class="nc" id="L124">            return y;</span>
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">        if (x.equals(y)) {</span>
+<span class="nc" id="L110">            return y;</span>
         }
         
-<span class="fc" id="L127">        DisjointSet2Node&lt;T&gt; parent = y;</span>
-<span class="fc" id="L128">        x.setParent(parent);</span>
-<span class="fc bfc" id="L129" title="All 2 branches covered.">        if (x.getRank() == y.getRank()) {</span>
-<span class="fc" id="L130">            parent.setRank(parent.getRank() + 1);</span>
+<span class="fc" id="L113">        DisjointSet2Node&lt;T&gt; parent = y;</span>
+<span class="fc" id="L114">        x.setParent(parent);</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">        if (x.getRank() == y.getRank()) {</span>
+<span class="fc" id="L116">            parent.setRank(parent.getRank() + 1);</span>
         }
         
-<span class="fc" id="L133">        return parent;</span>
+<span class="fc" id="L119">        return parent;</span>
     }
     
     /**
@@ -147,13 +133,13 @@ import java.util.List;
      */
     public &lt;T&gt; DisjointSet2Node&lt;T&gt; union(DisjointSet2Node&lt;T&gt; x, DisjointSet2Node&lt;T&gt; y) {
         
-<span class="fc" id="L150">        x = findSet(x);</span>
+<span class="fc" id="L136">        x = findSet(x);</span>
         
-<span class="fc" id="L152">        y = findSet(y);</span>
+<span class="fc" id="L138">        y = findSet(y);</span>
         
-<span class="fc" id="L154">        DisjointSet2Node&lt;T&gt; parent = link(x, y);</span>
+<span class="fc" id="L140">        DisjointSet2Node&lt;T&gt; parent = link(x, y);</span>
 
-<span class="fc" id="L156">        return parent;</span>
+<span class="fc" id="L142">        return parent;</span>
     }
     
     /**
@@ -170,13 +156,13 @@ import java.util.List;
      */
     public &lt;T&gt; DisjointSet2Node&lt;T&gt; unionChooseY(DisjointSet2Node&lt;T&gt; x, DisjointSet2Node&lt;T&gt; y) {
         
-<span class="fc" id="L173">        x = findSet(x);</span>
+<span class="fc" id="L159">        x = findSet(x);</span>
         
-<span class="fc" id="L175">        y = findSet(y);</span>
+<span class="fc" id="L161">        y = findSet(y);</span>
         
-<span class="fc" id="L177">        DisjointSet2Node&lt;T&gt; parent = linkChooseY(x, y);</span>
+<span class="fc" id="L163">        DisjointSet2Node&lt;T&gt; parent = linkChooseY(x, y);</span>
 
-<span class="fc" id="L179">        return parent;</span>
+<span class="fc" id="L165">        return parent;</span>
     }
     
     /**
@@ -187,22 +173,22 @@ import java.util.List;
      */
     public static &lt;T&gt; String print(DisjointSet2Node&lt;T&gt; x) {
                 
-<span class="fc" id="L190">        StringBuilder sb = new StringBuilder();</span>
+<span class="fc" id="L176">        StringBuilder sb = new StringBuilder();</span>
         
-<span class="fc" id="L192">        sb.append(x.toString());</span>
+<span class="fc" id="L178">        sb.append(x.toString());</span>
         
-<span class="fc" id="L194">        DisjointSet2Node&lt;T&gt; p = x.getParent();</span>
+<span class="fc" id="L180">        DisjointSet2Node&lt;T&gt; p = x.getParent();</span>
         
-<span class="pc bpc" id="L196" title="1 of 2 branches missed.">        while (p != null) {</span>
-<span class="fc" id="L197">            DisjointSet2Node&lt;T&gt; nextP = p.getParent();</span>
-<span class="pc bpc" id="L198" title="1 of 2 branches missed.">            if (nextP.equals(p)) {</span>
-<span class="fc" id="L199">                break;</span>
+<span class="pc bpc" id="L182" title="1 of 2 branches missed.">        while (p != null) {</span>
+<span class="fc" id="L183">            DisjointSet2Node&lt;T&gt; nextP = p.getParent();</span>
+<span class="pc bpc" id="L184" title="1 of 2 branches missed.">            if (nextP.equals(p)) {</span>
+<span class="fc" id="L185">                break;</span>
             }
-<span class="nc" id="L201">            sb.append(&quot;parent-&gt;&quot;).append(p.toString());</span>
-<span class="nc" id="L202">            p = nextP;</span>
-<span class="nc" id="L203">        }</span>
+<span class="nc" id="L187">            sb.append(&quot;parent-&gt;&quot;).append(p.toString());</span>
+<span class="nc" id="L188">            p = nextP;</span>
+<span class="nc" id="L189">        }</span>
         
-<span class="fc" id="L205">        return sb.toString();</span>
+<span class="fc" id="L191">        return sb.toString();</span>
     }
   
 }

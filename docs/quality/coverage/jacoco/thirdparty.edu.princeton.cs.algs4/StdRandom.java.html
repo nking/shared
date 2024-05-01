@@ -392,7 +392,7 @@ public final class StdRandom {
 
     /**
      * Rearranges the elements of the specified array in uniformly random order.
-     *
+     * see also Shuffle.fisherYates(...).
      @param  a the array to shuffle
      * @throws NullPointerException if &lt;tt&gt;a&lt;/tt&gt; is &lt;tt&gt;null&lt;/tt&gt;
      */
@@ -409,42 +409,43 @@ public final class StdRandom {
 
     /**
      * Rearranges the elements of the specified array in uniformly random order.
+     * see also Shuffle.fisherYates(...).
      *
      @param  a the array to shuffle
      * @throws NullPointerException if &lt;tt&gt;a&lt;/tt&gt; is &lt;tt&gt;null&lt;/tt&gt;
      */
     public static void shuffle(double[] a) {
-<span class="nc bnc" id="L417" title="All 2 branches missed.">        if (a == null) throw new NullPointerException(&quot;argument array is null&quot;);</span>
-<span class="nc" id="L418">        int n = a.length;</span>
-<span class="nc bnc" id="L419" title="All 2 branches missed.">        for (int i = 0; i &lt; n; i++) {</span>
-<span class="nc" id="L420">            int r = i + uniform(n-i);     // between i and n-1</span>
-<span class="nc" id="L421">            double temp = a[i];</span>
-<span class="nc" id="L422">            a[i] = a[r];</span>
-<span class="nc" id="L423">            a[r] = temp;</span>
+<span class="nc bnc" id="L418" title="All 2 branches missed.">        if (a == null) throw new NullPointerException(&quot;argument array is null&quot;);</span>
+<span class="nc" id="L419">        int n = a.length;</span>
+<span class="nc bnc" id="L420" title="All 2 branches missed.">        for (int i = 0; i &lt; n; i++) {</span>
+<span class="nc" id="L421">            int r = i + uniform(n-i);     // between i and n-1</span>
+<span class="nc" id="L422">            double temp = a[i];</span>
+<span class="nc" id="L423">            a[i] = a[r];</span>
+<span class="nc" id="L424">            a[r] = temp;</span>
         }
-<span class="nc" id="L425">    }</span>
+<span class="nc" id="L426">    }</span>
 
     /**
      * Rearranges the elements of the specified array in uniformly random order.
+     * see also Shuffle.fisherYates(...).
      *
      @param  a the array to shuffle
      * @throws NullPointerException if &lt;tt&gt;a&lt;/tt&gt; is &lt;tt&gt;null&lt;/tt&gt;
      */
     public static void shuffle(int[] a) {
-<span class="pc bpc" id="L434" title="1 of 2 branches missed.">        if (a == null) throw new NullPointerException(&quot;argument array is null&quot;);</span>
-<span class="fc" id="L435">        int n = a.length;</span>
-<span class="fc bfc" id="L436" title="All 2 branches covered.">        for (int i = 0; i &lt; n; i++) {</span>
-<span class="fc" id="L437">            int r = i + uniform(n-i);     // between i and n-1</span>
-<span class="fc" id="L438">            int temp = a[i];</span>
-<span class="fc" id="L439">            a[i] = a[r];</span>
-<span class="fc" id="L440">            a[r] = temp;</span>
+<span class="pc bpc" id="L436" title="1 of 2 branches missed.">        if (a == null) throw new NullPointerException(&quot;argument array is null&quot;);</span>
+<span class="fc" id="L437">        int n = a.length;</span>
+<span class="fc bfc" id="L438" title="All 2 branches covered.">        for (int i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L439">            int r = i + uniform(n-i);     // between i and n-1</span>
+<span class="fc" id="L440">            int temp = a[i];</span>
+<span class="fc" id="L441">            a[i] = a[r];</span>
+<span class="fc" id="L442">            a[r] = temp;</span>
         }
-<span class="fc" id="L442">    }</span>
+<span class="fc" id="L444">    }</span>
 
 
     /**
      * Rearranges the elements of the specified subarray in uniformly random order.
-     *
      @param  a the array to shuffle
      @param  lo the left endpoint (inclusive)
      @param  hi the right endpoint (inclusive)
@@ -453,21 +454,20 @@ public final class StdRandom {
      * 
      */
     public static void shuffle(Object[] a, int lo, int hi) {
-<span class="nc bnc" id="L456" title="All 2 branches missed.">        if (a == null) throw new NullPointerException(&quot;argument array is null&quot;);</span>
-<span class="nc bnc" id="L457" title="All 6 branches missed.">        if (lo &lt; 0 || lo &gt; hi || hi &gt;= a.length) {</span>
-<span class="nc" id="L458">            throw new IndexOutOfBoundsException(&quot;Illegal subarray range&quot;);</span>
+<span class="nc bnc" id="L457" title="All 2 branches missed.">        if (a == null) throw new NullPointerException(&quot;argument array is null&quot;);</span>
+<span class="nc bnc" id="L458" title="All 6 branches missed.">        if (lo &lt; 0 || lo &gt; hi || hi &gt;= a.length) {</span>
+<span class="nc" id="L459">            throw new IndexOutOfBoundsException(&quot;Illegal subarray range&quot;);</span>
         }
-<span class="nc bnc" id="L460" title="All 2 branches missed.">        for (int i = lo; i &lt;= hi; i++) {</span>
-<span class="nc" id="L461">            int r = i + uniform(hi-i+1);     // between i and hi</span>
-<span class="nc" id="L462">            Object temp = a[i];</span>
-<span class="nc" id="L463">            a[i] = a[r];</span>
-<span class="nc" id="L464">            a[r] = temp;</span>
+<span class="nc bnc" id="L461" title="All 2 branches missed.">        for (int i = lo; i &lt;= hi; i++) {</span>
+<span class="nc" id="L462">            int r = i + uniform(hi-i+1);     // between i and hi</span>
+<span class="nc" id="L463">            Object temp = a[i];</span>
+<span class="nc" id="L464">            a[i] = a[r];</span>
+<span class="nc" id="L465">            a[r] = temp;</span>
         }
-<span class="nc" id="L466">    }</span>
+<span class="nc" id="L467">    }</span>
 
     /**
      * Rearranges the elements of the specified subarray in uniformly random order.
-     *
      @param  a the array to shuffle
      @param  lo the left endpoint (inclusive)
      @param  hi the right endpoint (inclusive)
@@ -489,7 +489,7 @@ public final class StdRandom {
 
     /**
      * Rearranges the elements of the specified subarray in uniformly random order.
-     *
+     * see also Shuffle.fisherYates(...).
      @param  a the array to shuffle
      @param  lo the left endpoint (inclusive)
      @param  hi the right endpoint (inclusive)

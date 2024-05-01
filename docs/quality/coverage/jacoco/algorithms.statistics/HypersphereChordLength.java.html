@@ -778,7 +778,7 @@ import thirdparty.smile.math.special.Beta;
 
         // alpha=0.05 (probability of Type I error)
         // confidence level or a confidence coefficient, (1 - α)100% = 95%
-<span class="fc" id="L781">        idx = CDFRandomSelect.binarySearchForNearest(cdf, 0.95, tol);</span>
+<span class="fc" id="L781">        idx = CDFRandomSelect.binarySearchForQuantile(cdf, 0.95);</span>
         // confidence interval is interval in x capturing 95% of area 
         //     under curve, e.g. N(0,1): mu +- 1.96*sigma/sqrt(n)
         

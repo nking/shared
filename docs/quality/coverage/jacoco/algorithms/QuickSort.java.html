@@ -2718,7 +2718,7 @@ import java.util.List;
 <span class="fc" id="L2718">        return store;</span>
     }
     
-    private static int partitionBy1stThen2nd(int[] a, int[] b,
+    public static int partitionBy1stThen2nd(int[] a, int[] b,
         int idxLo, int idxHi) {
         
 <span class="fc" id="L2724">        int x = a[idxHi];</span>
@@ -2735,134 +2735,136 @@ import java.util.List;
             }
 <span class="fc bfc" id="L2736" title="All 2 branches covered.">            if (doSwap) {</span>
 <span class="fc" id="L2737">                store++;</span>
-<span class="fc" id="L2738">                int swap = a[store];</span>
-<span class="fc" id="L2739">                a[store] = a[i];</span>
-<span class="fc" id="L2740">                a[i] = swap;</span>
-<span class="fc" id="L2741">                int swap2 = b[store];</span>
-<span class="fc" id="L2742">                b[store] = b[i];</span>
-<span class="fc" id="L2743">                b[i] = swap2;</span>
+<span class="fc bfc" id="L2738" title="All 2 branches covered.">                if (store != i) {</span>
+<span class="fc" id="L2739">                    int swap = a[store];</span>
+<span class="fc" id="L2740">                    a[store] = a[i];</span>
+<span class="fc" id="L2741">                    a[i] = swap;</span>
+<span class="fc" id="L2742">                    int swap2 = b[store];</span>
+<span class="fc" id="L2743">                    b[store] = b[i];</span>
+<span class="fc" id="L2744">                    b[i] = swap2;</span>
+                }
             }
         }
-<span class="fc" id="L2746">        store++;</span>
-<span class="fc" id="L2747">        int swap = a[store];</span>
-<span class="fc" id="L2748">        a[store] = a[idxHi];</span>
-<span class="fc" id="L2749">        a[idxHi] = swap;</span>
-<span class="fc" id="L2750">        int swap2 = b[store];</span>
-<span class="fc" id="L2751">        b[store] = b[idxHi];</span>
-<span class="fc" id="L2752">        b[idxHi] = swap2;</span>
+<span class="fc" id="L2748">        store++;</span>
+<span class="fc" id="L2749">        int swap = a[store];</span>
+<span class="fc" id="L2750">        a[store] = a[idxHi];</span>
+<span class="fc" id="L2751">        a[idxHi] = swap;</span>
+<span class="fc" id="L2752">        int swap2 = b[store];</span>
+<span class="fc" id="L2753">        b[store] = b[idxHi];</span>
+<span class="fc" id="L2754">        b[idxHi] = swap2;</span>
         
-<span class="fc" id="L2754">        return store;</span>
+<span class="fc" id="L2756">        return store;</span>
     }
     
     private static &lt;T extends PairInt&gt; int partitionByYThenX(T[] a, int idxLo, 
         int idxHi) {
      
-<span class="fc" id="L2760">        T x = a[idxHi];</span>
-<span class="fc" id="L2761">        int store = idxLo - 1;</span>
+<span class="fc" id="L2762">        T x = a[idxHi];</span>
+<span class="fc" id="L2763">        int store = idxLo - 1;</span>
         
-<span class="fc bfc" id="L2763" title="All 2 branches covered.">        for (int i = idxLo; i &lt; idxHi; i++) {</span>
-<span class="fc" id="L2764">            boolean doSwap = false;</span>
-<span class="fc bfc" id="L2765" title="All 2 branches covered.">            if (a[i].getY() &lt; x.getY()) {</span>
-<span class="fc" id="L2766">                doSwap = true;</span>
-<span class="fc bfc" id="L2767" title="All 2 branches covered.">            } else if (a[i].getY() == x.getY()) {</span>
-<span class="fc bfc" id="L2768" title="All 2 branches covered.">                if (a[i].getX() &lt; x.getX()) {</span>
-<span class="fc" id="L2769">                    doSwap = true;</span>
+<span class="fc bfc" id="L2765" title="All 2 branches covered.">        for (int i = idxLo; i &lt; idxHi; i++) {</span>
+<span class="fc" id="L2766">            boolean doSwap = false;</span>
+<span class="fc bfc" id="L2767" title="All 2 branches covered.">            if (a[i].getY() &lt; x.getY()) {</span>
+<span class="fc" id="L2768">                doSwap = true;</span>
+<span class="fc bfc" id="L2769" title="All 2 branches covered.">            } else if (a[i].getY() == x.getY()) {</span>
+<span class="fc bfc" id="L2770" title="All 2 branches covered.">                if (a[i].getX() &lt; x.getX()) {</span>
+<span class="fc" id="L2771">                    doSwap = true;</span>
                 }
             }
-<span class="fc bfc" id="L2772" title="All 2 branches covered.">            if (doSwap) {</span>
-<span class="fc" id="L2773">                store++;</span>
-<span class="fc" id="L2774">                T swap = a[store];</span>
-<span class="fc" id="L2775">                a[store] = a[i];</span>
-<span class="fc" id="L2776">                a[i] = swap;</span>
+<span class="fc bfc" id="L2774" title="All 2 branches covered.">            if (doSwap) {</span>
+<span class="fc" id="L2775">                store++;</span>
+<span class="fc" id="L2776">                T swap = a[store];</span>
+<span class="fc" id="L2777">                a[store] = a[i];</span>
+<span class="fc" id="L2778">                a[i] = swap;</span>
             }
         }
-<span class="fc" id="L2779">        store++;</span>
-<span class="fc" id="L2780">        T swap = a[store];</span>
-<span class="fc" id="L2781">        a[store] = a[idxHi];</span>
-<span class="fc" id="L2782">        a[idxHi] = swap;</span>
-<span class="fc" id="L2783">        return store;</span>
+<span class="fc" id="L2781">        store++;</span>
+<span class="fc" id="L2782">        T swap = a[store];</span>
+<span class="fc" id="L2783">        a[store] = a[idxHi];</span>
+<span class="fc" id="L2784">        a[idxHi] = swap;</span>
+<span class="fc" id="L2785">        return store;</span>
     }
     
     private static &lt;T extends PairInt&gt; int 
     partitionByDecrYThenIncrX(T[] a, int[] b, int idxLo, int idxHi) {
      
-<span class="nc" id="L2789">        T x = a[idxHi];</span>
-<span class="nc" id="L2790">        int store = idxLo - 1;</span>
+<span class="nc" id="L2791">        T x = a[idxHi];</span>
+<span class="nc" id="L2792">        int store = idxLo - 1;</span>
         
-<span class="nc bnc" id="L2792" title="All 2 branches missed.">        for (int i = idxLo; i &lt; idxHi; i++) {</span>
-<span class="nc" id="L2793">            boolean doSwap = false;</span>
-<span class="nc bnc" id="L2794" title="All 2 branches missed.">            if (a[i].getY() &gt; x.getY()) {</span>
-<span class="nc" id="L2795">                doSwap = true;</span>
-<span class="nc bnc" id="L2796" title="All 2 branches missed.">            } else if (a[i].getY() == x.getY()) {</span>
-<span class="nc bnc" id="L2797" title="All 2 branches missed.">                if (a[i].getX() &lt; x.getX()) {</span>
-<span class="nc" id="L2798">                    doSwap = true;</span>
+<span class="nc bnc" id="L2794" title="All 2 branches missed.">        for (int i = idxLo; i &lt; idxHi; i++) {</span>
+<span class="nc" id="L2795">            boolean doSwap = false;</span>
+<span class="nc bnc" id="L2796" title="All 2 branches missed.">            if (a[i].getY() &gt; x.getY()) {</span>
+<span class="nc" id="L2797">                doSwap = true;</span>
+<span class="nc bnc" id="L2798" title="All 2 branches missed.">            } else if (a[i].getY() == x.getY()) {</span>
+<span class="nc bnc" id="L2799" title="All 2 branches missed.">                if (a[i].getX() &lt; x.getX()) {</span>
+<span class="nc" id="L2800">                    doSwap = true;</span>
                 }
             }
-<span class="nc bnc" id="L2801" title="All 2 branches missed.">            if (doSwap) {</span>
-<span class="nc" id="L2802">                store++;</span>
-<span class="nc" id="L2803">                T swap = a[store];</span>
-<span class="nc" id="L2804">                a[store] = a[i];</span>
-<span class="nc" id="L2805">                a[i] = swap;</span>
-<span class="nc" id="L2806">                int swap2 = b[store];</span>
-<span class="nc" id="L2807">                b[store] = b[i];</span>
-<span class="nc" id="L2808">                b[i] = swap2;</span>
+<span class="nc bnc" id="L2803" title="All 2 branches missed.">            if (doSwap) {</span>
+<span class="nc" id="L2804">                store++;</span>
+<span class="nc" id="L2805">                T swap = a[store];</span>
+<span class="nc" id="L2806">                a[store] = a[i];</span>
+<span class="nc" id="L2807">                a[i] = swap;</span>
+<span class="nc" id="L2808">                int swap2 = b[store];</span>
+<span class="nc" id="L2809">                b[store] = b[i];</span>
+<span class="nc" id="L2810">                b[i] = swap2;</span>
             }
         }
-<span class="nc" id="L2811">        store++;</span>
-<span class="nc" id="L2812">        T swap = a[store];</span>
-<span class="nc" id="L2813">        a[store] = a[idxHi];</span>
-<span class="nc" id="L2814">        a[idxHi] = swap;</span>
-<span class="nc" id="L2815">        int swap2 = b[store];</span>
-<span class="nc" id="L2816">        b[store] = b[idxHi];</span>
-<span class="nc" id="L2817">        b[idxHi] = swap2;</span>
-<span class="nc" id="L2818">        return store;</span>
+<span class="nc" id="L2813">        store++;</span>
+<span class="nc" id="L2814">        T swap = a[store];</span>
+<span class="nc" id="L2815">        a[store] = a[idxHi];</span>
+<span class="nc" id="L2816">        a[idxHi] = swap;</span>
+<span class="nc" id="L2817">        int swap2 = b[store];</span>
+<span class="nc" id="L2818">        b[store] = b[idxHi];</span>
+<span class="nc" id="L2819">        b[idxHi] = swap2;</span>
+<span class="nc" id="L2820">        return store;</span>
     }
     
     private static int partitionBy1stThen2nd(double[] a, double[] b, int[] c,
         int[] d, int idxLo, int idxHi) {
         
-<span class="fc" id="L2824">        double x = a[idxHi];</span>
-<span class="fc" id="L2825">        int store = idxLo - 1;</span>
+<span class="fc" id="L2826">        double x = a[idxHi];</span>
+<span class="fc" id="L2827">        int store = idxLo - 1;</span>
         
-<span class="fc bfc" id="L2827" title="All 2 branches covered.">        for (int i = idxLo; i &lt; idxHi; i++) {</span>
-<span class="fc" id="L2828">            boolean doSwap = false;</span>
-<span class="pc bpc" id="L2829" title="1 of 2 branches missed.">            if (a[i] &lt; x) {</span>
-<span class="nc" id="L2830">                doSwap = true;</span>
-<span class="fc bfc" id="L2831" title="All 2 branches covered.">            } else if (a[i] == x) {</span>
-<span class="fc bfc" id="L2832" title="All 2 branches covered.">                if (b[i] &lt; b[idxHi]) {</span>
-<span class="fc" id="L2833">                    doSwap = true;</span>
+<span class="fc bfc" id="L2829" title="All 2 branches covered.">        for (int i = idxLo; i &lt; idxHi; i++) {</span>
+<span class="fc" id="L2830">            boolean doSwap = false;</span>
+<span class="pc bpc" id="L2831" title="1 of 2 branches missed.">            if (a[i] &lt; x) {</span>
+<span class="nc" id="L2832">                doSwap = true;</span>
+<span class="fc bfc" id="L2833" title="All 2 branches covered.">            } else if (a[i] == x) {</span>
+<span class="fc bfc" id="L2834" title="All 2 branches covered.">                if (b[i] &lt; b[idxHi]) {</span>
+<span class="fc" id="L2835">                    doSwap = true;</span>
                 }
             }
-<span class="fc bfc" id="L2836" title="All 2 branches covered.">            if (doSwap) {</span>
-<span class="fc" id="L2837">                store++;</span>
-<span class="fc" id="L2838">                double swap = a[store];</span>
-<span class="fc" id="L2839">                a[store] = a[i];</span>
-<span class="fc" id="L2840">                a[i] = swap;</span>
-<span class="fc" id="L2841">                swap = b[store];</span>
-<span class="fc" id="L2842">                b[store] = b[i];</span>
-<span class="fc" id="L2843">                b[i] = swap;</span>
-<span class="fc" id="L2844">                int swap2 = c[store];</span>
-<span class="fc" id="L2845">                c[store] = c[i];</span>
-<span class="fc" id="L2846">                c[i] = swap2;</span>
-<span class="fc" id="L2847">                swap2 = d[store];</span>
-<span class="fc" id="L2848">                d[store] = d[i];</span>
-<span class="fc" id="L2849">                d[i] = swap2;</span>
+<span class="fc bfc" id="L2838" title="All 2 branches covered.">            if (doSwap) {</span>
+<span class="fc" id="L2839">                store++;</span>
+<span class="fc" id="L2840">                double swap = a[store];</span>
+<span class="fc" id="L2841">                a[store] = a[i];</span>
+<span class="fc" id="L2842">                a[i] = swap;</span>
+<span class="fc" id="L2843">                swap = b[store];</span>
+<span class="fc" id="L2844">                b[store] = b[i];</span>
+<span class="fc" id="L2845">                b[i] = swap;</span>
+<span class="fc" id="L2846">                int swap2 = c[store];</span>
+<span class="fc" id="L2847">                c[store] = c[i];</span>
+<span class="fc" id="L2848">                c[i] = swap2;</span>
+<span class="fc" id="L2849">                swap2 = d[store];</span>
+<span class="fc" id="L2850">                d[store] = d[i];</span>
+<span class="fc" id="L2851">                d[i] = swap2;</span>
             }
         }
-<span class="fc" id="L2852">        store++;</span>
-<span class="fc" id="L2853">        double swap = a[store];</span>
-<span class="fc" id="L2854">        a[store] = a[idxHi];</span>
-<span class="fc" id="L2855">        a[idxHi] = swap;</span>
-<span class="fc" id="L2856">        swap = b[store];</span>
-<span class="fc" id="L2857">        b[store] = b[idxHi];</span>
-<span class="fc" id="L2858">        b[idxHi] = swap;</span>
-<span class="fc" id="L2859">        int swap2 = c[store];</span>
-<span class="fc" id="L2860">        c[store] = c[idxHi];</span>
-<span class="fc" id="L2861">        c[idxHi] = swap2;</span>
-<span class="fc" id="L2862">        swap2 = d[store];</span>
-<span class="fc" id="L2863">        d[store] = d[idxHi];</span>
-<span class="fc" id="L2864">        d[idxHi] = swap2;        </span>
-<span class="fc" id="L2865">        return store;</span>
+<span class="fc" id="L2854">        store++;</span>
+<span class="fc" id="L2855">        double swap = a[store];</span>
+<span class="fc" id="L2856">        a[store] = a[idxHi];</span>
+<span class="fc" id="L2857">        a[idxHi] = swap;</span>
+<span class="fc" id="L2858">        swap = b[store];</span>
+<span class="fc" id="L2859">        b[store] = b[idxHi];</span>
+<span class="fc" id="L2860">        b[idxHi] = swap;</span>
+<span class="fc" id="L2861">        int swap2 = c[store];</span>
+<span class="fc" id="L2862">        c[store] = c[idxHi];</span>
+<span class="fc" id="L2863">        c[idxHi] = swap2;</span>
+<span class="fc" id="L2864">        swap2 = d[store];</span>
+<span class="fc" id="L2865">        d[store] = d[idxHi];</span>
+<span class="fc" id="L2866">        d[idxHi] = swap2;        </span>
+<span class="fc" id="L2867">        return store;</span>
     }
 
 }

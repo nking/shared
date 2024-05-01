@@ -84,10 +84,6 @@ Variants of Knapsack:
      * 
      * The worse case runtime complexity is O(n*W) where n is the number of
      * the items and W is the capacity.
-     * 
-     * If the minimum value in the weights array is larger than 1, it is used
-     * as an interval in summing up to the capacity, hence reduces the runtime
-     * complexity by roughly that as a factor.
      *
      * NOTE: consider reducing weights and capacity by the Greatest Common Denominator
      * between capacity and weights.
@@ -97,28 +93,24 @@ Variants of Knapsack:
      @param capacity
      @return 
      */
-    public static int solveDynamically(int[] values, int[] weights, int capacity) {
+    public static int maxValueForCapacity(int[] values, int[] weights, int capacity) {
 
-<span class="nc" id="L102">        return solveDynamically0(values, weights, capacity);</span>
-    }
-    
-    static int solveDynamically0(int[] values, int[] weights, int capacity) {
+<span class="fc" id="L98">        int n = values.length;</span>
 
-<span class="fc" id="L107">        int n = values.length;</span>
-        
-<span class="fc" id="L109">        int[][] memo = new int[n + 1][capacity + 1];</span>
-<span class="fc bfc" id="L110" title="All 2 branches covered.">        for (int i = 0; i &lt; memo.length; i++) {</span>
-<span class="fc" id="L111">            memo[i] = new int[capacity + 1];</span>
-        }
-        int i, wc, t, c;
-<span class="fc bfc" id="L114" title="All 2 branches covered.">        for (i = 1; i &lt;= n; i++) {</span>
-<span class="fc bfc" id="L115" title="All 2 branches covered.">            for (wc = 1; wc &lt;= capacity; wc++) {</span>
-<span class="fc" id="L116">                t = memo[i-1][wc];</span>
-<span class="fc bfc" id="L117" title="All 2 branches covered.">                if (wc &gt;= weights[i-1]) { // to avoid exceeding capacity</span>
-<span class="fc" id="L118">                    c = memo[i-1][wc-weights[i-1]] + values[i-1];</span>
-<span class="fc" id="L119">                    memo[i][wc] = Math.max(c, t);</span>
+<span class="fc" id="L100">        int[] prevTab = null;</span>
+<span class="fc" id="L101">        int[] currTab = new int[capacity + 1];</span>
+
+        int i, wc, c, wc2;
+<span class="fc bfc" id="L104" title="All 2 branches covered.">        for (i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L105">            prevTab = currTab;</span>
+<span class="fc" id="L106">            currTab = new int[capacity + 1];</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">            for (wc = 1; wc &lt;= capacity; wc++) {</span>
+<span class="fc" id="L108">                wc2 = wc-weights[i];</span>
+                // compare to previous wc.  0-1 means we cannot add to current wc2
+<span class="fc bfc" id="L110" title="All 2 branches covered.">                if (wc2 &gt;= 0) {</span>
+<span class="fc" id="L111">                    currTab[wc] = Math.max(prevTab[wc], prevTab[wc2] + values[i]);</span>
                 } else {
-<span class="fc" id="L121">                    memo[i][wc] = t;</span>
+<span class="fc" id="L113">                    currTab[wc] = prevTab[wc];</span>
                 }
             }
         }
@@ -128,7 +120,302 @@ Variants of Knapsack:
         System.out.printf(&quot;memo=\n%s\n&quot;, FormatArray.toString(memo, &quot;%d&quot;));
         System.out.flush();*/
 
-<span class="fc" id="L131">        return memo[memo.length - 1][memo[0].length - 1];</span>
+<span class="fc" id="L123">        return currTab[capacity];</span>
+    }
+
+    /**
+     * solve the knapsack 0-1 problem with values and weights of items and capacity
+     * for the knapsack.
+     * Each item is put into the knapsack 0 or 1 times to maximize the total
+     * value in the sack while keeping the total weight equal to or less than
+     * capacity.
+     *
+     * The worse case runtime complexity is O(n*W) where n is the number of
+     * the items and W is the capacity.
+     *
+     * NOTE: consider reducing weights and capacity by the Greatest Common Denominator
+     * between capacity and weights.
+     *
+     @param values
+     @param weights
+     @param capacity
+     @return
+     */
+    public static int maxValueForCapacity2(int[] values, int[] weights, int capacity) {
+
+<span class="fc" id="L146">        int n = values.length;</span>
+
+<span class="fc" id="L148">        int[] tab = new int[capacity + 1];</span>
+
+        int i, wc, t, c, wc2;
+<span class="fc bfc" id="L151" title="All 2 branches covered.">        for (i = 0; i &lt; n; i++) {</span>
+            // since tab holds current and prev i results,
+            // need to traverse weights from high to low
+            // to avoid including an updated low wc2 in current wc
+<span class="fc bfc" id="L155" title="All 2 branches covered.">            for (wc = capacity; wc &gt;= weights[i]; --wc) {</span>
+<span class="fc" id="L156">                wc2 = wc - weights[i];</span>
+<span class="fc" id="L157">                tab[wc] = Math.max(tab[wc], tab[wc2] + values[i]);</span>
+            }
+        }
+
+<span class="fc" id="L161">        return tab[capacity];</span>
+    }
+
+    /**
+     * find maximum value or sum of items whose weights sum to exactly equal the target, but with the restricted quantity
+     * of 0 or 1 for each item.
+     * @param values non-negative values for items. values and weights describe the same items.
+     * @param weights non-negative array of weights for items
+     * @param target the exact sum of weights for the minimum number of items which sum to that
+     *               weight.  each item can only be added up to a quantity of 1.
+     * @return the maximum value for items whose weights sum up to exactly equal target.
+     */
+    public static int maxValueForTarget(int[] values, int[] weights, int target) {
+
+<span class="fc" id="L175">        int n = values.length;</span>
+
+<span class="fc" id="L177">        int[] prevTab = null;</span>
+<span class="fc" id="L178">        int[] currTab = new int[target + 1];</span>
+<span class="fc" id="L179">        int sentinel = Integer.MIN_VALUE;</span>
+<span class="fc" id="L180">        Arrays.fill(currTab, sentinel);</span>
+<span class="fc" id="L181">        currTab[0] = 0;</span>
+
+        int i, wc,c, wc2;
+<span class="fc bfc" id="L184" title="All 2 branches covered.">        for (i = 1; i &lt;= n; i++) {</span>
+<span class="fc" id="L185">            prevTab = currTab;</span>
+<span class="fc" id="L186">            currTab = new int[target + 1];</span>
+<span class="fc" id="L187">            Arrays.fill(currTab, sentinel);</span>
+<span class="fc" id="L188">            currTab[0] = 0;</span>
+
+<span class="fc bfc" id="L190" title="All 2 branches covered.">            for (wc = 1; wc &lt;= target; wc++) {</span>
+<span class="fc" id="L191">                wc2 = wc-weights[i-1];</span>
+
+<span class="fc bfc" id="L193" title="All 2 branches covered.">                if (wc2 == 0) {</span>
+<span class="fc" id="L194">                    currTab[wc] = Math.max(prevTab[wc],  values[i - 1]);</span>
+<span class="fc bfc" id="L195" title="All 2 branches covered.">                } else if (wc2 &gt; 0)  {</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">                    int s = (prevTab[wc2] == sentinel) ? sentinel : prevTab[wc2] + values[i-1];</span>
+<span class="fc" id="L197">                    currTab[wc] = Math.max(prevTab[wc], s);</span>
+<span class="fc" id="L198">                } else {</span>
+<span class="fc" id="L199">                    currTab[wc] = prevTab[wc];</span>
+                }
+
+            }
+        }
+
+<span class="fc bfc" id="L205" title="All 2 branches covered.">        return currTab[target] == sentinel ? 0 : currTab[target];</span>
+    }
+
+    /**
+     * find maximum value or sum of items whose weights sum to exactly equal the target, but with the restricted quantity
+     * of 0 or 1 for each item.
+     * @param values non-negative values for items. values and weights describe the same items.
+     * @param weights non-negative array of weights for items
+     * @param target the exact sum of weights for the minimum number of items which sum to that
+     *               weight.  each item can only be added up to a quantity of 1.
+     * @return the maximum value for items whose weights sum up to exactly equal target.
+     */
+    public static int maxValueForTarget2(int[] values, int[] weights, int target) {
+
+<span class="fc" id="L219">        int n = values.length;</span>
+
+<span class="fc" id="L221">        int[] tab = new int[target + 1];</span>
+<span class="fc" id="L222">        int sentinel = Integer.MIN_VALUE;</span>
+<span class="fc" id="L223">        Arrays.fill(tab, sentinel);</span>
+<span class="fc" id="L224">        tab[0] = 0;</span>
+
+        int i, wc, c, wc2;
+<span class="fc bfc" id="L227" title="All 2 branches covered.">        for (i = 0; i &lt; n; i++) {</span>
+            // since tab holds current and prev i results,
+            // need to traverse weights from high to low
+            // to avoid including an updated low wc2 in current wc
+<span class="fc bfc" id="L231" title="All 2 branches covered.">            for (wc = target; wc &gt;= weights[i]; --wc) {</span>
+<span class="fc" id="L232">                wc2 = wc-weights[i];</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">                if (wc2 == 0) {</span>
+<span class="fc" id="L234">                    tab[wc] = Math.max(tab[wc],  values[i]);</span>
+<span class="pc bpc" id="L235" title="1 of 2 branches missed.">                } else if (wc2 &gt; 0)  {</span>
+<span class="fc bfc" id="L236" title="All 2 branches covered.">                    int s = (tab[wc2] == sentinel) ? sentinel : tab[wc2] + values[i];</span>
+<span class="fc" id="L237">                    tab[wc] = Math.max(tab[wc], s);</span>
+                }
+            }
+        }
+
+<span class="fc bfc" id="L242" title="All 2 branches covered.">        return tab[target] == sentinel ? 0 : tab[target];</span>
+    }
+
+    /**
+     * find the minimum number of items whose weights sum to LEQ capacity.
+     * @param weights non-negative array of item weights
+     * @param capacity the largest sum of weights for the minimum number of items which sum to that
+     * weight.  each item can only be added up to a quantity of 1.  if capacity isn't achieved, the solution
+     *                 for the next lowest summed amount is returned.
+     * @return
+     */
+    public static int minNumberOfItemsForCapacity(int[] weights, int capacity) {
+<span class="fc" id="L254">        return minNumberOfItems(weights, capacity, false);</span>
+    }
+
+    /**
+     * find the minimum number of items whose weights sum to exact target.
+     * @param weights non-negative array of item weights
+     * @param target the sum of weights for the minimum number of items which sum to that
+     * target.
+     * @return
+     */
+    public static int minNumberOfItemsForTarget(int[] weights, int target) {
+<span class="fc" id="L265">        return minNumberOfItems(weights, target, true);</span>
+    }
+
+    public static int minNumberOfItems(int[] weights, int target, boolean solveForExact) {
+<span class="fc" id="L269">        int n = weights.length;</span>
+
+        // tab[wc] holds the min number of items for the items whose weights sum to wc
+<span class="fc" id="L272">        int[] prevTab = null;</span>
+<span class="fc" id="L273">        int[] currTab = new int[target + 1];</span>
+<span class="fc" id="L274">        int sentinel = Integer.MAX_VALUE;</span>
+<span class="fc" id="L275">        Arrays.fill(currTab, sentinel);</span>
+<span class="fc" id="L276">        currTab[0] = 0;</span>
+
+        int i, wc, wc2;
+<span class="fc bfc" id="L279" title="All 2 branches covered.">        for (i = 0; i &lt; n; i++) {</span>
+<span class="fc bfc" id="L280" title="All 2 branches covered.">            if (weights[i] &gt; target) continue;</span>
+<span class="fc" id="L281">            prevTab = currTab;</span>
+<span class="fc" id="L282">            currTab = new int[target + 1];</span>
+<span class="fc" id="L283">            Arrays.fill(currTab, sentinel);</span>
+<span class="fc" id="L284">            currTab[0] = 0;</span>
+
+<span class="fc bfc" id="L286" title="All 2 branches covered.">            for (wc = 1; wc &lt;= target; wc++) {</span>
+<span class="fc" id="L287">                wc2 = wc - weights[i];</span>
+
+<span class="fc bfc" id="L289" title="All 2 branches covered.">                if (wc2 == 0) {</span>
+<span class="fc" id="L290">                    currTab[wc] = Math.min(currTab[wc], 1);</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">                } else if (wc2 &gt; 0)  {</span>
+<span class="fc bfc" id="L292" title="All 2 branches covered.">                    int s = (prevTab[wc2] == sentinel) ? sentinel : 1 + prevTab[wc2];</span>
+<span class="fc" id="L293">                    currTab[wc] = Math.min(currTab[wc], s);</span>
+<span class="fc" id="L294">                } else {</span>
+<span class="fc" id="L295">                    currTab[wc] = prevTab[wc];</span>
+                }
+
+                //System.out.printf(&quot;i=%d, wc=%d, wc2=%d, weights[i]=%d  tab=%s\n&quot;, i, wc, wc2, weights[i], Arrays.toString(tab));
+            }
+        }
+        //System.out.printf(&quot;tab=%s\n&quot;, Arrays.toString(tab));
+<span class="fc bfc" id="L302" title="All 2 branches covered.">        if (solveForExact) {</span>
+<span class="fc bfc" id="L303" title="All 2 branches covered.">            return currTab[target] == sentinel ? 0 : currTab[target];</span>
+        }
+
+        // search backwards for last sum entered
+<span class="fc" id="L307">        i = target;</span>
+<span class="fc bfc" id="L308" title="All 4 branches covered.">        while (i &gt; 0 &amp;&amp; currTab[i] == sentinel) {</span>
+<span class="fc" id="L309">            --i;</span>
+        }
+
+<span class="pc bpc" id="L312" title="1 of 2 branches missed.">        return currTab[i] == sentinel ? 0 : currTab[i];</span>
+    }
+
+    public static int minNumberOfItemsForCapacity2(int[] weights, int capacity) {
+<span class="fc" id="L316">        return minNumberOfItems2(weights, capacity, false);</span>
+    }
+
+    public static int minNumberOfItemsForTarget2(int[] weights, int target) {
+<span class="fc" id="L320">        return minNumberOfItems2(weights, target, true);</span>
+    }
+
+    public static int minNumberOfItems2(int[] weights, int capacity, boolean solveForTarget) {
+<span class="fc" id="L324">        int n = weights.length;</span>
+
+        // tab[wc] holds the min number of items for the items whose weights sum to wc
+<span class="fc" id="L327">        int[] tab = new int[capacity + 1];</span>
+<span class="fc" id="L328">        int sentinel = Integer.MAX_VALUE;</span>
+<span class="fc" id="L329">        Arrays.fill(tab, sentinel);</span>
+<span class="fc" id="L330">        tab[0] = 0;</span>
+
+        int i, wc, wc2;
+<span class="fc bfc" id="L333" title="All 2 branches covered.">        for (i = 0; i &lt; n; i++) {</span>
+            // since tab holds current and prev i results,
+            // need to traverse weights from high to low
+            // to avoid including an updated low wc2 in current wc
+<span class="fc bfc" id="L337" title="All 2 branches covered.">            for (wc = capacity; wc &gt;= weights[i]; --wc) {</span>
+<span class="fc" id="L338">                wc2 = wc - weights[i];</span>
+<span class="fc bfc" id="L339" title="All 2 branches covered.">                if (wc2 == 0) {</span>
+<span class="fc" id="L340">                    tab[wc] = Math.min(tab[wc], 1);</span>
+<span class="pc bpc" id="L341" title="1 of 2 branches missed.">                } else if (wc2 &gt; 0)  {</span>
+<span class="fc bfc" id="L342" title="All 2 branches covered.">                    int s = (tab[wc2] == sentinel) ? sentinel : 1 + tab[wc2];</span>
+<span class="fc" id="L343">                    tab[wc] = Math.min(tab[wc], s);</span>
+                }
+            }
+        }
+
+<span class="fc" id="L348">        i = capacity;</span>
+<span class="fc bfc" id="L349" title="All 2 branches covered.">        if (solveForTarget) {</span>
+<span class="fc bfc" id="L350" title="All 2 branches covered.">            return tab[i] == sentinel ? 0 : tab[i];</span>
+        }
+
+<span class="fc bfc" id="L353" title="All 4 branches covered.">        while (i &gt; 0 &amp;&amp; tab[i] == sentinel) {</span>
+<span class="fc" id="L354">            --i;</span>
+        }
+        //System.out.printf(&quot;tab=%s\n&quot;, Arrays.toString(tab));
+<span class="pc bpc" id="L357" title="1 of 2 branches missed.">        return tab[i] == sentinel ? 0 : tab[i];</span>
+    }
+
+    public static int numberOfWaysForTarget(int[] weights, int target) {
+
+<span class="fc" id="L362">        int n = weights.length;</span>
+
+<span class="pc bpc" id="L364" title="1 of 2 branches missed.">        if (weights.length != n) {</span>
+<span class="nc" id="L365">            throw new IllegalStateException(&quot;values and weights must be same length&quot;);</span>
+        }
+
+<span class="fc" id="L368">        int[] tab = new int[target + 1];</span>
+<span class="fc" id="L369">        tab[0] = 1;</span>
+        int wc, wc2;
+<span class="fc bfc" id="L371" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+            // since tab holds current and prev i results,
+            // need to traverse weights from high to low
+            // to avoid including an updated low wc2 in current wc
+<span class="fc bfc" id="L375" title="All 2 branches covered.">            for (wc = target; wc &gt;= weights[i]; --wc) {</span>
+<span class="fc" id="L376">                wc2 = wc - weights[i];</span>
+<span class="pc bpc" id="L377" title="1 of 2 branches missed.">                if (wc2 &gt;= 0) {</span>
+                    // adds counts from remaining sum
+<span class="fc" id="L379">                    tab[wc] += tab[wc2];</span>
+                }
+            }
+        }
+        //System.out.printf(&quot;tab=%s\n&quot;, Arrays.toString(tab));
+<span class="fc" id="L384">        return tab[target];</span>
+    }
+
+    /**
+     * count the number of ways that a combination of an unbounded quantity of weights
+     * can sum up to exactly EQ target, where the sequences are counted rather than sets,
+     * e.g. [1,2] is counted and [2,1] is counted.
+     * @param target the exact sum that a combination of and unbounded quantity of weights should sum to
+     * @param weights non-negative array of item weights
+     * @return
+     */
+    public static int numberOfSequencesForTarget(int[] weights, int target) {
+
+<span class="fc" id="L397">        int n = weights.length;</span>
+
+        // tab[wc] holds the number of ways that the item weights sum to wc.
+
+<span class="fc" id="L401">        int[] tab = new int[target + 1];</span>
+<span class="fc" id="L402">        tab[0] = 1;</span>
+
+        int i, wc, wc2;
+        // to count sequences instead of sets, outer loop is indexes to include all prev calc items
+        // in current weight count
+<span class="fc bfc" id="L407" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc bfc" id="L408" title="All 2 branches covered.">            for (wc = weights[i]; wc &lt;= target; ++wc) {</span>
+<span class="fc" id="L409">                wc2 = wc - weights[i];</span>
+<span class="pc bpc" id="L410" title="1 of 2 branches missed.">                if (wc2 &gt;= 0) {</span>
+                    // adds counts from remaining sum
+<span class="fc" id="L412">                    tab[wc] += tab[wc2];</span>
+                }
+            }
+        }
+
+        //System.out.printf(&quot;tab=%s\n&quot;, Arrays.toString(tab));
+<span class="fc" id="L418">        return tab[target];</span>
     }
     
     /**
@@ -144,76 +431,76 @@ Variants of Knapsack:
     static int approxDynamically(int[] values, int[] weights, int capacity) {
 
         int factor;
-<span class="fc" id="L147">        int q1 = findQ1Diff(weights);</span>
-<span class="fc bfc" id="L148" title="All 2 branches covered.">        if (q1 &lt; 2) {</span>
-<span class="fc" id="L149">            factor = 1;</span>
+<span class="fc" id="L434">        int q1 = findQ1Diff(weights);</span>
+<span class="fc bfc" id="L435" title="All 2 branches covered.">        if (q1 &lt; 2) {</span>
+<span class="fc" id="L436">            factor = 1;</span>
         } else {
-<span class="fc" id="L151">            factor = q1;</span>
+<span class="fc" id="L438">            factor = q1;</span>
         }
         //int minW = MiscMath0.findMin(weights);
         //factor = minW;
         
-<span class="fc" id="L156">        int n = values.length;</span>
+<span class="fc" id="L443">        int n = values.length;</span>
         int i, j, t, c, t2, wc, w;
         
-<span class="fc" id="L159">        int[] ws = getIntervals(capacity, factor);</span>
+<span class="fc" id="L446">        int[] ws = getIntervals(capacity, factor);</span>
         
-<span class="fc" id="L161">        System.out.printf(&quot;capacity=%d, factor=%d, q1Diff=%d, intervals=%s\n&quot;, capacity,</span>
-<span class="fc" id="L162">            factor, q1, Arrays.toString(ws));</span>
+        //System.out.printf(&quot;capacity=%d, factor=%d, q1Diff=%d, intervals=%s\n&quot;, capacity,
+        //    factor, q1, Arrays.toString(ws));
                 
-<span class="fc" id="L164">        int[][] memo = new int[n + 1][ws.length + 1];</span>
-<span class="fc bfc" id="L165" title="All 2 branches covered.">        for (i = 0; i &lt; memo.length; i++) {</span>
-<span class="fc" id="L166">            memo[i] = new int[ws.length  + 1];</span>
+<span class="fc" id="L451">        int[][] memo = new int[n + 1][ws.length + 1];</span>
+<span class="fc bfc" id="L452" title="All 2 branches covered.">        for (i = 0; i &lt; memo.length; i++) {</span>
+<span class="fc" id="L453">            memo[i] = new int[ws.length  + 1];</span>
         }
         
-<span class="fc bfc" id="L169" title="All 2 branches covered.">        for (i = 1; i &lt;= n; i++) {</span>
-<span class="fc bfc" id="L170" title="All 2 branches covered.">            for (j = 0; j &lt; ws.length; ++j) {//10,8,6,4,2</span>
-<span class="fc" id="L171">                w = ws[j];//capacities</span>
-<span class="fc" id="L172">                wc = j+1;</span>
-<span class="fc" id="L173">                t = memo[i - 1][wc];</span>
-<span class="fc" id="L174">                t2 = (int) Math.ceil((float) weights[i - 1] / (float) factor);</span>
-<span class="fc bfc" id="L175" title="All 2 branches covered.">                if (w &gt;= weights[i - 1]) {// to avoid exceeding capacity</span>
-<span class="fc" id="L176">                    c = memo[i - 1][wc - t2] + values[i - 1];</span>
-<span class="fc" id="L177">                    memo[i][wc] = Math.max(c, t);</span>
+<span class="fc bfc" id="L456" title="All 2 branches covered.">        for (i = 1; i &lt;= n; i++) {</span>
+<span class="fc bfc" id="L457" title="All 2 branches covered.">            for (j = 0; j &lt; ws.length; ++j) {//10,8,6,4,2</span>
+<span class="fc" id="L458">                w = ws[j];//capacities</span>
+<span class="fc" id="L459">                wc = j+1;</span>
+<span class="fc" id="L460">                t = memo[i - 1][wc];</span>
+<span class="fc" id="L461">                t2 = (int) Math.ceil((float) weights[i - 1] / (float) factor);</span>
+<span class="fc bfc" id="L462" title="All 2 branches covered.">                if (w &gt;= weights[i - 1]) {// to avoid exceeding capacity</span>
+<span class="fc" id="L463">                    c = memo[i - 1][wc - t2] + values[i - 1];</span>
+<span class="fc" id="L464">                    memo[i][wc] = Math.max(c, t);</span>
                 } else {
-<span class="fc" id="L179">                    memo[i][wc] = t;</span>
+<span class="fc" id="L466">                    memo[i][wc] = t;</span>
                 }
             }
         }
 
-<span class="fc" id="L184">        System.out.printf(&quot;memo=\n%s\n&quot;, FormatArray.toString(memo, &quot;%d&quot;));</span>
+        //System.out.printf(&quot;memo=\n%s\n&quot;, FormatArray.toString(memo, &quot;%d&quot;));
         
-<span class="fc" id="L186">        return memo[memo.length - 1][memo[0].length - 1];</span>
+<span class="fc" id="L473">        return memo[memo.length - 1][memo[0].length - 1];</span>
     }
 
     private static int[] getIntervals(int capacity, int minW) {
         
-<span class="fc" id="L191">        TIntList wcs = new TIntArrayList();</span>
-<span class="fc bfc" id="L192" title="All 2 branches covered.">        for (int wc = capacity; wc &gt;=1; wc-=minW) {</span>
-<span class="fc" id="L193">            wcs.add(wc);</span>
+<span class="fc" id="L478">        TIntList wcs = new TIntArrayList();</span>
+<span class="fc bfc" id="L479" title="All 2 branches covered.">        for (int wc = capacity; wc &gt;=1; wc-=minW) {</span>
+<span class="fc" id="L480">            wcs.add(wc);</span>
         }
-<span class="fc" id="L195">        wcs.reverse();  </span>
+<span class="fc" id="L482">        wcs.reverse();  </span>
         
-<span class="fc" id="L197">        return wcs.toArray();</span>
+<span class="fc" id="L484">        return wcs.toArray();</span>
     }
 
     private static int findQ1Diff(int[] a) {
-<span class="fc" id="L201">        a = Arrays.copyOf(a, a.length);</span>
-<span class="fc" id="L202">        Arrays.sort(a);</span>
-<span class="fc" id="L203">        int[] diffs = new int[a.length-1];</span>
+<span class="fc" id="L488">        a = Arrays.copyOf(a, a.length);</span>
+<span class="fc" id="L489">        Arrays.sort(a);</span>
+<span class="fc" id="L490">        int[] diffs = new int[a.length-1];</span>
         int i, d;
-<span class="fc" id="L205">        int minDiff = Integer.MAX_VALUE;</span>
-<span class="fc bfc" id="L206" title="All 2 branches covered.">        for (i = 1; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L207">            d = a[i] - a[i - 1];</span>
-<span class="fc bfc" id="L208" title="All 2 branches covered.">            if (d &lt; minDiff) {</span>
-<span class="fc" id="L209">                minDiff = d;</span>
+<span class="fc" id="L492">        int minDiff = Integer.MAX_VALUE;</span>
+<span class="fc bfc" id="L493" title="All 2 branches covered.">        for (i = 1; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L494">            d = a[i] - a[i - 1];</span>
+<span class="fc bfc" id="L495" title="All 2 branches covered.">            if (d &lt; minDiff) {</span>
+<span class="fc" id="L496">                minDiff = d;</span>
             }
-<span class="fc" id="L211">            diffs[i-1] = d;</span>
+<span class="fc" id="L498">            diffs[i-1] = d;</span>
         }
-<span class="fc" id="L213">        int q1 = diffs[(int)(diffs.length*.25)];</span>
-<span class="fc" id="L214">        System.out.printf(&quot;median diff=%d  Q1 diff = %d\n&quot;, diffs[diffs.length/2],</span>
-<span class="fc" id="L215">            q1);</span>
-<span class="fc" id="L216">        return q1;</span>
+<span class="fc" id="L500">        int q1 = diffs[(int)(diffs.length*.25)];</span>
+        //System.out.printf(&quot;median diff=%d  Q1 diff = %d\n&quot;, diffs[diffs.length/2],
+        //    q1);
+<span class="fc" id="L503">        return q1;</span>
     }
 
 }

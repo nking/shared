@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TextJustification.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.alignment</a> &gt; <span class="el_source">TextJustification.java</span></div><h1>TextJustification.java</h1><pre class="source lang-java linenums">package algorithms.alignment;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+<span class="fc" id="L8">public class TextJustification {</span>
+
+<span class="fc" id="L10">    protected int counter = 0;</span>
+
+
+    /**
+     * given a string of words and a column width, minimize the amount of space added between words where the
+     * number of spaces between words is at least 1.
+     * returns the total number of added spaces and fill output list with the text justified to line lengths &lt;= width.
+     *
+     * @param words list of words to consecutively justify to line lengths &lt;= width
+     * @param width widht of column to place consecutive words and spaces between them
+     * @param output and output array to fill with justified text
+     * @return
+     */
+    public int justify(String[] words, int width, List&lt;String&gt; output) {
+
+<span class="fc" id="L25">        counter = 0;</span>
+
+        //key = wordIdx, value=map with key=position in row, value=penalty
+<span class="fc" id="L28">        Map&lt;Integer, BestSoln&gt; memo = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L29">        List&lt;List&lt;Integer&gt;&gt; rows = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L31">        rows.add(new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L32">        rows.get(0).add(0);</span>
+<span class="fc" id="L33">        int currRSum = words[0].length();</span>
+
+<span class="fc" id="L35">        BestSoln best = recurse(0, 1, 0, currRSum, width, words, rows, memo);</span>
+
+<span class="fc" id="L37">        output.clear();</span>
+        // transform rows into words
+<span class="fc bfc" id="L39" title="All 2 branches covered.">        for (int[] row : best.rows) {</span>
+<span class="fc" id="L40">            StringBuilder sb = new StringBuilder();</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">            for (int i : row) {</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">                if (sb.length() &gt; 0) {</span>
+<span class="fc" id="L43">                    sb.append(&quot; &quot;);</span>
+                }
+<span class="fc" id="L45">                sb.append(words[i]);</span>
+            }
+<span class="fc" id="L47">            output.add(sb.toString());</span>
+        }
+
+<span class="fc" id="L50">        System.out.printf(&quot;nRecursions=%d, words.length=%d\n&quot;, counter, words.length);</span>
+
+<span class="fc" id="L52">        return best.cost;</span>
+    }
+
+    protected BestSoln recurse(int rIdx, int wIdx, int prevPSum, int currRSum, final int width,
+                               String[] words, List&lt;List&lt;Integer&gt;&gt; rows, Map&lt;Integer, BestSoln&gt; memo) {
+<span class="fc" id="L57">        ++counter;</span>
+
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        if (wIdx &gt;= words.length) {</span>
+<span class="fc" id="L60">            return new BestSoln(rows, prevPSum + width - currRSum);</span>
+        }
+
+<span class="fc bfc" id="L63" title="All 2 branches covered.">        if (memo.containsKey(wIdx)) {</span>
+<span class="fc" id="L64">            return memo.get(wIdx);</span>
+        }
+
+<span class="pc bnc" id="L67" title="All 2 branches missed.">        assert(currRSum &gt; 0);</span>
+<span class="fc" id="L68">        String w = words[wIdx];</span>
+<span class="fc" id="L69">        int cost0 = w.length() + 1;</span>
+
+        // add to current row if can
+<span class="fc" id="L72">        BestSoln p0 = new BestSoln(null, Integer.MAX_VALUE);</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        if ((width - (currRSum + cost0)) &gt;= 0) {</span>
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">            if (rows.size() &lt;= rIdx) {</span>
+<span class="nc" id="L75">                rows.add(new ArrayList&lt;&gt;());</span>
+            }
+<span class="fc" id="L77">            rows.get(rIdx).add(wIdx);</span>
+<span class="fc" id="L78">            p0 = recurse(rIdx, wIdx + 1, prevPSum, currRSum + cost0, width, words, rows, memo);</span>
+            // remove wIdx so can use it on p1 recursion:
+<span class="fc" id="L80">            rows.get(rIdx).remove(rows.get(rIdx).size() - 1);</span>
+        }
+
+        // posIdx = 0 for new row
+<span class="fc bfc" id="L84" title="All 2 branches covered.">        if (rows.size() &lt;= rIdx + 1) {</span>
+<span class="fc" id="L85">            rows.add(new ArrayList&lt;&gt;());</span>
+        }
+<span class="fc" id="L87">        rows.get(rIdx + 1).add(wIdx);</span>
+<span class="fc" id="L88">        int prevPSum1 = prevPSum + (width - currRSum);</span>
+<span class="fc" id="L89">        int cost1 = cost0 - 1;</span>
+<span class="fc" id="L90">        BestSoln p1 = recurse(rIdx + 1, wIdx + 1, prevPSum1, cost1, width, words, rows, memo);</span>
+<span class="fc" id="L91">        rows.get(rIdx + 1).remove(rows.get(rIdx + 1).size() - 1);</span>
+
+<span class="fc bfc" id="L93" title="All 2 branches covered.">        if (p0.cost &lt;= p1.cost) {</span>
+<span class="fc" id="L94">            memo.put(wIdx, p0);</span>
+<span class="fc" id="L95">            return p0;</span>
+        } else {
+<span class="fc" id="L97">            memo.put(wIdx, p1);</span>
+<span class="fc" id="L98">            return p1;</span>
+        }
+    }
+
+    protected class BestSoln {
+        int[][] rows;
+        final int cost;
+        public BestSoln(List&lt;List&lt;Integer&gt;&gt; rows, int penalty) {
+            this.cost = penalty;
+            if (rows != null) {
+                this.rows = new int[rows.size()][];
+                for (int i = 0; i &lt; rows.size(); ++i) {
+                    List&lt;Integer&gt; row = rows.get(i);
+                    this.rows[i] = new int[row.size()];
+                    for (int j = 0; j &lt; row.size(); ++j) {
+                        this.rows[i][j] = row.get(j);
+                    }
+                }
+            } else {
+                this.rows = null;
+            }
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

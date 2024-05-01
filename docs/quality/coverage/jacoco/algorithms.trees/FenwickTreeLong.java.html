@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FenwickTreeLong.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.trees</a> &gt; <span class="el_source">FenwickTreeLong.java</span></div><h1>FenwickTreeLong.java</h1><pre class="source lang-java linenums">package algorithms.trees;
+
+import java.util.Arrays;
+
+/**
+ * an update-able datastructure which can be used to hold numbers, given an index for them
+ * that starts at 1.  It's an efficient holder of prefix sums that is update-able in a
+ * runtime complexity of O(log(n)) where n is the number of values it is constructed with.
+ *
+ * If one needs range minimum or maximum queries in an update-able structure for
+ * r.t.c. of O(log(n)), should probably use a sortedtree like TreeSet which is a Red-Blac Tree.
+ *
+ &lt;pre&gt;
+ references:
+ adapted from the YouTube lecture of William Fiset (add reference)
+ and his source code:
+ https://github.com/williamfiset/Algorithms/tree/master/src/main/java/com/williamfiset/algorithms/datastructures/fenwicktree
+ The William Fiset code uses the MIT license:
+ https://github.com/williamfiset/Algorithms/blob/master/LICENSE
+ &lt;/pre&gt;
+ */
+public class FenwickTreeLong {
+
+    // Note, the internal arrays are represented as bit structures.
+    // the first bit, 0, is not used.
+
+    final protected long[] tree;
+    final boolean use0Based;
+
+    /**
+     * constuct a fenwick tree to hold n values.
+     * @param n
+     @param use0Based if true, you are inserting all values in the array and
+      *                  access this FenwickTree using indexes
+      *                  0 through n-1, inclusive where n is the length of the array,
+      *                  else the values array is taken to have an unused 0 as the
+      *                  first element and you will access this FewnwickTree using
+      *                  indexes 1 through n, inclusive.
+     */
+<span class="fc" id="L40">    public FenwickTreeLong(int n, boolean use0Based) {</span>
+<span class="fc" id="L41">        this.tree = new long[n+1];</span>
+<span class="fc" id="L42">        this.use0Based = use0Based;</span>
+<span class="fc" id="L43">    }</span>
+
+    /**
+     * construct a fenwick tree for the given values.
+     * runtime complexity is O(n) where n is values.length.  the space complexity is O(n).
+     * @param values the values to insert into the FenwickTree.
+     * @param use0Based if true, you are inserting all values in the array and
+     *                  access this FenwickTree using indexes
+     *                  0 through n-1, inclusive where n is the length of the array,
+     *                  else the values array is taken to have an unused 0 as the
+     *                  first element and you will access this FewnwickTree using
+     *                  indexes 1 through n, inclusive.
+     */
+<span class="fc" id="L56">    public FenwickTreeLong(long[] values, boolean use0Based) {</span>
+
+<span class="pc bpc" id="L58" title="3 of 4 branches missed.">        if (!use0Based &amp;&amp; (values[0] != 0L)) {</span>
+<span class="nc" id="L59">            throw new IllegalArgumentException(&quot;when use0Based is false, a 0 is expected &quot; +</span>
+                    &quot;as the first element in values&quot;);
+        }
+<span class="fc" id="L62">        this.use0Based = use0Based;</span>
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">        if (use0Based) {</span>
+<span class="fc" id="L64">            this.tree = new long[values.length + 1];</span>
+<span class="fc" id="L65">            System.arraycopy(values, 0, tree, 1, values.length);</span>
+        } else {
+<span class="nc" id="L67">            this.tree = Arrays.copyOf(values, values.length);</span>
+        }
+
+        // add item to immediate cell above
+        int j;
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        for (int i = 1; i &lt; tree.length; ++i) {</span>
+<span class="fc" id="L73">            j = i + lSB(i);</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">            if (j &lt; tree.length) tree[j] += tree[i];</span>
+        }
+<span class="fc" id="L76">    }</span>
+
+    protected int lSB(int idx) {
+<span class="fc" id="L79">        return idx &amp; -idx;</span>
+    }
+
+    protected int getIndex(int idx) {
+<span class="nc bnc" id="L83" title="All 2 branches missed.">        if (use0Based) return idx+1;</span>
+<span class="nc" id="L84">        return idx;</span>
+    }
+
+    private long prefixSum(final int i) {
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">        int idx = use0Based ? i+1: i;</span>
+<span class="fc" id="L89">        long sum = 0L;</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">        while (idx != 0) {</span>
+<span class="fc" id="L91">            sum += tree[idx];</span>
+            // drop the LSB  A = A &amp; (A - 1)
+<span class="fc" id="L93">            idx &amp;= (idx - 1);</span>
+            //idx &amp;= ~lSB(idx); // Equivalently, i -= lsb(i);
+        }
+<span class="fc" id="L96">        return sum;</span>
+    }
+
+
+    // Returns the sum of the interval [leftIdx, rightIdx], O(log(n))
+    public long sum(int leftIdx, int rightIdx) {
+<span class="pc bpc" id="L102" title="1 of 2 branches missed.">        if (rightIdx &lt; leftIdx) throw new IllegalArgumentException(&quot;Make sure rightIdx &gt;= leftIdx&quot;);</span>
+<span class="fc" id="L103">        return prefixSum(rightIdx) - prefixSum(leftIdx - 1);</span>
+    }
+
+    /**
+     * get the value of the tree element at index idx
+     * @param idx tree index
+     * @return
+     */
+    public long get(int idx) {
+<span class="fc" id="L112">        return sum(idx, idx);</span>
+    }
+
+    /**
+     * add v to the element at index idx in the tree.
+     * r.t.c. is O(log(n))
+     * @param idx tree index
+     * @param v value to add to value at tree index idx
+     */
+    public void add(final int idx, long v) {
+<span class="pc bpc" id="L122" title="1 of 2 branches missed.">        int _idx = use0Based ? idx+1: idx;</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">        while (_idx &lt; tree.length) {</span>
+<span class="fc" id="L124">            tree[_idx] += v;</span>
+<span class="fc" id="L125">            _idx += lSB(_idx);</span>
+        }
+<span class="fc" id="L127">    }</span>
+
+    /**
+     * et index idx to be equal to v.
+     * r.t.c. O(log(n))
+     * @param idx index of tree to set value v to
+     * @param v value to set tree element to
+     */
+    public void set(int idx, long v) {
+<span class="fc" id="L136">        add(idx, v - sum(idx, idx));</span>
+<span class="fc" id="L137">    }</span>
+
+    /*
+    min in a range
+    max in a range
+    n elements in range &gt;= a value
+     */
+
+    @Override
+    public String toString() {
+<span class="nc" id="L147">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L148">        sb.append(String.format(&quot;use 0 based indexes = %b&quot;, use0Based));</span>
+<span class="nc" id="L149">        sb.append(String.format(&quot;/ntree=%s\n&quot;,java.util.Arrays.toString(tree)));</span>
+<span class="nc" id="L150">        return sb.toString();</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

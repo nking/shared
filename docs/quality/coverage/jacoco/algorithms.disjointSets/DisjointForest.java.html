@@ -73,26 +73,11 @@ import java.util.Set;
      @return top-most parent in ancestry of x.
      */
     public DisjointSet2Node&lt;T&gt; findSet(DisjointSet2Node&lt;T&gt; x) {
-                
-        // iterative
-<span class="fc bfc" id="L78" title="All 2 branches covered.">        if (!x.equals(x.getParent())) {</span>
-            
-<span class="fc" id="L80">            List&lt;DisjointSet2Node&lt;T&gt;&gt; update = new ArrayList&lt;DisjointSet2Node&lt;T&gt;&gt;();</span>
-            
-<span class="fc" id="L82">            DisjointSet2Node&lt;T&gt; parent = x;</span>
-<span class="fc bfc" id="L83" title="All 2 branches covered.">            while (!parent.equals(parent.getParent())) {</span>
-<span class="fc" id="L84">                update.add(parent);</span>
-<span class="fc" id="L85">                parent = parent.getParent();</span>
-            }
-            
-            // update the nodes with parent
-<span class="fc bfc" id="L89" title="All 2 branches covered.">            for (DisjointSet2Node&lt;T&gt; node : update) {</span>
-<span class="fc" id="L90">                node.setParent(parent);</span>
-<span class="fc" id="L91">            }</span>
- 
+
+<span class="fc bfc" id="L77" title="All 2 branches covered.">        if (!x.equals(x.getParent())) {</span>
+<span class="fc" id="L78">            x.setParent(findSet(x.getParent()));</span>
         }
-        
-<span class="fc" id="L95">        return x.getParent();</span>
+<span class="fc" id="L80">        return x.getParent();</span>
     }
     
     /**
@@ -107,22 +92,22 @@ import java.util.Set;
      */
     private DisjointSet2Node&lt;T&gt; link(DisjointSet2Node&lt;T&gt; x, DisjointSet2Node&lt;T&gt; y) {
         
-<span class="pc bpc" id="L110" title="1 of 2 branches missed.">        if (x.equals(y)) {</span>
-<span class="nc" id="L111">            return x;</span>
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">        if (x.equals(y)) {</span>
+<span class="nc" id="L96">            return x;</span>
         }
         
         DisjointSet2Node&lt;T&gt; parent;
-<span class="fc bfc" id="L115" title="All 2 branches covered.">        if (x.getRank() &gt;= y.getRank()) {</span>
-<span class="fc" id="L116">            parent = x;</span>
-<span class="fc" id="L117">            y.setParent(parent);</span>
-<span class="fc bfc" id="L118" title="All 2 branches covered.">            if (x.getRank() == y.getRank()) {</span>
-<span class="fc" id="L119">                parent.setRank(parent.getRank() + 1);</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">        if (x.getRank() &gt;= y.getRank()) {</span>
+<span class="fc" id="L101">            parent = x;</span>
+<span class="fc" id="L102">            y.setParent(parent);</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">            if (x.getRank() == y.getRank()) {</span>
+<span class="fc" id="L104">                parent.setRank(parent.getRank() + 1);</span>
             }
         } else {
-<span class="fc" id="L122">            parent = y;</span>
-<span class="fc" id="L123">            x.setParent(parent);</span>
+<span class="fc" id="L107">            parent = y;</span>
+<span class="fc" id="L108">            x.setParent(parent);</span>
         }
-<span class="fc" id="L125">        return parent;</span>
+<span class="fc" id="L110">        return parent;</span>
     }
     
     /**
@@ -137,45 +122,44 @@ import java.util.Set;
      */
     private DisjointSet2Node&lt;T&gt; linkChooseY(DisjointSet2Node&lt;T&gt; x, DisjointSet2Node&lt;T&gt; y) {
         
-<span class="nc bnc" id="L140" title="All 2 branches missed.">        if (x.equals(y)) {</span>
-<span class="nc" id="L141">            return y;</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">        if (x.equals(y)) {</span>
+<span class="nc" id="L126">            return y;</span>
         }
         
-<span class="nc" id="L144">        DisjointSet2Node&lt;T&gt; parent = y;</span>
-<span class="nc" id="L145">        x.setParent(parent);</span>
-<span class="nc bnc" id="L146" title="All 2 branches missed.">        if (x.getRank() == y.getRank()) {</span>
-<span class="nc" id="L147">            parent.setRank(parent.getRank() + 1);</span>
+<span class="nc" id="L129">        DisjointSet2Node&lt;T&gt; parent = y;</span>
+<span class="nc" id="L130">        x.setParent(parent);</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">        if (x.getRank() == y.getRank()) {</span>
+<span class="nc" id="L132">            parent.setRank(parent.getRank() + 1);</span>
         }
         
-<span class="nc" id="L150">        return parent;</span>
+<span class="nc" id="L135">        return parent;</span>
     }
     
     private void addToForest(RootedTreeDisjointSet&lt;T&gt; t) {
-<span class="fc" id="L154">        getTrees().put(t.parent, t);</span>
-<span class="fc" id="L155">    }</span>
+<span class="fc" id="L139">        getTrees().put(t.parent, t);</span>
+<span class="fc" id="L140">    }</span>
     private RootedTreeDisjointSet&lt;T&gt; removeTreeFromForest(DisjointSet2Node&lt;T&gt; key) {
-<span class="fc" id="L157">        return getTrees().remove(key.parent);</span>
+<span class="fc" id="L142">        return getTrees().remove(key.parent);</span>
     }
     
     /**
      * append the shorter list onto the end of the longer list.
-     * The amortized runtime complexity is O(1) due to the path compression
-     * in findSet.
-     * The method is also known as &quot;union-find&quot; because it uses findSet 
-     * as the first steps before link.
-     * 
+     * The amortized runtime complexity would be O(1) due to the path compression
+     * in findSet but we are moving nodes between sets so the worse case runtime
+     * complexity is O(n) for this context.
+     *
      @param x disjoint set x
      @param y disjoint set y
      @return the union of x and y
      */
     public DisjointSet2Node&lt;T&gt; union(DisjointSet2Node&lt;T&gt; x, DisjointSet2Node&lt;T&gt; y) {
         
-<span class="fc" id="L173">        x = findSet(x);</span>
+<span class="fc" id="L157">        x = findSet(x);</span>
         
-<span class="fc" id="L175">        y = findSet(y);</span>
+<span class="fc" id="L159">        y = findSet(y);</span>
         
-<span class="pc bpc" id="L177" title="1 of 2 branches missed.">        if (x.equals(y)) {</span>
-<span class="nc" id="L178">            return x;</span>
+<span class="pc bpc" id="L161" title="1 of 2 branches missed.">        if (x.equals(y)) {</span>
+<span class="nc" id="L162">            return x;</span>
         }
         
         /*System.out.println(&quot;\nforest=&quot; + toString());
@@ -183,20 +167,20 @@ import java.util.Set;
         System.out.println(&quot;y=&quot; + y.member + &quot; y.parent=&quot; + y.parent.member);
         System.out.flush();*/
         
-<span class="fc" id="L186">        RootedTreeDisjointSet&lt;T&gt; tX = removeTreeFromForest(x);</span>
-<span class="fc" id="L187">        RootedTreeDisjointSet&lt;T&gt; tY = removeTreeFromForest(y);</span>
+<span class="fc" id="L170">        RootedTreeDisjointSet&lt;T&gt; tX = removeTreeFromForest(x);</span>
+<span class="fc" id="L171">        RootedTreeDisjointSet&lt;T&gt; tY = removeTreeFromForest(y);</span>
         
-<span class="fc" id="L189">        DisjointSet2Node&lt;T&gt; parent = link(x, y);</span>
-        
-<span class="fc bfc" id="L191" title="All 2 branches covered.">        if (tX.nodes.size() &lt;= tY.nodes.size()) {</span>
-<span class="fc" id="L192">            tX.nodes.addAll(tY.nodes);</span>
-<span class="fc" id="L193">            trees.put(parent, tX);</span>
+<span class="fc" id="L173">        DisjointSet2Node&lt;T&gt; parent = link(x, y);</span>
+
+<span class="fc bfc" id="L175" title="All 2 branches covered.">        if (tX.nodes.size() &lt;= tY.nodes.size()) {</span>
+<span class="fc" id="L176">            tX.nodes.addAll(tY.nodes);</span>
+<span class="fc" id="L177">            trees.put(parent, tX);</span>
         } else {
-<span class="fc" id="L195">            tY.nodes.addAll(tX.nodes);</span>
-<span class="fc" id="L196">            trees.put(parent, tY);</span>
+<span class="fc" id="L179">            tY.nodes.addAll(tX.nodes);</span>
+<span class="fc" id="L180">            trees.put(parent, tY);</span>
         }
                 
-<span class="fc" id="L199">        return parent;</span>
+<span class="fc" id="L183">        return parent;</span>
     }
     
     /**
@@ -212,30 +196,30 @@ import java.util.Set;
      */
     public DisjointSet2Node&lt;T&gt; unionChooseY(DisjointSet2Node&lt;T&gt; x, DisjointSet2Node&lt;T&gt; y) {
         
-<span class="nc" id="L215">        x = findSet(x);</span>
+<span class="nc" id="L199">        x = findSet(x);</span>
         
-<span class="nc" id="L217">        y = findSet(y);</span>
+<span class="nc" id="L201">        y = findSet(y);</span>
         
-<span class="nc bnc" id="L219" title="All 2 branches missed.">        if (x.equals(y)) {</span>
-<span class="nc" id="L220">            return y;</span>
+<span class="nc bnc" id="L203" title="All 2 branches missed.">        if (x.equals(y)) {</span>
+<span class="nc" id="L204">            return y;</span>
         }
         
-<span class="nc" id="L223">        RootedTreeDisjointSet&lt;T&gt; tX = removeTreeFromForest(x);</span>
-<span class="nc" id="L224">        RootedTreeDisjointSet&lt;T&gt; tY = removeTreeFromForest(y);</span>
+<span class="nc" id="L207">        RootedTreeDisjointSet&lt;T&gt; tX = removeTreeFromForest(x);</span>
+<span class="nc" id="L208">        RootedTreeDisjointSet&lt;T&gt; tY = removeTreeFromForest(y);</span>
         
-<span class="nc" id="L226">        DisjointSet2Node&lt;T&gt; parent = linkChooseY(x, y);</span>
+<span class="nc" id="L210">        DisjointSet2Node&lt;T&gt; parent = linkChooseY(x, y);</span>
         
-<span class="nc" id="L228">        tY.nodes.addAll(tX.nodes);</span>
-<span class="nc" id="L229">        trees.put(parent, tY);</span>
+<span class="nc" id="L212">        tY.nodes.addAll(tX.nodes);</span>
+<span class="nc" id="L213">        trees.put(parent, tY);</span>
         
-<span class="nc" id="L231">        return parent;</span>
+<span class="nc" id="L215">        return parent;</span>
     }
   
     /**
      @return the trees
      */
     public Map&lt;DisjointSet2Node&lt;T&gt;, RootedTreeDisjointSet&lt;T&gt;&gt; getTrees() {
-<span class="fc" id="L238">        return trees;</span>
+<span class="fc" id="L222">        return trees;</span>
     }
     
     /**
@@ -249,16 +233,16 @@ import java.util.Set;
     public static List&lt;TIntSet&gt; connectedComponents(final SimpleLinkedListNode[] 
         adjList) {
         
-<span class="fc" id="L252">        DisjointForest&lt;Integer&gt; forest = new DisjointForest&lt;&gt;();</span>
+<span class="fc" id="L236">        DisjointForest&lt;Integer&gt; forest = new DisjointForest&lt;&gt;();</span>
         
-<span class="fc" id="L254">        TIntObjectMap&lt;DisjointSet2Node&lt;Integer&gt;&gt; vertexMap = new TIntObjectHashMap&lt;&gt;();</span>
+<span class="fc" id="L238">        TIntObjectMap&lt;DisjointSet2Node&lt;Integer&gt;&gt; vertexMap = new TIntObjectHashMap&lt;&gt;();</span>
         
         DisjointSet2Node&lt;Integer&gt; uVertex;
         
-<span class="fc bfc" id="L258" title="All 2 branches covered.">        for (int u = 0; u &lt; adjList.length; ++u) {</span>
-<span class="fc" id="L259">            uVertex = new DisjointSet2Node&lt;&gt;(u);</span>
-<span class="fc" id="L260">            vertexMap.put(u, uVertex);</span>
-<span class="fc" id="L261">            forest.makeSet(uVertex);</span>
+<span class="fc bfc" id="L242" title="All 2 branches covered.">        for (int u = 0; u &lt; adjList.length; ++u) {</span>
+<span class="fc" id="L243">            uVertex = new DisjointSet2Node&lt;&gt;(u);</span>
+<span class="fc" id="L244">            vertexMap.put(u, uVertex);</span>
+<span class="fc" id="L245">            forest.makeSet(uVertex);</span>
         }
         
         DisjointSet2Node&lt;Integer&gt; vVertex;
@@ -266,84 +250,84 @@ import java.util.Set;
         int u;
         int v;
         SimpleLinkedListNode vNode;
-<span class="fc bfc" id="L269" title="All 2 branches covered.">        for (u = 0; u &lt; adjList.length; ++u) {</span>
+<span class="fc bfc" id="L253" title="All 2 branches covered.">        for (u = 0; u &lt; adjList.length; ++u) {</span>
             
-<span class="fc" id="L271">            uVertex = vertexMap.get(u);</span>
+<span class="fc" id="L255">            uVertex = vertexMap.get(u);</span>
             
-<span class="fc" id="L273">            vNode = adjList[u];</span>
-<span class="fc bfc" id="L274" title="All 4 branches covered.">            while (vNode != null &amp;&amp; vNode.getNumberOfKeys() &gt; 0) {</span>
+<span class="fc" id="L257">            vNode = adjList[u];</span>
+<span class="fc bfc" id="L258" title="All 4 branches covered.">            while (vNode != null &amp;&amp; vNode.getNumberOfKeys() &gt; 0) {</span>
                 
-<span class="fc" id="L276">                v = vNode.getKey();</span>
+<span class="fc" id="L260">                v = vNode.getKey();</span>
                 
-<span class="fc" id="L278">                vVertex = vertexMap.get(v);</span>
+<span class="fc" id="L262">                vVertex = vertexMap.get(v);</span>
                 
-<span class="pc bpc" id="L280" title="1 of 2 branches missed.">                if (vVertex == null) {</span>
-<span class="nc" id="L281">                    continue;</span>
+<span class="pc bpc" id="L264" title="1 of 2 branches missed.">                if (vVertex == null) {</span>
+<span class="nc" id="L265">                    continue;</span>
                 }
                 
-<span class="fc bfc" id="L284" title="All 2 branches covered.">                if (!forest.findSet(uVertex).equals(forest.findSet(vVertex))) {</span>
-<span class="fc" id="L285">                    forest.union(uVertex, vVertex);</span>
+<span class="fc bfc" id="L268" title="All 2 branches covered.">                if (!forest.findSet(uVertex).equals(forest.findSet(vVertex))) {</span>
+<span class="fc" id="L269">                    forest.union(uVertex, vVertex);</span>
                 }
                 
-<span class="fc" id="L288">                vNode = vNode.getNext();</span>
+<span class="fc" id="L272">                vNode = vNode.getNext();</span>
             }
         }
         
-<span class="fc" id="L292">        Map&lt;DisjointSet2Node&lt;Integer&gt;, RootedTreeDisjointSet&lt;Integer&gt;&gt; map = </span>
-<span class="fc" id="L293">            forest.getTrees();</span>
+<span class="fc" id="L276">        Map&lt;DisjointSet2Node&lt;Integer&gt;, RootedTreeDisjointSet&lt;Integer&gt;&gt; map = </span>
+<span class="fc" id="L277">            forest.getTrees();</span>
         
-<span class="fc" id="L295">        List&lt;TIntSet&gt; components = new ArrayList&lt;&gt;(map.size());</span>
+<span class="fc" id="L279">        List&lt;TIntSet&gt; components = new ArrayList&lt;&gt;(map.size());</span>
         
-<span class="fc" id="L297">        Iterator&lt;Entry&lt;DisjointSet2Node&lt;Integer&gt;, RootedTreeDisjointSet&lt;Integer&gt;&gt;&gt; iter =</span>
-<span class="fc" id="L298">            map.entrySet().iterator();</span>
+<span class="fc" id="L281">        Iterator&lt;Entry&lt;DisjointSet2Node&lt;Integer&gt;, RootedTreeDisjointSet&lt;Integer&gt;&gt;&gt; iter =</span>
+<span class="fc" id="L282">            map.entrySet().iterator();</span>
         
-<span class="fc bfc" id="L300" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
-<span class="fc" id="L301">            TIntSet c = new TIntHashSet();</span>
+<span class="fc bfc" id="L284" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L285">            TIntSet c = new TIntHashSet();</span>
             
-<span class="fc" id="L303">            Entry&lt;DisjointSet2Node&lt;Integer&gt;, RootedTreeDisjointSet&lt;Integer&gt;&gt; entry = iter.next();</span>
-<span class="fc" id="L304">            Set&lt;DisjointSet2Node&lt;Integer&gt;&gt; nodes = entry.getValue().nodes;</span>
-<span class="fc bfc" id="L305" title="All 2 branches covered.">            for (DisjointSet2Node&lt;Integer&gt; node : nodes) {</span>
-<span class="fc" id="L306">                c.add(node.member);</span>
-<span class="fc" id="L307">            }</span>
-<span class="fc" id="L308">            components.add(c);</span>
-<span class="fc" id="L309">        }</span>
-<span class="fc" id="L310">        return components;</span>
+<span class="fc" id="L287">            Entry&lt;DisjointSet2Node&lt;Integer&gt;, RootedTreeDisjointSet&lt;Integer&gt;&gt; entry = iter.next();</span>
+<span class="fc" id="L288">            Set&lt;DisjointSet2Node&lt;Integer&gt;&gt; nodes = entry.getValue().nodes;</span>
+<span class="fc bfc" id="L289" title="All 2 branches covered.">            for (DisjointSet2Node&lt;Integer&gt; node : nodes) {</span>
+<span class="fc" id="L290">                c.add(node.member);</span>
+<span class="fc" id="L291">            }</span>
+<span class="fc" id="L292">            components.add(c);</span>
+<span class="fc" id="L293">        }</span>
+<span class="fc" id="L294">        return components;</span>
     }
     
     @Override
     public String toString() {
-<span class="fc" id="L315">        StringBuilder sb = new StringBuilder();</span>
-<span class="fc" id="L316">        sb.append(&quot;trees.size=&quot;);</span>
-<span class="pc bpc" id="L317" title="1 of 2 branches missed.">        if (getTrees() != null) {</span>
-<span class="fc" id="L318">            sb.append(getTrees().size());</span>
+<span class="fc" id="L299">        StringBuilder sb = new StringBuilder();</span>
+<span class="fc" id="L300">        sb.append(&quot;trees.size=&quot;);</span>
+<span class="pc bpc" id="L301" title="1 of 2 branches missed.">        if (getTrees() != null) {</span>
+<span class="fc" id="L302">            sb.append(getTrees().size());</span>
         } else {
-<span class="nc" id="L320">            sb.append(&quot;0&quot;);</span>
+<span class="nc" id="L304">            sb.append(&quot;0&quot;);</span>
         }
-<span class="fc" id="L322">        sb.append(&quot;, [trees=&quot;);</span>
-<span class="pc bpc" id="L323" title="1 of 2 branches missed.">        if (getTrees() != null) {</span>
-<span class="fc" id="L324">            Iterator&lt;Entry&lt;DisjointSet2Node&lt;T&gt;, RootedTreeDisjointSet&lt;T&gt;&gt;&gt; iter </span>
-<span class="fc" id="L325">                = getTrees().entrySet().iterator();</span>
+<span class="fc" id="L306">        sb.append(&quot;, [trees=&quot;);</span>
+<span class="pc bpc" id="L307" title="1 of 2 branches missed.">        if (getTrees() != null) {</span>
+<span class="fc" id="L308">            Iterator&lt;Entry&lt;DisjointSet2Node&lt;T&gt;, RootedTreeDisjointSet&lt;T&gt;&gt;&gt; iter </span>
+<span class="fc" id="L309">                = getTrees().entrySet().iterator();</span>
             Entry&lt;DisjointSet2Node&lt;T&gt;, RootedTreeDisjointSet&lt;T&gt;&gt; entry;
             DisjointSet2Node&lt;T&gt; p;
             RootedTreeDisjointSet&lt;T&gt; t;
-<span class="fc bfc" id="L329" title="All 2 branches covered.">            while (iter.hasNext()) {</span>
-<span class="fc" id="L330">                entry = iter.next();</span>
-<span class="fc" id="L331">                p = entry.getKey();</span>
-<span class="fc" id="L332">                t = entry.getValue();</span>
-<span class="fc" id="L333">                sb.append(&quot;\n tree p=&quot;);</span>
-<span class="pc bpc" id="L334" title="1 of 2 branches missed.">                if (p.member != null) {</span>
-<span class="fc" id="L335">                    sb.append(p.member);</span>
+<span class="fc bfc" id="L313" title="All 2 branches covered.">            while (iter.hasNext()) {</span>
+<span class="fc" id="L314">                entry = iter.next();</span>
+<span class="fc" id="L315">                p = entry.getKey();</span>
+<span class="fc" id="L316">                t = entry.getValue();</span>
+<span class="fc" id="L317">                sb.append(&quot;\n tree p=&quot;);</span>
+<span class="pc bpc" id="L318" title="1 of 2 branches missed.">                if (p.member != null) {</span>
+<span class="fc" id="L319">                    sb.append(p.member);</span>
                 } else {
-<span class="nc" id="L337">                    sb.append(p.hashCode());</span>
+<span class="nc" id="L321">                    sb.append(p.hashCode());</span>
                 }
-<span class="fc" id="L339">                sb.append(&quot;, t=&quot;).append(t.toString());</span>
-<span class="fc" id="L340">                sb.append(&quot;, &quot;);</span>
+<span class="fc" id="L323">                sb.append(&quot;, t=&quot;).append(t.toString());</span>
+<span class="fc" id="L324">                sb.append(&quot;, &quot;);</span>
             }
         }
-<span class="fc" id="L343">        sb.append(&quot;, &quot;);</span>
-<span class="fc" id="L344">        sb.append(&quot;] &quot;);</span>
+<span class="fc" id="L327">        sb.append(&quot;, &quot;);</span>
+<span class="fc" id="L328">        sb.append(&quot;] &quot;);</span>
 
-<span class="fc" id="L346">        return sb.toString();</span>
+<span class="fc" id="L330">        return sb.toString();</span>
     }
 
     /**
@@ -365,6 +349,7 @@ import java.util.Set;
          */
         protected DisjointSet2Node&lt;T&gt; parent = null;
 
+        // adding this makes union O(n) instead of O(1)
         private Set&lt;DisjointSet2Node&lt;T&gt;&gt; nodes = null;
 
         /**

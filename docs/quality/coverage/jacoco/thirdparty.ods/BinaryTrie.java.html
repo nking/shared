@@ -200,7 +200,7 @@ public class BinaryTrie&lt;S extends BinaryTrieNode&lt;T&gt;, T&gt;
 <span class="fc bfc" id="L200" title="All 2 branches covered.">		while (v != null) {</span>
 <span class="fc bfc" id="L201" title="All 4 branches covered.">			if ((v.child[left] == null </span>
 	        	&amp;&amp; (v.jump == null ||
-<span class="pc bpc" id="L203" title="1 of 8 branches missed.">                it.intValue(v.jump.x) &gt; ix))</span>
+<span class="fc bfc" id="L203" title="All 8 branches covered.">                it.intValue(v.jump.x) &gt; ix))</span>
 			|| (v.child[right] == null 
 	    		&amp;&amp; (v.jump == null || 
 <span class="fc bfc" id="L206" title="All 2 branches covered.">                (v.jump.x != null &amp;&amp; it.intValue(v.jump.x) &lt; ix))</span>
@@ -227,8 +227,8 @@ public class BinaryTrie&lt;S extends BinaryTrieNode&lt;T&gt;, T&gt;
     public T find(T x) {
 <span class="fc" id="L228">        int ix = it.intValue(x);</span>
 <span class="fc" id="L229">        T v = findValue(ix);</span>
-<span class="pc bpc" id="L230" title="1 of 2 branches missed.">        if (v == null) {</span>
-<span class="nc" id="L231">            return v;</span>
+<span class="fc bfc" id="L230" title="All 2 branches covered.">        if (v == null) {</span>
+<span class="fc" id="L231">            return v;</span>
 <span class="fc bfc" id="L232" title="All 2 branches covered.">        } else if (it.intValue(v) == ix) {</span>
 <span class="fc" id="L233">            return v;</span>
         }
@@ -258,7 +258,7 @@ public class BinaryTrie&lt;S extends BinaryTrieNode&lt;T&gt;, T&gt;
         } else {
 <span class="fc" id="L259">            u = u.jump.child[next]; </span>
         }
-<span class="pc bpc" id="L261" title="1 of 2 branches missed.">		return u == dummy ? null : u.x;</span>
+<span class="fc bfc" id="L261" title="All 2 branches covered.">		return u == dummy ? null : u.x;</span>
 	}
 
     /**

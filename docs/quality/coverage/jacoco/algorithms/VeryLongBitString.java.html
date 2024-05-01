@@ -31,9 +31,9 @@ import java.util.Arrays;
     protected final long nBits;
     
     /**
-     *
+     * length for signed long positive
      */
-    protected static final long ITEM_BIT_LENGTH = 64L;
+    protected static final long ITEM_BIT_LENGTH = 63;
     
     // the length of an array in java is limited to Integer.MAX_VALUE
 
@@ -100,32 +100,41 @@ import java.util.Arrays;
     public long getCapacity() {
 <span class="fc" id="L101">        return capacityBits;</span>
     }
-    
+
+    public void setAllBits() {
+<span class="fc bfc" id="L105" title="All 2 branches covered.">        for (int i = 0; i &lt; bitstring.length - 1; ++i) {</span>
+<span class="fc" id="L106">            bitstring[i] = (1L &lt;&lt; 63L) - 1;</span>
+        }
+        // handle last row
+<span class="fc" id="L109">        long bitIdx = getBitIdx(nBits, bitstring.length - 1);</span>
+<span class="fc" id="L110">        bitstring[bitstring.length - 1] = (1L &lt;&lt; bitIdx) - 1;</span>
+<span class="fc" id="L111">        nSetBits = nBits;</span>
+<span class="fc" id="L112">    }</span>
     /**
      *
      @param nthBit
      */
     public void setBit(long nthBit) {
-<span class="pc bpc" id="L109" title="1 of 2 branches missed.">        if (nthBit &lt; 0) {</span>
-<span class="nc" id="L110">            throw new IllegalArgumentException(&quot;nthBit must be non-negative&quot;);</span>
+<span class="pc bpc" id="L118" title="1 of 2 branches missed.">        if (nthBit &lt; 0) {</span>
+<span class="nc" id="L119">            throw new IllegalArgumentException(&quot;nthBit must be non-negative&quot;);</span>
         }
 
-<span class="fc" id="L113">        int idx = getRowNumber(nthBit);</span>
+<span class="fc" id="L122">        int idx = getRowNumber(nthBit);</span>
         
-<span class="fc" id="L115">        int bitIdx = getBitIdx(nthBit, idx);</span>
+<span class="fc" id="L124">        int bitIdx = getBitIdx(nthBit, idx);</span>
         
-<span class="pc bnc" id="L117" title="All 2 branches missed.">        assert(bitIdx &lt; 64);</span>
-<span class="pc bnc" id="L118" title="All 2 branches missed.">        assert(bitIdx &gt;= 0);</span>
+<span class="pc bnc" id="L126" title="All 2 branches missed.">        assert(bitIdx &lt; ITEM_BIT_LENGTH);</span>
+<span class="pc bnc" id="L127" title="All 2 branches missed.">        assert(bitIdx &gt;= 0);</span>
         
         // test bit is not set
-<span class="fc bfc" id="L121" title="All 2 branches covered.">        if ((bitstring[idx] &amp; (1L &lt;&lt; bitIdx)) == 0) {</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">        if ((bitstring[idx] &amp; (1L &lt;&lt; bitIdx)) == 0) {</span>
           
             // set bit
-<span class="fc" id="L124">            bitstring[idx] |= (1L &lt;&lt; bitIdx);</span>
+<span class="fc" id="L133">            bitstring[idx] |= (1L &lt;&lt; bitIdx);</span>
                         
-<span class="fc" id="L126">            nSetBits++;</span>
+<span class="fc" id="L135">            nSetBits++;</span>
         }
-<span class="fc" id="L128">    }</span>
+<span class="fc" id="L137">    }</span>
     
     /**
      *
@@ -133,25 +142,25 @@ import java.util.Arrays;
      */
     public void clearBit(long nthBit) {
 
-<span class="pc bpc" id="L136" title="1 of 2 branches missed.">        if (nthBit &lt; 0) {</span>
-<span class="nc" id="L137">            throw new IllegalArgumentException(&quot;nthBit must be non-negative&quot;);</span>
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">        if (nthBit &lt; 0) {</span>
+<span class="nc" id="L146">            throw new IllegalArgumentException(&quot;nthBit must be non-negative&quot;);</span>
         }
 
-<span class="fc" id="L140">        int idx = getRowNumber(nthBit);</span>
-<span class="pc bnc" id="L141" title="All 4 branches missed.">        assert(idx &gt;= 0 &amp;&amp; idx &lt; bitstring.length);</span>
+<span class="fc" id="L149">        int idx = getRowNumber(nthBit);</span>
+<span class="pc bnc" id="L150" title="All 4 branches missed.">        assert(idx &gt;= 0 &amp;&amp; idx &lt; bitstring.length);</span>
         
-<span class="fc" id="L143">        int bitIdx = getBitIdx(nthBit, idx);</span>
-<span class="pc bnc" id="L144" title="All 2 branches missed.">        assert(bitIdx &gt;= 0);</span>
+<span class="fc" id="L152">        int bitIdx = getBitIdx(nthBit, idx);</span>
+<span class="pc bnc" id="L153" title="All 2 branches missed.">        assert(bitIdx &gt;= 0);</span>
         
         // test bit
-<span class="fc bfc" id="L147" title="All 2 branches covered.">        if ((bitstring[idx] &amp; (1L &lt;&lt; bitIdx)) != 0) {</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">        if ((bitstring[idx] &amp; (1L &lt;&lt; bitIdx)) != 0) {</span>
         
             // clear bit
-<span class="fc" id="L150">            bitstring[idx] &amp;= ~(1L &lt;&lt; bitIdx);</span>
+<span class="fc" id="L159">            bitstring[idx] &amp;= ~(1L &lt;&lt; bitIdx);</span>
                         
-<span class="fc" id="L152">            nSetBits--;</span>
+<span class="fc" id="L161">            nSetBits--;</span>
         }
-<span class="fc" id="L154">    }</span>
+<span class="fc" id="L163">    }</span>
     
     /**
      *
@@ -159,37 +168,37 @@ import java.util.Arrays;
      */
     public void toggleBit(long nthBit) {
 
-<span class="fc" id="L162">        int idx = getRowNumber(nthBit);</span>
-<span class="pc bnc" id="L163" title="All 4 branches missed.">        assert(idx &gt;= 0 &amp;&amp; idx &lt; bitstring.length);</span>
+<span class="fc" id="L171">        int idx = getRowNumber(nthBit);</span>
+<span class="pc bnc" id="L172" title="All 4 branches missed.">        assert(idx &gt;= 0 &amp;&amp; idx &lt; bitstring.length);</span>
 
-<span class="fc" id="L165">        int bitIdx = getBitIdx(nthBit, idx);</span>
-<span class="pc bnc" id="L166" title="All 2 branches missed.">        assert(bitIdx &gt;= 0);</span>
+<span class="fc" id="L174">        int bitIdx = getBitIdx(nthBit, idx);</span>
+<span class="pc bnc" id="L175" title="All 2 branches missed.">        assert(bitIdx &gt;= 0);</span>
 
         // replace toggle so can keep track of nSetBits
         //bitstring[idx] ^= (1L &lt;&lt; bitIdx);
         
-<span class="fc bfc" id="L171" title="All 2 branches covered.">        if ((bitstring[idx] &amp; (1L &lt;&lt; bitIdx)) == 0) {</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">        if ((bitstring[idx] &amp; (1L &lt;&lt; bitIdx)) == 0) {</span>
             
             // set bit
-<span class="fc" id="L174">            bitstring[idx] |= (1L &lt;&lt; bitIdx);</span>
+<span class="fc" id="L183">            bitstring[idx] |= (1L &lt;&lt; bitIdx);</span>
             
-<span class="fc" id="L176">            nSetBits++;</span>
+<span class="fc" id="L185">            nSetBits++;</span>
             
         } else {
             
             // clear bit
-<span class="fc" id="L181">            bitstring[idx] &amp;= ~(1L &lt;&lt; bitIdx);</span>
+<span class="fc" id="L190">            bitstring[idx] &amp;= ~(1L &lt;&lt; bitIdx);</span>
             
-<span class="fc" id="L183">            nSetBits--;</span>
+<span class="fc" id="L192">            nSetBits--;</span>
         }
-<span class="fc" id="L185">    }</span>
+<span class="fc" id="L194">    }</span>
     
     /**
      *
      @return
      */
     public long getNSetBits() {
-<span class="nc" id="L192">        return nSetBits;</span>
+<span class="nc" id="L201">        return nSetBits;</span>
     }
     
     /**
@@ -197,7 +206,7 @@ import java.util.Arrays;
      @return
      */
     public long getInstantiatedBitSize() {
-<span class="fc" id="L200">        return nBits;</span>
+<span class="fc" id="L209">        return nBits;</span>
     }
     
     /**
@@ -207,15 +216,15 @@ import java.util.Arrays;
      */
     public boolean isSet(long nthBit) {
 
-<span class="pc bpc" id="L210" title="1 of 2 branches missed.">        if (nthBit &lt; 0) {</span>
-<span class="nc" id="L211">            throw new IllegalArgumentException(&quot;nthBit must be non-negative&quot;);</span>
+<span class="pc bpc" id="L219" title="1 of 2 branches missed.">        if (nthBit &lt; 0) {</span>
+<span class="nc" id="L220">            throw new IllegalArgumentException(&quot;nthBit must be non-negative&quot;);</span>
         }
 
-<span class="fc" id="L214">        int idx = getRowNumber(nthBit);</span>
+<span class="fc" id="L223">        int idx = getRowNumber(nthBit);</span>
         
-<span class="fc" id="L216">        int bitIdx = getBitIdx(nthBit, idx);</span>
+<span class="fc" id="L225">        int bitIdx = getBitIdx(nthBit, idx);</span>
         
-<span class="fc bfc" id="L218" title="All 2 branches covered.">        return ((bitstring[idx] &amp; (1L &lt;&lt; bitIdx)) != 0);</span>
+<span class="fc bfc" id="L227" title="All 2 branches covered.">        return ((bitstring[idx] &amp; (1L &lt;&lt; bitIdx)) != 0);</span>
     }
     
     /**
@@ -224,15 +233,15 @@ import java.util.Arrays;
      @return
      */
     public boolean isNotSet(long nthBit) {
-<span class="pc bpc" id="L227" title="1 of 2 branches missed.">        if (nthBit &lt; 0) {</span>
-<span class="nc" id="L228">            throw new IllegalArgumentException(&quot;nthBit must be non-negative&quot;);</span>
+<span class="pc bpc" id="L236" title="1 of 2 branches missed.">        if (nthBit &lt; 0) {</span>
+<span class="nc" id="L237">            throw new IllegalArgumentException(&quot;nthBit must be non-negative&quot;);</span>
         }
 
-<span class="fc" id="L231">        int idx = getRowNumber(nthBit);</span>
+<span class="fc" id="L240">        int idx = getRowNumber(nthBit);</span>
         
-<span class="fc" id="L233">        int bitIdx = getBitIdx(nthBit, idx);</span>
+<span class="fc" id="L242">        int bitIdx = getBitIdx(nthBit, idx);</span>
         
-<span class="fc bfc" id="L235" title="All 2 branches covered.">        return ((bitstring[idx] &amp; (1L &lt;&lt; bitIdx)) == 0);</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">        return ((bitstring[idx] &amp; (1L &lt;&lt; bitIdx)) == 0);</span>
     }
          
     /**
@@ -242,13 +251,13 @@ import java.util.Arrays;
      */
     protected int getRowNumber(long n) {
 
-<span class="pc bpc" id="L245" title="1 of 2 branches missed.">        if (n &lt; 0) {</span>
-<span class="nc" id="L246">            throw new IllegalArgumentException(&quot;n must be non-negative&quot;);</span>
+<span class="pc bpc" id="L254" title="1 of 2 branches missed.">        if (n &lt; 0) {</span>
+<span class="nc" id="L255">            throw new IllegalArgumentException(&quot;n must be non-negative&quot;);</span>
         }
         
-<span class="fc" id="L249">        int nthElement = (int)(n/ITEM_BIT_LENGTH);</span>
+<span class="fc" id="L258">        int nthElement = (int)(n/ITEM_BIT_LENGTH);</span>
         
-<span class="fc" id="L251">        return nthElement;</span>
+<span class="fc" id="L260">        return nthElement;</span>
     }
     
     /**
@@ -263,13 +272,13 @@ import java.util.Arrays;
      */
     int getBitIdx(long nthBit, int arrayIdx) {
         
-<span class="fc" id="L266">        int bitIdx = (int)(nthBit - (arrayIdx * ITEM_BIT_LENGTH));</span>
+<span class="fc" id="L275">        int bitIdx = (int)(nthBit - (arrayIdx * ITEM_BIT_LENGTH));</span>
         
-<span class="pc bpc" id="L268" title="2 of 4 branches missed.">        if ((bitIdx &lt; 0) || (bitIdx &gt; (ITEM_BIT_LENGTH - 1))) {</span>
-<span class="nc" id="L269">            return -1;</span>
+<span class="pc bpc" id="L277" title="2 of 4 branches missed.">        if ((bitIdx &lt; 0) || (bitIdx &gt; (ITEM_BIT_LENGTH - 1))) {</span>
+<span class="nc" id="L278">            return -1;</span>
         }
         
-<span class="fc" id="L272">        return bitIdx;</span>
+<span class="fc" id="L281">        return bitIdx;</span>
     }
     
     /**
@@ -277,10 +286,10 @@ import java.util.Arrays;
      */
     public void clearAllBits() {
         
-<span class="fc" id="L280">        Arrays.fill(bitstring, 0);</span>
+<span class="fc" id="L289">        Arrays.fill(bitstring, 0);</span>
         
-<span class="fc" id="L282">        nSetBits = 0;</span>
-<span class="fc" id="L283">    }</span>
+<span class="fc" id="L291">        nSetBits = 0;</span>
+<span class="fc" id="L292">    }</span>
     
     /**
      *
@@ -288,10 +297,10 @@ import java.util.Arrays;
      */
     public VeryLongBitString copy() {
         
-<span class="fc" id="L291">        VeryLongBitString c = new VeryLongBitString(bitstring, </span>
+<span class="fc" id="L300">        VeryLongBitString c = new VeryLongBitString(bitstring, </span>
             nBits, nSetBits);
         
-<span class="fc" id="L294">        return c;</span>
+<span class="fc" id="L303">        return c;</span>
     }
     
     /**
@@ -299,13 +308,13 @@ import java.util.Arrays;
      @param other
      */
     public void resetAllTo(VeryLongBitString other) {
-<span class="pc bpc" id="L302" title="1 of 2 branches missed.">        if (other.nBits != nBits) {</span>
-<span class="nc" id="L303">            throw new IllegalArgumentException(&quot;nBits must be the same in both to use this method&quot;);</span>
+<span class="pc bpc" id="L311" title="1 of 2 branches missed.">        if (other.nBits != nBits) {</span>
+<span class="nc" id="L312">            throw new IllegalArgumentException(&quot;nBits must be the same in both to use this method&quot;);</span>
         }
-<span class="fc" id="L305">        System.arraycopy(other.bitstring, 0, bitstring, 0, other.bitstring.length);</span>
+<span class="fc" id="L314">        System.arraycopy(other.bitstring, 0, bitstring, 0, other.bitstring.length);</span>
         
-<span class="fc" id="L307">        this.nSetBits = other.nSetBits;</span>
-<span class="fc" id="L308">    }</span>
+<span class="fc" id="L316">        this.nSetBits = other.nSetBits;</span>
+<span class="fc" id="L317">    }</span>
     
     /**
      * get the '01...' bitstring representation of this object
@@ -313,22 +322,57 @@ import java.util.Arrays;
      */
     @Override
     public String toString() {
-<span class="fc" id="L316">        StringBuilder sb = new StringBuilder();</span>
-<span class="fc bfc" id="L317" title="All 2 branches covered.">        for (int i = (bitstring.length - 1); i &gt; -1 ; i--) {</span>
-<span class="fc" id="L318">            sb.append(Long.toBinaryString(bitstring[i]));</span>
+        /*
+        bit 0 is at bitstring[0] bit 0
+        bit n is at bitstring[bitstring.length-1] bit n % ITEM_LENGTH
+        so reverse array order
+         */
+<span class="fc" id="L330">        StringBuilder sb = new StringBuilder();</span>
+<span class="fc bfc" id="L331" title="All 2 branches covered.">        for (int i = (bitstring.length - 1); i &gt; -1 ; i--) {</span>
+<span class="fc" id="L332">            sb.append(Long.toBinaryString(bitstring[i]));</span>
         }
-<span class="fc" id="L320">        return sb.toString();</span>
+<span class="fc" id="L334">        return sb.toString();</span>
+    }
+
+    /**
+     * appends below the bitstring, 2 arrays to count the bits
+     * @return
+     */
+    public String toStringWithRuler() {
+        /*
+        bit 0 is at bitstring[0] bit 0
+        bit n is at bitstring[bitstring.length-1] bit n % ITEM_LENGTH
+        so reverse array order
+         */
+<span class="fc" id="L347">        StringBuilder sbr1 = new StringBuilder();</span>
+<span class="fc" id="L348">        StringBuilder sbr2 = new StringBuilder();</span>
+<span class="fc" id="L349">        StringBuilder sb = new StringBuilder();</span>
+<span class="fc" id="L350">        long c = nBits - 1;</span>
+<span class="fc bfc" id="L351" title="All 2 branches covered.">        for (int i = (bitstring.length - 1); i &gt; -1 ; i--) {</span>
+<span class="fc" id="L352">            sb.append(Long.toBinaryString(bitstring[i]));</span>
+<span class="pc bpc" id="L353" title="1 of 2 branches missed.">            for (int j = 0; j &lt; ITEM_BIT_LENGTH; ++j,--c) {</span>
+<span class="fc bfc" id="L354" title="All 2 branches covered.">                if (c &lt; 0) break;</span>
+<span class="fc" id="L355">                sbr1.append(c % 10);</span>
+<span class="fc bfc" id="L356" title="All 2 branches covered.">                if (c%10 == 0) {</span>
+<span class="fc" id="L357">                    sbr2.append(c/10);</span>
+                } else {
+<span class="fc" id="L359">                    sbr2.append(&quot; &quot;);</span>
+                }
+            }
+        }
+<span class="fc" id="L363">        sb.append(&quot;\n&quot;).append(sbr1).append(&quot;\n&quot;).append(sbr2);</span>
+<span class="fc" id="L364">        return sb.toString();</span>
     }
     
     /**
      *
      */
     protected void recountNSetBits() {
-<span class="fc" id="L327">        nSetBits = 0;</span>
-<span class="fc bfc" id="L328" title="All 2 branches covered.">        for (int i = 0; i &lt; bitstring.length; ++i) {</span>
-<span class="fc" id="L329">            nSetBits += Long.bitCount(bitstring[i]);</span>
+<span class="fc" id="L371">        nSetBits = 0;</span>
+<span class="fc bfc" id="L372" title="All 2 branches covered.">        for (int i = 0; i &lt; bitstring.length; ++i) {</span>
+<span class="fc" id="L373">            nSetBits += Long.bitCount(bitstring[i]);</span>
         }
-<span class="fc" id="L331">    }</span>
+<span class="fc" id="L375">    }</span>
     
     /**
      * get a list of the bit numbers that are set.
@@ -336,58 +380,58 @@ import java.util.Arrays;
      */
     public int[] getSetBits() {
         
-<span class="fc" id="L339">        int n = 0;</span>
-<span class="fc bfc" id="L340" title="All 2 branches covered.">        for (int i = 0; i &lt; bitstring.length; ++i) {</span>
-<span class="fc" id="L341">            n += Long.bitCount(bitstring[i]);</span>
+<span class="fc" id="L383">        int n = 0;</span>
+<span class="fc bfc" id="L384" title="All 2 branches covered.">        for (int i = 0; i &lt; bitstring.length; ++i) {</span>
+<span class="fc" id="L385">            n += Long.bitCount(bitstring[i]);</span>
         }
-<span class="pc bnc" id="L343" title="All 2 branches missed.">        assert(n == nSetBits);</span>
+<span class="pc bnc" id="L387" title="All 2 branches missed.">        assert(n == nSetBits);</span>
         
-<span class="fc" id="L345">        int[] setBits = new int[n];</span>
-<span class="fc" id="L346">        int n2 = 0;</span>
-<span class="fc bfc" id="L347" title="All 2 branches covered.">        for (int i = 0; i &lt; bitstring.length; ++i) {</span>
-<span class="fc" id="L348">            long b = bitstring[i];</span>
-<span class="fc" id="L349">            int count = 64 * i;</span>
-<span class="fc bfc" id="L350" title="All 2 branches covered.">            while (b != 0) {</span>
-<span class="fc bfc" id="L351" title="All 2 branches covered.">                if ((b &amp; 1L) == 1L) {</span>
-<span class="fc" id="L352">                    setBits[n2] = count;</span>
-<span class="fc" id="L353">                    n2++;</span>
+<span class="fc" id="L389">        int[] setBits = new int[n];</span>
+<span class="fc" id="L390">        int n2 = 0;</span>
+<span class="fc bfc" id="L391" title="All 2 branches covered.">        for (int i = 0; i &lt; bitstring.length; ++i) {</span>
+<span class="fc" id="L392">            long b = bitstring[i];</span>
+<span class="fc" id="L393">            int count = (int)ITEM_BIT_LENGTH * i;</span>
+<span class="fc bfc" id="L394" title="All 2 branches covered.">            while (b != 0) {</span>
+<span class="fc bfc" id="L395" title="All 2 branches covered.">                if ((b &amp; 1L) == 1L) {</span>
+<span class="fc" id="L396">                    setBits[n2] = count;</span>
+<span class="fc" id="L397">                    n2++;</span>
                 }
-<span class="fc" id="L355">                b &gt;&gt;&gt;= 1L;</span>
-<span class="fc" id="L356">                count++;</span>
+<span class="fc" id="L399">                b &gt;&gt;&gt;= 1L;</span>
+<span class="fc" id="L400">                count++;</span>
             }
         }
         
-<span class="pc bnc" id="L360" title="All 2 branches missed.">        assert(n == n2);</span>
+<span class="pc bnc" id="L404" title="All 2 branches missed.">        assert(n == n2);</span>
                 
-<span class="fc" id="L362">        return setBits;</span>
+<span class="fc" id="L406">        return setBits;</span>
     }
 
     @Override
     public boolean equals(Object obj) {
         
-<span class="pc bpc" id="L368" title="1 of 2 branches missed.">        if (!(obj instanceof VeryLongBitString)) {</span>
-<span class="nc" id="L369">            return false;</span>
+<span class="pc bpc" id="L412" title="1 of 2 branches missed.">        if (!(obj instanceof VeryLongBitString)) {</span>
+<span class="nc" id="L413">            return false;</span>
         }
         
-<span class="fc" id="L372">        VeryLongBitString other = (VeryLongBitString)obj;</span>
+<span class="fc" id="L416">        VeryLongBitString other = (VeryLongBitString)obj;</span>
         
-<span class="pc bpc" id="L374" title="1 of 2 branches missed.">        if (nBits != other.nBits) {</span>
-<span class="nc" id="L375">            return false;</span>
+<span class="pc bpc" id="L418" title="1 of 2 branches missed.">        if (nBits != other.nBits) {</span>
+<span class="nc" id="L419">            return false;</span>
         }
         
-<span class="pc bpc" id="L378" title="1 of 2 branches missed.">        if (nSetBits != other.nSetBits) {</span>
-<span class="nc" id="L379">            return false;</span>
+<span class="pc bpc" id="L422" title="1 of 2 branches missed.">        if (nSetBits != other.nSetBits) {</span>
+<span class="nc" id="L423">            return false;</span>
         }
         
-<span class="fc" id="L382">        return Arrays.equals(this.bitstring, other.bitstring);</span>
+<span class="fc" id="L426">        return Arrays.equals(this.bitstring, other.bitstring);</span>
     }    
 
     @Override
     public int hashCode() {
-<span class="nc" id="L387">        int hash = 5;</span>
-<span class="nc" id="L388">        hash = 11 * hash + Arrays.hashCode(this.bitstring);</span>
-<span class="nc" id="L389">        hash = 11 * hash + (int) (this.nBits ^ (this.nBits &gt;&gt;&gt; 32));</span>
-<span class="nc" id="L390">        return hash;</span>
+<span class="nc" id="L431">        int hash = 5;</span>
+<span class="nc" id="L432">        hash = 11 * hash + Arrays.hashCode(this.bitstring);</span>
+<span class="nc" id="L433">        hash = 11 * hash + (int) (this.nBits ^ (this.nBits &gt;&gt;&gt; 32));</span>
+<span class="nc" id="L434">        return hash;</span>
     }
     
     /**
@@ -397,9 +441,9 @@ import java.util.Arrays;
      */
     protected long approximateMemoryUsed_Stack() {
        
-<span class="nc" id="L400">        String arch = System.getProperty(&quot;sun.arch.data.model&quot;);</span>
-<span class="nc bnc" id="L401" title="All 4 branches missed.">        boolean is32Bit = ((arch != null) &amp;&amp; arch.equals(&quot;64&quot;)) ? false : true;</span>
-<span class="nc bnc" id="L402" title="All 2 branches missed.">        int nbits = (is32Bit) ? 32 : 64;</span>
+<span class="nc" id="L444">        String arch = System.getProperty(&quot;sun.arch.data.model&quot;);</span>
+<span class="nc bnc" id="L445" title="All 4 branches missed.">        boolean is32Bit = ((arch != null) &amp;&amp; arch.equals(&quot;64&quot;)) ? false : true;</span>
+<span class="nc bnc" id="L446" title="All 2 branches missed.">        int nbits = (is32Bit) ? 32 : 64;</span>
         
         /*
         instance contains members:
@@ -415,14 +459,14 @@ import java.util.Arrays;
         
         //TODO: should update this one day soon...
         
-<span class="nc" id="L418">        long sumBits = 3*(nbits*2) + 32;</span>
+<span class="nc" id="L462">        long sumBits = 3*(nbits*2) + 32;</span>
         
-<span class="nc" id="L420">        long sumBytes = (sumBits/8);</span>
-<span class="nc bnc" id="L421" title="All 2 branches missed.">        if (sumBytes*8 &gt; sumBits) {</span>
-<span class="nc" id="L422">            sumBytes++;</span>
+<span class="nc" id="L464">        long sumBytes = (sumBits/8);</span>
+<span class="nc bnc" id="L465" title="All 2 branches missed.">        if (sumBytes*8 &gt; sumBits) {</span>
+<span class="nc" id="L466">            sumBytes++;</span>
         }
         
-<span class="nc" id="L425">        return sumBytes;</span>
+<span class="nc" id="L469">        return sumBytes;</span>
     }
     
     /**
@@ -442,18 +486,18 @@ import java.util.Arrays;
            sum of each item in the long array  (a long is 2*word size)
         */
         
-<span class="nc" id="L445">        String arch = System.getProperty(&quot;sun.arch.data.model&quot;);</span>
-<span class="nc bnc" id="L446" title="All 4 branches missed.">        boolean is32Bit = ((arch != null) &amp;&amp; arch.equals(&quot;64&quot;)) ? false : true;</span>
-<span class="nc bnc" id="L447" title="All 2 branches missed.">        int nbits = (is32Bit) ? 32 : 64;</span>
+<span class="nc" id="L489">        String arch = System.getProperty(&quot;sun.arch.data.model&quot;);</span>
+<span class="nc bnc" id="L490" title="All 4 branches missed.">        boolean is32Bit = ((arch != null) &amp;&amp; arch.equals(&quot;64&quot;)) ? false : true;</span>
+<span class="nc bnc" id="L491" title="All 2 branches missed.">        int nbits = (is32Bit) ? 32 : 64;</span>
         
-<span class="nc" id="L449">        long sumBytes = 16;</span>
-<span class="nc bnc" id="L450" title="All 2 branches missed.">        if (bitstring != null) {</span>
-<span class="nc" id="L451">            sumBytes += bitstring.length * (2 * nbits);</span>
+<span class="nc" id="L493">        long sumBytes = 16;</span>
+<span class="nc bnc" id="L494" title="All 2 branches missed.">        if (bitstring != null) {</span>
+<span class="nc" id="L495">            sumBytes += bitstring.length * (2 * nbits);</span>
         }
-<span class="nc" id="L453">        long padding = (sumBytes % 8);</span>
-<span class="nc" id="L454">        sumBytes += padding;</span>
+<span class="nc" id="L497">        long padding = (sumBytes % 8);</span>
+<span class="nc" id="L498">        sumBytes += padding;</span>
         
-<span class="nc" id="L456">        return sumBytes;</span>
+<span class="nc" id="L500">        return sumBytes;</span>
     }
 
     /**
@@ -466,28 +510,28 @@ import java.util.Arrays;
                 
         VeryLongBitString out;
         
-<span class="pc bpc" id="L469" title="3 of 4 branches missed.">        if (nBits == otherBS.nBits || (nBits &gt; otherBS.nBits)) {</span>
+<span class="pc bpc" id="L513" title="3 of 4 branches missed.">        if (nBits == otherBS.nBits || (nBits &gt; otherBS.nBits)) {</span>
             
-<span class="fc" id="L471">            out = copy();</span>
+<span class="fc" id="L515">            out = copy();</span>
             
-<span class="fc bfc" id="L473" title="All 2 branches covered.">            for (int i = 0; i &lt; otherBS.bitstring.length; ++i) {</span>
-<span class="fc" id="L474">                long bs = otherBS.bitstring[i];</span>
-<span class="fc" id="L475">                out.bitstring[i] &amp;= bs;</span>
+<span class="fc bfc" id="L517" title="All 2 branches covered.">            for (int i = 0; i &lt; otherBS.bitstring.length; ++i) {</span>
+<span class="fc" id="L518">                long bs = otherBS.bitstring[i];</span>
+<span class="fc" id="L519">                out.bitstring[i] &amp;= bs;</span>
             }
             
         } else { //if (nBits &lt; otherBS.nBits) {
             
-<span class="nc" id="L480">            out = otherBS.copy();</span>
+<span class="nc" id="L524">            out = otherBS.copy();</span>
             
-<span class="nc bnc" id="L482" title="All 2 branches missed.">            for (int i = 0; i &lt; bitstring.length; ++i) {</span>
-<span class="nc" id="L483">                long bs = bitstring[i];</span>
-<span class="nc" id="L484">                out.bitstring[i] &amp;= bs;</span>
+<span class="nc bnc" id="L526" title="All 2 branches missed.">            for (int i = 0; i &lt; bitstring.length; ++i) {</span>
+<span class="nc" id="L527">                long bs = bitstring[i];</span>
+<span class="nc" id="L528">                out.bitstring[i] &amp;= bs;</span>
             }
         }
         
-<span class="fc" id="L488">        out.recountNSetBits();</span>
+<span class="fc" id="L532">        out.recountNSetBits();</span>
         
-<span class="fc" id="L490">        return out;</span>
+<span class="fc" id="L534">        return out;</span>
     }
 
     /**
@@ -499,24 +543,24 @@ import java.util.Arrays;
      */
     public long nBitsDifferent(VeryLongBitString otherBS) {
         
-<span class="nc bnc" id="L502" title="All 2 branches missed.">        if (nBits != otherBS.nBits) {</span>
-<span class="nc" id="L503">            throw new IllegalArgumentException(&quot;otherBS must have same&quot;</span>
+<span class="nc bnc" id="L546" title="All 2 branches missed.">        if (nBits != otherBS.nBits) {</span>
+<span class="nc" id="L547">            throw new IllegalArgumentException(&quot;otherBS must have same&quot;</span>
                 + &quot; number of bits&quot;);
         }        
         
-<span class="nc" id="L507">        long nDiff = 0;</span>
+<span class="nc" id="L551">        long nDiff = 0;</span>
         
-<span class="nc bnc" id="L509" title="All 2 branches missed.">        for (int i = 0; i &lt; otherBS.bitstring.length; ++i) {</span>
+<span class="nc bnc" id="L553" title="All 2 branches missed.">        for (int i = 0; i &lt; otherBS.bitstring.length; ++i) {</span>
             
-<span class="nc" id="L511">            long bs = otherBS.bitstring[i];</span>
-<span class="nc" id="L512">            long tbs = bitstring[i];</span>
+<span class="nc" id="L555">            long bs = otherBS.bitstring[i];</span>
+<span class="nc" id="L556">            long tbs = bitstring[i];</span>
             
             // xor gives the  different bits
-<span class="nc" id="L515">            long diff = bs ^ tbs;</span>
-<span class="nc" id="L516">            nDiff += Long.bitCount(diff);</span>
+<span class="nc" id="L559">            long diff = bs ^ tbs;</span>
+<span class="nc" id="L560">            nDiff += Long.bitCount(diff);</span>
         }
         
-<span class="nc" id="L519">        return nDiff;</span>
+<span class="nc" id="L563">        return nDiff;</span>
     }
     
     /**
@@ -529,28 +573,28 @@ import java.util.Arrays;
                 
         VeryLongBitString out;
         
-<span class="pc bpc" id="L532" title="3 of 4 branches missed.">        if (nBits == otherBS.nBits || (nBits &gt; otherBS.nBits)) {</span>
+<span class="pc bpc" id="L576" title="3 of 4 branches missed.">        if (nBits == otherBS.nBits || (nBits &gt; otherBS.nBits)) {</span>
             
-<span class="fc" id="L534">            out = copy();</span>
+<span class="fc" id="L578">            out = copy();</span>
             
-<span class="fc bfc" id="L536" title="All 2 branches covered.">            for (int i = 0; i &lt; otherBS.bitstring.length; ++i) {</span>
-<span class="fc" id="L537">                long bs = otherBS.bitstring[i];</span>
-<span class="fc" id="L538">                out.bitstring[i] |= bs;</span>
+<span class="fc bfc" id="L580" title="All 2 branches covered.">            for (int i = 0; i &lt; otherBS.bitstring.length; ++i) {</span>
+<span class="fc" id="L581">                long bs = otherBS.bitstring[i];</span>
+<span class="fc" id="L582">                out.bitstring[i] |= bs;</span>
             }
             
         } else { //if (nBits &lt; otherBS.nBits) {
             
-<span class="nc" id="L543">            out = otherBS.copy();</span>
+<span class="nc" id="L587">            out = otherBS.copy();</span>
             
-<span class="nc bnc" id="L545" title="All 2 branches missed.">            for (int i = 0; i &lt; bitstring.length; ++i) {</span>
-<span class="nc" id="L546">                long bs = bitstring[i];</span>
-<span class="nc" id="L547">                out.bitstring[i] |= bs;</span>
+<span class="nc bnc" id="L589" title="All 2 branches missed.">            for (int i = 0; i &lt; bitstring.length; ++i) {</span>
+<span class="nc" id="L590">                long bs = bitstring[i];</span>
+<span class="nc" id="L591">                out.bitstring[i] |= bs;</span>
             }
         }
         
-<span class="fc" id="L551">        out.recountNSetBits();</span>
+<span class="fc" id="L595">        out.recountNSetBits();</span>
         
-<span class="fc" id="L553">        return out;</span>
+<span class="fc" id="L597">        return out;</span>
     }
     
     /**
@@ -563,28 +607,28 @@ import java.util.Arrays;
                 
         VeryLongBitString out;
         
-<span class="nc bnc" id="L566" title="All 4 branches missed.">        if (nBits == otherBS.nBits || (nBits &gt; otherBS.nBits)) {</span>
+<span class="nc bnc" id="L610" title="All 4 branches missed.">        if (nBits == otherBS.nBits || (nBits &gt; otherBS.nBits)) {</span>
             
-<span class="nc" id="L568">            out = copy();</span>
+<span class="nc" id="L612">            out = copy();</span>
             
-<span class="nc bnc" id="L570" title="All 2 branches missed.">            for (int i = 0; i &lt; otherBS.bitstring.length; ++i) {</span>
-<span class="nc" id="L571">                long bs = otherBS.bitstring[i];</span>
-<span class="nc" id="L572">                out.bitstring[i] ^= bs;</span>
+<span class="nc bnc" id="L614" title="All 2 branches missed.">            for (int i = 0; i &lt; otherBS.bitstring.length; ++i) {</span>
+<span class="nc" id="L615">                long bs = otherBS.bitstring[i];</span>
+<span class="nc" id="L616">                out.bitstring[i] ^= bs;</span>
             }
             
         } else { //if (nBits &lt; otherBS.nBits) {
             
-<span class="nc" id="L577">            out = otherBS.copy();</span>
+<span class="nc" id="L621">            out = otherBS.copy();</span>
             
-<span class="nc bnc" id="L579" title="All 2 branches missed.">            for (int i = 0; i &lt; bitstring.length; ++i) {</span>
-<span class="nc" id="L580">                long bs = bitstring[i];</span>
-<span class="nc" id="L581">                out.bitstring[i] ^= bs;</span>
+<span class="nc bnc" id="L623" title="All 2 branches missed.">            for (int i = 0; i &lt; bitstring.length; ++i) {</span>
+<span class="nc" id="L624">                long bs = bitstring[i];</span>
+<span class="nc" id="L625">                out.bitstring[i] ^= bs;</span>
             }
         }
         
-<span class="nc" id="L585">        out.recountNSetBits();</span>
+<span class="nc" id="L629">        out.recountNSetBits();</span>
         
-<span class="nc" id="L587">        return out;</span>
+<span class="nc" id="L631">        return out;</span>
     }
 
     /**
@@ -596,32 +640,32 @@ import java.util.Arrays;
      */
     public VeryLongBitString difference(VeryLongBitString otherBS) {
                 
-<span class="fc" id="L599">        VeryLongBitString out = copy();</span>
+<span class="fc" id="L643">        VeryLongBitString out = copy();</span>
         
-<span class="pc bpc" id="L601" title="3 of 4 branches missed.">        if (nBits == otherBS.nBits || (nBits &gt; otherBS.nBits)) {</span>
+<span class="pc bpc" id="L645" title="3 of 4 branches missed.">        if (nBits == otherBS.nBits || (nBits &gt; otherBS.nBits)) {</span>
                         
-<span class="fc bfc" id="L603" title="All 2 branches covered.">            for (int i = 0; i &lt; otherBS.bitstring.length; ++i) {</span>
-<span class="fc" id="L604">                long bs = otherBS.bitstring[i];</span>
-<span class="fc" id="L605">                long intersection = out.bitstring[i] &amp; bs;</span>
+<span class="fc bfc" id="L647" title="All 2 branches covered.">            for (int i = 0; i &lt; otherBS.bitstring.length; ++i) {</span>
+<span class="fc" id="L648">                long bs = otherBS.bitstring[i];</span>
+<span class="fc" id="L649">                long intersection = out.bitstring[i] &amp; bs;</span>
                 // clear the intersection bits 
-<span class="fc" id="L607">                out.bitstring[i] &amp;= ~intersection;</span>
+<span class="fc" id="L651">                out.bitstring[i] &amp;= ~intersection;</span>
             }
             
         } else { //if (nBits &lt; otherBS.nBits) {
             
-<span class="nc" id="L612">            out = otherBS.copy();</span>
+<span class="nc" id="L656">            out = otherBS.copy();</span>
             
-<span class="nc bnc" id="L614" title="All 2 branches missed.">            for (int i = 0; i &lt; bitstring.length; ++i) {</span>
-<span class="nc" id="L615">                long bs = bitstring[i];</span>
-<span class="nc" id="L616">                long intersection = out.bitstring[i] &amp; bs;</span>
-                // clear the intersection bits 
-<span class="nc" id="L618">                out.bitstring[i] &amp;= ~intersection;</span>
+<span class="nc bnc" id="L658" title="All 2 branches missed.">            for (int i = 0; i &lt; bitstring.length; ++i) {</span>
+<span class="nc" id="L659">                long bs = bitstring[i];</span>
+<span class="nc" id="L660">                long intersection = out.bitstring[i] &amp; bs;</span>
+                // clear the intersection bits
+<span class="nc" id="L662">                out.bitstring[i] &amp;= ~intersection;</span>
             }
         }
         
-<span class="fc" id="L622">        out.recountNSetBits();</span>
+<span class="fc" id="L666">        out.recountNSetBits();</span>
         
-<span class="fc" id="L624">        return out;</span>
+<span class="fc" id="L668">        return out;</span>
     }
 
     /**
@@ -634,19 +678,20 @@ import java.util.Arrays;
     public static VeryLongBitString subtract(VeryLongBitString bs1,
         VeryLongBitString bs2) {
         
-<span class="nc bnc" id="L637" title="All 2 branches missed.">        if (bs1.nBits != bs2.nBits) {</span>
-<span class="nc" id="L638">            throw new IllegalArgumentException(&quot;bs1 and bs2 must be same lengths&quot;);</span>
+<span class="nc bnc" id="L681" title="All 2 branches missed.">        if (bs1.nBits != bs2.nBits) {</span>
+<span class="nc" id="L682">            throw new IllegalArgumentException(&quot;bs1 and bs2 must be same lengths&quot;);</span>
         }
                 
-<span class="nc" id="L641">        VeryLongBitString out = bs1.copy();</span>
+<span class="nc" id="L685">        VeryLongBitString out = bs1.copy();</span>
                                 
-<span class="nc bnc" id="L643" title="All 2 branches missed.">        for (int i = 0; i &lt; bs2.bitstring.length; ++i) {</span>
-<span class="nc" id="L644">            out.bitstring[i] &amp;= ~bs2.bitstring[i];</span>
+<span class="nc bnc" id="L687" title="All 2 branches missed.">        for (int i = 0; i &lt; bs2.bitstring.length; ++i) {</span>
+            // set subtraction is A &amp; ~B
+<span class="nc" id="L689">            out.bitstring[i] &amp;= ~bs2.bitstring[i];</span>
         }
             
-<span class="nc" id="L647">        out.recountNSetBits();</span>
+<span class="nc" id="L692">        out.recountNSetBits();</span>
         
-<span class="nc" id="L649">        return out;</span>
+<span class="nc" id="L694">        return out;</span>
     }
 
     /**
@@ -656,100 +701,106 @@ import java.util.Arrays;
      */
     public int nextHighestBitSet(int nthBit) {
         
-<span class="pc bpc" id="L659" title="1 of 2 branches missed.">        if (nthBit &gt; nBits) {</span>
-<span class="nc" id="L660">            throw new IllegalArgumentException(&quot;bit must be &lt; &quot; + nBits);</span>
+<span class="pc bpc" id="L704" title="1 of 2 branches missed.">        if (nthBit &gt; nBits) {</span>
+<span class="nc" id="L705">            throw new IllegalArgumentException(&quot;bit must be &lt; &quot; + nBits);</span>
         }
-<span class="pc bpc" id="L662" title="1 of 2 branches missed.">        if (nthBit &lt; 0) {</span>
-<span class="nc" id="L663">            throw new IllegalArgumentException(&quot;bit must be &gt;= 0&quot;);</span>
-        }
-        
-<span class="fc" id="L666">        int idx = getRowNumber(nthBit);</span>
-        
-<span class="fc" id="L668">        int bitIdx = getBitIdx(nthBit, idx);</span>
-        
-        // nthBit is last item on idx array, increment idx
-<span class="fc bfc" id="L671" title="All 2 branches covered.">        if (nthBit == (((idx + 1) * ITEM_BIT_LENGTH) - 1)) {</span>
-<span class="fc" id="L672">            idx++;</span>
+<span class="pc bpc" id="L707" title="1 of 2 branches missed.">        if (nthBit &lt; 0) {</span>
+<span class="nc" id="L708">            throw new IllegalArgumentException(&quot;bit must be &gt;= 0&quot;);</span>
         }
         
-<span class="pc bpc" id="L675" title="1 of 2 branches missed.">        for (int i = idx; i &lt; bitstring.length; ++i) {</span>
-            
-<span class="fc" id="L677">            long b = bitstring[i];</span>
-            
-<span class="pc bpc" id="L679" title="1 of 2 branches missed.">            if (i == idx) {                </span>
-<span class="fc" id="L680">                long shift = bitIdx + 1;</span>
-<span class="fc" id="L681">                b &gt;&gt;= shift;</span>
-<span class="fc" id="L682">                b &lt;&lt;= shift;</span>
-            }
+<span class="fc" id="L711">        int idx = getRowNumber(nthBit);</span>
+        
+<span class="fc" id="L713">        int bitIdx = getBitIdx(nthBit, idx);</span>
+        
+        // nthBit is last item on idx array, so start looking at next row, bit 0
+<span class="fc bfc" id="L716" title="All 2 branches covered.">        if (bitIdx == ((int)ITEM_BIT_LENGTH - 1)) {</span>
+<span class="fc" id="L717">            idx++;</span>
+<span class="fc" id="L718">            bitIdx = 0;</span>
+        } else {
+<span class="fc" id="L720">            ++bitIdx;</span>
+        }
 
-            // same as v &amp; -v, but might be using native method:
-<span class="fc" id="L686">            long l = Long.lowestOneBit(b);</span>
-            
-<span class="pc bpc" id="L688" title="1 of 2 branches missed.">            if (l != 0) { </span>
-                
-<span class="fc" id="L690">                int bn = 63 - Long.numberOfLeadingZeros(l);</span>
-                
-                // bn is bit position within row i
-                
-<span class="fc" id="L694">                return (int)((i * ITEM_BIT_LENGTH) + bn);                  </span>
+<span class="fc bfc" id="L723" title="All 2 branches covered.">        if (bitIdx &gt; 0) {</span>
+            // check the same array element for the next higher set bit
+<span class="fc" id="L725">            long b = bitstring[idx];</span>
+            // mask out bits below bitIdx
+<span class="fc" id="L727">            long mask = Long.MAX_VALUE &gt;&gt; (bitIdx - 0);</span>
+<span class="fc" id="L728">            mask &lt;&lt;= (bitIdx - 0);</span>
+<span class="fc" id="L729">            b &amp;= mask;</span>
+
+<span class="pc bpc" id="L731" title="1 of 2 branches missed.">            if (b == 0) {</span>
+<span class="nc" id="L732">                idx++;</span>
+<span class="nc" id="L733">                bitIdx = 0;</span>
+            } else {
+<span class="fc" id="L735">                long lsbNumber = b &amp; -b;</span>
+<span class="fc" id="L736">                int lsb = (int)(Math.log(lsbNumber) / Math.log(2));</span>
+                // transform back to bit number
+<span class="fc" id="L738">                int nextBit = (idx * (int)ITEM_BIT_LENGTH) + lsb;</span>
+<span class="fc" id="L739">                return nextBit;</span>
             }
         }
+
+<span class="pc bpc" id="L743" title="1 of 2 branches missed.">        for (int i = idx; i &lt; bitstring.length; ++i) {</span>
+            
+<span class="fc" id="L745">            long b = bitstring[i];</span>
+
+<span class="pc bpc" id="L747" title="1 of 2 branches missed.">            if (b == 0) continue;</span>
+
+<span class="fc" id="L749">            long lsbNumber = b &amp; -b;</span>
+<span class="fc" id="L750">            int lsb = (int)(Math.log(lsbNumber) / Math.log(2));</span>
+            // transform back to bit number
+<span class="fc" id="L752">            int nextBit = (idx * (int)ITEM_BIT_LENGTH) + lsb;</span>
+<span class="fc" id="L753">            return nextBit;</span>
+        }
         
-<span class="nc" id="L698">        return -1;</span>
-        
+<span class="nc" id="L756">        return -1;</span>
     }
     
     /**
-     * returns the index of the lowest bit set (&quot;rightmost), else -1 if no bits are set.
+     * returns the index of the lowest bit set (&quot;rightmost&quot;, LSB), else -1 if no bits are set.
      @return the index of the lowest (rightmost) bit set, else -1 if no bits are set.
      */
     public int leastBitSet() {
         
-<span class="pc bpc" id="L708" title="1 of 2 branches missed.">        for (int i = 0; i &lt; bitstring.length; ++i) {</span>
-<span class="fc" id="L709">            long b = bitstring[i];</span>
+<span class="pc bpc" id="L765" title="1 of 2 branches missed.">        for (int i = 0; i &lt; bitstring.length; ++i) {</span>
+<span class="fc" id="L766">            long b = bitstring[i];</span>
+<span class="pc bpc" id="L767" title="1 of 2 branches missed.">            if (b == 0) continue;</span>
                 
-            // same as v &amp; -v, but might be using native method:
-<span class="fc" id="L712">            long l = Long.lowestOneBit(b);</span>
-               
-<span class="pc bpc" id="L714" title="1 of 2 branches missed.">            if (l &gt; 0) {</span>
-                
-<span class="fc" id="L716">                int bn = 63 - Long.numberOfLeadingZeros(l);</span>
-                
-                // bn is bit position within row i
-                
-<span class="fc" id="L720">                int bitIdx = (int)((i * ITEM_BIT_LENGTH) + bn);</span>
-                
-<span class="fc" id="L722">                return bitIdx;</span>
-            }
+<span class="fc" id="L769">            long l = b &amp; -b;</span>
+<span class="fc" id="L770">            int lsb = (int)(Math.log(l) / Math.log(2));</span>
+            // transform back to bit number
+<span class="fc" id="L772">            int nextBit = (i * (int)ITEM_BIT_LENGTH) + lsb;</span>
+<span class="fc" id="L773">            return nextBit;</span>
         }
         
-<span class="nc" id="L726">        return -1;</span>
+<span class="nc" id="L776">        return -1;</span>
     }
     
     /**
-     * returns the index of the highest bit set (&quot;leftmost&quot;), else -1 if no bits are set.
+     * returns the index of the highest bit set (&quot;leftmost&quot;, MSB), else -1 if no bits are set.
      @return the index of the highest bit set (leftmost) else -1 if no bits are set.
      */
     public int highestBitSet() {
         
-<span class="pc bpc" id="L735" title="1 of 2 branches missed.">        for (int i = (bitstring.length - 1); i &gt; -1; --i) {</span>
-<span class="fc" id="L736">            long b = bitstring[i];</span>
+<span class="pc bpc" id="L785" title="1 of 2 branches missed.">        for (int i = (bitstring.length - 1); i &gt; -1; --i) {</span>
+<span class="fc" id="L786">            long b = bitstring[i];</span>
+<span class="fc bfc" id="L787" title="All 2 branches covered.">            if (b == 0) continue;</span>
                 
-<span class="fc" id="L738">            long l = Long.highestOneBit(b);</span>
+<span class="fc" id="L789">            long l = Long.highestOneBit(b);</span>
                
-<span class="fc bfc" id="L740" title="All 2 branches covered.">            if (l &gt; 0) {</span>
+<span class="pc bpc" id="L791" title="1 of 2 branches missed.">            if (l &gt; 0) {</span>
              
-<span class="fc" id="L742">                int bn = 63 - Long.numberOfLeadingZeros(l);</span>
+<span class="fc" id="L793">                int bn = 63 - Long.numberOfLeadingZeros(l);</span>
                 
                 // bn is bit position within row i
                 
-<span class="fc" id="L746">                int bitIdx = (int)((i * ITEM_BIT_LENGTH) + bn);</span>
+<span class="fc" id="L797">                int bitIdx = (int)((i * ITEM_BIT_LENGTH) + bn);</span>
                 
-<span class="fc" id="L748">                return bitIdx;</span>
+<span class="fc" id="L799">                return bitIdx;</span>
             }
         }
         
-<span class="nc" id="L752">        return -1;</span>
+<span class="nc" id="L803">        return -1;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

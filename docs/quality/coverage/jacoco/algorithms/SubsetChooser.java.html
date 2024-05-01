@@ -119,7 +119,7 @@ public class SubsetChooser {
 
 <span class="fc" id="L120">        count = 1;</span>
 
-        // n!/(k!(n-k)!)
+        // n!/(k!(n-k)!).  r.t.c. is O(k)
 <span class="fc" id="L123">        np = MiscMath0.computeNDivKTimesNMinusK(n, k);</span>
 
 <span class="fc bfc" id="L125" title="All 2 branches covered.">        if (n &lt; 64) {</span>
@@ -242,13 +242,16 @@ public class SubsetChooser {
     private long nextSubset64(long x0) {
 
 <span class="fc" id="L244">        long y = x0 &amp; -x0;  // = the least significant one bit of x0</span>
-<span class="fc" id="L245">        long c = x0 + y;</span>
+<span class="fc" id="L245">        long c = x0 + y; // set the next 0 bit that is higher than y</span>
 
-<span class="fc" id="L247">        x0 = c + (((c ^ x0) / y) &gt;&gt; 2);</span>
+        // c^x0 isolates all the bits from y to c as all 1s.
+        // y is a power of 2, so (c ^ x0)/y down shifts (c ^ x0) by LSB(x0).
+        // then &gt;&gt;2 down shifts twice more to get the pattern to add to c
+<span class="fc" id="L250">        x0 = c + (((c ^ x0) / y) &gt;&gt; 2);</span>
 
-<span class="fc" id="L249">        count++;</span>
+<span class="fc" id="L252">        count++;</span>
 
-<span class="fc" id="L251">        return x0;</span>
+<span class="fc" id="L254">        return x0;</span>
     }
 
     /**
@@ -257,17 +260,17 @@ public class SubsetChooser {
      */
     private BigInteger nextSubsetBigInteger(BigInteger x0) {
 
-<span class="fc" id="L260">        BigInteger y = x0.and(x0.negate()); // = the least significant one bit of x</span>
-<span class="fc" id="L261">        BigInteger c = x0.add(y);</span>
+<span class="fc" id="L263">        BigInteger y = x0.and(x0.negate()); // = the least significant one bit of x</span>
+<span class="fc" id="L264">        BigInteger c = x0.add(y);</span>
         
         //x0 = c + (((c ^ x0) / y) &gt;&gt; 2);
-<span class="fc" id="L264">        BigInteger tmp = c.xor(x0).divide(y).shiftRight(2);</span>
+<span class="fc" id="L267">        BigInteger tmp = c.xor(x0).divide(y).shiftRight(2);</span>
         
-<span class="fc" id="L266">        x0 = c.add(tmp);</span>
+<span class="fc" id="L269">        x0 = c.add(tmp);</span>
 
-<span class="fc" id="L268">        count++;</span>
+<span class="fc" id="L271">        count++;</span>
 
-<span class="fc" id="L270">        return x0;</span>
+<span class="fc" id="L273">        return x0;</span>
     }
 
     /**
@@ -288,20 +291,20 @@ public class SubsetChooser {
 &quot;, x, str);
         */
 
-<span class="fc" id="L291">        int nBits = 0;</span>
-<span class="fc" id="L292">        int nOneBits = 0;</span>
-<span class="fc" id="L293">        long xp = x64;</span>
-<span class="fc bfc" id="L294" title="All 2 branches covered.">        while (xp &gt; 0) {</span>
-<span class="fc bfc" id="L295" title="All 2 branches covered.">            if ((xp &amp; 1) == 1) {</span>
-<span class="fc" id="L296">                int idx2 = n - 1 - nBits;</span>
-<span class="fc" id="L297">                selected[nOneBits] = idx2;</span>
-<span class="fc" id="L298">                nOneBits++;</span>
+<span class="fc" id="L294">        int nBits = 0;</span>
+<span class="fc" id="L295">        int nOneBits = 0;</span>
+<span class="fc" id="L296">        long xp = x64;</span>
+<span class="fc bfc" id="L297" title="All 2 branches covered.">        while (xp &gt; 0) {</span>
+<span class="fc bfc" id="L298" title="All 2 branches covered.">            if ((xp &amp; 1) == 1) {</span>
+<span class="fc" id="L299">                int idx2 = n - 1 - nBits;</span>
+<span class="fc" id="L300">                selected[nOneBits] = idx2;</span>
+<span class="fc" id="L301">                nOneBits++;</span>
             }
-<span class="fc" id="L300">            xp = xp &gt;&gt; 1;</span>
-<span class="fc" id="L301">            nBits++;</span>
+<span class="fc" id="L303">            xp = xp &gt;&gt; 1;</span>
+<span class="fc" id="L304">            nBits++;</span>
         }
 
-<span class="fc" id="L304">        return nOneBits;</span>
+<span class="fc" id="L307">        return nOneBits;</span>
     }
 
     /**
@@ -322,20 +325,20 @@ public class SubsetChooser {
 &quot;, x, str);
         */
 
-<span class="fc" id="L325">        int nBits = 0;</span>
-<span class="fc" id="L326">        int nOneBits = 0;</span>
-<span class="fc" id="L327">        BigInteger xp = new BigInteger(x.toByteArray());</span>
-<span class="fc bfc" id="L328" title="All 2 branches covered.">        while (xp.compareTo(BigInteger.ZERO) &gt; 0) {</span>
-<span class="fc bfc" id="L329" title="All 2 branches covered.">            if (xp.and(BigInteger.ONE).equals(BigInteger.ONE)) {</span>
-<span class="fc" id="L330">                int idx2 = n - 1 - nBits;</span>
-<span class="fc" id="L331">                selected[nOneBits] = idx2;</span>
-<span class="fc" id="L332">                nOneBits++;</span>
+<span class="fc" id="L328">        int nBits = 0;</span>
+<span class="fc" id="L329">        int nOneBits = 0;</span>
+<span class="fc" id="L330">        BigInteger xp = new BigInteger(x.toByteArray());</span>
+<span class="fc bfc" id="L331" title="All 2 branches covered.">        while (xp.compareTo(BigInteger.ZERO) &gt; 0) {</span>
+<span class="fc bfc" id="L332" title="All 2 branches covered.">            if (xp.and(BigInteger.ONE).equals(BigInteger.ONE)) {</span>
+<span class="fc" id="L333">                int idx2 = n - 1 - nBits;</span>
+<span class="fc" id="L334">                selected[nOneBits] = idx2;</span>
+<span class="fc" id="L335">                nOneBits++;</span>
             }
-<span class="fc" id="L334">            xp = xp.shiftRight(1);</span>
-<span class="fc" id="L335">            nBits++;</span>
+<span class="fc" id="L337">            xp = xp.shiftRight(1);</span>
+<span class="fc" id="L338">            nBits++;</span>
         }
 
-<span class="fc" id="L338">        return nOneBits;</span>
+<span class="fc" id="L341">        return nOneBits;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

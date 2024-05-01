@@ -49,7 +49,7 @@ public class BinaryTreeNode extends DoublyLinkedNode {
      @return the parent
      */
     public BinaryTreeNode getParent() {
-<span class="nc" id="L52">        return parent;</span>
+<span class="fc" id="L52">        return parent;</span>
     }
 
     /**
@@ -79,5 +79,83 @@ public class BinaryTreeNode extends DoublyLinkedNode {
     public void setParent(BinaryTreeNode parent) {
 <span class="fc" id="L80">        this.parent = parent;</span>
 <span class="fc" id="L81">    }</span>
+
+    /**
+     * rotate node to the right
+     &lt;pre&gt;
+     e.g.
+     given tree or subtree A:
+              A
+           B      C
+        D    E
+     rightRotate(A) creates:
+              B
+           D      A
+                 E  C
+     &lt;/pre&gt;
+     * @param node
+     * @return
+     */
+    public static BinaryTreeNode rotateRight(BinaryTreeNode node) {
+<span class="nc" id="L100">        BinaryTreeNode node2 = node.left; //*</span>
+<span class="nc" id="L101">        BinaryTreeNode p = node.parent;</span>
+<span class="nc" id="L102">        node.left = node2.right; //*</span>
+
+<span class="nc" id="L104">        node2.right = node;  //*</span>
+<span class="nc" id="L105">        node.parent = node2;</span>
+<span class="nc" id="L106">        node2.parent = p;</span>
+
+<span class="nc bnc" id="L108" title="All 2 branches missed.">        if (node.left != null) {</span>
+<span class="nc" id="L109">            node.left.parent = node;</span>
+        }
+
+<span class="nc bnc" id="L112" title="All 2 branches missed.">        if (p != null) {</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">            if (p.left.equals(node)) {</span>
+<span class="nc" id="L114">                p.left = node2;</span>
+            } else {
+<span class="nc" id="L116">                p.right = node2;</span>
+            }
+        }
+<span class="nc" id="L119">        return node2;</span>
+    }
+
+    /**
+     rotate node to the left
+     &lt;pre&gt;
+     e.g.
+     given tree or subtree B:
+              B
+           D      A
+                 E  C
+     leftRotate(B) creates:
+              A
+           B      C
+        D    E
+     &lt;/pre&gt;
+     @param node
+     @return
+     */
+    public static BinaryTreeNode rotateLeft(BinaryTreeNode node) {
+<span class="nc" id="L139">        BinaryTreeNode node2 = node.right; //*</span>
+<span class="nc" id="L140">        BinaryTreeNode p = node.parent;</span>
+<span class="nc" id="L141">        node.right = node2.left; //*</span>
+
+<span class="nc" id="L143">        node2.left = node;  //*</span>
+<span class="nc" id="L144">        node.parent = node2;</span>
+<span class="nc" id="L145">        node2.parent = p;</span>
+
+<span class="nc bnc" id="L147" title="All 2 branches missed.">        if (node.right != null) {</span>
+<span class="nc" id="L148">            node.right.parent = node;</span>
+        }
+
+<span class="nc bnc" id="L151" title="All 2 branches missed.">        if (p != null) {</span>
+<span class="nc bnc" id="L152" title="All 2 branches missed.">            if (p.left.equals(node)) {</span>
+<span class="nc" id="L153">                p.left = node2;</span>
+            } else {
+<span class="nc" id="L155">                p.right = node2;</span>
+            }
+        }
+<span class="nc" id="L158">        return node2;</span>
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

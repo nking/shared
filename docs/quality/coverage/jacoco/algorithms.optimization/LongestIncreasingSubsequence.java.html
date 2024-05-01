@@ -1,0 +1,633 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LongestIncreasingSubsequence.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.optimization</a> &gt; <span class="el_source">LongestIncreasingSubsequence.java</span></div><h1>LongestIncreasingSubsequence.java</h1><pre class="source lang-java linenums">package algorithms.optimization;
+
+import algorithms.search.MiscBisectingSearch;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.function.ToIntFunction;
+import java.util.stream.IntStream;
+
+/**
+ * Longest increasing subsequence (LIS) is general term for algorithms that find
+ * the largest length subsequence of increasing values
+ * within an array, where a subsequence maintains the order of the given list, but
+ * can exclude members that do not fit the ordering.
+ *
+ * The implementations here use &quot;patience sort&quot; on comparisons to improve runtime complexities
+ * from O(n^2) to O(n*log(n)) where n is the length of the given array.
+
+ &lt;em&gt; Patience sort&lt;/em&gt;
+ * Patience sort is named after the game of solitaire where one makes piles of
+ * sequences of sorted numbers .
+ *
+ * As one iterates over the input list, the number  is compared to the
+ * leftmost pile for which the pile's smallest card is LEQ
+ * that number,
+ * and the card is added to that pile or forms a new pile to right of it if cannot add to a left pile.
+ *
+ * Note that there are methods here for strictly increasing, or non-decreasing subsequences.
+
+ &lt;pre&gt;
+ for length of longest incr subseq, ascending sort example:
+ a = [2,1,7,3,9]
+ we would have piles:
+ pile 0   pile 1    pile 2
+   2      7         9
+   1      3
+
+ Every LIS is (2,7,9), (2,3,9), (1,7,9), (1,3,9).
+ The length of the longest increasing subsequence is 3.
+ There are 4 of LIS (2*2*1=4)
+
+ Another example:
+
+ a = [3,2,1,7,6,9,8]
+ we would have piles:
+ pile 0   pile 1    pile 2
+ 3        7         9
+ 2        6         8
+ 1
+
+ Every LIS is (3,7,9), (3,7,8), (3,6,9),(3,6,8)
+ (2,7,9), (2,7,8), (2,6,9),(2,6,8)
+ (1,7,9), (1,7,8), (1,6,9),(1,6,8)
+
+ The length of the longest increasing subsequence is 3.
+
+ There are 12 of LIS (3*2*2=12)
+
+ &lt;/pre&gt;
+ If we are interested in only the length of the longest increasing sequence, we
+ only need to store the comparison number (i.e. the representation) for each pile.
+ That means we can store each pile representative in a a single list and
+ the length of that list is the length of the longest increasing aubsequence
+ and we replace the representative with the new number that would be added to the pile.
+ We find the leftmost pile that a number belongs to by  using a pileary search
+ of type floor if the resulting series should be monontonic (increasing but equal values
+ are in same piles) or type ceiling if
+ the resulting series should be strictly monotonic (equal values are in different piles).
+
+ If we are interested in only the number of LISes and the length of them,
+ we can store the pile representation (see paragraph above this) in a list,
+ and we can store the number of items in a pile in a list.
+
+ &lt;pre&gt;
+ --------------------------------
+ &lt;/pre&gt;
+ Patience sort can be used on multi-column data too.
+ In that case, we first sort by the first dimension,
+ and if the sort is ascending of a[i][0], the tie breakers must be descending on a[i][1].
+
+ &lt;pre&gt;
+ a = [ [4,1], [2,3], [2,2], [5,3] ]
+
+ the longest sequence wherein the first and second column values of a[i] are GEQ the
+ values in a[i+1]
+
+ for strictly increasing sequences:
+
+ (1) sort ascending of a[i][0], the tie breakers must be descending on a[i][1]:
+     results in a = [ [2,3], [2,2], [4,1], [6,3] ]
+ (2) then binary search of type ceiling to find where a[i][1] can be placed
+ in patience piles of decreasing values
+
+ pile 0                        pile 1
+ [2,3] where 3 is repr         [6,3]
+ [2,2] where 2 is new repr
+ [4,1] where 1 is new repr
+
+ The longest sequences are
+    [[2,3], [6,3]],
+    [[2,2], [6,3]],
+    [[4,1], [6,3]].
+ There are 3 longest sequences.
+ The length of the longest sequence is 2.
+
+ &lt;pre&gt;
+ --------------------------------
+ &lt;/pre&gt;
+
+ For multi-column data and non-decreasing subsequences:
+
+ TODO: rewrite this one
+
+ example a = [ [1,1], [2,2], [2,3], [4,1], [5,1], [5,2], [6,3] ]
+
+ [1,1] through [2,3] placement follow patience rules.
+ [4,1] does not fit after [2,3].
+       ceiling search in pile 0 returns index=1.
+       so we copy pile 0 up to index 1 into a new pile and add [4,1] to it
+       (or keep reference to previous pile last index to include)
+ [5,1] needs to be compared to pile 1 and pile 0
+       for pile 1 we can add it to end.
+       for pile 0, a ceiling search return index 1 and we see that in pile 1 already
+                   so we do nothing wile pile 0 results.
+ [5,2] needs to be compared to pile 1, and pile 0
+       for pile 1, we can add to end and note that pile 1 ref to pile 0 is (0)
+       for pile 0, ceil search returns index = 2, and that is greater than the pile 0, 0
+           reference in pile 1, so we create a new pile 2, add the pile 0 items (or reference)
+           and then add [5,2]] to pile 2
+ [6,3] needs to be compared to pile 2, pile 1, and pile 0
+       for pile 2, can add to end.
+       for pile 1, can add to end.
+       for pile 0, can add to end.
+
+     pile 0       pile 1                       pile 2
+     [1,1]        [1,1] ref (pile0, idx 0)     [1,1]
+     [2,2]        [4,1]                        [2,2] ref (pile0, idx 1)
+     [2,3]        [5,1]                        [5,2]
+     [6,3]        [5,2]                        [6,3]
+                  [6,3]
+
+ The longest sequence which is increasing, but not strictly increasing for both columns of array 'a'
+ is then in pile 1 for this example.
+ The length of the LIS is 5.
+ There is only 1 way to compose the LIS for this example.
+
+ The worse case runtime complexity would be O(n^2 * log(n))
+ for all items in their own piles, e.g. [1,4], [2, 2], [3,1].
+
+ &lt;/pre&gt;
+
+ */
+<span class="pc" id="L155">public class LongestIncreasingSubsequence {</span>
+
+    /**
+     * given a list of integers, return the indexes of the longest increasing subsequence
+     * where increasing is defind as stricly increasing.  If there is more than one sequence
+     * with same max length, returns one of them.
+     &lt;pre&gt;
+     &lt;pre&gt;
+     a = new int[]{2,2,1,7,6};
+
+     pile 0    pile 1
+     2         7
+     2
+     1          6
+
+     The result is 6 LIS of length 2.
+
+     by value the sequences are:
+     [2,7], [2,6], [2,7], [2,6], [1,7], [1,6]
+
+     by index the sequences are:
+     [0,3], [0,4], [1,3], [1,4], [2,3], [2,4]
+
+     returns one of the sequences of LIS indexes.
+     &lt;/pre&gt;
+     The runtime complexity is O(n * log(n)) where n = a.length.
+     The space complexity is O(n).
+     * @param a an array of integers
+     * @return one of the possible many index sequences of longest increasing subsequence.
+     */
+    public static List&lt;Integer&gt; findAnyStrictlyIncreasing(int[] a) {
+
+<span class="fc" id="L187">        List&lt;Integer&gt; pileReps = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L188">        List&lt;Integer&gt; pileRepIdxs = new ArrayList&lt;&gt;();</span>
+        int v;
+<span class="fc bfc" id="L190" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L191">            v = a[i];</span>
+<span class="fc bfc" id="L192" title="All 4 branches covered.">            if (pileReps.isEmpty() || v &gt; pileReps.get(pileReps.size() - 1)) {</span>
+                // create new pile for v which is GT last element
+<span class="fc" id="L194">                pileReps.add(v);</span>
+<span class="fc" id="L195">                pileRepIdxs.add(i);</span>
+            } else {
+<span class="fc" id="L197">                int idx = MiscBisectingSearch.ceiling(pileReps, v);</span>
+<span class="pc bnc" id="L198" title="All 4 branches missed.">                assert(idx &gt;-1 &amp;&amp; idx &lt; pileReps.size());</span>
+<span class="fc" id="L199">                pileReps.set(idx, v);</span>
+<span class="fc" id="L200">                pileRepIdxs.set(idx, i);</span>
+            }
+        }
+
+<span class="fc" id="L204">        return pileRepIdxs;</span>
+    }
+
+    /**
+     * given a list of integers, find the length of the longest increasing sequence, and return all
+     * sequences of that length (specifically, the indexes of the items).
+     * Increasing is defined as strictly increasing.
+     &lt;pre&gt;
+     a = new int[]{2,2,1,7,6};
+
+     pile 0    pile 1
+     2         7
+     2
+     1          6
+
+     The result is 6 LIS of length 2.
+
+     by value the sequences are:
+     [2,7], [2,6], [2,7], [2,6], [1,7], [1,6]
+
+     by index the sequences are:
+     [0,3], [0,4], [1,3], [1,4], [2,3], [2,4]
+
+     returns indexes of the LIS
+     &lt;/pre&gt;
+     The runtime complexity is O(k * n * log(n)) where n = a.length and k
+     is the product of the number of sequences in each pile.
+     The space complexity is O(k*n).
+     * @param a an array of integers
+     * @return list of indexes of each LIS of maximum length
+     */
+    public static List&lt;int[]&gt; findAllStrictlyIncreasing(int[] a) {
+
+<span class="fc" id="L237">        List&lt;Integer&gt; pileReps = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L238">        List&lt;List&lt;Integer&gt;&gt; pileIdxs = new ArrayList&lt;&gt;();</span>
+        int v;
+<span class="fc bfc" id="L240" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L241">            v = a[i];</span>
+<span class="fc bfc" id="L242" title="All 4 branches covered.">            if (pileReps.isEmpty() || v &gt; pileReps.get(pileReps.size() - 1)) {</span>
+                // create new pile if v &gt; last element
+<span class="fc" id="L244">                pileReps.add(v);</span>
+<span class="fc" id="L245">                pileIdxs.add(new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L246">                pileIdxs.get(pileIdxs.size() - 1).add(i);</span>
+            } else {
+<span class="fc" id="L248">                int idx = MiscBisectingSearch.ceiling(pileReps, v);</span>
+<span class="pc bnc" id="L249" title="All 4 branches missed.">                assert(idx &gt;-1 &amp;&amp; idx &lt; pileReps.size());</span>
+<span class="fc" id="L250">                pileReps.set(idx, v);</span>
+<span class="fc" id="L251">                pileIdxs.get(idx).add(i);</span>
+            }
+        }
+
+        // return every combination of pileIdxs
+
+<span class="fc" id="L257">        List&lt;int[]&gt; out = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L258">        int[] curr = new int[pileIdxs.size()];</span>
+<span class="fc" id="L259">        combineRecursively(0, curr, out, pileIdxs);</span>
+
+<span class="fc" id="L261">        int nSize = 1;</span>
+<span class="fc bfc" id="L262" title="All 2 branches covered.">        for (int i = 0; i &lt; pileIdxs.size(); ++i) {</span>
+<span class="fc" id="L263">            nSize *= pileIdxs.get(i).size();</span>
+        }
+<span class="pc bnc" id="L265" title="All 2 branches missed.">        assert(out.size() == nSize);</span>
+
+<span class="fc" id="L267">        return out;</span>
+    }
+
+    private static void combineRecursively(int i, int[] curr, List&lt;int[]&gt; out, List&lt;List&lt;Integer&gt;&gt; pileIdxs) {
+<span class="fc bfc" id="L271" title="All 2 branches covered.">        if (i == pileIdxs.size()) {</span>
+<span class="fc" id="L272">            out.add(Arrays.copyOf(curr, curr.length));</span>
+<span class="fc" id="L273">            return;</span>
+        }
+<span class="fc" id="L275">        List&lt;Integer&gt; currPile = pileIdxs.get(i);</span>
+<span class="fc bfc" id="L276" title="All 2 branches covered.">        for (int ii = 0; ii &lt; currPile.size(); ++ii) {</span>
+<span class="fc" id="L277">            int v = currPile.get(ii);</span>
+<span class="fc" id="L278">            curr[i] = v;</span>
+<span class="fc" id="L279">            combineRecursively(i+1, curr, out, pileIdxs);</span>
+        }
+<span class="fc" id="L281">    }</span>
+
+    /**
+     * given a list of integers, return the indexes of the longest increasing subsequence
+     * within the list, where increasing is strictly increasing.
+     &lt;pre&gt;
+     a = new int[]{2,2,1,7,6};
+
+     pile 0    pile 1
+     2         7
+     2
+     1          6
+
+     The result is 6 LIS of length 2.
+
+     by value the sequences are:
+     [2,7], [2,6], [2,7], [2,6], [1,7], [1,6]
+
+     by index the sequences are:
+     [0,3], [0,4], [1,3], [1,4], [2,3], [2,4]
+
+     returns new int[]{2, 6}
+
+     &lt;/pre&gt;
+     The runtime complexity is O(n * log(n)) where n = a.length.
+     The space complexity is O(n).
+     * @param a
+     * @return an array of length 2 holding as first item, the max size of longest increasing subequence
+     * and as second item, the number of max size LISes.
+     */
+    public static int[] findSizeAndNumberStrictlyIncreasing(int[] a) {
+
+<span class="fc" id="L313">        List&lt;Integer&gt; pileReps = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L314">        List&lt;Integer&gt; pileSizes = new ArrayList&lt;&gt;();</span>
+        int v;
+<span class="fc bfc" id="L316" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L317">            v = a[i];</span>
+<span class="fc bfc" id="L318" title="All 4 branches covered.">            if (pileReps.isEmpty() || v &gt; pileReps.get(pileReps.size() - 1)) {</span>
+<span class="fc" id="L319">                pileReps.add(v);</span>
+<span class="fc" id="L320">                pileSizes.add(1);</span>
+            } else {
+<span class="fc" id="L322">                int idx = MiscBisectingSearch.ceiling(pileReps, v);</span>
+<span class="pc bnc" id="L323" title="All 4 branches missed.">                assert(idx &gt;-1 &amp;&amp; idx &lt; pileReps.size());</span>
+<span class="fc" id="L324">                pileReps.set(idx, v);</span>
+<span class="fc" id="L325">                pileSizes.set(idx, pileSizes.get(idx) + 1);</span>
+            }
+        }
+
+<span class="fc" id="L329">        int nSize = 1;</span>
+<span class="fc bfc" id="L330" title="All 2 branches covered.">        for (int i = 0; i &lt; pileSizes.size(); ++i) {</span>
+<span class="fc" id="L331">            nSize *= pileSizes.get(i);</span>
+        }
+
+<span class="fc" id="L334">        return new int[]{pileReps.size(), nSize};</span>
+    }
+
+    public class AscDescComparator implements Comparator&lt;int[]&gt; {
+        @Override
+        public int compare(int[] a1, int[] a2) {
+            if (a1[0] == a2[0]) return 0;
+            return Integer.compare(a2[1], a1[1]);
+        }
+    }
+
+    /**
+     find the longest strictly increasing subsequence of a where columns 0
+     and columns 1 of row i are greater than columns 0 and 1, respectively of
+     row (i-1).
+     * The runtime complexity is O(k * n * log(n)) where n = a.length and k
+     *      is the product of the number of sequences in each pile.
+     *      The space complexity is O(k*n).
+     * If only 1 LIS is needed not the entire enumeration,
+     * or only the size of LIS is needed, can use methods
+     * findAnyStrictlyIncreasing or findSizeAndNumberStrictlyIncreasing
+     * for smaller runtime complexities of O(n * log(n)).
+     @param a 2 dimensional array of length n X 2.  Though, rows of a can be longer than 2,
+      *          only the first 2 columns of a row are used in comparisons.
+     @return list of indexes of each longest LIS of maximum length
+     */
+    public static List&lt;int[]&gt; findAllStrictlyIncreasing(int[][] a) {
+
+<span class="fc" id="L362">        int n = a.length;</span>
+
+<span class="pc bpc" id="L364" title="1 of 2 branches missed.">        if (a[0].length &lt; 2) {</span>
+<span class="nc" id="L365">            throw new IllegalStateException(&quot;each row length must be at least 2&quot;);</span>
+        }
+
+        // created indexes sorted on ascending a[i][0] with tie breaking descending
+        // sort on a[i][1]
+
+        /*
+        int[] sortedIdxs = IntStream.range(0, n)
+                .boxed() // produces Stream&lt;Integer&gt; needed for Comparator
+                .sorted(
+                        //type argument of Comparator cannot be primitive
+                       new Comparator&lt;Integer&gt;() {
+                           @Override
+                           public int compare(Integer i, Integer j) {
+                                // a is external to this anonymous inner class
+                                int c = Integer.compare(a[i][0], a[j][0]);
+                                if (c != 0) {
+                                    return c;
+                                }
+                                return Integer.compare(a[j][1], a[i][1]);
+                           }
+                       }
+                )
+                .mapToInt(new ToIntFunction&lt;Integer&gt;() {
+                              @Override
+                              public int applyAsInt(Integer value) {
+                                  return value;
+                              }
+                          })
+                .toArray();
+        */
+        // nice and compact, but produces Integer Objects in between, so this can be improved by writing a custom sort method
+<span class="fc" id="L397">        int[] sortedIdxs = IntStream.range(0, n)</span>
+<span class="fc" id="L398">                .boxed() // produces Stream&lt;Integer&gt; needed for Comparator</span>
+<span class="fc" id="L399">                .sorted((i, j) -&gt; {</span>
+<span class="fc" id="L400">                    int c = Integer.compare(a[i][0], a[j][0]);</span>
+<span class="fc bfc" id="L401" title="All 2 branches covered.">                    if (c != 0) {</span>
+<span class="fc" id="L402">                        return c;</span>
+                    }
+<span class="fc" id="L404">                    return Integer.compare(a[j][1], a[i][1]);</span>
+                })
+<span class="fc" id="L406">                .mapToInt(element -&gt; element).toArray();</span>
+
+<span class="fc" id="L408">        List&lt;Integer&gt; pileReps = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L409">        List&lt;List&lt;Integer&gt;&gt; pileIdxs = new ArrayList&lt;&gt;();</span>
+        int v2;
+        int idx;
+        int[] aI;
+<span class="fc bfc" id="L413" title="All 2 branches covered.">        for (int i0 = 0; i0 &lt; n; ++i0) {</span>
+<span class="fc" id="L414">            idx = sortedIdxs[i0];</span>
+<span class="fc" id="L415">            aI = a[idx];</span>
+
+            // sorted already by a[i][0], now find where a[i][1] fits in patience piles
+<span class="fc" id="L418">            v2 = aI[1];</span>
+
+<span class="fc bfc" id="L420" title="All 4 branches covered.">            if (pileReps.isEmpty() || v2 &gt; pileReps.get(pileReps.size() - 1)) {</span>
+                // create new pile if v &gt; last element
+<span class="fc" id="L422">                pileReps.add(v2);</span>
+<span class="fc" id="L423">                pileIdxs.add(new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L424">                pileIdxs.get(pileIdxs.size() - 1).add(idx);</span>
+            } else {
+<span class="fc" id="L426">                int _idx = MiscBisectingSearch.ceiling(pileReps, v2);</span>
+<span class="pc bnc" id="L427" title="All 4 branches missed.">                assert(_idx &gt;-1 &amp;&amp; _idx &lt; pileReps.size());</span>
+<span class="fc" id="L428">                pileReps.set(_idx, v2);</span>
+<span class="fc" id="L429">                pileIdxs.get(_idx).add(idx);</span>
+            }
+        }
+
+        // return every combination of pileIdxs
+
+<span class="fc" id="L435">        List&lt;int[]&gt; out = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L436">        int[] curr = new int[pileIdxs.size()];</span>
+<span class="fc" id="L437">        combineRecursively(0, curr, out, pileIdxs);</span>
+
+<span class="fc" id="L439">        int nSize = 1;</span>
+<span class="fc bfc" id="L440" title="All 2 branches covered.">        for (int i = 0; i &lt; pileIdxs.size(); ++i) {</span>
+<span class="fc" id="L441">            nSize *= pileIdxs.get(i).size();</span>
+        }
+<span class="pc bnc" id="L443" title="All 2 branches missed.">        assert(out.size() == nSize);</span>
+
+<span class="fc" id="L445">        return out;</span>
+    }
+
+    /**
+     find the longest strictly increasing subsequence of a where
+     columns 0 and 1 of row a[i] are greater than columns 0 and 1, respectively,
+     of row[i-1].
+     If more than one sequence of indexes exists for the maximum length,
+     only the last is returned.
+     * The runtime complexity is O(n * log(n)) where n = a.length.
+     * The space complexity is O(n).
+     @param a 2 dimensional array of length n X 2.  Though, rows of a can be longer than 2,
+      *          only the first 2 columns of a row are used in comparisons.
+     @return indexes of one of the longest increasing subsequences
+     */
+    public static List&lt;Integer&gt; findAnyStrictlyIncreasing(int[][] a) {
+
+<span class="fc" id="L462">        int n = a.length;</span>
+
+<span class="pc bpc" id="L464" title="1 of 2 branches missed.">        if (a[0].length &lt; 2) {</span>
+<span class="nc" id="L465">            throw new IllegalStateException(&quot;each row length must be at least 2&quot;);</span>
+        }
+
+        // created indexes sorted on ascending a[i][0] with tie breaking descending
+        // sort on a[i][1]
+
+        // nice and compact, but produces Integer Objects in between, so this can be improved by writing a custom sort method
+<span class="fc" id="L472">        int[] sortedIdxs = IntStream.range(0, n)</span>
+<span class="fc" id="L473">                .boxed() // produces Stream&lt;Integer&gt; needed for Comparator</span>
+<span class="fc" id="L474">                .sorted((i, j) -&gt; {</span>
+<span class="fc" id="L475">                    int c = Integer.compare(a[i][0], a[j][0]);</span>
+<span class="fc bfc" id="L476" title="All 2 branches covered.">                    if (c != 0) {</span>
+<span class="fc" id="L477">                        return c;</span>
+                    }
+<span class="fc" id="L479">                    return Integer.compare(a[j][1], a[i][1]);</span>
+                })
+<span class="fc" id="L481">                .mapToInt(element -&gt; element).toArray();</span>
+
+<span class="fc" id="L483">        List&lt;Integer&gt; pileReps = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L484">        List&lt;Integer&gt; pileRepIdxs = new ArrayList&lt;&gt;();</span>
+        int v2;
+        int idx;
+        int[] aI;
+<span class="fc bfc" id="L488" title="All 2 branches covered.">        for (int i0 = 0; i0 &lt; n; ++i0) {</span>
+<span class="fc" id="L489">            idx = sortedIdxs[i0];</span>
+<span class="fc" id="L490">            aI = a[idx];</span>
+
+            // sorted already by a[i][0], now find where a[i][1] fits in patience piles
+<span class="fc" id="L493">            v2 = aI[1];</span>
+
+<span class="fc bfc" id="L495" title="All 4 branches covered.">            if (pileReps.isEmpty() || v2 &gt; pileReps.get(pileReps.size() - 1)) {</span>
+                // create new pile if v &gt; last element
+<span class="fc" id="L497">                pileReps.add(v2);</span>
+<span class="fc" id="L498">                pileRepIdxs.add(idx);</span>
+            } else {
+<span class="fc" id="L500">                int _idx = MiscBisectingSearch.ceiling(pileReps, v2);</span>
+<span class="pc bnc" id="L501" title="All 4 branches missed.">                assert(_idx &gt;-1 &amp;&amp; _idx &lt; pileReps.size());</span>
+<span class="fc" id="L502">                pileReps.set(_idx, v2);</span>
+<span class="fc" id="L503">                pileRepIdxs.set(_idx, idx);</span>
+            }
+        }
+
+<span class="fc" id="L507">        return pileRepIdxs;</span>
+    }
+
+    /**
+     find the length and number of longest strictly increasing subsequence of a where
+     columns 0 and 1 of row a[i] are greater than columns 0 and 1, respectively,
+     of row[i-1].
+     The runtime complexity is O(n * log(n)) where n = a.length.
+     The space complexity is O(n).
+     * @param a 2 dimensional array of length n X 2.  Though, rows of a can be longer than 2,
+     *          only the first 2 columns of a row are used in comparisons.
+     * @return the size of the LIS and the number of them as an integer array.
+     */
+    public static int[] findSizeAndNumberStrictlyIncreasing(int[][] a) {
+
+<span class="fc" id="L522">        int n = a.length;</span>
+
+<span class="pc bpc" id="L524" title="1 of 2 branches missed.">        if (a[0].length &lt; 2) {</span>
+<span class="nc" id="L525">            throw new IllegalStateException(&quot;each row length must be at least 2&quot;);</span>
+        }
+
+        // created indexes sorted on ascending a[i][0] with tie breaking descending
+        // sort on a[i][1]
+
+        // nice and compact, but produces Integer Objects in between, so this can be improved by writing a custom sort method
+<span class="fc" id="L532">        int[] sortedIdxs = IntStream.range(0, n)</span>
+<span class="fc" id="L533">                .boxed() // produces Stream&lt;Integer&gt; needed for Comparator</span>
+<span class="fc" id="L534">                .sorted((i, j) -&gt; {</span>
+<span class="fc" id="L535">                    int c = Integer.compare(a[i][0], a[j][0]);</span>
+<span class="fc bfc" id="L536" title="All 2 branches covered.">                    if (c != 0) {</span>
+<span class="fc" id="L537">                        return c;</span>
+                    }
+<span class="fc" id="L539">                    return Integer.compare(a[j][1], a[i][1]);</span>
+                })
+<span class="fc" id="L541">                .mapToInt(element -&gt; element).toArray();</span>
+
+<span class="fc" id="L543">        List&lt;Integer&gt; pileReps = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L544">        List&lt;List&lt;Integer&gt;&gt; pileIdxs = new ArrayList&lt;&gt;();</span>
+        int v2;
+        int idx;
+        int[] aI;
+<span class="fc bfc" id="L548" title="All 2 branches covered.">        for (int i0 = 0; i0 &lt; n; ++i0) {</span>
+<span class="fc" id="L549">            idx = sortedIdxs[i0];</span>
+<span class="fc" id="L550">            aI = a[idx];</span>
+
+            // sorted already by a[i][0], now find where a[i][1] fits in patience piles
+<span class="fc" id="L553">            v2 = aI[1];</span>
+
+<span class="fc bfc" id="L555" title="All 4 branches covered.">            if (pileReps.isEmpty() || v2 &gt; pileReps.get(pileReps.size() - 1)) {</span>
+                // create new pile if v &gt; last element
+<span class="fc" id="L557">                pileReps.add(v2);</span>
+<span class="fc" id="L558">                pileIdxs.add(new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L559">                pileIdxs.get(pileIdxs.size() - 1).add(idx);</span>
+            } else {
+<span class="fc" id="L561">                int _idx = MiscBisectingSearch.ceiling(pileReps, v2);</span>
+<span class="pc bnc" id="L562" title="All 4 branches missed.">                assert(_idx &gt;-1 &amp;&amp; _idx &lt; pileReps.size());</span>
+<span class="fc" id="L563">                pileReps.set(_idx, v2);</span>
+<span class="fc" id="L564">                pileIdxs.get(_idx).add(idx);</span>
+            }
+        }
+
+<span class="fc" id="L568">        int nSize = 1;</span>
+<span class="fc bfc" id="L569" title="All 2 branches covered.">        for (int i = 0; i &lt; pileIdxs.size(); ++i) {</span>
+<span class="fc" id="L570">            nSize *= pileIdxs.get(i).size();</span>
+        }
+
+<span class="fc" id="L573">        return new int[]{pileReps.size(), nSize};</span>
+    }
+
+    /**
+     given a list of integers, return the indexes of the longest increasing subsequence
+     within the list, items are non-decreasing.
+
+     &lt;pre&gt;
+
+     example: a = [7,6, 2,2,1,7,6]
+
+     expected sequences:
+      7,7
+      6,7
+      6,6
+      2,2,7   &lt;== LIS
+      2,2,6   &lt;== LIS
+      2,7
+      2,6
+      1,7
+      1,6
+
+     needs multiple lists of patience piles and to remember top and bottom of pile
+
+     list 0
+     pile 0   line 1
+     7         7
+     6
+     2         cannot add 2nd 2 as it is not &gt;= top of pile 0 = 7, so it gets a new list
+     1         cannot add 2nd 6 as it is not &gt;= top of pile 0 = 7, so it gets a new list
+
+     list 1 for 2nd 2 that can't be added to list 0
+     pile 0    pile 1   pile 2
+     2          2
+                cannot add 1 because it is not &gt;= top of pile 0 = 2 so it gets a new list
+                          7
+                          6
+
+     list 2 for 1 that cant be added to list 1
+     pile 0    pile 1
+     1          7
+                6
+
+     list 3 for 6 that cant be added to list 0
+     pile 0    pile 1
+     6          6
+     2
+     1
+
+     &lt;/pre&gt;
+     * @param a
+     * @return
+     */
+    public static List&lt;int[]&gt; _findAllNonDecreasing(int[] a) {
+
+<span class="nc" id="L628">        throw new UnsupportedOperationException(&quot;not ready for use&quot;);</span>
+
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

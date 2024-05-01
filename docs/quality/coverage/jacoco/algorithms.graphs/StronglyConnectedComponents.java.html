@@ -33,18 +33,20 @@ import java.util.logging.Logger;
  * Runtime complexity is O(|E| + |V|) (average?), and the worse case runtime
  * complexity is one in which the graph is completely connected, strongly,
  * O(|V|*(2 + 5w)) where w is the word size in bits.
- * 
- * https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm
- * 
- * Further information on use in processing very large datasets such as 
- * in transitive closure is in the book &quot;Mining of Massive Datasets&quot; 
- * by Jure Leskovec, Anand Rajaraman, Jeff Ullman
- * http://infolab.stanford.edu/~ullman/mmds/ch10n.pdf
- * A strongly connected component (SCC) of a graph is a set of nodes S such that:
+
+ &lt;pre&gt;
+ references:
+  https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm
+
+ Further information on use in processing very large datasets such as
+ in transitive closure is in Chapter 10 of the book &quot;Mining of Massive Datasets&quot;
+ by Jure Leskovec, Anand Rajaraman, Jeff Ullman
+ http://infolab.stanford.edu/~ullman/mmds/ch10n.pdf
+ A strongly connected component (SCC) of a graph is a set of nodes S such that:
       1. Every node in S reaches every other node in S.
       2. S is maximal, in the sense that there is no node outside S that both
          reaches every node in S and is reached by every node in S.
-* 
+ &lt;/pre&gt;
  * 
  * first implemented in project
      https://github.com/nking/curvature-scale-space-corners-and-transformations
@@ -55,7 +57,7 @@ import java.util.logging.Logger;
 
  * @author nichole
  */
-<span class="fc" id="L58">public class StronglyConnectedComponents {</span>
+<span class="fc" id="L60">public class StronglyConnectedComponents {</span>
     
     private SimpleLinkedListNode[] g;
     
@@ -65,26 +67,26 @@ import java.util.logging.Logger;
     private int[] td;
     
     /**
-    lowLink represents the smallest index of any node known to be reachable 
-       from v through v's DFS subtree, including v itself.
-    Therefore v must be left on the stack if v.lowlink less than v.index, 
-    whereas v must be removed as the root of a strongly connected component 
-    if v.lowlink equals v.index. 
+    lowLink represents the smallest discovered index of any node known to be reachable
+     from v through v's DFS subtree, including v itself.
+    Therefore v must be left on the stack if lowlink[v] less than td[v],
+    else v must be removed as the root of a strongly connected component
+    if lowlink[v] equals td[v].
      
-    The value v.lowlink is computed during the depth-first search from v,
+    The value lowlink[v] is computed during the depth-first search from v,
     as this finds the nodes that are reachable from v.
      */
     private int[] lowLink;
     private int[] onStack;
-    
+
     private int time;
     private List&lt;SimpleLinkedListNode&gt; scc;
     private int[] inSCC;
     private Stack&lt;Integer&gt; stack;
     
-<span class="fc" id="L85">    private Logger log = Logger.getLogger(getClass().getSimpleName());</span>
+<span class="fc" id="L87">    private Logger log = Logger.getLogger(getClass().getSimpleName());</span>
     
-<span class="fc" id="L87">    private Level logLevel = Level.FINEST;</span>
+<span class="fc" id="L89">    private Level logLevel = Level.FINEST;</span>
     
     /**
      *  find the strongly connected components.
@@ -98,96 +100,98 @@ import java.util.logging.Logger;
      */
     public List&lt;SimpleLinkedListNode&gt; find(SimpleLinkedListNode[] graph) {
         
-<span class="fc" id="L101">        check(graph);</span>
+<span class="fc" id="L103">        check(graph);</span>
         
-<span class="fc" id="L103">        g = Arrays.copyOf(graph, graph.length);</span>
-<span class="fc" id="L104">        lowLink = new int[g.length];</span>
-<span class="fc" id="L105">        td = new int[g.length];</span>
-<span class="fc" id="L106">        Arrays.fill(td, -1);</span>
-<span class="fc" id="L107">        Arrays.fill(lowLink, -1);</span>
-<span class="fc" id="L108">        onStack = new int[g.length];</span>
-<span class="fc" id="L109">        scc = new ArrayList&lt;SimpleLinkedListNode&gt;();</span>
-<span class="fc" id="L110">        inSCC = new int[g.length];</span>
-<span class="fc" id="L111">        time = 0;</span>
-<span class="fc" id="L112">        stack = new Stack&lt;Integer&gt;();</span>
-        
-<span class="fc bfc" id="L114" title="All 2 branches covered.">        for (int i = 0; i &lt; g.length; ++i) {</span>
-<span class="fc" id="L115">            strongConnect(i);</span>
+<span class="fc" id="L105">        g = Arrays.copyOf(graph, graph.length);</span>
+<span class="fc" id="L106">        lowLink = new int[g.length];</span>
+<span class="fc" id="L107">        td = new int[g.length];</span>
+<span class="fc" id="L108">        Arrays.fill(td, -1);</span>
+<span class="fc" id="L109">        Arrays.fill(lowLink, -1);</span>
+<span class="fc" id="L110">        onStack = new int[g.length];</span>
+<span class="fc" id="L111">        scc = new ArrayList&lt;SimpleLinkedListNode&gt;();</span>
+<span class="fc" id="L112">        inSCC = new int[g.length];</span>
+<span class="fc" id="L113">        time = 0;</span>
+<span class="fc" id="L114">        stack = new Stack&lt;Integer&gt;();</span>
+
+<span class="fc bfc" id="L116" title="All 2 branches covered.">        for (int i = 0; i &lt; g.length; ++i) {</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">            if (lowLink[i] == -1) {</span>
+<span class="fc" id="L118">                strongConnect(i);</span>
+            }
         }
         
-<span class="fc" id="L118">        return scc;</span>
+<span class="fc" id="L122">        return scc;</span>
     }
     
     private void strongConnect(int u) {
         
-<span class="fc" id="L123">        td[u] = time;</span>
-<span class="fc" id="L124">        lowLink[u] = time;</span>
-<span class="fc" id="L125">        time++;</span>
+<span class="fc" id="L127">        td[u] = time;</span>
+<span class="fc" id="L128">        lowLink[u] = time;</span>
+<span class="fc" id="L129">        time++;</span>
+
+<span class="fc" id="L131">        stack.push(u);</span>
+<span class="fc" id="L132">        onStack[u] = 1;</span>
         
-<span class="fc" id="L127">        stack.push(u);</span>
-<span class="fc" id="L128">        onStack[u] = 1;</span>
-        
-<span class="fc" id="L130">        log.log(logLevel, &quot;u:&quot; + toString(u));</span>
+<span class="fc" id="L134">        log.log(logLevel, &quot;u:&quot; + toString(u));</span>
                 
-<span class="fc" id="L132">        SimpleLinkedListNode wNode = g[u];</span>
-<span class="pc bpc" id="L133" title="1 of 4 branches missed.">        while (wNode != null &amp;&amp; wNode.getNumberOfKeys() &gt; 0) {</span>
-<span class="fc" id="L134">            int v = wNode.getKey();</span>
-<span class="fc" id="L135">            log.log(logLevel, &quot;    v=&quot; + toString(v));            </span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">            if (td[v] == -1) {</span>
+<span class="fc" id="L136">        SimpleLinkedListNode wNode = g[u];</span>
+<span class="pc bpc" id="L137" title="1 of 4 branches missed.">        while (wNode != null &amp;&amp; wNode.getNumberOfKeys() &gt; 0) {</span>
+<span class="fc" id="L138">            int v = wNode.getKey();</span>
+<span class="fc" id="L139">            log.log(logLevel, &quot;    v=&quot; + toString(v));            </span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">            if (td[v] == -1) {</span>
                 // Successor v has not yet been visited; recurse on it
-<span class="fc" id="L138">                strongConnect(v);</span>
-<span class="fc" id="L139">                lowLink[u] = Math.min(lowLink[u], lowLink[v]);  // update Low[v]</span>
-<span class="fc bfc" id="L140" title="All 2 branches covered.">            } else if (onStack[v] == 1) {</span>
+<span class="fc" id="L142">                strongConnect(v);</span>
+<span class="fc" id="L143">                lowLink[u] = Math.min(lowLink[u], lowLink[v]);  // update Low[v]</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">            } else if (onStack[v] == 1) {</span>
                 // v is in stack S and hence in the current SCC
                 // If v is not on stack, then (u, v) is a cross-edge in the 
                 // DFS tree and must be ignored.
-<span class="fc" id="L144">                lowLink[u] = Math.min(lowLink[u], td[v]);  // update Low[u]</span>
+<span class="fc" id="L148">                lowLink[u] = Math.min(lowLink[u], td[v]);  // update Low[u]</span>
             }
-<span class="fc" id="L146">            wNode = wNode.getNext();</span>
-<span class="fc" id="L147">        }</span>
+<span class="fc" id="L150">            wNode = wNode.getNext();</span>
+<span class="fc" id="L151">        }</span>
         
         // If v is a root node, pop the stack and generate an SCC
-<span class="fc bfc" id="L150" title="All 4 branches covered.">        if (lowLink[u] == td[u] &amp;&amp; inSCC[u] == 0) {</span>
-<span class="fc" id="L151">            log.log(logLevel, &quot;    START scc &quot; + u);</span>
-<span class="fc" id="L152">            SimpleLinkedListNode sccNode = new SimpleLinkedListNode();</span>
-<span class="fc" id="L153">            scc.add(sccNode);</span>
-<span class="fc" id="L154">            inSCC[u] = 1;</span>
+<span class="pc bpc" id="L154" title="1 of 4 branches missed.">        if (lowLink[u] == td[u] &amp;&amp; inSCC[u] == 0) {</span>
+<span class="fc" id="L155">            log.log(logLevel, &quot;    START scc &quot; + u);</span>
+<span class="fc" id="L156">            SimpleLinkedListNode sccNode = new SimpleLinkedListNode();</span>
+<span class="fc" id="L157">            scc.add(sccNode);</span>
+<span class="fc" id="L158">            inSCC[u] = 1;</span>
             int v;
             do {
-<span class="pc bpc" id="L157" title="1 of 2 branches missed.">                if (stack.isEmpty()) {</span>
-<span class="nc" id="L158">                    break;</span>
+<span class="pc bpc" id="L161" title="1 of 2 branches missed.">                if (stack.isEmpty()) {</span>
+<span class="nc" id="L162">                    break;</span>
                 }
-<span class="fc" id="L160">                v = stack.pop();</span>
-<span class="fc" id="L161">                onStack[v] = 0;</span>
-<span class="fc" id="L162">                sccNode.insert(v);</span>
-<span class="fc" id="L163">                inSCC[v] = 1;</span>
-<span class="fc" id="L164">                log.log(logLevel, &quot;    add &quot; + v + &quot; to scc&quot;);</span>
-<span class="fc bfc" id="L165" title="All 2 branches covered.">            } while (v != u);</span>
-<span class="fc" id="L166">            log.log(logLevel, &quot;stack size=&quot; + stack.size());</span>
+<span class="fc" id="L164">                v = stack.pop();</span>
+<span class="fc" id="L165">                onStack[v] = 0;</span>
+<span class="fc" id="L166">                sccNode.insert(v);</span>
+<span class="fc" id="L167">                inSCC[v] = 1;</span>
+<span class="fc" id="L168">                log.log(logLevel, &quot;    add &quot; + v + &quot; to scc&quot;);</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">            } while (v != u);</span>
+<span class="fc" id="L170">            log.log(logLevel, &quot;stack size=&quot; + stack.size());</span>
         }
-<span class="fc" id="L168">    }</span>
+<span class="fc" id="L172">    }</span>
 
     private void check(SimpleLinkedListNode[] graph) {
 
-<span class="pc bpc" id="L172" title="1 of 2 branches missed.">        if (graph == null) {</span>
-<span class="nc" id="L173">            throw new IllegalArgumentException(&quot;graph cannot be null&quot;);</span>
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">        if (graph == null) {</span>
+<span class="nc" id="L177">            throw new IllegalArgumentException(&quot;graph cannot be null&quot;);</span>
         }
         
-<span class="fc bfc" id="L176" title="All 2 branches covered.">        for (SimpleLinkedListNode node : graph) {</span>
-<span class="pc bpc" id="L177" title="1 of 2 branches missed.">            if (node == null) {</span>
-<span class="nc" id="L178">                throw new IllegalArgumentException(&quot;graph nodes cannot be null&quot;);</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">        for (SimpleLinkedListNode node : graph) {</span>
+<span class="pc bpc" id="L181" title="1 of 2 branches missed.">            if (node == null) {</span>
+<span class="nc" id="L182">                throw new IllegalArgumentException(&quot;graph nodes cannot be null&quot;);</span>
             }
         }
-<span class="fc" id="L181">    }</span>
+<span class="fc" id="L185">    }</span>
     
     private String toString(int node) {
         
-<span class="fc" id="L185">        StringBuilder sb = new StringBuilder();</span>
-<span class="fc" id="L186">        sb.append(&quot;node=&quot;).append(node).append(&quot;, lowLink=&quot;).append(lowLink[node])</span>
-<span class="fc" id="L187">            .append(&quot;, index=&quot;).append(td[node])</span>
-<span class="fc" id="L188">            .append(&quot;, onStack=&quot;).append(onStack[node])</span>
-<span class="fc" id="L189">            .append(&quot; (time=&quot;).append(time).append(&quot;);&quot;);</span>
-<span class="fc" id="L190">        return sb.toString();</span>
+<span class="fc" id="L189">        StringBuilder sb = new StringBuilder();</span>
+<span class="fc" id="L190">        sb.append(&quot;node=&quot;).append(node).append(&quot;, lowLink=&quot;).append(lowLink[node])</span>
+<span class="fc" id="L191">            .append(&quot;, index=&quot;).append(td[node])</span>
+<span class="fc" id="L192">            .append(&quot;, onStack=&quot;).append(onStack[node])</span>
+<span class="fc" id="L193">            .append(&quot; (time=&quot;).append(time).append(&quot;);&quot;);</span>
+<span class="fc" id="L194">        return sb.toString();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

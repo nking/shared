@@ -366,13 +366,13 @@ import no.uib.cipr.matrix.SVD;
         
 <span class="fc" id="L367">        int rank = 0;</span>
 <span class="fc bfc" id="L368" title="All 2 branches covered.">        for (i = 0; i &lt; s.length; ++i) {</span>
-<span class="pc bpc" id="L369" title="1 of 2 branches missed.">            if (Math.abs(s[i]) &gt; eps) {</span>
+<span class="fc bfc" id="L369" title="All 2 branches covered.">            if (Math.abs(s[i]) &gt; eps) {</span>
 <span class="fc" id="L370">                rank++;</span>
             }
         }
         
-<span class="pc bpc" id="L374" title="1 of 2 branches missed.">        if (rank == 0) {</span>
-<span class="nc" id="L375">            throw new IllegalArgumentException(&quot;factorization cannot continue as&quot;</span>
+<span class="fc bfc" id="L374" title="All 2 branches covered.">        if (rank == 0) {</span>
+<span class="fc" id="L375">            throw new IllegalArgumentException(&quot;factorization cannot continue as&quot;</span>
             + &quot; the number of selected indexes is too small&quot;);
         }
         

@@ -82,7 +82,7 @@ import java.util.concurrent.ThreadLocalRandom;
 <span class="fc" id="L82">                    continue;</span>
                 }
 <span class="pc bpc" id="L84" title="1 of 2 branches missed.">                if (!factors.contains(factor2)) {</span>
-<span class="nc" id="L85">                    factorsList.add(factor2);</span>
+<span class="fc" id="L85">                    factorsList.add(factor2);</span>
                 }
             }
         }
@@ -361,62 +361,64 @@ import java.util.concurrent.ThreadLocalRandom;
      * &lt;pre&gt;
      * Reference:
      * Joye, Paillier, and Vaudenay &quot;Efficient Generation of Prime Numbers&quot;
+     *
+     * see comments from from Aho &amp; Ullman above
      * &lt;/pre&gt;
      @param bitLength
      @param rand
      @return 
      */
     public static long naivePrimeGenerator(int bitLength, ThreadLocalRandom rand) {
-<span class="pc bpc" id="L370" title="1 of 2 branches missed.">        if (bitLength &lt; 2) {</span>
-<span class="nc" id="L371">            throw new IllegalStateException(&quot;bitLength must be &gt; 1&quot;);</span>
+<span class="pc bpc" id="L372" title="1 of 2 branches missed.">        if (bitLength &lt; 2) {</span>
+<span class="nc" id="L373">            throw new IllegalStateException(&quot;bitLength must be &gt; 1&quot;);</span>
         }
         // generate a random n-bit odd number and test it for primality and return
         //    when true.
         //    the expected number of iterations is bitLength * log_2(2)/2 = 0.347*bitLength
         // it should find a 32 bit number in 11 iterations.
-<span class="fc" id="L377">        int s = 10; // can increase to 100 for very high accuracy</span>
-<span class="fc" id="L378">        int maxIter = (int) Math.ceil(0.347 * bitLength);</span>
-<span class="fc" id="L379">        int nIter = 0;</span>
+<span class="fc" id="L379">        int s = 10; // can increase to 100 for very high accuracy</span>
+<span class="fc" id="L380">        int maxIter = (int) Math.ceil(0.347 * bitLength);</span>
+<span class="fc" id="L381">        int nIter = 0;</span>
         long q;
         do {
-<span class="fc" id="L382">            q = generateRandomOdd(bitLength, rand);</span>
-<span class="fc" id="L383">            nIter++;</span>
-<span class="pc bpc" id="L384" title="1 of 2 branches missed.">        } while ( !probablyPrime(q, s));</span>
+<span class="fc" id="L384">            q = generateRandomOdd(bitLength, rand);</span>
+<span class="fc" id="L385">            nIter++;</span>
+<span class="pc bpc" id="L386" title="1 of 2 branches missed.">        } while ( !probablyPrime(q, s));</span>
         
-<span class="fc" id="L386">        System.out.printf(&quot;nIter=%d, max expected=%d prime=%d\n&quot;, nIter, maxIter, q);</span>
+<span class="fc" id="L388">        System.out.printf(&quot;nIter=%d, max expected=%d prime=%d\n&quot;, nIter, maxIter, q);</span>
         
-<span class="fc" id="L388">        return q;</span>
+<span class="fc" id="L390">        return q;</span>
     }
     
     static long generateRandomOdd(int bitlength, ThreadLocalRandom rand) {
         // for bit length n=3:  [(1&lt;&lt;(n-1)), (1&lt;&lt;n)-1 ] 4 thru 7, '100' thru '111'
-<span class="fc" id="L393">        long q = rand.nextLong((1&lt;&lt;(bitlength - 1)), (1 &lt;&lt; bitlength) - 1) ;</span>
-<span class="fc" id="L394">        System.out.printf(&quot;bitlength=%d rand=%d\n&quot;, bitlength, q);</span>
-<span class="fc" id="L395">        q &lt;&lt;= 1L;</span>
-<span class="fc" id="L396">        q |= 1;</span>
-<span class="fc" id="L397">        return q;</span>
+<span class="fc" id="L395">        long q = rand.nextLong((1&lt;&lt;(bitlength - 1)), (1 &lt;&lt; bitlength) - 1) ;</span>
+<span class="fc" id="L396">        System.out.printf(&quot;bitlength=%d rand=%d\n&quot;, bitlength, q);</span>
+<span class="fc" id="L397">        q &lt;&lt;= 1L;</span>
+<span class="fc" id="L398">        q |= 1;</span>
+<span class="fc" id="L399">        return q;</span>
     }
 
     private static long multiply(TLongSet factors) {
-<span class="nc" id="L401">        TLongIterator iter = factors.iterator();</span>
-<span class="nc" id="L402">        long m = 1;</span>
-<span class="nc bnc" id="L403" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
-<span class="nc" id="L404">            m *= iter.next();</span>
+<span class="nc" id="L403">        TLongIterator iter = factors.iterator();</span>
+<span class="nc" id="L404">        long m = 1;</span>
+<span class="nc bnc" id="L405" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
+<span class="nc" id="L406">            m *= iter.next();</span>
         }
-<span class="nc" id="L406">        return m;</span>
+<span class="nc" id="L408">        return m;</span>
     }
     
     private static long max(TLongSet factors) {
-<span class="nc" id="L410">        TLongIterator iter = factors.iterator();</span>
-<span class="nc" id="L411">        long m = Long.MIN_VALUE;</span>
+<span class="nc" id="L412">        TLongIterator iter = factors.iterator();</span>
+<span class="nc" id="L413">        long m = Long.MIN_VALUE;</span>
         long r;
-<span class="nc bnc" id="L413" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
-<span class="nc" id="L414">            r = iter.next();</span>
-<span class="nc bnc" id="L415" title="All 2 branches missed.">            if (r &gt; m) {</span>
-<span class="nc" id="L416">                m = r;</span>
+<span class="nc bnc" id="L415" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
+<span class="nc" id="L416">            r = iter.next();</span>
+<span class="nc bnc" id="L417" title="All 2 branches missed.">            if (r &gt; m) {</span>
+<span class="nc" id="L418">                m = r;</span>
             }
         }
-<span class="nc" id="L419">        return m;</span>
+<span class="nc" id="L421">        return m;</span>
     }
     
     /**
@@ -428,7 +430,7 @@ import java.util.concurrent.ThreadLocalRandom;
      @return 
      */
     public static int numberOfPrimes(int n) {
-<span class="nc" id="L431">        return (int)Math.floor((double)n/Math.log(n));</span>
+<span class="fc" id="L433">        return (int)Math.floor((double)n/Math.log(n));</span>
     }
     
      
@@ -442,14 +444,15 @@ import java.util.concurrent.ThreadLocalRandom;
         // for 32 bit  2147483647 which is a Mersenne prime
         // for 62 bit  2305843009213693951
         //     64 bits 9223372036854775783
-<span class="nc" id="L445">        String arch = System.getProperty(&quot;sun.arch.data.model&quot;);</span>
+<span class="nc" id="L447">        String arch = System.getProperty(&quot;sun.arch.data.model&quot;);</span>
 
-<span class="nc bnc" id="L447" title="All 4 branches missed.">        boolean is32Bit = ((arch != null) &amp;&amp; arch.equals(&quot;64&quot;)) ? false : true;</span>
+<span class="nc bnc" id="L449" title="All 4 branches missed.">        boolean is32Bit = ((arch != null) &amp;&amp; arch.equals(&quot;64&quot;)) ? false : true;</span>
         
-<span class="nc bnc" id="L449" title="All 2 branches missed.">        if (is32Bit) {</span>
-<span class="nc" id="L450">            return 2147483647l;</span>
+<span class="nc bnc" id="L451" title="All 2 branches missed.">        if (is32Bit) {</span>
+            //Integer.MAX_VALUE is prime
+<span class="nc" id="L453">            return 2147483647l;</span>
         } else {
-<span class="nc" id="L452">            return 9223372036854775783l;</span>
+<span class="nc" id="L455">            return 9223372036854775783l;</span>
         }
     }
 
@@ -463,30 +466,33 @@ import java.util.concurrent.ThreadLocalRandom;
      * @return
      */
     public static int[] allPrimesLessThanN(int n) {
-<span class="pc bpc" id="L466" title="1 of 2 branches missed.">        if (n &lt; 2) {</span>
-<span class="nc" id="L467">            throw new UnsupportedOperationException(&quot;n must be &gt; 1&quot;);</span>
-<span class="pc bpc" id="L468" title="1 of 2 branches missed.">        } else if (n == 2) {</span>
-<span class="nc" id="L469">            return new int[]{};</span>
-<span class="pc bpc" id="L470" title="1 of 2 branches missed.">        } else if (n == 3) {</span>
-<span class="nc" id="L471">            return new int[]{3};</span>
+<span class="pc bpc" id="L469" title="1 of 2 branches missed.">        if (n &lt; 2) {</span>
+<span class="nc" id="L470">            throw new UnsupportedOperationException(&quot;n must be &gt; 1&quot;);</span>
+<span class="pc bpc" id="L471" title="1 of 2 branches missed.">        } else if (n == 2) {</span>
+<span class="nc" id="L472">            return new int[]{2};</span>
+<span class="pc bpc" id="L473" title="1 of 2 branches missed.">        } else if (n == 3) {</span>
+<span class="nc" id="L474">            return new int[]{2,3};</span>
         }
-<span class="fc" id="L473">        VeryLongBitString b = new VeryLongBitString(n);</span>
-        int i;
-<span class="fc bfc" id="L475" title="All 2 branches covered.">        for (i = 2; i &lt; n; ++i) {</span>
-<span class="fc" id="L476">            b.setBit(i);</span>
-        }
+<span class="fc" id="L476">        VeryLongBitString b = new VeryLongBitString(n);</span>
+<span class="fc" id="L477">        b.setAllBits();</span>
+<span class="fc" id="L478">        b.clearBit(0);</span>
+<span class="fc" id="L479">        b.clearBit(1);</span>
+
+<span class="fc" id="L481">        int sqrtN = (int)Math.ceil(Math.sqrt(n));</span>
         int j;
-<span class="fc bfc" id="L479" title="All 2 branches covered.">        for (i = 2; i &lt; (int)Math.sqrt(n); ++i) {</span>
-<span class="fc bfc" id="L480" title="All 2 branches covered.">            if (b.isSet(i)) {</span>
-<span class="fc bfc" id="L481" title="All 4 branches covered.">                for (j = i*i; j &lt; n &amp;&amp; j &lt;= (Integer.MAX_VALUE - i); j+=i) {</span>
+<span class="fc bfc" id="L483" title="All 2 branches covered.">        for (int i = 2; i &lt; sqrtN; ++i) {</span>
+<span class="fc bfc" id="L484" title="All 2 branches covered.">            if (b.isSet(i)) {</span>
+<span class="pc bpc" id="L485" title="1 of 4 branches missed.">                for (j = i*i; j &lt; n &amp;&amp; j &lt;= (Integer.MAX_VALUE - i); j+=i) {</span>
                     // remove all multiples of i
-<span class="fc" id="L483">                    b.clearBit(j);</span>
+<span class="fc" id="L487">                    b.clearBit(j);</span>
                 }
             }
         }
-<span class="fc" id="L487">        b.clearBit(2);</span>
 
-<span class="fc" id="L489">        return b.getSetBits();</span>
+<span class="fc" id="L492">        return b.getSetBits();</span>
+    }
+    public static long getMarsennePrime(int powerOf2) {
+<span class="nc" id="L495">        return MiscMath0.getMarsennePrime(powerOf2);</span>
     }
     
 }

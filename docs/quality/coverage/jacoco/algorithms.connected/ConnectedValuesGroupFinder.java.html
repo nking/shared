@@ -25,10 +25,10 @@ import java.util.logging.Logger;
  */
 <span class="fc" id="L26">public class ConnectedValuesGroupFinder implements IConnectedValuesGroupFinder {</span>
 
-<span class="fc" id="L28">    private final DisjointSet2Helper disjointSetHelper = new DisjointSet2Helper();</span>
+<span class="fc" id="L28">    protected final DisjointSet2Helper disjointSetHelper = new DisjointSet2Helper();</span>
 
     // key = pixIdx, value = disjoint set node with key pixIdx
-<span class="fc" id="L31">    private TLongObjectMap&lt;DisjointSet2Node&lt;Long&gt;&gt; pixNodes = null;</span>
+<span class="fc" id="L31">    protected TLongObjectMap&lt;DisjointSet2Node&lt;Long&gt;&gt; pixNodes = null;</span>
 
     /**
      * uses the 4 neighbor region if true, else the 8-neighbor region
@@ -206,7 +206,7 @@ import java.util.logging.Logger;
 <span class="fc" id="L206">        pixNodes.put(vReprNode.getMember().longValue(), mergedNode);</span>
 <span class="fc" id="L207">    }</span>
 
-    private List&lt;TLongSet&gt; prune() {
+    protected List&lt;TLongSet&gt; prune() {
 
         // key = repr node index, value = set of pixels w/ repr
 <span class="fc" id="L212">        TLongObjectMap&lt;TLongSet&gt; map = new TLongObjectHashMap&lt;TLongSet&gt;();</span>

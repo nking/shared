@@ -1609,16 +1609,16 @@ import java.util.logging.Logger;
      */
     public static int numberOfBinsDoane(double[] data) {
 
-<span class="fc" id="L1612">        double g1 = MiscMath0.calcSampleSkewness(data);</span>
+<span class="nc" id="L1612">        double g1 = MiscMath0.calcSampleSkewness(data);</span>
 
-<span class="fc" id="L1614">        int n = data.length;</span>
+<span class="nc" id="L1614">        int n = data.length;</span>
 
-<span class="fc" id="L1616">        double sigmaG1 = Math.sqrt(  (6.*(n-2.))/((n+1.)*(n+3.)));</span>
+<span class="nc" id="L1616">        double sigmaG1 = Math.sqrt(  (6.*(n-2.))/((n+1.)*(n+3.)));</span>
 
-<span class="fc" id="L1618">        double t2 = Math.log(n)/Math.log(2);</span>
-<span class="fc" id="L1619">        double t3 = Math.log(1. + (Math.abs(g1)/sigmaG1))/Math.log(2);</span>
-<span class="fc" id="L1620">        double nBins = 1 + t2 + t3;</span>
-<span class="fc" id="L1621">        return (int)nBins;</span>
+<span class="nc" id="L1618">        double t2 = Math.log(n)/Math.log(2);</span>
+<span class="nc" id="L1619">        double t3 = Math.log(1. + (Math.abs(g1)/sigmaG1))/Math.log(2);</span>
+<span class="nc" id="L1620">        double nBins = 1 + t2 + t3;</span>
+<span class="nc" id="L1621">        return (int)nBins;</span>
     }
 
     /**

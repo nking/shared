@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BFSBiDirectional.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.shortestPaths</a> &gt; <span class="el_source">BFSBiDirectional.java</span></div><h1>BFSBiDirectional.java</h1><pre class="source lang-java linenums">package algorithms.shortestPaths;
+
+import java.util.*;
+
+/**
+ * perform Breadth First search bi-directionally from src to destination, a.k.a. 2-end BFS.
+ *
+ * Note that the search by one direction, then the other, was adapted from the book
+ * &quot;Cracking the Code Interview, 6th Ed. by Gayle Laakmann McDowell.
+ *
+ * Bi-directional BFS runtime complexity is O(b^(d/2)) where b is the branching factor and d is the distance from
+ * start to destination.
+ * BFS without the bi-directional search is O(b^d).
+ *
+ * Bi-directional search works best when the branching factors from both ends are similar.
+ *
+ * @author Nichole
+ */
+<span class="nc" id="L19">public class BFSBiDirectional {</span>
+    Map&lt;Integer, Integer&gt; visitedS;
+    Map&lt;Integer, Integer&gt; visitedD;
+    Map&lt;Integer, Integer&gt; dS;
+    Map&lt;Integer, Integer&gt; dD;
+    Map&lt;Integer, Integer&gt; prevS;
+    Map&lt;Integer, Integer&gt; prevD;
+    Map&lt;Integer, Set&lt;Integer&gt;&gt; adjMap;
+
+    public List&lt;Integer&gt; search(Map&lt;Integer, Set&lt;Integer&gt;&gt; adjMap, int src, int dest) {
+<span class="nc bnc" id="L29" title="All 4 branches missed.">        if (adjMap == null || adjMap.isEmpty()) {</span>
+<span class="nc" id="L30">            throw new IllegalArgumentException(&quot;adjMap cannot be null or empty&quot;);</span>
+        }
+<span class="nc" id="L32">        this.adjMap = adjMap;</span>
+        // init
+<span class="nc" id="L34">        int n = adjMap.size();</span>
+<span class="nc" id="L35">        visitedS = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L36">        visitedD = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L37">        dS = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L38">        dD = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L39">        prevS = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L40">        prevD = new HashMap&lt;&gt;();</span>
+
+<span class="nc" id="L42">        java.util.Queue&lt;Integer&gt; qS = new ArrayDeque&lt;Integer&gt;();</span>
+<span class="nc" id="L43">        java.util.Queue&lt;Integer&gt; qD = new ArrayDeque&lt;Integer&gt;();</span>
+<span class="nc" id="L44">        visitedS.put(src, 1);</span>
+<span class="nc" id="L45">        dS.put(src, 0);</span>
+<span class="nc" id="L46">        visitedD.put(dest, 1);</span>
+<span class="nc" id="L47">        dD.put(dest, 0);</span>
+<span class="nc" id="L48">        qS.offer(src);</span>
+<span class="nc" id="L49">        qD.offer(dest);</span>
+
+<span class="nc bnc" id="L51" title="All 4 branches missed.">        while (!qS.isEmpty() &amp;&amp; !qD.isEmpty()) {</span>
+<span class="nc" id="L52">            Integer collisionId = searchLevel(qS, visitedS, visitedD, dS, prevS);</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">            if (collisionId != null) {</span>
+<span class="nc" id="L54">                return mergePaths(collisionId);</span>
+            }
+<span class="nc" id="L56">            collisionId = searchLevel(qD, visitedD, visitedS, dD, prevD);</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">            if (collisionId != null) {</span>
+<span class="nc" id="L58">                return mergePaths(collisionId);</span>
+            }
+<span class="nc" id="L60">        }</span>
+<span class="nc" id="L61">        return null;</span>
+    }
+
+    protected Integer searchLevel(Queue&lt;Integer&gt; q0,
+                                  Map&lt;Integer, Integer&gt; visited0, Map&lt;Integer, Integer&gt; visited1,
+                                  Map&lt;Integer, Integer&gt; d0,
+                                  Map&lt;Integer, Integer&gt; prev0) {
+
+<span class="nc" id="L69">        int nS = q0.size();</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">        for (int i = 0; i &lt; nS; i++) {</span>
+<span class="nc" id="L71">            int u = q0.poll();</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">            if (visited1.containsKey(u)) {</span>
+<span class="nc" id="L73">                return u;</span>
+            }
+<span class="nc" id="L75">            Set&lt;Integer&gt; vS = adjMap.get(u);</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">            if (vS != null) {</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">                for (int v : vS) {</span>
+<span class="nc bnc" id="L78" title="All 4 branches missed.">                    if (!d0.containsKey(v) || (d0.get(v) &gt; d0.get(u) + 1)) {</span>
+<span class="nc" id="L79">                        d0.put(v, d0.get(u) + 1);</span>
+<span class="nc" id="L80">                        prev0.put(v, u);</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">                        if (!visited0.containsKey(v)) {</span>
+<span class="nc" id="L82">                            visited0.put(v, 1);</span>
+<span class="nc" id="L83">                            q0.offer(v);</span>
+                        }
+                    }
+<span class="nc" id="L86">                }</span>
+            }
+        }
+<span class="nc" id="L89">        return null;</span>
+    }
+
+    public List&lt;Integer&gt; mergePaths(int connection) {
+<span class="nc" id="L93">        List&lt;Integer&gt; path = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L94">        Integer prev = connection;</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">        while (prev != null) {</span>
+<span class="nc" id="L96">            path.add(prev);</span>
+<span class="nc" id="L97">            prev = prevS.get(prev);</span>
+        }
+        // reverse order to put src at beginning
+<span class="nc" id="L100">        int n = path.size();</span>
+        int swap;
+<span class="nc bnc" id="L102" title="All 2 branches missed.">        for (int i = 0; i &lt; n/2; ++i) {</span>
+<span class="nc" id="L103">            swap = path.get(n-i-1);</span>
+<span class="nc" id="L104">            path.set(n-i-1, path.get(i));</span>
+<span class="nc" id="L105">            path.set(i, swap);</span>
+        }
+<span class="nc" id="L107">        prev = prevD.get(connection);</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">        while (prev != null) {</span>
+<span class="nc" id="L109">            path.add(prev);</span>
+<span class="nc" id="L110">            prev = prevD.get(prev);</span>
+        }
+<span class="nc" id="L112">        return path;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

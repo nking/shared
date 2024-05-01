@@ -330,48 +330,36 @@ import java.util.Queue;
         //NOTE: could use java's BigInteger, but that creates a new BigInteger 
         //      for every modifying operation such as setBit().
 <span class="fc" id="L332">        VeryLongBitString encoded = new VeryLongBitString(nE);</span>
-       
-        /*
-        network data is usually passed as big endian
-            example integer: 0A0B0C0D
 
-                       Big        Little 
-                       Endian:    Endian:
-            memory
-            address
-                a     0A           0D
-              a+1     0B           0C
-              a+2     0C           0B
-              a+3     0D           0A
-        */
-         
         int cP;
         int s;
-<span class="fc" id="L350">        long b = 0;</span>
+<span class="fc" id="L336">        long b = 0;</span>
         long b2;
         int nB;
-<span class="fc bfc" id="L353" title="All 2 branches covered.">        for (int i = 0; i &lt; c.length(); ++i) {</span>
-<span class="fc" id="L354">            cP = c.codePointAt(i);</span>
-<span class="fc" id="L355">            s = codeSymbolMap.get(cP);</span>
+<span class="fc bfc" id="L339" title="All 2 branches covered.">        for (int i = 0; i &lt; c.length(); ++i) {</span>
+<span class="fc" id="L340">            cP = c.codePointAt(i);</span>
+<span class="fc" id="L341">            s = codeSymbolMap.get(cP);</span>
             
-<span class="fc" id="L357">            nB = MiscMath0.numberOfBits(s);</span>
+<span class="fc" id="L343">            nB = MiscMath0.numberOfBits(s);</span>
+
+            //TODO: revisit one day
             
             // set bits, reversing them from b to b+nB for the bit-string tree path
             // _ _ _ _ _ _  b=0, nB=3   7 6 5 4 3 2 1 0
             //              s=100: write s[0] to  c[(b+nB-1)]
-<span class="fc" id="L362">            b2 = b + nB - 1;</span>
-<span class="fc bfc" id="L363" title="All 2 branches covered.">            while (nB &gt; 0) {</span>
-<span class="fc bfc" id="L364" title="All 2 branches covered.">                if ((s &amp; 1) == 1) {</span>
-<span class="fc" id="L365">                    encoded.setBit(b2);</span>
+<span class="fc" id="L350">            b2 = b + nB - 1;</span>
+<span class="fc bfc" id="L351" title="All 2 branches covered.">            while (nB &gt; 0) {</span>
+<span class="fc bfc" id="L352" title="All 2 branches covered.">                if ((s &amp; 1) == 1) {</span>
+<span class="fc" id="L353">                    encoded.setBit(b2);</span>
                 }
-<span class="fc" id="L367">                s &gt;&gt;= 1;</span>
-<span class="fc" id="L368">                ++b;</span>
-<span class="fc" id="L369">                --nB;</span>
-<span class="fc" id="L370">                --b2;</span>
+<span class="fc" id="L355">                s &gt;&gt;= 1;</span>
+<span class="fc" id="L356">                ++b;</span>
+<span class="fc" id="L357">                --nB;</span>
+<span class="fc" id="L358">                --b2;</span>
             }
         }
         
-<span class="fc" id="L374">        return encoded;</span>
+<span class="fc" id="L362">        return encoded;</span>
     }
     
     /**
@@ -384,40 +372,40 @@ import java.util.Queue;
      */
     public String decompress(HeapNode symbolTree, VeryLongBitString encoded) {
         
-<span class="fc" id="L387">        StringBuilder sb = new StringBuilder();</span>
+<span class="fc" id="L375">        StringBuilder sb = new StringBuilder();</span>
         
-<span class="fc" id="L389">        HeapNode node = symbolTree;</span>
+<span class="fc" id="L377">        HeapNode node = symbolTree;</span>
              
-<span class="pc bpc" id="L391" title="1 of 2 branches missed.">        if (node == null) {</span>
-<span class="nc" id="L392">            return &quot;&quot;;</span>
+<span class="pc bpc" id="L379" title="1 of 2 branches missed.">        if (node == null) {</span>
+<span class="nc" id="L380">            return &quot;&quot;;</span>
         }
         
-<span class="fc" id="L395">        long n = encoded.getInstantiatedBitSize();</span>
+<span class="fc" id="L383">        long n = encoded.getInstantiatedBitSize();</span>
         long i;
         int cP;
-<span class="fc bfc" id="L398" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc bfc" id="L399" title="All 4 branches covered.">            if (node.getLeft() == null &amp;&amp; node.getRight() == null) {</span>
+<span class="fc bfc" id="L386" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc bfc" id="L387" title="All 4 branches covered.">            if (node.getLeft() == null &amp;&amp; node.getRight() == null) {</span>
                 
                 // this is a leaf node, so we have a letter in the decoded alphabet now
-<span class="fc" id="L402">                cP = (Integer)node.getData();</span>
+<span class="fc" id="L390">                cP = (Integer)node.getData();</span>
                 
-<span class="fc" id="L404">                sb.append(Character.toChars(cP));</span>
-<span class="fc" id="L405">                node = symbolTree;</span>
+<span class="fc" id="L392">                sb.append(Character.toChars(cP));</span>
+<span class="fc" id="L393">                node = symbolTree;</span>
             }
             
-<span class="fc bfc" id="L408" title="All 2 branches covered.">            if (encoded.isSet(i)) {</span>
-<span class="fc" id="L409">                node = node.getRight();</span>
+<span class="fc bfc" id="L396" title="All 2 branches covered.">            if (encoded.isSet(i)) {</span>
+<span class="fc" id="L397">                node = node.getRight();</span>
             } else {
-<span class="fc" id="L411">                node = node.getLeft();</span>
+<span class="fc" id="L399">                node = node.getLeft();</span>
             }
         }
         
-<span class="pc bpc" id="L415" title="2 of 4 branches missed.">        if (node != null &amp;&amp; node.getData() != null) {</span>
-<span class="fc" id="L416">            cP = (Integer)node.getData();</span>
-<span class="fc" id="L417">            sb.append(Character.toChars(cP));</span>
+<span class="pc bpc" id="L403" title="2 of 4 branches missed.">        if (node != null &amp;&amp; node.getData() != null) {</span>
+<span class="fc" id="L404">            cP = (Integer)node.getData();</span>
+<span class="fc" id="L405">            sb.append(Character.toChars(cP));</span>
         }
         
-<span class="fc" id="L420">        return sb.toString();</span>
+<span class="fc" id="L408">        return sb.toString();</span>
     }
     
     private HeapNode repairToUniqueIfNeeded(HeapNode t) {
@@ -431,39 +419,39 @@ import java.util.Queue;
         // add a new root node to top of the tree t and assign the existing tree to its right
         // assign the leaf to the new root's left 
         
-<span class="pc bpc" id="L434" title="1 of 4 branches missed.">        if (!(t.getLeft() != null &amp;&amp; t.getLeft().getLeft() != null)) {</span>
-<span class="fc" id="L435">            return t;</span>
+<span class="pc bpc" id="L422" title="1 of 4 branches missed.">        if (!(t.getLeft() != null &amp;&amp; t.getLeft().getLeft() != null)) {</span>
+<span class="fc" id="L423">            return t;</span>
         }
        
-<span class="fc" id="L438">        HeapNode p = t;</span>
-<span class="fc" id="L439">        HeapNode leaf = p.getLeft();</span>
+<span class="fc" id="L426">        HeapNode p = t;</span>
+<span class="fc" id="L427">        HeapNode leaf = p.getLeft();</span>
                 
-<span class="fc bfc" id="L441" title="All 2 branches covered.">        while (leaf.getLeft() != null) {</span>
-<span class="fc" id="L442">            p = leaf;</span>
-<span class="fc" id="L443">            leaf = leaf.getLeft();</span>
+<span class="fc bfc" id="L429" title="All 2 branches covered.">        while (leaf.getLeft() != null) {</span>
+<span class="fc" id="L430">            p = leaf;</span>
+<span class="fc" id="L431">            leaf = leaf.getLeft();</span>
         }
         
         //System.out.printf(&quot;remove leaf=(%d,%d), p=(%d,%d)\n&quot;, 
         //    leaf.getKey(), (Integer)leaf.getData(), p.getKey(), (Integer)p.getData());
-<span class="fc" id="L448">        p.setLeft(null);</span>
+<span class="fc" id="L436">        p.setLeft(null);</span>
         
-<span class="fc" id="L450">        HeapNode r = new HeapNode(t.getKey() - 1);</span>
-<span class="fc" id="L451">        r.setRight(t);</span>
-<span class="fc" id="L452">        r.setLeft(leaf);</span>
+<span class="fc" id="L438">        HeapNode r = new HeapNode(t.getKey() - 1);</span>
+<span class="fc" id="L439">        r.setRight(t);</span>
+<span class="fc" id="L440">        r.setLeft(leaf);</span>
         
         //System.out.println(&quot;repaired tree:&quot;);
         //TreeTraversal.printLevelOrder(r);
         
-<span class="fc" id="L457">        return r;</span>
+<span class="fc" id="L445">        return r;</span>
     }
     
     private static void printMap(TIntIntMap f) {
-<span class="nc" id="L461">        TIntIntIterator iter = f.iterator();</span>
-<span class="nc bnc" id="L462" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
-<span class="nc" id="L463">            iter.advance();</span>
-<span class="nc" id="L464">            System.out.printf(&quot;key=%d, v=%d\n&quot;, iter.key(), iter.value());</span>
+<span class="nc" id="L449">        TIntIntIterator iter = f.iterator();</span>
+<span class="nc bnc" id="L450" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
+<span class="nc" id="L451">            iter.advance();</span>
+<span class="nc" id="L452">            System.out.printf(&quot;key=%d, v=%d\n&quot;, iter.key(), iter.value());</span>
         }
-<span class="nc" id="L466">    }</span>
+<span class="nc" id="L454">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

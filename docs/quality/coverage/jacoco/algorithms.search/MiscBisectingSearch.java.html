@@ -1,0 +1,510 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MiscBisectingSearch.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.search</a> &gt; <span class="el_source">MiscBisectingSearch.java</span></div><h1>MiscBisectingSearch.java</h1><pre class="source lang-java linenums">package algorithms.search;
+
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * useful methods for bisecting search, a.k.a. binary search
+ */
+<span class="nc" id="L9">public class MiscBisectingSearch {</span>
+
+    /**
+     * finds where srch would be inserted such that all keys at indexes &lt; resulting index
+     * have smaller values than srch.   if srch is larger than all array elements,
+     * this method returns an index larger than last array index.
+     &lt;pre&gt;
+
+     a = [2, 2]
+     srch = 1,
+     returns index 0
+
+     a = [2, 2]
+     srch = 2,
+     returns index 2
+
+     a = [2, 2]
+     srch = 2,
+     returns index 2
+     &lt;/pre&gt;
+     * @param a
+     * @param srch
+     * @return smallest index i such that a[i] is GT srch.
+     * range of returned value is is [0, n] where n is a.length.
+     */
+    public static int successor(int[] a, int srch) {
+<span class="fc" id="L35">        int lo = 0;</span>
+<span class="fc" id="L36">        int hi = a.length - 1;</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        while (lo &lt;= hi) {</span>
+<span class="fc" id="L38">            int mid = lo + (hi - lo) / 2;</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">            if (a[mid] &lt;= srch) {</span>
+<span class="fc" id="L40">                lo = mid + 1;</span>
+            } else {
+<span class="fc" id="L42">                hi = mid - 1;</span>
+            }
+<span class="fc" id="L44">        }</span>
+<span class="fc" id="L45">        return lo;</span>
+    }
+
+    /**
+     * find the least index i whose value a]i] EQ srch, else finds the least index i
+     * whose value a[i] is GT srch.
+     * The method returns indexes in the range [-1, a.length], inclusive.
+     * The return valye of a.length means that srch is larger than all values in the array.
+     *
+     * Note that one could instead use the java.util.Arrays.binarySearch(...) and if the index is
+     * negative, you can convert it with mult by -1 and then subtract 1 (
+     * i.e. idx = -(insertion point) - 1, so insertion point = -idx - 1).
+     * @param a
+     * @param srch
+     * @return
+     * range is [0, n] inclusive where n = a.length.
+     */
+    public static int findInsertIndex(int[] a, int srch) {
+<span class="fc" id="L63">        int lo = 0;</span>
+<span class="fc" id="L64">        int hi = a.length - 1;</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">        while (lo &lt;= hi) {</span>
+<span class="fc" id="L66">            int mid = lo + (hi - lo) / 2;</span>
+            // NOTE: the successor method uses &lt;= here:
+<span class="fc bfc" id="L68" title="All 2 branches covered.">            if (a[mid] &lt; srch) {</span>
+<span class="fc" id="L69">                lo = mid + 1;</span>
+            } else {
+<span class="fc" id="L71">                hi = mid - 1;</span>
+            }
+<span class="fc" id="L73">        }</span>
+<span class="fc" id="L74">        return lo;</span>
+    }
+
+    /**
+     * find the least index i whose value a]i] EQ srch, else finds the least index i
+     * whose value a[i] is GT srch.
+     * The method returns indexes in the range [-1, a.length], inclusive.
+     * The return valye of a.length means that srch is larger than all values in the array.
+     *
+     * Note that one could instead use the java.util.Arrays.binarySearch(...) and if the index is
+     * negative, you can convert it with mult by -1 and then subtract 1 (
+     * i.e. idx = -(insertion point) - 1, so insertion point = -idx - 1).
+     * @param a
+     * @param srch
+     * @return
+     * range is [0, n] inclusive where n = a.length.
+     */
+    public static int findInsertIndex(List&lt;Integer&gt; a, int srch) {
+<span class="fc" id="L92">        int lo = 0;</span>
+<span class="fc" id="L93">        int hi = a.size() - 1;</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">        while (lo &lt;= hi) {</span>
+<span class="fc" id="L95">            int mid = lo + (hi - lo) / 2;</span>
+            // NOTE: the successor method uses &lt;= here:
+<span class="fc bfc" id="L97" title="All 2 branches covered.">            if (a.get(mid) &lt; srch) {</span>
+<span class="fc" id="L98">                lo = mid + 1;</span>
+            } else {
+<span class="fc" id="L100">                hi = mid - 1;</span>
+            }
+<span class="fc" id="L102">        }</span>
+<span class="fc" id="L103">        return lo;</span>
+    }
+
+    /**
+     * finds where srch would be inserted such that all keys at indexes &lt; resulting index
+     * have smaller values than srch.   if srch is larger than all array elements,
+     * this method returns an index larger than last array index.
+     &lt;pre&gt;
+
+     a = [2, 2]
+     srch = 1,
+     returns index 0
+
+     a = [2, 2]
+     srch = 2,
+     returns index 2
+
+     a = [2, 2]
+     srch = 2,
+     returns index 2
+     &lt;/pre&gt;
+     * @param a
+     * @param srch
+     * @return smallest index i such that a[i] is GT srch.
+     * range of returned value is is [0, n] where n is a.length.
+     */
+    public static int successor(List&lt;Integer&gt; a, int srch) {
+<span class="fc" id="L130">        int lo = 0;</span>
+<span class="fc" id="L131">        int hi = a.size() - 1;</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">        while (lo &lt;= hi) {</span>
+<span class="fc" id="L133">            int mid = lo + (hi - lo) / 2;</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">            if (a.get(mid) &lt;= srch) {</span>
+<span class="fc" id="L135">                lo = mid + 1;</span>
+            } else {
+<span class="fc" id="L137">                hi = mid - 1;</span>
+            }
+<span class="fc" id="L139">        }</span>
+<span class="fc" id="L140">        return lo;</span>
+    }
+
+    /**
+     Finds the smallest index for which value == srch, or if doesn't exist,
+     finds the largest index for which the value is LT srch.
+
+     * This is a floor function.
+     *
+     * If the method returns -1, the srch is smaller than all elements in the
+     * array.
+     * if srch is larger than every element in list 'a', this method will return
+     * the last index of a.
+     &lt;pre&gt;
+     e.g.
+
+     a = [0,1,2,2,3]
+     srch = 2
+     returns  2
+
+     a = [0,3,4,4,6};
+     srch = 5;
+     returns 3
+
+     a = [2,3,4,4,6};
+     srch = 0;
+     returns -1
+
+     a = [2,3,4,4,6};
+     srch = 7;
+     returs 4
+
+     &lt;/pre&gt;
+     * @param a an ascending ordered list (non-decreasing, adjacent values can be ==).
+     * @param srch the value to search for in a
+     * @return the floor index, that is,
+     * finds the smallest index for which value == srch, or if doesn't exist,
+     *      finds the largest index for which the value is LT srch.
+     *      range of values from floor is [-1, a.length-1] inclusive.
+     */
+    public static int floor(int[] a, int srch) {
+<span class="fc" id="L181">        return floor(a, srch, 0, a.length - 1);</span>
+    }
+
+    /**
+     Finds the smallest index for which value == srch, or if doesn't exist,
+     finds the largest index for which the value is LT srch.
+
+     * This is a floor function.
+     *
+     * If the method returns -1, the srch is smaller than all elements in the
+     * array.
+     * if srch is larger than every element in list 'a', this method will return
+     * the last index of a.
+     &lt;pre&gt;
+     e.g.
+
+     a = [0,1,2,2,3]
+     srch = 2
+     returns  2
+
+     a = [0,3,4,4,6};
+     srch = 5;
+     returns 3
+
+     a = [2,3,4,4,6};
+     srch = 0;
+     returns -1
+
+     a = [2,3,4,4,6};
+     srch = 7;
+     returs 4
+
+     &lt;/pre&gt;
+     * @param a an ascending ordered list (non-decreasing, adjacent values can be ==).
+     * @param srch the value to search for in a
+     * @param lo smallest index for search range
+     * @param hi largets index for search range, inclusive.
+     * @return the floor index, that is,
+     * finds the smallest index for which value == srch, or if doesn't exist,
+     *      finds the largest index for which the value is LT srch.
+     *      range of values from floor is [-1, a.length-1] inclusive.
+     */
+    public static int floor(int[] a, int srch, int lo, int hi) {
+<span class="fc bfc" id="L224" title="All 2 branches covered.">        if (srch &lt; a[lo]) {</span>
+<span class="fc" id="L225">            return -1;</span>
+        }
+<span class="fc bfc" id="L227" title="All 2 branches covered.">        while (lo &lt;= hi) {</span>
+<span class="fc" id="L228">            int mid = lo + (hi - lo) / 2;</span>
+<span class="fc bfc" id="L229" title="All 2 branches covered.">            if (a[mid] == srch) {</span>
+                //we want the smallest index whose value == srch, so search further in lower half of array
+<span class="fc bfc" id="L231" title="All 2 branches covered.">                if (mid == lo) {</span>
+<span class="fc" id="L232">                    return mid;</span>
+                }
+<span class="fc" id="L234">                int idx = floor(a, srch, lo, mid - 1);</span>
+<span class="pc bpc" id="L235" title="2 of 4 branches missed.">                if (idx == -1 || a[idx] &lt; srch) {</span>
+<span class="fc" id="L236">                    return mid;</span>
+                }
+<span class="nc" id="L238">                return idx;</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">            } else if (a[mid] &lt; srch) {</span>
+<span class="fc" id="L240">                lo = mid + 1;</span>
+            } else {
+<span class="fc" id="L242">                hi = mid - 1;</span>
+            }
+<span class="fc" id="L244">        }</span>
+<span class="fc" id="L245">        return Math.min(lo, hi);</span>
+    }
+
+    /**
+     Finds the smallest index for which value == srch, or if doesn't exist,
+     finds the largest index for which the value is LT srch.
+
+     * This is a floor function.
+     *
+     * If the method returns -1, the srch is smaller than all elements in the
+     * array.
+     * if srch is larger than every element in list 'a', this method will return
+     * the last index of a.
+     &lt;pre&gt;
+     e.g.
+
+     a = [0,1,2,2,3]
+     srch = 2
+     returns  2
+
+     a = [0,3,4,4,6};
+     srch = 5;
+     returns 3
+
+     a = [2,3,4,4,6};
+     srch = 0;
+     returns -1
+
+     a = [2,3,4,4,6};
+     srch = 7;
+     returs 4
+
+     &lt;/pre&gt;
+     * @param a an ascending ordered list (non-decreasing, adjacent values can be ==).
+     * @param srch the value to search for in a
+     * @return the floor index, that is,
+     * finds the smallest index for which value == srch, or if doesn't exist,
+     *      finds the largest index for which the value is LT srch.
+     */
+    public static int floor(List&lt;Integer&gt; a, int srch) {
+<span class="fc" id="L285">        return floor(a, srch, 0, a.size() - 1);</span>
+    }
+    public static int floor(List&lt;Integer&gt; a, int srch, int lo, int hi) {
+<span class="fc bfc" id="L288" title="All 2 branches covered.">        if (srch &lt; a.get(lo)) {</span>
+<span class="fc" id="L289">            return -1;</span>
+        }
+<span class="fc bfc" id="L291" title="All 2 branches covered.">        while (lo &lt;= hi) {</span>
+<span class="fc" id="L292">            int mid = lo + (hi - lo) / 2;</span>
+<span class="fc bfc" id="L293" title="All 2 branches covered.">            if (a.get(mid) == srch) {</span>
+                //we want the smallest index whose value == srch, so search further in lower half of array
+<span class="fc" id="L295">                int idx = floor(a, srch, lo, mid - 1);</span>
+<span class="pc bpc" id="L296" title="2 of 4 branches missed.">                if (idx == -1 || a.get(idx) &lt; srch) return mid;</span>
+<span class="nc" id="L297">                return idx;</span>
+<span class="fc bfc" id="L298" title="All 2 branches covered.">            } else if (a.get(mid) &lt; srch) {</span>
+<span class="fc" id="L299">                lo = mid + 1;</span>
+            } else {
+<span class="fc" id="L301">                hi = mid - 1;</span>
+            }
+<span class="fc" id="L303">        }</span>
+<span class="fc" id="L304">        return Math.min(lo, hi);</span>
+    }
+
+    /**
+     * find the largest index i whose value a[i] EQ srch,
+     * else if no value exists this method returns the smallest index whose
+     * value is GT srch.  if all values in the array are less than srch, the
+     * method returns index == array size which is beyond bounds of array.
+     &lt;pre&gt;
+     for example:
+     a       = [1, 2, 3, 3, 4]
+     indexes =  0  1  2  3  4
+
+     ceil of srch=3 is index 3
+     ceil of srch=4 is index 4
+     ceil of srch=9 is index 5
+     ceil of srch=0 is index 0
+     &lt;/pre&gt;
+     * @param a an ascending ordered list (non-decreasing, adjacent values can be ==).
+     * @param srch the value to search for in a
+     * @return
+    the greatest index i for which a[i] == srch, else if no such value exists,
+    the index for the smallest value GT srch.
+    range is [0, n] inclusive where n = a.length.
+     */
+    public static int ceiling(List&lt;Integer&gt; a, int srch) {
+<span class="fc" id="L330">        return ceiling(a, srch, 0, a.size() - 1);</span>
+    }
+
+    /**
+     * find the largest index i whose value a[i] EQ srch,
+     * else if no value exists this method returns the smallest index whose
+     * value is GT srch.  if all values in the array are less than srch, the
+     * method returns index == array size which is beyond bounds of array.
+     &lt;pre&gt;
+     for example:
+         a       = [1, 2, 3, 3, 4]
+         indexes =  0  1  2  3  4
+
+         ceil of srch=3 is index 3
+         ceil of srch=4 is index 4
+         ceil of srch=9 is index 5
+         ceil of srch=0 is index 0
+     &lt;/pre&gt;
+     * @param a an ascending ordered list (non-decreasing, adjacent values can be ==).
+     * @param srch the value to search for in a
+     * @param lo smallest index of search range
+     * @param hi largest index of search range
+     * @return
+    the greatest index i for which a[i] == srch, else if no such value exists,
+    the index for the smallest value GT srch.
+    range is [0, n] inclusive where n = a.length.
+     */
+    public static int ceiling(List&lt;Integer&gt; a, int srch, int lo, int hi) {
+        //System.out.printf(&quot;a=%s, srch=%d, lo=%d, hi=%d\n&quot;,
+        //        Arrays.toString(a.stream().mapToInt(Integer::intValue).toArray()),
+        //        srch, lo, hi);
+<span class="fc bfc" id="L361" title="All 2 branches covered.">        if (srch &gt; a.get(hi)) {</span>
+<span class="fc" id="L362">            return a.size();</span>
+<span class="fc bfc" id="L363" title="All 2 branches covered.">        } else if (srch &lt; a.get(lo)) {</span>
+<span class="fc" id="L364">            return lo;</span>
+        }
+<span class="fc" id="L366">        int lastEq = hi;</span>
+<span class="fc bfc" id="L367" title="All 2 branches covered.">        while (lo &lt;= hi) {</span>
+<span class="fc" id="L368">            int mid = lo + (hi - lo) / 2;</span>
+<span class="fc bfc" id="L369" title="All 2 branches covered.">            if (a.get(mid) == srch) {</span>
+<span class="fc bfc" id="L370" title="All 2 branches covered.">                if (mid + 1 &gt; hi){</span>
+<span class="fc" id="L371">                    return mid;</span>
+                }
+                //we want the largest index whose value == srch, so search further in higher half of array
+                /*int idx = ceiling(a, srch, mid+1, hi);
+                if (idx == -1 || idx == hi+1 || a.get(idx) &gt; srch) {
+                    return mid;
+                }
+                return idx;*/
+<span class="fc" id="L379">                lastEq = mid;</span>
+<span class="fc" id="L380">                lo = mid + 1;</span>
+<span class="fc bfc" id="L381" title="All 2 branches covered.">            } else if (a.get(mid) &lt; srch) {</span>
+<span class="fc" id="L382">                lo = mid + 1;</span>
+            } else {
+<span class="fc" id="L384">                hi = mid - 1;</span>
+            }
+<span class="fc" id="L386">        }</span>
+<span class="fc" id="L387">        return Math.min(lastEq, lo);//Math.min(lo, hi);</span>
+    }
+
+    /**
+     find the largest index i whose value a[i] EQ srch,
+     * else if no value exists this method returns the smallest index whose
+     * value is GT srch.  if all values in the array are less than srch, the
+     * method returns index == array size which is beyond bounds of array.
+     &lt;pre&gt;
+     for example:
+     a       = [1, 2, 3, 3, 4]
+     indexes =  0  1  2  3  4
+
+     ceil of srch=3 is index 3
+     ceil of srch=4 is index 4
+     ceil of srch=9 is index 5
+     ceil of srch=0 is index 0
+     &lt;/pre&gt;
+     * @param a an ascending ordered list (non-decreasing, adjacent values can be ==).
+     * @param srch the value to search for in a
+     * @param lo smallest index of search range
+     * @param hi largest index of search range
+     * @return
+     the greatest index i for which a[i] == srch, else if no such value exists,
+     the index for the smallest value GT srch.
+     range is [0, n] inclusive where n = a.length.
+     */
+    public static int ceiling(int[] a, int srch) {
+<span class="fc" id="L415">        return ceiling(a, srch, 0, a.length - 1);</span>
+    }
+
+    /**
+     * find the largest index i whose value a[i] EQ srch,
+     * else if no value exists this method returns the smallest index whose
+     * value is GT srch.  if all values in the array are less than srch, the
+     * method returns index == array size which is beyond bounds of array.
+     &lt;pre&gt;
+     for example:
+     a       = [1, 2, 3, 3, 4]
+     indexes =  0  1  2  3  4
+
+     ceil of srch=3 is index 3
+     ceil of srch=4 is index 4
+     ceil of srch=9 is index 5
+     ceil of srch=0 is index 0
+     &lt;/pre&gt;
+     * @param a an ascending ordered list (non-decreasing, adjacent values can be ==).
+     * @param srch the value to search for in a
+     * @param lo smallest index of search range
+     * @param hi largest index of search range
+     * @return the greatest index i for which a[i] == srch, else if no such value exists,
+     * the index for the smallest value GT srch.
+     * range is [0, n] inclusive where n = a.length.
+     */
+    public static int ceiling(int[] a, int srch, int lo, int hi) {
+<span class="fc bfc" id="L442" title="All 2 branches covered.">        if (srch &gt; a[hi]) {</span>
+<span class="fc" id="L443">            return a.length;</span>
+<span class="fc bfc" id="L444" title="All 2 branches covered.">        } else if (srch &lt; a[lo]) {</span>
+<span class="fc" id="L445">            return lo;</span>
+        }
+<span class="fc" id="L447">        int lastEq = hi;</span>
+<span class="fc bfc" id="L448" title="All 2 branches covered.">        while (lo &lt;= hi) {</span>
+<span class="fc" id="L449">            int mid = lo + (hi - lo) / 2;</span>
+<span class="fc bfc" id="L450" title="All 2 branches covered.">            if (a[mid] == srch) {</span>
+<span class="fc bfc" id="L451" title="All 2 branches covered.">                if (mid + 1 &gt; hi) {</span>
+<span class="fc" id="L452">                    return mid;</span>
+                }
+                //we want the largest index whose value == srch, so search further in higher half of array
+                /*int idx = ceiling(a, srch, mid+1, hi);
+                if (idx == -1 || idx == hi+1 || a[idx] &gt; srch) {
+                    return mid;
+                }
+                return idx;*/
+<span class="fc" id="L460">                lastEq = mid;</span>
+<span class="fc" id="L461">                lo = mid + 1;</span>
+<span class="fc bfc" id="L462" title="All 2 branches covered.">            } else if (a[mid] &lt; srch) {</span>
+<span class="fc" id="L463">                lo = mid + 1;</span>
+            } else {
+<span class="fc" id="L465">                hi = mid - 1;</span>
+            }
+<span class="fc" id="L467">        }</span>
+<span class="fc" id="L468">        return Math.min(lastEq, lo);//Math.min(lo, hi);</span>
+    }
+
+    /**
+     * find the greatest index i whose value a[i] is LT srch.
+     * @param a list sorted by ascending values
+     * @param srch value to srch for predecessor of.
+     * @return the greatest index i whose value a[i] is LT srch.
+     * range is [-1, n-1] where n = a.length.
+     */
+    public static int predecessor(int[] a, int srch) {
+
+        // range of values from floor is [-1, a.length-1]
+<span class="fc" id="L481">        int floorIdx = MiscBisectingSearch.floor(a, srch);</span>
+
+<span class="fc bfc" id="L483" title="All 2 branches covered.">        if (floorIdx == -1) {</span>
+<span class="fc" id="L484">            return floorIdx;</span>
+        }
+<span class="fc bfc" id="L486" title="All 2 branches covered.">        if (a[floorIdx] == srch) {</span>
+<span class="fc" id="L487">            return floorIdx - 1;</span>
+        }
+<span class="fc" id="L489">        return floorIdx;</span>
+    }
+
+    /**
+     * find the greatest index i whose value a[i] is LT srch.
+     * @param a list sorted by ascending values
+     * @param srch value to srch for predecessor of.
+     * @return the greatest index i whose value a[i] is LT srch.
+     * range is [-1, n-1] where n = a.length.
+     */
+    public static int predecessor(List&lt;Integer&gt; a, int srch) {
+
+        // range of values from floor is [-1, a.length-1]
+<span class="fc" id="L502">        int floorIdx = MiscBisectingSearch.floor(a, srch);</span>
+
+<span class="fc bfc" id="L504" title="All 2 branches covered.">        if (floorIdx == -1) return floorIdx;</span>
+<span class="fc bfc" id="L505" title="All 2 branches covered.">        if (a.get(floorIdx) == srch) return floorIdx - 1;</span>
+<span class="fc" id="L506">        return floorIdx;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

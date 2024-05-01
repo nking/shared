@@ -565,47 +565,55 @@ by Marco Chiarandini, Giulia Galbiati, and Stefano Gualandi,
 
     // NOTE:  A stable set is also known as an independent set, coclique or anticliqu.
     //        It is a set of vertices in a graph, no two of which are adjacent.
+
+    /**
+     *
+     @param adjMap the graph represented as an adjacency map
+     @param c is the colorMap the output map having key=vertex, value= color where the range of color is [0, k)
+     @param revAdjMap
+     @param k
+     */
     private static void findStableSet(Map&lt;Integer, Set&lt;Integer&gt;&gt; adjMap,
                                       Map&lt;Integer, Set&lt;Integer&gt;&gt; revAdjMap, final int k, Map&lt;Integer, Integer&gt; c) {
 
-<span class="fc" id="L571">        Set&lt;Integer&gt; p = new HashSet&lt;Integer&gt;(adjMap.keySet());</span>
-<span class="fc" id="L572">        Set&lt;Integer&gt; u = new HashSet&lt;Integer&gt;();</span>
+<span class="fc" id="L579">        Set&lt;Integer&gt; p = new HashSet&lt;Integer&gt;(adjMap.keySet());</span>
+<span class="fc" id="L580">        Set&lt;Integer&gt; u = new HashSet&lt;Integer&gt;();</span>
 
         // δX(v) = the set of vertices adjacent to v in G[X ∪ v].
         // dX(v) = |δX(v)| be the degree of v induced by X.
 
         //for all v∈P do d_U(v)←0
-<span class="fc" id="L578">        Map&lt;Integer, Integer&gt; degreeUMap = createDegreeMapForVertices(u, p, adjMap);</span>
+<span class="fc" id="L586">        Map&lt;Integer, Integer&gt; degreeUMap = createDegreeMapForVertices(u, p, adjMap);</span>
 
         Set&lt;Integer&gt; vAdj, wAdj;
 
         int v;
-<span class="fc bfc" id="L583" title="All 2 branches covered.">        while (!p.isEmpty()) {</span>
+<span class="fc bfc" id="L591" title="All 2 branches covered.">        while (!p.isEmpty()) {</span>
             //vertex with max degree induced by U
             //v ← argmax_{w∈P} d_U(w)
-<span class="fc" id="L586">            v = GraphUtil.findMaxDegreeVertex(p, degreeUMap);</span>
+<span class="fc" id="L594">            v = GraphUtil.findMaxDegreeVertex(p, degreeUMap);</span>
             /*if (v == -1) {
                 //find the vertex in G w/ the largest degree
                 v = GraphUtil.findMaxDegreeVertex(GraphUtil.createDegreeMapForVertices(p, adjMap));
             }*/
-<span class="fc" id="L591">            c.put(v, k);</span>
+<span class="fc" id="L599">            c.put(v, k);</span>
 
-<span class="fc" id="L593">            vAdj = adjMap.get(v);</span>
+<span class="fc" id="L601">            vAdj = adjMap.get(v);</span>
 
-<span class="fc" id="L595">            p.remove(v);// p is only the uncolored vertexes, so remove v now</span>
-<span class="fc" id="L596">            GraphUtil.subtractVertex(v, adjMap, revAdjMap); // this removes v from V and E</span>
+<span class="fc" id="L603">            p.remove(v);// p is only the uncolored vertexes, so remove v now</span>
+<span class="fc" id="L604">            GraphUtil.subtractVertex(v, adjMap, revAdjMap); // this removes v from V and E</span>
 
             //δX(v) is the set of vertices adjacent to v in G[X ∪ v].
             // δX(v) = adjMap.get(v)
             // Let d_X(v) = |δX(v)| be the degree of v induced by X = adjMap.get(v).size()
-<span class="pc bpc" id="L601" title="1 of 2 branches missed.">            if (vAdj == null) {</span>
-<span class="nc" id="L602">                continue;</span>
+<span class="pc bpc" id="L609" title="1 of 2 branches missed.">            if (vAdj == null) {</span>
+<span class="nc" id="L610">                continue;</span>
             }
-<span class="fc bfc" id="L604" title="All 2 branches covered.">            for (int w : vAdj) {</span>
+<span class="fc bfc" id="L612" title="All 2 branches covered.">            for (int w : vAdj) {</span>
                 //if w∈P then P←P\{w}, U←U∪{w}endif
-<span class="fc bfc" id="L606" title="All 2 branches covered.">                if (p.contains(w)) {</span>
-<span class="fc" id="L607">                    p.remove(w);</span>
-<span class="fc" id="L608">                    u.add(w);</span>
+<span class="fc bfc" id="L614" title="All 2 branches covered.">                if (p.contains(w)) {</span>
+<span class="fc" id="L615">                    p.remove(w);</span>
+<span class="fc" id="L616">                    u.add(w);</span>
                 }
 
                 // remove v from δ(w).  This was already done above with GraphUtil.subtractVertex(v...
@@ -613,35 +621,35 @@ by Marco Chiarandini, Giulia Galbiati, and Stefano Gualandi,
                     GraphUtil.removeEdge(w, v, revAdjMap);
                 }*/
 
-<span class="fc" id="L616">                wAdj = adjMap.get(w);</span>
+<span class="fc" id="L624">                wAdj = adjMap.get(w);</span>
                 // update degreeUMap
-<span class="pc bpc" id="L618" title="1 of 2 branches missed.">                if (wAdj == null) {</span>
-<span class="nc" id="L619">                    continue;</span>
+<span class="pc bpc" id="L626" title="1 of 2 branches missed.">                if (wAdj == null) {</span>
+<span class="nc" id="L627">                    continue;</span>
                 }
-<span class="fc bfc" id="L621" title="All 2 branches covered.">                for (int uu : wAdj) {</span>
-<span class="fc bfc" id="L622" title="All 2 branches covered.">                    if (p.contains(uu)) {</span>
-<span class="pc bnc" id="L623" title="All 2 branches missed.">                        assert(degreeUMap.containsKey(uu));</span>
-<span class="fc" id="L624">                        degreeUMap.put(uu, degreeUMap.get(uu) + 1);</span>
+<span class="fc bfc" id="L629" title="All 2 branches covered.">                for (int uu : wAdj) {</span>
+<span class="fc bfc" id="L630" title="All 2 branches covered.">                    if (p.contains(uu)) {</span>
+<span class="pc bnc" id="L631" title="All 2 branches missed.">                        assert(degreeUMap.containsKey(uu));</span>
+<span class="fc" id="L632">                        degreeUMap.put(uu, degreeUMap.get(uu) + 1);</span>
                     }
-<span class="fc" id="L626">                }</span>
-<span class="fc" id="L627">            }</span>
+<span class="fc" id="L634">                }</span>
+<span class="fc" id="L635">            }</span>
         }
-<span class="fc" id="L629">    }</span>
+<span class="fc" id="L637">    }</span>
 
     private static Map&lt;Integer, Integer&gt; createDegreeMapForVertices(Set&lt;Integer&gt; subsetOfG, Set&lt;Integer&gt; targetVertices,
                                                                    Map&lt;Integer, Set&lt;Integer&gt;&gt; g) {
-<span class="fc" id="L633">        Map&lt;Integer, Integer&gt; degreeMap = new HashMap&lt;Integer, Integer&gt;();</span>
+<span class="fc" id="L641">        Map&lt;Integer, Integer&gt; degreeMap = new HashMap&lt;Integer, Integer&gt;();</span>
 
         int nA;
-<span class="fc bfc" id="L636" title="All 2 branches covered.">        for (int v : targetVertices) {</span>
-<span class="pc bpc" id="L637" title="3 of 4 branches missed.">            if (!subsetOfG.contains(v) || !g.containsKey(v)) {</span>
-<span class="fc" id="L638">                nA = 0;</span>
+<span class="fc bfc" id="L644" title="All 2 branches covered.">        for (int v : targetVertices) {</span>
+<span class="pc bpc" id="L645" title="3 of 4 branches missed.">            if (!subsetOfG.contains(v) || !g.containsKey(v)) {</span>
+<span class="fc" id="L646">                nA = 0;</span>
             } else {
-<span class="nc" id="L640">                nA = g.get(v).size();</span>
+<span class="nc" id="L648">                nA = g.get(v).size();</span>
             }
-<span class="fc" id="L642">            degreeMap.put(v, nA);</span>
-<span class="fc" id="L643">        }</span>
-<span class="fc" id="L644">        return degreeMap;</span>
+<span class="fc" id="L650">            degreeMap.put(v, nA);</span>
+<span class="fc" id="L651">        }</span>
+<span class="fc" id="L652">        return degreeMap;</span>
     }
 
     private static class SaturatedItem implements Comparable&lt;SaturatedItem&gt; {

@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KnapsackUnbounded.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.optimization</a> &gt; <span class="el_source">KnapsackUnbounded.java</span></div><h1>KnapsackUnbounded.java</h1><pre class="source lang-java linenums">package algorithms.optimization;
+
+import java.util.Arrays;
+
+/**
+ * various unbounded knapsack problems
+ */
+<span class="nc" id="L8">public class KnapsackUnbounded {</span>
+
+    /**
+     * find maximum value from summing the values associated with an unbounded quantity
+     * of weights that sum to exactly EQ target.
+     * @param values non-negative values for items. values and weights describe the same items.
+     * @param weights non-negative array of weights for items
+     * @param target the exact sum that a combination of an unbounded number of weights should sum to
+     * @return the maximum value for items whose weights sum up to exactly equal target.
+     */
+    public static int maxValueForTarget(int[] values, int[] weights, int target) {
+<span class="fc" id="L19">        return maxValue(values, weights, target, true);</span>
+    }
+
+    /**
+     * find maximum value from summing the values associated with an unbounded quantity of
+     * weights that sum to LEQ to capacity.
+     * @param values non-negative values for items. values and weights describe the same items.
+     * @param weights non-negative array of weights for items
+     * @param capacity upper limit to the sum of weights for an unbounded number of items
+     * @return
+     */
+    public static int maxValueForCapacity(int[] values, int[] weights, int capacity) {
+<span class="fc" id="L31">        return maxValue(values, weights, capacity, false);</span>
+    }
+
+    public static int maxValue(int[] values, int[] weights, int target, boolean solveForExact) {
+<span class="fc" id="L35">        int n = weights.length;</span>
+
+<span class="pc bpc" id="L37" title="1 of 2 branches missed.">        if (values.length != n) {</span>
+<span class="nc" id="L38">            throw new IllegalStateException(&quot;values and weights must be same length&quot;);</span>
+        }
+
+        // tab[wc] holds the largest sum of values for the items whose weights sum to wc
+<span class="fc" id="L42">        int[] tab = new int[target + 1];</span>
+<span class="fc" id="L43">        int sentinel = Integer.MIN_VALUE;;</span>
+<span class="fc" id="L44">        Arrays.fill(tab, sentinel);</span>
+<span class="fc" id="L45">        tab[0] = 0;</span>
+
+        int i, wc, wc2;
+<span class="fc bfc" id="L48" title="All 2 branches covered.">        for (i = 0; i &lt; n; i++) {</span>
+            // traverse wc from 1 to target to be able to add current wc2 counts to current count sum
+<span class="fc bfc" id="L50" title="All 2 branches covered.">            for (wc = weights[i]; wc &lt;= target; wc++) {</span>
+<span class="fc" id="L51">                wc2 = wc - weights[i];</span>
+
+<span class="fc bfc" id="L53" title="All 2 branches covered.">                if (wc2 == 0) {</span>
+<span class="fc" id="L54">                    tab[wc] = Math.max(tab[wc], values[i]);</span>
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">                } else if (wc2 &gt; 0)  {</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">                    int s = (tab[wc2] == sentinel) ? sentinel : tab[wc2] +  values[i];</span>
+<span class="fc" id="L57">                    tab[wc] = Math.max(tab[wc], s);</span>
+                }
+            }
+        }
+
+<span class="fc bfc" id="L62" title="All 2 branches covered.">        if (solveForExact) {</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">            return tab[target] == sentinel ? 0 : tab[target];</span>
+        }
+
+        // search backwards for max
+<span class="fc" id="L67">        int max = tab[target];</span>
+<span class="fc" id="L68">        i = target;</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">        while (i &gt; 0) {</span>
+<span class="fc" id="L70">            max = Math.max(max, tab[--i]);</span>
+        }
+
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">        return max == sentinel ? 0 : max;</span>
+    }
+
+    /**
+     * find maximum value from summing the values associated with an unbounded quantity of
+     * weights that sum to LEQ to capacity.
+     * @param values non-negative values for items. values and weights describe the same items.
+     * @param weights non-negative array of weights for items
+     * @param capacity upper limit to the sum of weights for an unbounded number of items
+     * @return
+     */
+    public static int maxValueForCapacity2(int[] values, int[] weights, int capacity) {
+
+<span class="fc" id="L86">        int n = weights.length;</span>
+
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">        if (values.length != n) {</span>
+<span class="nc" id="L89">            throw new IllegalStateException(&quot;values and weights must be same length&quot;);</span>
+        }
+
+        // tab[wc] holds the largest sum of values for the items whose weights sum to wc
+<span class="fc" id="L93">        int[] tab = new int[capacity + 1];</span>
+
+        int i, wc, wc2;
+<span class="fc bfc" id="L96" title="All 2 branches covered.">        for (i = 0; i &lt; n; i++) {</span>
+            // cannot traverse weight sum in reverse order here.
+            // traverse wc from 1 to target to be able to add current wc2 counts to current count sum
+<span class="fc bfc" id="L99" title="All 2 branches covered.">            for (wc = weights[i]; wc &lt;= capacity; wc++) {</span>
+<span class="fc" id="L100">                wc2 = wc - weights[i];</span>
+
+                //System.out.printf(&quot;i=%d, wc=%d, wc2=%d, weights[i]=%d  tab=%s\n&quot;, i, wc, wc2, weights[i], Arrays.toString(tab));
+
+<span class="fc" id="L104">                tab[wc] = Math.max(tab[wc], tab[wc2] + values[i]);</span>
+
+                //System.out.printf(&quot;    tab[%d]=%d\n&quot;, wc, tab[wc]);
+            }
+        }
+<span class="fc" id="L109">        return tab[capacity];</span>
+    }
+
+    /**
+     * find the minimum number of items whose weights sum to exactly EQ target.
+     * @param weights non-negative array of item weights
+     * @param target the exact sum that a combination of and unbounded quantity of weights should sum to
+     * @return
+     */
+    public static int minNumberOfItemsForTarget(int[] weights, int target) {
+<span class="fc" id="L119">        return minNumberOfItems(weights, target, true);</span>
+    }
+
+    /**
+     * find the minimum number of items whose weights sum to LEQ capacity.
+     * @param weights non-negative array of item weights
+     * @param capacity the sum that a combination of and unbounded quantity of weights should sum to if possible, else
+     *                 the min for the greatest lower sum which was met.
+     * @return
+     */
+    public static int minNumberOfItemsForCapacity(int[] weights, int capacity) {
+<span class="fc" id="L130">        return minNumberOfItems(weights, capacity, false);</span>
+    }
+
+    public static int minNumberOfItems(int[] weights, int target, boolean solveForExact) {
+<span class="fc" id="L134">        int n = weights.length;</span>
+
+        // tab[wc] holds the min number of items for the items whose weights sum to wc
+<span class="fc" id="L137">        int[] tab = new int[target+1];</span>
+<span class="fc" id="L138">        int sentinel = Integer.MAX_VALUE;//target+1;</span>
+<span class="fc" id="L139">        Arrays.fill(tab, sentinel);</span>
+<span class="fc" id="L140">        tab[0] = 0;</span>
+
+        int i, wc, wc2;
+<span class="fc bfc" id="L143" title="All 2 branches covered.">        for (i = 0; i &lt; n; i++) {</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">            for (wc = weights[i]; wc &lt;= target; wc++) {</span>
+<span class="fc" id="L145">                wc2 = wc - weights[i];</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">                if (wc2 == 0) {</span>
+<span class="fc" id="L147">                    tab[wc] = Math.min(tab[wc], 1);</span>
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">                } else if (wc2 &gt; 0)  {</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">                    int s = (tab[wc2] == sentinel) ? sentinel : 1 + tab[wc2];</span>
+<span class="fc" id="L150">                    tab[wc] = Math.min(tab[wc], s);</span>
+                }
+            }
+        }
+        //System.out.printf(&quot;tab=%s\n&quot;, Arrays.toString(tab));
+<span class="fc bfc" id="L155" title="All 2 branches covered.">        if (solveForExact) {</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">            return tab[target] == sentinel ? 0 : tab[target];</span>
+        }
+
+        // search backwards for last sum entered
+<span class="fc" id="L160">        i = target;</span>
+<span class="fc bfc" id="L161" title="All 4 branches covered.">        while (i &gt; 0 &amp;&amp; tab[i] == sentinel) {</span>
+<span class="fc" id="L162">            --i;</span>
+        }
+
+<span class="pc bpc" id="L165" title="1 of 2 branches missed.">        return tab[i] == sentinel ? 0 : tab[i];</span>
+    }
+
+    /**
+     * find the minimum number of items whose weights sum to LEQ capacity.
+     * @param weights non-negative array of item weights
+     * @param capacity the sum that a combination of and unbounded quantity of weights should sum to if possible, else
+     *                 the min for the greatest lower sum which was met.
+     * @return
+     */
+    public static int minNumberOfItemsForCapacity2(int[] weights, int capacity) {
+
+<span class="fc" id="L177">        int n = weights.length;</span>
+
+        // tab[wc] holds the min number of items for the items whose weights sum to wc
+<span class="fc" id="L180">        int[] tab = new int[capacity+1];</span>
+<span class="fc" id="L181">        int sentinel = Integer.MAX_VALUE;</span>
+<span class="fc" id="L182">        Arrays.fill(tab, sentinel);</span>
+<span class="fc" id="L183">        tab[0] = 0;</span>
+
+        int i, wc, wc2;
+<span class="fc bfc" id="L186" title="All 2 branches covered.">        for (i = 0; i &lt; n; i++) {</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">            if (weights[i] &gt; capacity) continue;</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">            for (wc = 1; wc &lt;= capacity; wc++) {</span>
+<span class="fc" id="L189">                wc2 = wc - weights[i];</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">                if (wc2 &gt;= 0) {</span>
+<span class="fc bfc" id="L191" title="All 2 branches covered.">                    int s = (tab[wc2] == sentinel) ? sentinel : 1 + tab[wc2];</span>
+<span class="fc" id="L192">                    tab[wc] = Math.min(tab[wc], s);</span>
+                }
+            }
+        }
+<span class="fc bfc" id="L196" title="All 2 branches covered.">        return tab[capacity] == sentinel ? 0 : tab[capacity];</span>
+    }
+
+    /**
+     * count the number of ways that a combination of an unbounded quantity of weights
+     * can sum up to exactly EQ target.
+     * The combinations are counted as sets, that is, same numbers in a set are counted only once.
+     * @param target the exact sum that a combination of and unbounded quantity of weights should sum to
+     * @param weights non-negative array of item weights
+     * @return
+     */
+    public static int numberOfWaysForTarget(int[] weights, int target) {
+
+<span class="fc" id="L209">        int n = weights.length;</span>
+
+        // tab[wc] holds the number of ways that the item weights sum to wc.
+
+<span class="fc" id="L213">        int[] tab = new int[target + 1];</span>
+<span class="fc" id="L214">        tab[0] = 1;</span>
+
+        int wc, wc2;
+<span class="fc bfc" id="L217" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+            // traverse wc from 1 to target to be able to add current wc2 counts to current count sum
+<span class="fc bfc" id="L219" title="All 2 branches covered.">            for (wc = weights[i]; wc &lt;= target; ++wc) {</span>
+                // the remaining sum after weight subtracted
+<span class="fc" id="L221">                wc2 = wc - weights[i];</span>
+                // adds counts from remaining sum
+<span class="fc" id="L223">                tab[wc] += tab[wc2];</span>
+            }
+        }
+        //System.out.printf(&quot;tab=%s\n&quot;, Arrays.toString(tab));
+<span class="fc" id="L227">        return tab[target];</span>
+    }
+
+    /**
+     * count the number of ways that a combination of an unbounded quantity of weights
+     * can sum up to exactly EQ target, where the sequences are counted rather than sets,
+     * e.g. [1,2] is counted and [2,1] is counted.
+     * @param target the exact sum that a combination of and unbounded quantity of weights should sum to
+     * @param weights non-negative array of item weights
+     * @return
+     */
+    public static int numberOfSequencesForTarget(int[] weights, int target) {
+
+<span class="fc" id="L240">        int n = weights.length;</span>
+
+        // tab[wc] holds the number of ways that the item weights sum to wc.
+
+<span class="fc" id="L244">        int[] tab = new int[target + 1];</span>
+<span class="fc" id="L245">        tab[0] = 1;</span>
+
+        int i, wc, wc2;
+        // to count sequences instead of sets, outer loop is indexes to include all prev calc items
+        // in current weight count
+<span class="fc bfc" id="L250" title="All 2 branches covered.">        for (wc = 1; wc &lt;= target; ++wc) {</span>
+<span class="fc bfc" id="L251" title="All 2 branches covered.">            for (i = 0; i &lt; n; ++i) {</span>
+                // the remaining sum after weight subtracted
+<span class="fc" id="L253">                wc2 = wc - weights[i];</span>
+<span class="fc bfc" id="L254" title="All 2 branches covered.">                if (wc2 &gt;= 0) {</span>
+                    // adds counts from remaining sum
+<span class="fc" id="L256">                    tab[wc] += tab[wc2];</span>
+                }
+            }
+        }
+        //System.out.printf(&quot;tab=%s\n&quot;, Arrays.toString(tab));
+<span class="fc" id="L261">        return tab[target];</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -190,35 +190,36 @@ public class FixedSizeSortedIntVector {
 <span class="pc bpc" id="L190" title="1 of 2 branches missed.">        } else if (insIdx &lt; availSlot) {</span>
 
             // move all items from insIdx to availSlot down by 1
-<span class="fc bfc" id="L193" title="All 2 branches covered.">            for (int i = (availSlot - 1); i &gt;= insIdx; i--) {</span>
-<span class="fc" id="L194">                a[i + 1] = a[i];</span>
+            //TODO: review runtime complexity estimate
+<span class="fc bfc" id="L194" title="All 2 branches covered.">            for (int i = (availSlot - 1); i &gt;= insIdx; i--) {</span>
+<span class="fc" id="L195">                a[i + 1] = a[i];</span>
             }
 
-<span class="fc" id="L197">            a[insIdx] = value;</span>
+<span class="fc" id="L198">            a[insIdx] = value;</span>
 
         } else {
 
-<span class="nc" id="L201">            int end = insIdx - 1;</span>
+<span class="nc" id="L202">            int end = insIdx - 1;</span>
 
-<span class="nc bnc" id="L203" title="All 2 branches missed.">            if (availSlot &gt; -1) {</span>
-<span class="nc bnc" id="L204" title="All 6 branches missed.">                while ((a[insIdx] == value) &amp;&amp; ((end + 1) &lt;= n) &amp;&amp; (a[end + 1] == value)) {</span>
-<span class="nc" id="L205">                    end++;</span>
+<span class="nc bnc" id="L204" title="All 2 branches missed.">            if (availSlot &gt; -1) {</span>
+<span class="nc bnc" id="L205" title="All 6 branches missed.">                while ((a[insIdx] == value) &amp;&amp; ((end + 1) &lt;= n) &amp;&amp; (a[end + 1] == value)) {</span>
+<span class="nc" id="L206">                    end++;</span>
                 }
             }
 
             // move items up from availSlot +1 to insIdx - 1
             // then insert value into insIdx - 1
-<span class="nc bnc" id="L211" title="All 2 branches missed.">            for (int i = availSlot; i &lt; end; i++) {</span>
-<span class="nc" id="L212">                a[i] = a[i + 1];</span>
+<span class="nc bnc" id="L212" title="All 2 branches missed.">            for (int i = availSlot; i &lt; end; i++) {</span>
+<span class="nc" id="L213">                a[i] = a[i + 1];</span>
             }
 
-<span class="nc" id="L215">            a[insIdx] = value;</span>
+<span class="nc" id="L216">            a[insIdx] = value;</span>
         }
 
-<span class="fc" id="L218">        n++;</span>
+<span class="fc" id="L219">        n++;</span>
 
-<span class="fc" id="L220">        availSlot = -1;</span>
-<span class="fc" id="L221">    }</span>
+<span class="fc" id="L221">        availSlot = -1;</span>
+<span class="fc" id="L222">    }</span>
 
     /**
      * get the internal array for the sorted list.  note this is not a copy in
@@ -231,7 +232,7 @@ public class FixedSizeSortedIntVector {
      */
     public int[] getArray() {
 
-<span class="fc" id="L234">        return a;</span>
+<span class="fc" id="L235">        return a;</span>
     }
 
     /**
@@ -246,11 +247,11 @@ public class FixedSizeSortedIntVector {
      */
     public int getValue(int index) {
 
-<span class="pc bpc" id="L249" title="2 of 4 branches missed.">        if ((index &lt; 0) || (index &gt; (a.length - 1))) {</span>
-<span class="nc" id="L250">            throw new IllegalArgumentException(&quot;index is out of bounds&quot;);</span>
+<span class="pc bpc" id="L250" title="2 of 4 branches missed.">        if ((index &lt; 0) || (index &gt; (a.length - 1))) {</span>
+<span class="nc" id="L251">            throw new IllegalArgumentException(&quot;index is out of bounds&quot;);</span>
         }
 
-<span class="fc" id="L253">        return a[index];</span>
+<span class="fc" id="L254">        return a[index];</span>
     }
 
     /**
@@ -260,12 +261,12 @@ public class FixedSizeSortedIntVector {
      @return number of items
      */
     public int getNumberOfItems() {
-<span class="fc" id="L263">        return n;</span>
+<span class="fc" id="L264">        return n;</span>
     }
 
     @Override
     public String toString() {
-<span class="nc" id="L268">        return Arrays.toString(a);</span>
+<span class="nc" id="L269">        return Arrays.toString(a);</span>
     }
 
     /**
@@ -278,23 +279,23 @@ public class FixedSizeSortedIntVector {
      */
     public FixedSizeSortedIntVector split(int x) {
 
-<span class="fc" id="L281">        int idx = findIndexFor(x);</span>
+<span class="fc" id="L282">        int idx = findIndexFor(x);</span>
 
         // copy: 0 : 1dx-1;  keep: idx : n-1
-<span class="fc" id="L284">        FixedSizeSortedIntVector vecL = new FixedSizeSortedIntVector(size);</span>
-<span class="fc" id="L285">        int[] aL = vecL.getArray();</span>
+<span class="fc" id="L285">        FixedSizeSortedIntVector vecL = new FixedSizeSortedIntVector(size);</span>
+<span class="fc" id="L286">        int[] aL = vecL.getArray();</span>
 
         // copy 0:idx-1 to aL
-<span class="fc" id="L288">        System.arraycopy(a, 0, aL, 0, idx);</span>
-<span class="fc" id="L289">        vecL.n = (idx + 1);</span>
-<span class="fc" id="L290">        vecL.availSlot = vecL.n;</span>
+<span class="fc" id="L289">        System.arraycopy(a, 0, aL, 0, idx);</span>
+<span class="fc" id="L290">        vecL.n = (idx + 1);</span>
+<span class="fc" id="L291">        vecL.availSlot = vecL.n;</span>
 
         // move idx:n-1 up to 0 
-<span class="fc" id="L293">        System.arraycopy(a, idx, a, 0, n - idx);</span>
-<span class="fc" id="L294">        n = n - idx;</span>
-<span class="fc" id="L295">        availSlot = n;</span>
+<span class="fc" id="L294">        System.arraycopy(a, idx, a, 0, n - idx);</span>
+<span class="fc" id="L295">        n = n - idx;</span>
+<span class="fc" id="L296">        availSlot = n;</span>
         
-<span class="fc" id="L297">        return vecL;</span>
+<span class="fc" id="L298">        return vecL;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
