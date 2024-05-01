@@ -391,6 +391,7 @@
                 <batchtest todir="${tests.out.dir}">
                     <fileset dir="${tests.out.dir}">
                         <exclude name="**/*$*.class" />
+                        <exclude name="**/A0*Test.class" />
                         <include name="**/*Test.class" />
                     </fileset>
                 </batchtest>
