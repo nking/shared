@@ -17,10 +17,12 @@ algorithms.misc
 algorithms.msts
 algorithms.optimization
 algorithms.optimization.tsp
+algorithms.puzzles
 algorithms.scheduling
 algorithms.search
 algorithms.shortestPaths
 algorithms.signalProcessing
 algorithms.sort
 algorithms.statistics
+algorithms.trees
 algorithms.util
