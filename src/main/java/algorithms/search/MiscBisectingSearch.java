@@ -220,9 +220,11 @@ public class MiscBisectingSearch {
      *      finds the largest index for which the value is LT srch.
      *      range of values from floor is [-1, a.length-1] inclusive.
      */
-    public static int floor(int[] a, int srch, int lo, int hi) {
+    protected static int _floor(int[] a, int srch, int lo, int hi) {
         if (srch < a[lo]) {
             return -1;
+        } else if (srch > a[hi]) {
+            return hi;
         }
         while (lo <= hi) {
             int mid = lo + (hi - lo) / 2;
@@ -231,7 +233,7 @@ public class MiscBisectingSearch {
                 if (mid == lo) {
                     return mid;
                 }
-                int idx = floor(a, srch, lo, mid - 1);
+                int idx = _floor(a, srch, lo, mid - 1);
                 if (idx == -1 || a[idx] < srch) {
                     return mid;
                 }
@@ -277,6 +279,61 @@ public class MiscBisectingSearch {
      </pre>
      * @param a an ascending ordered list (non-decreasing, adjacent values can be ==).
      * @param srch the value to search for in a
+     * @param lo smallest index for search range
+     * @param hi largets index for search range, inclusive.
+     * @return the floor index, that is,
+     * finds the smallest index for which value == srch, or if doesn't exist,
+     *      finds the largest index for which the value is LT srch.
+     *      range of values from floor is [-1, a.length-1] inclusive.
+     */
+    public static int floor(int[] a, int srch, int lo, int hi) {
+        boolean found = false;
+        while (lo <= hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (a[mid] == srch) {
+                found = true;
+                hi = mid - 1;
+            } else if (a[mid] < srch) {
+                lo = mid + 1;
+            } else {
+                hi = mid - 1;
+            }
+        }
+        return found ? lo : Math.min(lo, hi);
+    }
+
+    /**
+     Finds the smallest index for which value == srch, or if doesn't exist,
+     finds the largest index for which the value is LT srch.
+
+     * This is a floor function.
+     *
+     * If the method returns -1, the srch is smaller than all elements in the
+     * array.
+     * if srch is larger than every element in list 'a', this method will return
+     * the last index of a.
+     <pre>
+     e.g.
+
+     a = [0,1,2,2,3]
+     srch = 2
+     returns  2
+
+     a = [0,3,4,4,6};
+     srch = 5;
+     returns 3
+
+     a = [2,3,4,4,6};
+     srch = 0;
+     returns -1
+
+     a = [2,3,4,4,6};
+     srch = 7;
+     returs 4
+
+     </pre>
+     * @param a an ascending ordered list (non-decreasing, adjacent values can be ==).
+     * @param srch the value to search for in a
      * @return the floor index, that is,
      * finds the smallest index for which value == srch, or if doesn't exist,
      *      finds the largest index for which the value is LT srch.
@@ -284,7 +341,62 @@ public class MiscBisectingSearch {
     public static int floor(List<Integer> a, int srch) {
         return floor(a, srch, 0, a.size() - 1);
     }
+    /**
+     Finds the smallest index for which value == srch, or if doesn't exist,
+     finds the largest index for which the value is LT srch.
+
+     * This is a floor function.
+     *
+     * If the method returns -1, the srch is smaller than all elements in the
+     * array.
+     * if srch is larger than every element in list 'a', this method will return
+     * the last index of a.
+     <pre>
+     e.g.
+
+     a = [0,1,2,2,3]
+     srch = 2
+     returns  2
+
+     a = [0,3,4,4,6};
+     srch = 5;
+     returns 3
+
+     a = [2,3,4,4,6};
+     srch = 0;
+     returns -1
+
+     a = [2,3,4,4,6};
+     srch = 7;
+     returs 4
+
+     </pre>
+     * @param a an ascending ordered list (non-decreasing, adjacent values can be ==).
+     * @param srch the value to search for in a
+     * @param lo smallest index for search range
+     * @param hi largets index for search range, inclusive.
+     * @return the floor index, that is,
+     * finds the smallest index for which value == srch, or if doesn't exist,
+     *      finds the largest index for which the value is LT srch.
+     *      range of values from floor is [-1, a.length-1] inclusive.
+     */
     public static int floor(List<Integer> a, int srch, int lo, int hi) {
+        boolean found = false;
+        while (lo <= hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (a.get(mid) == srch) {
+                found = true;
+                hi = mid - 1;
+            } else if (a.get(mid) < srch) {
+                lo = mid + 1;
+            } else {
+                hi = mid - 1;
+            }
+        }
+        return found ? lo : Math.min(lo, hi);
+    }
+
+    public static int _floor(List<Integer> a, int srch, int lo, int hi) {
         if (srch < a.get(lo)) {
             return -1;
         }
@@ -355,36 +467,20 @@ public class MiscBisectingSearch {
     range is [0, n] inclusive where n = a.length.
      */
     public static int ceiling(List<Integer> a, int srch, int lo, int hi) {
-        //System.out.printf("a=%s, srch=%d, lo=%d, hi=%d\n",
-        //        Arrays.toString(a.stream().mapToInt(Integer::intValue).toArray()),
-        //        srch, lo, hi);
-        if (srch > a.get(hi)) {
-            return a.size();
-        } else if (srch < a.get(lo)) {
-            return lo;
-        }
-        int lastEq = hi;
+        boolean found = false;
         while (lo <= hi) {
             int mid = lo + (hi - lo) / 2;
             if (a.get(mid) == srch) {
-                if (mid + 1 > hi){
-                    return mid;
-                }
-                //we want the largest index whose value == srch, so search further in higher half of array
-                /*int idx = ceiling(a, srch, mid+1, hi);
-                if (idx == -1 || idx == hi+1 || a.get(idx) > srch) {
-                    return mid;
-                }
-                return idx;*/
-                lastEq = mid;
+                //we want the largest index whose value == srch, so search further in higher half of arra
                 lo = mid + 1;
+                found = true;
             } else if (a.get(mid) < srch) {
                 lo = mid + 1;
             } else {
                 hi = mid - 1;
             }
         }
-        return Math.min(lastEq, lo);//Math.min(lo, hi);
+        return found ? hi : lo;
     }
 
     /**
@@ -439,33 +535,20 @@ public class MiscBisectingSearch {
      * range is [0, n] inclusive where n = a.length.
      */
     public static int ceiling(int[] a, int srch, int lo, int hi) {
-        if (srch > a[hi]) {
-            return a.length;
-        } else if (srch < a[lo]) {
-            return lo;
-        }
-        int lastEq = hi;
+        boolean found = false;
         while (lo <= hi) {
             int mid = lo + (hi - lo) / 2;
             if (a[mid] == srch) {
-                if (mid + 1 > hi) {
-                    return mid;
-                }
-                //we want the largest index whose value == srch, so search further in higher half of array
-                /*int idx = ceiling(a, srch, mid+1, hi);
-                if (idx == -1 || idx == hi+1 || a[idx] > srch) {
-                    return mid;
-                }
-                return idx;*/
-                lastEq = mid;
+                //we want the largest index whose value == srch, so search further in higher half of arra
                 lo = mid + 1;
+                found = true;
             } else if (a[mid] < srch) {
                 lo = mid + 1;
             } else {
                 hi = mid - 1;
             }
         }
-        return Math.min(lastEq, lo);//Math.min(lo, hi);
+        return found ? hi : lo;
     }
 
     /**
