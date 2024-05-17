@@ -260,7 +260,7 @@ public class SetCover {
                 idx = iter.next();
                 r = rand.nextDouble();
                 //System.out.printf("%d) r=%.3f, yP[%d]=%.3f\n", i, r, idx, yProbabilities[idx]);
-                if (r <= yProbabilities[idx]) {
+                if (r < yProbabilities[idx]) {
                     c.add(idx);
                     rm.add(idx);
                 }
