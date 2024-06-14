@@ -1,5 +1,7 @@
 package algorithms.misc;
 
+import algorithms.signalProcessing.Util;
+import algorithms.statistics.UnivariateNormalDistribution;
 import algorithms.util.PairInt;
 import algorithms.util.PairIntArray;
 import gnu.trove.iterator.TIntIntIterator;
@@ -8,7 +10,9 @@ import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Logger;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
@@ -864,4 +868,88 @@ public class MiscMath0Test extends TestCase {
         1.000e+00, 1.000e+00, 1.000e+00, 1.000e+00, 1.000e+00, 1.000e+00, 1.000e+00
          */
     }
+
+    public void testEqualWithinTolerance() {
+        double[] a = new double[]{1,2,3,4,5};
+        assertTrue(MiscMath0.equalsWithinTolerance(a, a, 1E-11));
+        double[] b = Arrays.copyOf(a, a.length);
+        b[3] += 1E-4;
+        assertFalse(MiscMath0.equalsWithinTolerance(a, b, 1E-5));
+    }
+
+    public void testUniformRandomDoubleTest() {
+
+        // test that using same seed produces same Unif(0,1) numbers and that the numbers fit a uniform distribution
+        long seed = 1234567L;
+        Random rand = new Random(seed);
+
+        // Unif(0,1); E[x]=0.5, Var(x)=0.25
+        int n = 1000;
+        double[] a1 = MiscMath0.uniformRandomDouble(n, rand);
+        double[] s1 = MiscMath0.getAvgAndStDev(a1);
+        assertTrue(Math.abs(s1[0] - 0.5) < 0.01);
+        assertTrue(Math.abs(s1[1] - 0.25) < 0.1);
+
+        // check that seeded rand produces repeatable numbers for use in tests
+        rand = new Random(seed);
+        double[] a2 = MiscMath0.uniformRandomDouble(n, rand);
+
+        assertTrue(MiscMath0.equalsWithinTolerance(a1, a2, 1E-11));
+    }
+
+    public void testLog() {
+        // simple test that each number is log of x
+        double[] x = MiscMath0.uniformRandomDouble(10);
+        double[] logX = MiscMath0.log(x);
+        for (int i = 0; i < x.length; ++i) {
+            assertTrue(Math.abs(x[i] - Math.exp(logX[i])) < 1E-11);
+        }
+    }
+
+    public void testCalcMean() {
+        int n = 10000;
+        double[] x = MiscMath0.uniformRandomDouble(n);
+        assertTrue(Math.abs(0.5 - MiscMath0.mean(x)) < 1E-2);
+    }
+
+    public void testCalcMeanAndSSD_double() throws NoSuchAlgorithmException {
+        int n = 100000;
+        double[] x = UnivariateNormalDistribution.randomSampleOfUnitStandard(n);
+        double[] ms = MiscMath0.calcMeanAndSSD(x);
+        double stDev = Math.sqrt(ms[1]/(n-1));
+        assertTrue(Math.abs(ms[0]) < 1E-2);//0
+        assertTrue(Math.abs(stDev - 1) < 1E-2);//1
+    }
+
+    public void testCalcMeanAndSSD_int() throws Exception {
+        int n = 100000;
+        double[] x = UnivariateNormalDistribution.randomSampleOfUnitStandard(n);
+        int[] xInt = new int[n];
+        int f = 1;
+        for (int i = 0; i < n; ++i) {
+            xInt[i] = (int)Math.round(f * x[i]);
+        }
+        double[] ms = MiscMath0.calcMeanAndSSD(xInt);
+        double stDev = Math.sqrt(ms[1]/(n-1));
+        assertTrue(Math.abs(ms[0]) < 1E-1);//0
+        assertTrue(Math.abs(stDev - 1) < 1E-1);//1
+    }
+
+    public void testCalcGeometricMean() {
+        double[] x = new double[]{1,3,7,5,3,11};
+        double exAns = 3.8900084061965643;
+        //(product(x_i))^(1/ n)
+        double gm = MiscMath0.calcGeometricMean(x);
+        assertTrue(Math.abs(exAns - gm) < 1E-11);
+
+    }
+
+    public void testCalcHarmonicMean() {
+        double[] x = new double[]{1,3,7,5,3,11};
+        double exAns = 2.8565539983511954;
+        //n/(sum(1/ a_i))
+        double hm = MiscMath0.calcHarmonicMean(x);
+        assertTrue(Math.abs(exAns - hm) < 1E-11);
+    }
+
 }

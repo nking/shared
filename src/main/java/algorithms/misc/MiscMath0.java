@@ -5,9 +5,9 @@ import algorithms.matrix.MatrixUtil;
 import algorithms.sort.CountingSort;
 import algorithms.util.PairInt;
 import algorithms.util.PairIntArray;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collection;
+
+import java.util.*;
+
 import gnu.trove.set.TIntSet;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.TIntList;
@@ -18,7 +18,7 @@ import gnu.trove.map.hash.TIntIntHashMap;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
-import java.util.Arrays;
+
 import algorithms.sort.MiscSorter;
 
 import java.math.RoundingMode;
@@ -868,34 +868,42 @@ public class MiscMath0 {
     }
 
     /**
-     * calculate the mean of x and the sum of the squared differences (SSD) between x and the mean.
-     * The SSD can be used to calculate the biased or unbiased variance, standard deviation, and standard error.
+     * calculate the mean of x and the sum of the squared differences
+     * (SSD) between x and the mean.
+     * The SSD can be used to calculate the biased or unbiased
+     * variance, standard deviation, and standard error.
      <pre>
      mean = (1/n)*sum_{i=0 to n-1}(x_i) where n = x.length
 
      SSD = sum_{i=0 to n-1}((x_i - mean)^2)
 
      sample standard deviation:
-         n-1 degrees of freedom within a sample of size n for having to estimate the mean from data,
+         n-1 degrees of freedom within a sample of size n for having
+         to estimate the mean from data,
          is a.k.a. unbiased standard deviation.
-         note that standard deviation is not appropriate for all distributions, e.g. categorical.
+         note that standard deviation is not appropriate for all
+         distributions, e.g. categorical.
      = sqrt( SSD / (n-1) )
 
      population standard deviation:
-         true population mean is known, so n degrees of freedom within a sample of size n
+         true population mean is known, so n degrees of freedom
+         within a sample of size n
      = sqrt( SSD/ n) biased, population mean is known
 
      standard error (SE):
-         the standard deviation of the mean itself, across more than one sample.
+         the standard deviation of the mean itself, across more
+         than one sample.
          used in confidence intervals and hypothesis testing.
-         e.g. 95% - confidence interval = mean += 1.96 * SE for gaussian normal distribution
+         e.g. 95% - confidence interval = mean += 1.96 * SE for
+         gaussian normal distribution
          assumptions of same sample size and drawn from same population.
      = sample standard deviation / sqrt(n)
      = sqrt( SSD / (n*(n-1)) )
 
      </pre>
      * @param x
-     * @return array of length 2 holding the mean of x and the ssum of the square ddifferences of x from the mean.
+     * @return array of length 2 holding the mean of x and the ssum of
+     * the square differences of x from the mean.
      */
     public static double[] calcMeanAndSSD(double[] x) {
 
@@ -912,34 +920,42 @@ public class MiscMath0 {
     }
 
     /**
-     * calculate the mean of x and the sum of the squared differences (SSD) between x and the mean.
-     * The SSD can be used to calculate the biased or unbiased variance, standard deviation, and standard error.
+     * calculate the mean of x and the sum of the squared differences
+     * (SSD) between x and the mean.
+     * The SSD can be used to calculate the biased or unbiased
+     * variance, standard deviation, and standard error.
      <pre>
      mean = (1/n)*sum_{i=0 to n-1}(x_i) where n = x.length
 
      SSD = sum_{i=0 to n-1}((x_i - mean)^2)
 
      sample standard deviation:
-     n-1 degrees of freedom within a sample of size n for having to estimate the mean from data,
-     is a.k.a. unbiased standard deviation.
-     note that standard deviation is not appropriate for all distributions, e.g. categorical.
+         n-1 degrees of freedom within a sample of size n for having
+         to estimate the mean from data,
+         is a.k.a. unbiased standard deviation.
+         note that standard deviation is not appropriate for all
+         distributions, e.g. categorical.
      = sqrt( SSD / (n-1) )
 
      population standard deviation:
-     true population mean is known, so n degrees of freedom within a sample of size n
+         true population mean is known, so n degrees of freedom
+         within a sample of size n
      = sqrt( SSD/ n) biased, population mean is known
 
      standard error (SE):
-     the standard deviation of the mean itself, across more than one sample.
-     used in confidence intervals and hypothesis testing.
-     e.g. 95% - confidence interval = mean += 1.96 * SE for gaussian normal distribution
-     assumptions of same sample size and drawn from same population.
+         the standard deviation of the mean itself, across more
+         than one sample.
+         used in confidence intervals and hypothesis testing.
+         e.g. 95% - confidence interval = mean += 1.96 * SE for
+         gaussian normal distribution
+         assumptions of same sample size and drawn from same population.
      = sample standard deviation / sqrt(n)
      = sqrt( SSD / (n*(n-1)) )
 
      </pre>
      * @param x
-     * @return array of length 2 holding the mean of x and the ssum of the square ddifferences of x from the mean.
+     * @return array of length 2 holding the mean of x and the ssum of
+     * the square differences of x from the mean.
      */
     public static double[] calcMeanAndSSD(int[] x) {
         return calcMeanAndSSD(convertIntToDouble(x));
@@ -995,7 +1011,7 @@ public class MiscMath0 {
         for (int i = 0; i < x.length; ++i) {
             recip[i] = 1./x[i];
         }
-        return calcMean(recip);
+        return 1./calcMean(recip);
     }
 
     /**
@@ -2170,4 +2186,26 @@ public class MiscMath0 {
         return Math.abs(direction) < tol;
     }
 
+    public static double[] uniformRandomDouble(int n) {
+        long seed = System.nanoTime();
+        Random rand = new Random(seed);
+        return uniformRandomDouble(n, rand);
+    }
+    public static double[] uniformRandomDouble(int n, Random rand) {
+        double[] out = new double[n];
+        for (int i = 0; i < n; ++i) {
+            out[i] = rand.nextDouble();
+        }
+        return out;
+    }
+
+    public static boolean equalsWithinTolerance(double[] a1, double[] a2, double tol) {
+        if (a1.length != a2.length) {
+            return false;
+        }
+        for (int i = 0; i < a1.length; ++i) {
+            if (Math.abs(a1[i] - a2[i]) > tol) return false;
+        }
+        return true;
+    }
 }
