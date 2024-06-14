@@ -699,6 +699,41 @@ public class MiscSorterTest extends TestCase {
         }
     }
 
+    public void testLambdaSort() {
+
+        SecureRandom sr = new SecureRandom();
+        long seed = System.nanoTime();
+        System.out.println("testLambdaSort: seed=" + seed);
+        sr.setSeed(seed);
+
+        double diff;
+        int idx;
+
+        int nTests = 100;
+
+        for (int ii = 0; ii < nTests; ++ii) {
+
+            int n = sr.nextInt(100) + 5;
+            int[] a1 = new int[n];
+            for (int jj = 0; jj < n; ++jj) {
+                a1[jj] = sr.nextInt();
+            }
+            int[] orig = Arrays.copyOf(a1, a1.length);
+
+            int[] indexes = MiscSorter.lambdaSort(a1);
+
+            assertEquals(n, indexes.length);
+
+            int prev = a1[0];
+            for (int i = 1; i < n; ++i) {
+                assertTrue(a1[i] >= prev);
+                idx = indexes[i];
+                assertEquals(orig[idx], a1[i]);
+                prev = a1[i];
+            }
+        }
+    }
+
     public void testNonRecursiveMergeSort() {
         System.out.println("testNonRecursiveMergeSort");
         double[] a = new double[]{5, 7, 9, 6, 8, 10};

@@ -21,8 +21,8 @@ basic outline for all exact target methods:
 
 0-1:
         // since tab holds current and prev i results,
-        // need to traverse weights from high to low
-        // to avoid including an updated low wc2 in current wc
+        // need to traverse weights from high to low indices
+        // to avoid including an updated low index wc2 in current wc
         for (wc = target; wc >= weights[i]; --wc) {
             wc2 = wc-weights[i];
             if (wc2 == 0) {
@@ -35,8 +35,8 @@ basic outline for all exact target methods:
 
 Bounded:
         // since tab holds current and prev i results,
-        // need to traverse weights from high to low
-        // to avoid including an updated low wc2 in current wc
+        // need to traverse weights from high to low indices
+        // to avoid including an updated low index wc2 in current wc
         for (wc = target; wc >= weights[i]; --wc) {
             for (q = 1; q <= quantities[i]; ++q) {
                 wc2 = wc - q * weights[i];

@@ -17,13 +17,13 @@ basic outline for all target methods:
     // to count sequences instead of sets, outer loop is indexes to include all prev calc items
     // in current weight count
     for (i = 0; i < n; ++i) {
-        // traverse wc from low to high to include current updates in next tab[wc]
+        // traverse wc from low to high indices to include current updates in next tab[wc]
         for (wc = weights[i]; wc <= target; ++wc) {
             wc2 = wc - weights[i];
-            if (wc2 >= 0) {
+            //if (wc2 >= 0) {
                 // adds counts from remaining sum
                 tab[wc] += tab[wc2];
-            }
+            //}
         }
     }
 
@@ -33,8 +33,8 @@ Bounded:
     ...Map<Integer, List<int[]>> tabQ = new HashMap<>();
     for (int i = 0; i < n; ++i) {
         // since tab holds current and prev i results,
-        // need to traverse weights from high to low
-        // to avoid including an updated low wc2 in current wc
+        // need to traverse weights from high to low indices
+        // to avoid including an updated low index wc2 in current wc
         for (int wc = target; wc >= weights[i]; --wc) {
             for (int q = 1; q <= quantities[i]; ++q) {
                 // wc2 is the remaining sum after q coins subtracted

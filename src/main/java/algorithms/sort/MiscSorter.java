@@ -39,6 +39,18 @@ int[] sortedIdxs
  */
 public class MiscSorter {
 
+    // sort a, and return indexes in sorted order
+    public static int[] lambdaSort(int[] a) {
+        int[] sortedIdxs
+                = IntStream.range(0, a.length).boxed()
+                .sorted((i, j) -> Integer.compare(a[i], a[j]))
+                .mapToInt(ele -> ele).toArray();
+        // write into a by sortedIdxs order
+        sortByIndexes(a, sortedIdxs);
+        return sortedIdxs;
+
+    }
+
     public static int[] returnSortedIndexes(int[] a, boolean ascending) {
 
         // range:

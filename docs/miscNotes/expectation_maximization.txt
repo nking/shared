@@ -7,7 +7,7 @@ NOTE: rewriting the variables to use Stanford ML CS229 notation.
 x are the observed.
 z are not observed and are called the complete data.
 
-postulate a family of sampling densities f (z I θ) depending on parameters phi.  <== complete-data specification.
+postulate a family of sampling densities f (z | θ) depending on parameters phi.  <== complete-data specification.
 corresponding family of sampling densities is g(x | θ)  <== incomplete-data specification.
     EQN 1.1:
     g(x | θ) = integral over z of ( f(z | θ) dz)

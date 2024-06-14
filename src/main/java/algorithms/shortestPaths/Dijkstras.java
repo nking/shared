@@ -14,14 +14,16 @@ import java.util.Arrays;
  * source shortest paths.
  * 
  * All edge weights must be non-negative.
- * 
- * The runtime complexity is O(|V| + |E|) due to use of a YFastTrie as the min-priority heap.
-   Note runtime complexity using YFasttrie is O(|V|*(log log(M)) + |E|)     
-   where M is the number of bits of the maximum value the trie.
+ *
+ * The runtime complexity of a Dijkstra algorithm implementation is
+ * |V|*(ins + extractMin) + |E| * decreaseKey
+ *
+ * For use of a YFastTrie, ins, extractMin and decreaseKey are each O(c) in r.t.c.
+ * so we have O(c*(|V| + |E|) where c is log (log(max value in heap))
+ *
+   An implementations using a Fibonacci Heap ins and decreaseKey are O(1)
+ while extractMin is O(log(|V|)) so the entire r.t.c. is O(lg(V)*|V| + |E|).
 
-   Implementations using a Fibonacci Heap have runtime complexity
-    O(|V|*log_2|V| + |E|)
- * 
  * implemented from pseudocode from Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms"
  * then edited to use heaps and priority queues.
  * 

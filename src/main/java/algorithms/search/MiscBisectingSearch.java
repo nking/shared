@@ -480,6 +480,7 @@ public class MiscBisectingSearch {
                 hi = mid - 1;
             }
         }
+
         return found ? hi : lo;
     }
 
