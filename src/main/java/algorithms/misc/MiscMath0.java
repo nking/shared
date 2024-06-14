@@ -866,6 +866,150 @@ public class MiscMath0 {
         r[1] = (x[3*n/4] - x[n/2]);
         return r;
     }
+
+    /**
+     * calculate the mean of x and the sum of the squared differences (SSD) between x and the mean.
+     * The SSD can be used to calculate the biased or unbiased variance, standard deviation, and standard error.
+     <pre>
+     mean = (1/n)*sum_{i=0 to n-1}(x_i) where n = x.length
+
+     SSD = sum_{i=0 to n-1}((x_i - mean)^2)
+
+     sample standard deviation:
+         n-1 degrees of freedom within a sample of size n for having to estimate the mean from data,
+         is a.k.a. unbiased standard deviation.
+         note that standard deviation is not appropriate for all distributions, e.g. categorical.
+     = sqrt( SSD / (n-1) )
+
+     population standard deviation:
+         true population mean is known, so n degrees of freedom within a sample of size n
+     = sqrt( SSD/ n) biased, population mean is known
+
+     standard error (SE):
+         the standard deviation of the mean itself, across more than one sample.
+         used in confidence intervals and hypothesis testing.
+         e.g. 95% - confidence interval = mean += 1.96 * SE for gaussian normal distribution
+         assumptions of same sample size and drawn from same population.
+     = sample standard deviation / sqrt(n)
+     = sqrt( SSD / (n*(n-1)) )
+
+     </pre>
+     * @param x
+     * @return array of length 2 holding the mean of x and the ssum of the square ddifferences of x from the mean.
+     */
+    public static double[] calcMeanAndSSD(double[] x) {
+
+        double[] out = new double[]{calcMean(x), 0.};
+
+        double s = 0;
+        double d;
+        for (int i = 0; i < x.length; i++) {
+            d = (out[0] - x[i]);
+            s += (d * d);
+        }
+        out[1] = s;
+        return out;
+    }
+
+    /**
+     * calculate the mean of x and the sum of the squared differences (SSD) between x and the mean.
+     * The SSD can be used to calculate the biased or unbiased variance, standard deviation, and standard error.
+     <pre>
+     mean = (1/n)*sum_{i=0 to n-1}(x_i) where n = x.length
+
+     SSD = sum_{i=0 to n-1}((x_i - mean)^2)
+
+     sample standard deviation:
+     n-1 degrees of freedom within a sample of size n for having to estimate the mean from data,
+     is a.k.a. unbiased standard deviation.
+     note that standard deviation is not appropriate for all distributions, e.g. categorical.
+     = sqrt( SSD / (n-1) )
+
+     population standard deviation:
+     true population mean is known, so n degrees of freedom within a sample of size n
+     = sqrt( SSD/ n) biased, population mean is known
+
+     standard error (SE):
+     the standard deviation of the mean itself, across more than one sample.
+     used in confidence intervals and hypothesis testing.
+     e.g. 95% - confidence interval = mean += 1.96 * SE for gaussian normal distribution
+     assumptions of same sample size and drawn from same population.
+     = sample standard deviation / sqrt(n)
+     = sqrt( SSD / (n*(n-1)) )
+
+     </pre>
+     * @param x
+     * @return array of length 2 holding the mean of x and the ssum of the square ddifferences of x from the mean.
+     */
+    public static double[] calcMeanAndSSD(int[] x) {
+        return calcMeanAndSSD(convertIntToDouble(x));
+    }
+
+    /**
+     * calculate the arithmetic mean of x
+     <pre>
+     arithetic mean: (1/n)*sum(x_i) for i = 0 to n-1 where n = x.length
+     </pre>
+     * @param x array of values
+     * @return arithmetic mean of x
+     */
+    public static double calcMean(double[] x) {
+        double s = 0;
+        for (int i = 0; i < x.length; i++) {
+            s += x[i];
+        }
+        return s/x.length;
+    }
+
+    /**
+     * calculate the geometric mean of array x.
+     <pre>
+     geometric mean: (product(x_i))^(1/n) for i=0 to n-1 where n=x.length.
+     </pre>
+     Note that to handle potentially very small and very large numbers, the logarithm is used
+     followed by exponential of the result. (logarithm transforms the product into sum, making it
+     the arithmetic mean).
+     * @param x array of values.  note that a 0 in x results in a geometric mean of 0
+     * @return geometric mean of x
+     */
+    public static double calcGeometricMean(double[] x) {
+        int n = x.length;
+        // to avoid problems with very large and very small numbers, take logarithm,
+        // which then
+        double mean = calcMean(x);
+        return Math.exp(mean);
+    }
+
+    /**
+     * calculate the harmonic mean of array x.
+     <pre>
+     harmonic mean: n/(sum(1/a_i)) for i=0 to n-1 where n = x.length
+     </pre>
+     * @param x array of values.  note that any 0 in x will throw a divide by zero runtime error.
+     * @return harmonic mean
+     */
+    public static double calcHarmonicMean(double[] x) {
+        int n = x.length;
+        // n/(sum(1/a_i)) = 1/arithmetic sum of the reciprocals of each x_i
+        double[] recip = new double[x.length];
+        for (int i = 0; i < x.length; ++i) {
+            recip[i] = 1./x[i];
+        }
+        return calcMean(recip);
+    }
+
+    /**
+     * returns the logarithm of each value in x
+     * @param x array of values
+     * @return logarithm of each value in x
+     */
+    public static double[] log(double[] x) {
+        double[] out = new double[x.length];
+        for (int i = 0; i < x.length; ++i) {
+            out[i] = Math.log(x[i]);
+        }
+        return out;
+    }
     
     /**
      * given an array of points, return the average and standard deviation from
