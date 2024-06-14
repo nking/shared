@@ -975,8 +975,8 @@ public class MiscMath0 {
     public static double calcGeometricMean(double[] x) {
         int n = x.length;
         // to avoid problems with very large and very small numbers, take logarithm,
-        // which then
-        double mean = calcMean(x);
+        // which then turns product into sum
+        double mean = calcMean(log(x));
         return Math.exp(mean);
     }
 
