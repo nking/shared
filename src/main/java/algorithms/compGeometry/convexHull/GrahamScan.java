@@ -1,7 +1,6 @@
 package algorithms.compGeometry.convexHull;
 
 import algorithms.sort.MiscSorter;
-import algorithms.sort.MultiArrayMergeSort;
 import algorithms.sort.PolarAngleMergeSort;
 import algorithms.util.Stack;
 
@@ -301,7 +300,7 @@ public class GrahamScan {
         for (int i = 3; i < nPointsUsable; i++) {
 
             topS = s.peek();
-            nextToTopS = s.peekPopNext();
+            nextToTopS = s.peekNext();
             si = i;
 
             double direction = ((x[topS] - x[nextToTopS])*(y[si] - y[nextToTopS])) - ((y[topS]
@@ -316,7 +315,7 @@ public class GrahamScan {
                 }
 
                 topS = s.peek();
-                nextToTopS = s.peekPopNext();
+                nextToTopS = s.peekNext();
                 si = i;
                 direction = ((x[topS] - x[nextToTopS])*(y[si] - y[nextToTopS])) - ((y[topS]
                         - y[nextToTopS])*(x[si] - x[nextToTopS]));
@@ -444,9 +443,13 @@ public class GrahamScan {
         for (int i = 3; i < nPointsUsable; i++) {
 
             topS = s.peek();
-            nextToTopS = s.peekPopNext();
+            nextToTopS = s.peekNext();
             si = i;
 
+            // direction is the cross-product of
+            //   P[topS], P[si]
+            //      corrected to a center P[nextToTopS]
+            // the cross product is positive when P1 is CW from P2 w.r.t. the center
             double direction = ((x[topS] - x[nextToTopS])*(y[si] - y[nextToTopS])) - ((y[topS]
                     - y[nextToTopS])*(x[si] - x[nextToTopS]));
 
@@ -459,7 +462,7 @@ public class GrahamScan {
                 }
 
                 topS = s.peek();
-                nextToTopS = s.peekPopNext();
+                nextToTopS = s.peekNext();
                 si = i;
                 direction = ((x[topS] - x[nextToTopS])*(y[si] - y[nextToTopS])) - ((y[topS]
                         - y[nextToTopS])*(x[si] - x[nextToTopS]));

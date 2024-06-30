@@ -3,23 +3,22 @@ see shared/src/main/algorithms/optimization/Knapsack*
 ===========================================================
 max value for capacity:
     Given a set of n items, each with a mass and a value,
-    determine the number of each item to include in a collection
-    so that the total weight W is less than or equal to a given limit
-    capacity and the total value is as large as possible.
+    calculate and return the max total value for a total mass 
+    LEQ capacity.
   
 basic outline for all capacity methods:
 
     int[] tab = new int[capacity + 1];
     int i, wc, t, c, wc2;
     for (i = 0; i < n; i++) {
-    ... specialized weight logic for each knapsack type ...
+        ... specialized weight logic for each knapsack type ...
     }
     return tab[capacity];
 
 0-1:
         // since tab holds current i and previous i results,
         // need to traverse weights from high to low indices
-        // to avoid including an updated low index wc2 in current wc
+        // to avoid including an updated low index tab[wc2] in current tab[wc]
         for (wc = capacity; wc >= weights[i]; --wc) {
             wc2 = wc - weights[i];
             tab[wc] = Math.max(tab[wc], tab[wc2] + values[i]);
@@ -28,7 +27,7 @@ basic outline for all capacity methods:
 Bounded:
         // since tab holds current i and previous i results,
         // need to traverse weights from high to low indices
-        // to avoid including an updated low index wc2 in current wc
+        // to avoid including an updated low index tab[wc2] in current tab[wc]
         for (wc = capacity; wc >= weights[i]; --wc) {
             for (q = 1; q <= quantities[i]; ++q) {
                 wc2 = wc - q * weights[i];
@@ -40,7 +39,7 @@ Bounded:
 
 Unbounded:
         // cannot traverse weight sum in reverse order here.
-        // traverse wc from 1 to target to be able to 
+        // traverse wc from 1 to capacity to be able to 
         // add current wc2 counts to current count sum
         for (wc = weights[i]; wc <= capacity; wc++) {
             wc2 = wc - weights[i];

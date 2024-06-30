@@ -14,10 +14,11 @@ basic outline for all target methods:
     int i, wc, t, c, wc2;
 
 0-1:
-    // to count sequences instead of sets, outer loop is indexes to include all prev calc items
-    // in current weight count
+    // to count sequences instead of sets, outer loop is indexes to 
+    // include all prev calc items  in current weight count
     for (i = 0; i < n; ++i) {
-        // traverse wc from low to high indices to include current updates in next tab[wc]
+        // traverse wc from low to high indices to include current 
+        // updates in next tab[wc]
         for (wc = weights[i]; wc <= target; ++wc) {
             wc2 = wc - weights[i];
             //if (wc2 >= 0) {

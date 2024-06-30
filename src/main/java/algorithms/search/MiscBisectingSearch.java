@@ -480,7 +480,7 @@ public class MiscBisectingSearch {
                 hi = mid - 1;
             }
         }
-
+        //return found ? hi : Math.max(lo, hi);// works too and easier to remember as complement of floor return
         return found ? hi : lo;
     }
 

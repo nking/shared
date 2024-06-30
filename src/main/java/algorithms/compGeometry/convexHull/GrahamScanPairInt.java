@@ -116,7 +116,7 @@ public class GrahamScanPairInt<T extends PairInt> {
         for (int i = 3; i < nPointsUsable; i++) {
             
             T top = points.peek();
-            T nextToTop = points.peekPopNext();
+            T nextToTop = points.peekNext();
 
             double direction = LinesAndAngles.direction(nextToTop, top, input[i]);
             
@@ -132,7 +132,7 @@ public class GrahamScanPairInt<T extends PairInt> {
                 }
 
                 top = points.peek();
-                nextToTop = points.peekPopNext();
+                nextToTop = points.peekNext();
                 
                 direction = LinesAndAngles.direction(nextToTop, top, input[i]);              
             }

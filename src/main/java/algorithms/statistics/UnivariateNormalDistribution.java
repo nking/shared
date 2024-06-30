@@ -25,11 +25,11 @@ public class UnivariateNormalDistribution {
      @return 
      * @throws java.security.NoSuchAlgorithmException 
      */
-    public static double[] randomSampleOfUnitStandard(int n) throws NoSuchAlgorithmException {
-        SecureRandom rand = SecureRandom.getInstanceStrong();
+    public static double[] randomSampleOfUnitStandard(int n) {
+
         long seed = System.nanoTime();
         //System.out.println("SEED=" + seed);
-        rand.setSeed(seed);
+        Random rand = new Random(seed);
         
         return randomSampleOfUnitStandard(rand, n);
     }

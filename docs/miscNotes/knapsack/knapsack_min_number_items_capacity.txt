@@ -16,10 +16,10 @@ basic outline for all capacity methods:
 
     int i, wc, t, c, wc2;
     for (i = 0; i < n; i++) {
-    ... specialized weight logic for each knapsack type ...
+        ... specialized weight logic for each knapsack type ...
     }
 
-    int i = target;
+    int i = capacity;
     while (i > 0 && tab[i] == sentinel) {
         --i;
     }
@@ -28,7 +28,7 @@ basic outline for all capacity methods:
 0-1:
         // since tab holds current i and previous i results,
         // need to traverse weights from high to low indices
-        // to avoid including an updated low index wc2 in current wc
+        // to avoid including an updated low index tab[wc2] in current tab[wc]
         for (wc = capacity; wc >= weights[i]; --wc) {
             wc2 = wc - weights[i];
             if (wc2 == 0) {
@@ -38,13 +38,13 @@ basic outline for all capacity methods:
                 tab[wc] = Math.min(tab[wc], s);
             }
         }
-    }
+     
 
 Bounded:
         // since tab holds current i and previous i results,
         // need to traverse weights from high to low indices
-        // to avoid including an updated low index wc2 in current wc
-        for (wc = target; wc >= weights[i]; --wc) {
+        // to avoid including an updated low index tab[wc2] in current tab[wc]
+        for (wc = capacity; wc >= weights[i]; --wc) {
             for (q = 1; q <= quantities[i]; ++q) {
                 wc2 = wc - q * weights[i];
                 if (wc2 == 0) {
@@ -58,9 +58,9 @@ Bounded:
 
 Unbounded:
         // cannot traverse weight sum in reverse order here.
-        // traverse wc from 1 to target to be able to 
+        // traverse wc from 1 to capacity to be able to 
         // add current wc2 counts to current count sum
-        for (wc = weights[i]; wc <= target; wc++) {
+        for (wc = weights[i]; wc <= capacity; wc++) {
             wc2 = wc - weights[i];
             if (wc2 == 0) {
                 tab[wc] = Math.min(tab[wc], 1);

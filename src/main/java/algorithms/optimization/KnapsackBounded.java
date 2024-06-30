@@ -329,7 +329,7 @@ public class KnapsackBounded {
         for (int i = 0; i < n; ++i) {
             // since tab holds current and prev i results,
             // need to traverse weights from high to low
-            // to avoid including an updated low wc2 in current wc
+            // to avoid including an updated low tab[wc2] in current tab[wc]
             for (int wc = target; wc >= weights[i]; --wc) {
                 for (int q = 1; q <= quantities[i]; ++q) {
                     // wc2 is the remaining sum after q coins subtracted
@@ -348,6 +348,7 @@ public class KnapsackBounded {
      * count the number of ways that a combination of an unbounded quantity of weights
      * can sum up to exactly EQ target, where the sequences are counted rather than sets,
      * e.g. [1,2] is counted and [2,1] is counted, though [1,1] is counted once.
+     * TODO: improve the r.t.c.
      * @param target the exact sum that a combination of and unbounded quantity of weights should sum to
      * @param weights non-negative array of item weights
      * @return
