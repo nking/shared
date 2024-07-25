@@ -70,7 +70,13 @@ public class Util {
                 
         return x0;
     }
-    
+
+    /**
+     * given a histogram, measure the FWHM.
+     * For a gaussian normal distribution, FWHM = 2*sqrt(2*ln(2)) * standard deviation
+     * @param x
+     * @return
+     */
     public static float measureFWHM(float[] x) {
                 
         int xMaxIdx = MiscMath0.findYMaxIndex(x);

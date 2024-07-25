@@ -138,8 +138,8 @@ public class BruteForce {
     
     /**
      * calculate the covariance matrix for a using simplest brute force method
-     * Cov_a = (1/n) a * a^T for a being standardized to subtract the mean of
-     * each type from the measurement of same type.
+     * Cov_a = (1/n) a^T * a for 'a' being zero-mean centered (that is, subtract the mean
+     * of each column from each column).
      * The covariance matrix is also known as auto-covariance matrix, 
      * dispersion matrix, variance matrix, and the variance–covariance matrix.
      @param a an mxn matrix of data with the dimensions being rows

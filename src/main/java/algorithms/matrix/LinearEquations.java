@@ -384,7 +384,8 @@ public class LinearEquations {
     /**
      * compute the cholesky decomposition for symmetric positive definite matrix
      * a using the MTJ library.
-     @param a symmetric positive definite matrix 
+     @param a symmetric positive definite matrix.  
+     a pos def matrix is symmetric and its eigenvalues are all positive.
      @return lower triangular matrix G  which G is a lower triangular matrix with positive
     * diagonal entries.  a = G*G^T.
     */
@@ -408,7 +409,8 @@ public class LinearEquations {
      * a = G*G^T where G is a lower triangular matrix with positive
     * diagonal entries.
     * 
-     @param a symmetric positive definite matrix 
+     @param a symmetric positive definite matrix.
+     a pos def matrix is symmetric and its eigenvalues are all positive.
      @param eps value for an error tolerance around zero used in the LDL decomposition.
      @return lower triangular matrix G  which G is a lower triangular matrix with positive
     * diagonal entries.  a = G*G^T.

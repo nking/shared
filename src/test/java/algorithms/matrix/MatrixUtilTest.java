@@ -1879,7 +1879,7 @@ public class MatrixUtilTest extends TestCase {
         int nEig = 2;
         ArpackSym.Ritz ritz = ArpackSym.Ritz.SA;
 
-        // making a test out of Fiedler vector, a.k.a. algebraid connectivity example in wikipedia:
+        // making a test out of Fiedler vector, a.k.a. algebraic connectivity example in wikipedia:
         // https://en.wikipedia.org/wiki/Algebraic_connectivity
 
         int n = 6;

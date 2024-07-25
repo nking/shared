@@ -53,6 +53,64 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
    * schur decomposition followed by back substitution), or
    * for hermetician matrices can use divide and conquer eigenvalue algorithms and they
    * are parallelizable.
+
+ Some notes on the smallest eigenvalue of A:
+ from Wirtz and Guhr 2014,
+ “Distribution of the Smallest Eigenvalue in Complex and Real Correlated Wishart Ensembles”
+ https://arxiv.org/pdf/1310.2467.pdf
+ In linear discriminant analysis it [smallest eigenvalue] gives the leading contribution for the threshold estimate [21].
+ It is most sensitive to noise in the data [18].
+ In linear principal component analysis, the smallest eigenvalue determines the plane of closest fit [18].
+ It is also crucial for the identification of single statistical outliers [17].
+ In numerical studies involving large random matrices, the condition number is used, which depends
+ on the smallest eigenvalue [22, 23]. In wireless communication the Multi–Input–Multi– Output (MIMO) channel matrix
+ of an antenna system is modeled by a random matrix [24]. The smallest eigenvalue of C yields an estimate for the
+ error of a received signal [25, 26, 27]. In finance, the optimal portfolio is associated with the eigenvector
+ to the smallest eigenvalue of the covariance matrix, which is directly related to the correlation matrix [28].
+ This incomplete list of examples shows the influence of the smallest eigenvalue in applications.
+ Further information on the role of the smallest eigenvalue is given in Appendix A.
+ [17] Barnett V, Lewis T. Outliers in Statistical Data. first edition ed. John Wiley & Sons; 1980.
+ [18] Gnanadesikan R. Methods for Statistical Data Analysis of Multivariate Oberservations.
+ Second edition ed. John Wiley & Sons; 1997.
+
+ Note also, regarding finding the closest distance of a vector to a subspace in matrix A:
+ One can use orthgoncal projection to solve for the distance, which is also called the residual
+ or error vector.
+     Given matrix A and vector b, we solve for x (i.e. x_est).
+             A * x = b
+        x_est is the subspace in A closest to b.   It's the best estimate for x.
+        x_est = pseudoinverse(A) * b; [A=mxn, b=mx1, x_est=nx1]
+        e.g. for full rank
+             x_est = (A^T*A)^-1 * A^T * b
+
+       The projection of b onto subspace x_est:
+           p = A * x_est.  A=mxn, x_est=nx1, P=mx1
+
+        The projection matrix in P = p*b is then
+            P = A * pseudoinverse(A)
+            e.g. for full rank
+                P = A * (A^T*A)^-1 * A^T; A=mxn, P=mxm
+
+        The vector that is perpendicular to the subspace of x_est is
+            b - A * x_est
+            this is called the residual, i.e. error vector
+
+ Note that to estimate b - A * x_est, one could instead use eigenvectors (or singular value vectors):
+    If an exact solution to b is possible (i.e. A is invertible, etc.), the eigenvectors are solved for matrix A,
+    else the eigenvectors are solved for matrix A^T*A (which, if A is zero mean centered, is the covariance of A.
+    see PCA for related, but different context).
+    We want a vector of length n where A is mxn, so that means we use the right matrix of decomposed eigen/singular
+    vectors (e.g. the V matrix in the SVD U, S, V matrices).
+    The eigenvector associated with the smallest eigenvalue solves for the null space
+    (eigenvalue is 0), and so it is perpendicular to the row space.
+    This method is often used in optimization as total least squares regression.
+    The x_est that minimizes ||b - A * x_est||^2 is the least squares solution for x_est when m > n.
+ The projection matrix of A is A * pseudoinverse(A).
+
+
+ Note that the eigenvector for the 2nd smallest eigenvalue of A, called the Fielder has distinct uses also,
+ especially in community finding.
+ Search for Fiedler vector in this code base.
  </pre>
  * 
  * TODO: implement Orthogonal Iteration from Morita and Kanade Sect 3.2.2
@@ -3361,6 +3419,9 @@ public class MatrixUtil {
     /**
      * Given a symmetric matrix and a nonnegative number eps, find the
      * nearest symmetric positive semidefinite matrices with eigenvalues at least eps.
+       a pos def matrix is symmetric and its eigenvalues are all positive, 
+       so, there's a unique minimum for quadratic equations, but the nearest
+       will be a function of eps.
      * <pre>
      * References:
      * https://nhigham.com/2021/01/26/what-is-the-nearest-positive-semidefinite-matrix/

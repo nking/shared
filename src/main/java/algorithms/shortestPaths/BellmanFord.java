@@ -9,6 +9,8 @@ import gnu.trove.map.hash.TObjectIntHashMap;
 import java.util.Arrays;
 
 /**
+ <pre>
+
  * solves the single source to all destinations shortest paths problem.
  * 
  * It can handle <em>negative edge weights</em>, but if there is a negative cycle, it returns false.
@@ -21,7 +23,8 @@ import java.util.Arrays;
  * Runtime complexity is <em>O(|V||E|)</em>.
  * 
  * implemented following Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms"
- * 
+ </pre>
+
  * @author nichole
  */
 public class BellmanFord {

@@ -10,6 +10,7 @@ import gnu.trove.map.hash.TIntIntHashMap;
 import java.util.Arrays;
 
 /**
+ * <pre>
  * given a weighted directed graph with weight function, solves the single
  * source shortest paths.
  * 
@@ -28,7 +29,7 @@ import java.util.Arrays;
  * then edited to use heaps and priority queues.
  * 
  * from Cormen, Leiserson, Rivest, and Stein :
- * 
+ * </pre>
  * @author nichole
  */
 public class Dijkstras {

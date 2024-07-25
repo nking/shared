@@ -50,7 +50,7 @@ public class Stack<T> {
         return list.data;
     }
     
-    public T peekPopNext() {
+    public T peekNext() {
         if (list == null || list.next == null) {
             return null;
         }
