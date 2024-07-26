@@ -282,7 +282,7 @@ public class ResourceFinder {
     }
 
     /**
-     * get the base directory of the project.  note that the string does not end with
+     * get the project base directory of the project.  note that the string does not end with
      * a file separator "/".
      * @return
      * @throws IOException
@@ -297,12 +297,10 @@ public class ResourceFinder {
         }
 
         String filePath = basedir.getPath();
-
-        String[] rep = new String[]{"/bin/classes/", "/bin/test-classes/"};
-        for (String r : rep) {
-            if (filePath.endsWith(r)) {
-                filePath = filePath.replace(r, "");
-            }
+        int idx = filePath.indexOf("/bin/");
+        if (idx > -1) {
+            filePath = filePath.substring(0, idx);
+            return filePath;
         }
 
         return filePath;

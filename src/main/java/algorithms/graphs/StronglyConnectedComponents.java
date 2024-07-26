@@ -138,13 +138,15 @@ public class StronglyConnectedComponents {
             int v = wNode.getKey();
             log.log(logLevel, "    v=" + toString(v));            
             if (td[v] == -1) {
-                // Successor v has not yet been visited; recurse on it
+                // Successor v has not yet been visited; recurse on it.
+                // this is a tree edge.
                 strongConnect(v);
                 lowLink[u] = Math.min(lowLink[u], lowLink[v]);  // update Low[v]
             } else if (onStack[v] == 1) {
                 // v is in stack S and hence in the current SCC
                 // If v is not on stack, then (u, v) is a cross-edge in the 
                 // DFS tree and must be ignored.
+                // this is a back edge.
                 lowLink[u] = Math.min(lowLink[u], td[v]);  // update Low[u]
             }
             wNode = wNode.getNext();
@@ -152,6 +154,7 @@ public class StronglyConnectedComponents {
         
         // If v is a root node, pop the stack and generate an SCC
         if (lowLink[u] == td[u] && inSCC[u] == 0) {
+            // found a bridge (no descendants of u who are also descendants of ancestor of u)
             log.log(logLevel, "    START scc " + u);
             SimpleLinkedListNode sccNode = new SimpleLinkedListNode();
             scc.add(sccNode);
