@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GrahamScan.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.compGeometry.convexHull</a> &gt; <span class="el_source">GrahamScan.java</span></div><h1>GrahamScan.java</h1><pre class="source lang-java linenums">package algorithms.compGeometry.convexHull;
 
 import algorithms.sort.MiscSorter;
-import algorithms.sort.MultiArrayMergeSort;
 import algorithms.sort.PolarAngleMergeSort;
 import algorithms.util.Stack;
 
@@ -155,8 +154,8 @@ public class GrahamScan {
         }
     }
 
-<span class="fc" id="L158">	public GrahamScan() {</span>
-<span class="fc" id="L159">	}</span>
+<span class="fc" id="L157">	public GrahamScan() {</span>
+<span class="fc" id="L158">	}</span>
 
     /**
      * find the convex hull of the given (x, y) points.  Note that the resulting
@@ -172,29 +171,29 @@ public class GrahamScan {
      */
     public CHD computeHull(float[] x, float[] y, boolean useLinearSort) throws GrahamScanTooFewPointsException {
 
-<span class="fc bfc" id="L175" title="All 2 branches covered.">        if (x == null) {</span>
-<span class="fc" id="L176">            throw new IllegalArgumentException(&quot;x cannot be null&quot;);</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">        if (x == null) {</span>
+<span class="fc" id="L175">            throw new IllegalArgumentException(&quot;x cannot be null&quot;);</span>
         }
-<span class="fc bfc" id="L178" title="All 2 branches covered.">        if (y == null) {</span>
-<span class="fc" id="L179">            throw new IllegalArgumentException(&quot;y cannot be null&quot;);</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">        if (y == null) {</span>
+<span class="fc" id="L178">            throw new IllegalArgumentException(&quot;y cannot be null&quot;);</span>
         }
-<span class="fc bfc" id="L181" title="All 2 branches covered.">        if (x.length != y.length) {</span>
-<span class="fc" id="L182">            throw new IllegalArgumentException(&quot;x must have the same number of items as y&quot;);</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">        if (x.length != y.length) {</span>
+<span class="fc" id="L181">            throw new IllegalArgumentException(&quot;x must have the same number of items as y&quot;);</span>
         }
-<span class="fc bfc" id="L184" title="All 2 branches covered.">        if (x.length &lt; 3) {</span>
-<span class="fc" id="L185">            throw new IllegalArgumentException(&quot;x must have at least 3 items&quot;);</span>
-        }
-
-<span class="fc" id="L188">        double[] x2 = new double[x.length];</span>
-<span class="fc" id="L189">        double[] y2 = new double[x.length];</span>
-<span class="fc bfc" id="L190" title="All 2 branches covered.">        for (int i = 0; i &lt; x.length; ++i) {</span>
-<span class="fc" id="L191">            x2[i] = x[i];</span>
-<span class="fc" id="L192">            y2[i] = y[i];</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">        if (x.length &lt; 3) {</span>
+<span class="fc" id="L184">            throw new IllegalArgumentException(&quot;x must have at least 3 items&quot;);</span>
         }
 
-<span class="fc" id="L195">        CHD chd = computeHull(x2, y2, useLinearSort);</span>
+<span class="fc" id="L187">        double[] x2 = new double[x.length];</span>
+<span class="fc" id="L188">        double[] y2 = new double[x.length];</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">        for (int i = 0; i &lt; x.length; ++i) {</span>
+<span class="fc" id="L190">            x2[i] = x[i];</span>
+<span class="fc" id="L191">            y2[i] = y[i];</span>
+        }
 
-<span class="fc" id="L197">        return chd;</span>
+<span class="fc" id="L194">        CHD chd = computeHull(x2, y2, useLinearSort);</span>
+
+<span class="fc" id="L196">        return chd;</span>
     }
 
     /**
@@ -211,22 +210,22 @@ public class GrahamScan {
      */
     public CHD computeHull(double[] x, double[] y, boolean useLinearSort) throws GrahamScanTooFewPointsException {
 
-<span class="pc bpc" id="L214" title="1 of 2 branches missed.">        if (x == null) {</span>
-<span class="nc" id="L215">            throw new IllegalArgumentException(&quot;x cannot be null&quot;);</span>
+<span class="pc bpc" id="L213" title="1 of 2 branches missed.">        if (x == null) {</span>
+<span class="nc" id="L214">            throw new IllegalArgumentException(&quot;x cannot be null&quot;);</span>
         }
-<span class="pc bpc" id="L217" title="1 of 2 branches missed.">        if (y == null) {</span>
-<span class="nc" id="L218">            throw new IllegalArgumentException(&quot;y cannot be null&quot;);</span>
+<span class="pc bpc" id="L216" title="1 of 2 branches missed.">        if (y == null) {</span>
+<span class="nc" id="L217">            throw new IllegalArgumentException(&quot;y cannot be null&quot;);</span>
         }
-<span class="pc bpc" id="L220" title="1 of 2 branches missed.">        if (x.length != y.length) {</span>
-<span class="nc" id="L221">            throw new IllegalArgumentException(&quot;x must have the same number of items as y&quot;);</span>
+<span class="pc bpc" id="L219" title="1 of 2 branches missed.">        if (x.length != y.length) {</span>
+<span class="nc" id="L220">            throw new IllegalArgumentException(&quot;x must have the same number of items as y&quot;);</span>
         }
-<span class="pc bpc" id="L223" title="1 of 2 branches missed.">        if (x.length &lt; 3) {</span>
-<span class="nc" id="L224">            throw new IllegalArgumentException(&quot;x must have at least 3 items&quot;);</span>
+<span class="pc bpc" id="L222" title="1 of 2 branches missed.">        if (x.length &lt; 3) {</span>
+<span class="nc" id="L223">            throw new IllegalArgumentException(&quot;x must have at least 3 items&quot;);</span>
         }
 
         // make copy of points to avoid modifying input
-<span class="fc" id="L228">        x = Arrays.copyOf(x, x.length);</span>
-<span class="fc" id="L229">        y = Arrays.copyOf(y, y.length);</span>
+<span class="fc" id="L227">        x = Arrays.copyOf(x, x.length);</span>
+<span class="fc" id="L228">        y = Arrays.copyOf(y, y.length);</span>
 
         /*
          * Q is a stack of candidate points which have been pushed once onto the stack
@@ -252,17 +251,17 @@ public class GrahamScan {
 
         // (1) let p0 be the point in Q w/ minimum yCoord,
         //     or the leftmost point if more than one w/ same minimum yCoord.
-<span class="fc" id="L255">        int p0Index = findIndexOfMinY(x, y);</span>
+<span class="fc" id="L254">        int p0Index = findIndexOfMinY(x, y);</span>
 
-<span class="fc bfc" id="L257" title="All 2 branches covered.">        if (p0Index != 0) {</span>
+<span class="fc bfc" id="L256" title="All 2 branches covered.">        if (p0Index != 0) {</span>
             // move the point at index [iP0] to index [0]
-<span class="fc" id="L259">            double swapX = x[p0Index];</span>
-<span class="fc" id="L260">            double swapY = y[p0Index];</span>
-<span class="fc" id="L261">            x[p0Index] = x[0];</span>
-<span class="fc" id="L262">            y[p0Index] = y[0];</span>
-<span class="fc" id="L263">            x[0] = swapX;</span>
-<span class="fc" id="L264">            y[0] = swapY;</span>
-<span class="fc" id="L265">            p0Index = 0;</span>
+<span class="fc" id="L258">            double swapX = x[p0Index];</span>
+<span class="fc" id="L259">            double swapY = y[p0Index];</span>
+<span class="fc" id="L260">            x[p0Index] = x[0];</span>
+<span class="fc" id="L261">            y[p0Index] = y[0];</span>
+<span class="fc" id="L262">            x[0] = swapX;</span>
+<span class="fc" id="L263">            y[0] = swapY;</span>
+<span class="fc" id="L264">            p0Index = 0;</span>
         }
 
         // (2) let &lt;p1, p2, ..., pm&gt; be the remaining points in Q, sorted
@@ -272,23 +271,23 @@ public class GrahamScan {
         // this step uses angles rounded to degrees between 0 and 360.
         // the runtime complexity is O( max(x.length, 360) )
         int nPointsUsable;
-<span class="fc" id="L275">        boolean reduceToUniqueAngles = true;</span>
-<span class="fc bfc" id="L276" title="All 2 branches covered.">        if (useLinearSort) {</span>
-<span class="fc" id="L277">            nPointsUsable = MiscSorter.sortCCWBy1stPointLinear(x, y, reduceToUniqueAngles);</span>
+<span class="fc" id="L274">        boolean reduceToUniqueAngles = true;</span>
+<span class="fc bfc" id="L275" title="All 2 branches covered.">        if (useLinearSort) {</span>
+<span class="fc" id="L276">            nPointsUsable = MiscSorter.sortCCWBy1stPointLinear(x, y, reduceToUniqueAngles);</span>
         } else {
-<span class="fc" id="L279">            double[] outputPolarAngle = new double[x.length];</span>
-<span class="fc" id="L280">            double tolerance = 1E-4;</span>
-<span class="fc" id="L281">            nPointsUsable = PolarAngleMergeSort.sortCCWBy1stPoint(x, y, outputPolarAngle, reduceToUniqueAngles, tolerance);</span>
+<span class="fc" id="L278">            double[] outputPolarAngle = new double[x.length];</span>
+<span class="fc" id="L279">            double tolerance = 1E-4;</span>
+<span class="fc" id="L280">            nPointsUsable = PolarAngleMergeSort.sortCCWBy1stPoint(x, y, outputPolarAngle, reduceToUniqueAngles, tolerance);</span>
         }
 
-<span class="fc bfc" id="L284" title="All 2 branches covered.">        if (nPointsUsable &lt; 3) {</span>
-<span class="fc" id="L285">            throw new GrahamScanTooFewPointsException(&quot;polar angle sorting has reduced the number of points to less than 3&quot;);</span>
+<span class="fc bfc" id="L283" title="All 2 branches covered.">        if (nPointsUsable &lt; 3) {</span>
+<span class="fc" id="L284">            throw new GrahamScanTooFewPointsException(&quot;polar angle sorting has reduced the number of points to less than 3&quot;);</span>
         }
 
-<span class="fc" id="L288">        Stack&lt;Integer&gt; s = new Stack&lt;Integer&gt;();</span>
-<span class="fc" id="L289">        s.push(p0Index);</span>
-<span class="fc" id="L290">        s.push(1);</span>
-<span class="fc" id="L291">        s.push(2);</span>
+<span class="fc" id="L287">        Stack&lt;Integer&gt; s = new Stack&lt;Integer&gt;();</span>
+<span class="fc" id="L288">        s.push(p0Index);</span>
+<span class="fc" id="L289">        s.push(1);</span>
+<span class="fc" id="L290">        s.push(2);</span>
 
         int topS;
         int nextToTopS;
@@ -298,46 +297,46 @@ public class GrahamScan {
         //    while angle between next-to-top(S), top(S) and p_i makes a nonleft turn
         //        do pop(S)
         //    push(pi, S)
-<span class="fc bfc" id="L301" title="All 2 branches covered.">        for (int i = 3; i &lt; nPointsUsable; i++) {</span>
+<span class="fc bfc" id="L300" title="All 2 branches covered.">        for (int i = 3; i &lt; nPointsUsable; i++) {</span>
 
-<span class="fc" id="L303">            topS = s.peek();</span>
-<span class="fc" id="L304">            nextToTopS = s.peekPopNext();</span>
-<span class="fc" id="L305">            si = i;</span>
+<span class="fc" id="L302">            topS = s.peek();</span>
+<span class="fc" id="L303">            nextToTopS = s.peekNext();</span>
+<span class="fc" id="L304">            si = i;</span>
 
-<span class="fc" id="L307">            double direction = ((x[topS] - x[nextToTopS])*(y[si] - y[nextToTopS])) - ((y[topS]</span>
+<span class="fc" id="L306">            double direction = ((x[topS] - x[nextToTopS])*(y[si] - y[nextToTopS])) - ((y[topS]</span>
                     - y[nextToTopS])*(x[si] - x[nextToTopS]));
 
-<span class="fc bfc" id="L310" title="All 2 branches covered.">            while (direction &lt;= 0) {</span>
+<span class="fc bfc" id="L309" title="All 2 branches covered.">            while (direction &lt;= 0) {</span>
 
-<span class="fc" id="L312">                s.pop();</span>
+<span class="fc" id="L311">                s.pop();</span>
 
-<span class="pc bpc" id="L314" title="1 of 2 branches missed.">                if (s.size() &lt; 2) {</span>
-<span class="nc" id="L315">                    break;</span>
+<span class="pc bpc" id="L313" title="1 of 2 branches missed.">                if (s.size() &lt; 2) {</span>
+<span class="nc" id="L314">                    break;</span>
                 }
 
-<span class="fc" id="L318">                topS = s.peek();</span>
-<span class="fc" id="L319">                nextToTopS = s.peekPopNext();</span>
-<span class="fc" id="L320">                si = i;</span>
-<span class="fc" id="L321">                direction = ((x[topS] - x[nextToTopS])*(y[si] - y[nextToTopS])) - ((y[topS]</span>
+<span class="fc" id="L317">                topS = s.peek();</span>
+<span class="fc" id="L318">                nextToTopS = s.peekNext();</span>
+<span class="fc" id="L319">                si = i;</span>
+<span class="fc" id="L320">                direction = ((x[topS] - x[nextToTopS])*(y[si] - y[nextToTopS])) - ((y[topS]</span>
                         - y[nextToTopS])*(x[si] - x[nextToTopS]));
             }
 
-<span class="fc" id="L325">            s.push(i);</span>
+<span class="fc" id="L324">            s.push(i);</span>
         }
 
-<span class="fc" id="L328">        int n = s.size() + 1;</span>
+<span class="fc" id="L327">        int n = s.size() + 1;</span>
 
-<span class="fc" id="L330">        double[] xHull = new double[n];</span>
-<span class="fc" id="L331">        double[] yHull = new double[n];</span>
-<span class="fc bfc" id="L332" title="All 2 branches covered.">        for (int i = 0; i &lt; (n - 1); ++i) {</span>
-<span class="fc" id="L333">            si = s.pop();</span>
-<span class="fc" id="L334">            xHull[i] = x[si];</span>
-<span class="fc" id="L335">            yHull[i] = y[si];</span>
+<span class="fc" id="L329">        double[] xHull = new double[n];</span>
+<span class="fc" id="L330">        double[] yHull = new double[n];</span>
+<span class="fc bfc" id="L331" title="All 2 branches covered.">        for (int i = 0; i &lt; (n - 1); ++i) {</span>
+<span class="fc" id="L332">            si = s.pop();</span>
+<span class="fc" id="L333">            xHull[i] = x[si];</span>
+<span class="fc" id="L334">            yHull[i] = y[si];</span>
         }
-<span class="fc" id="L337">        xHull[n-1] = xHull[0];</span>
-<span class="fc" id="L338">        yHull[n-1] = yHull[0];</span>
+<span class="fc" id="L336">        xHull[n-1] = xHull[0];</span>
+<span class="fc" id="L337">        yHull[n-1] = yHull[0];</span>
 
-<span class="fc" id="L340">        return new CHD(xHull, yHull);</span>
+<span class="fc" id="L339">        return new CHD(xHull, yHull);</span>
     }
 
     /**
@@ -354,22 +353,22 @@ public class GrahamScan {
      */
     public static CHL computeHull(long[] x, long[] y, boolean useLinearSort) throws GrahamScanTooFewPointsException {
 
-<span class="pc bpc" id="L357" title="1 of 2 branches missed.">        if (x == null) {</span>
-<span class="nc" id="L358">            throw new IllegalArgumentException(&quot;x cannot be null&quot;);</span>
+<span class="pc bpc" id="L356" title="1 of 2 branches missed.">        if (x == null) {</span>
+<span class="nc" id="L357">            throw new IllegalArgumentException(&quot;x cannot be null&quot;);</span>
         }
-<span class="pc bpc" id="L360" title="1 of 2 branches missed.">        if (y == null) {</span>
-<span class="nc" id="L361">            throw new IllegalArgumentException(&quot;y cannot be null&quot;);</span>
+<span class="pc bpc" id="L359" title="1 of 2 branches missed.">        if (y == null) {</span>
+<span class="nc" id="L360">            throw new IllegalArgumentException(&quot;y cannot be null&quot;);</span>
         }
-<span class="pc bpc" id="L363" title="1 of 2 branches missed.">        if (x.length != y.length) {</span>
-<span class="nc" id="L364">            throw new IllegalArgumentException(&quot;x must have the same number of items as y&quot;);</span>
+<span class="pc bpc" id="L362" title="1 of 2 branches missed.">        if (x.length != y.length) {</span>
+<span class="nc" id="L363">            throw new IllegalArgumentException(&quot;x must have the same number of items as y&quot;);</span>
         }
-<span class="pc bpc" id="L366" title="1 of 2 branches missed.">        if (x.length &lt; 3) {</span>
-<span class="nc" id="L367">            throw new IllegalArgumentException(&quot;x must have at least 3 items&quot;);</span>
+<span class="pc bpc" id="L365" title="1 of 2 branches missed.">        if (x.length &lt; 3) {</span>
+<span class="nc" id="L366">            throw new IllegalArgumentException(&quot;x must have at least 3 items&quot;);</span>
         }
 
         // make copy of points to avoid modifying input
-<span class="fc" id="L371">        x = Arrays.copyOf(x, x.length);</span>
-<span class="fc" id="L372">        y = Arrays.copyOf(y, y.length);</span>
+<span class="fc" id="L370">        x = Arrays.copyOf(x, x.length);</span>
+<span class="fc" id="L371">        y = Arrays.copyOf(y, y.length);</span>
 
         /*
          * Q is a stack of candidate points which have been pushed once onto the stack
@@ -395,17 +394,17 @@ public class GrahamScan {
 
         // (1) let p0 be the point in Q w/ minimum yCoord,
         //     or the leftmost point if more than one w/ same minimum yCoord.
-<span class="fc" id="L398">        int p0Index = findIndexOfMinY(x, y);</span>
+<span class="fc" id="L397">        int p0Index = findIndexOfMinY(x, y);</span>
 
-<span class="pc bpc" id="L400" title="1 of 2 branches missed.">        if (p0Index != 0) {</span>
+<span class="pc bpc" id="L399" title="1 of 2 branches missed.">        if (p0Index != 0) {</span>
             // move the point at index [iP0] to index [0]
-<span class="fc" id="L402">            long swapX = x[p0Index];</span>
-<span class="fc" id="L403">            long swapY = y[p0Index];</span>
-<span class="fc" id="L404">            x[p0Index] = x[0];</span>
-<span class="fc" id="L405">            y[p0Index] = y[0];</span>
-<span class="fc" id="L406">            x[0] = swapX;</span>
-<span class="fc" id="L407">            y[0] = swapY;</span>
-<span class="fc" id="L408">            p0Index = 0;</span>
+<span class="fc" id="L401">            long swapX = x[p0Index];</span>
+<span class="fc" id="L402">            long swapY = y[p0Index];</span>
+<span class="fc" id="L403">            x[p0Index] = x[0];</span>
+<span class="fc" id="L404">            y[p0Index] = y[0];</span>
+<span class="fc" id="L405">            x[0] = swapX;</span>
+<span class="fc" id="L406">            y[0] = swapY;</span>
+<span class="fc" id="L407">            p0Index = 0;</span>
         }
 
         // (2) let &lt;p1, p2, ..., pm&gt; be the remaining points in Q, sorted
@@ -415,23 +414,23 @@ public class GrahamScan {
         // this step uses angles rounded to degrees between 0 and 360.
         // the runtime complexity is O( max(x.length, 360) )
         int nPointsUsable;
-<span class="fc" id="L418">        boolean reduceToUniqueAngles = true;</span>
-<span class="fc bfc" id="L419" title="All 2 branches covered.">        if (useLinearSort) {</span>
-<span class="fc" id="L420">            nPointsUsable = MiscSorter.sortCCWBy1stPointLinear(x, y, reduceToUniqueAngles);</span>
+<span class="fc" id="L417">        boolean reduceToUniqueAngles = true;</span>
+<span class="fc bfc" id="L418" title="All 2 branches covered.">        if (useLinearSort) {</span>
+<span class="fc" id="L419">            nPointsUsable = MiscSorter.sortCCWBy1stPointLinear(x, y, reduceToUniqueAngles);</span>
         } else {
-<span class="fc" id="L422">            double[] outputPolarAngle = new double[x.length];</span>
-<span class="fc" id="L423">            double tolerance = 1E-4;</span>
-<span class="fc" id="L424">            nPointsUsable = PolarAngleMergeSort.sortCCWBy1stPoint(x, y, outputPolarAngle, reduceToUniqueAngles, tolerance);</span>
+<span class="fc" id="L421">            double[] outputPolarAngle = new double[x.length];</span>
+<span class="fc" id="L422">            double tolerance = 1E-4;</span>
+<span class="fc" id="L423">            nPointsUsable = PolarAngleMergeSort.sortCCWBy1stPoint(x, y, outputPolarAngle, reduceToUniqueAngles, tolerance);</span>
         }
 
-<span class="pc bpc" id="L427" title="1 of 2 branches missed.">        if (nPointsUsable &lt; 3) {</span>
-<span class="nc" id="L428">            throw new GrahamScanTooFewPointsException(&quot;polar angle sorting has reduced the number of points to less than 3&quot;);</span>
+<span class="pc bpc" id="L426" title="1 of 2 branches missed.">        if (nPointsUsable &lt; 3) {</span>
+<span class="nc" id="L427">            throw new GrahamScanTooFewPointsException(&quot;polar angle sorting has reduced the number of points to less than 3&quot;);</span>
         }
 
-<span class="fc" id="L431">        Stack&lt;Integer&gt; s = new Stack&lt;Integer&gt;();</span>
-<span class="fc" id="L432">        s.push(p0Index);</span>
-<span class="fc" id="L433">        s.push(1);</span>
-<span class="fc" id="L434">        s.push(2);</span>
+<span class="fc" id="L430">        Stack&lt;Integer&gt; s = new Stack&lt;Integer&gt;();</span>
+<span class="fc" id="L431">        s.push(p0Index);</span>
+<span class="fc" id="L432">        s.push(1);</span>
+<span class="fc" id="L433">        s.push(2);</span>
 
         int topS;
         int nextToTopS;
@@ -441,82 +440,86 @@ public class GrahamScan {
         //    while angle between next-to-top(S), top(S) and p_i makes a nonleft turn
         //        do pop(S)
         //    push(pi, S)
-<span class="fc bfc" id="L444" title="All 2 branches covered.">        for (int i = 3; i &lt; nPointsUsable; i++) {</span>
+<span class="fc bfc" id="L443" title="All 2 branches covered.">        for (int i = 3; i &lt; nPointsUsable; i++) {</span>
 
-<span class="fc" id="L446">            topS = s.peek();</span>
-<span class="fc" id="L447">            nextToTopS = s.peekPopNext();</span>
-<span class="fc" id="L448">            si = i;</span>
+<span class="fc" id="L445">            topS = s.peek();</span>
+<span class="fc" id="L446">            nextToTopS = s.peekNext();</span>
+<span class="fc" id="L447">            si = i;</span>
 
-<span class="fc" id="L450">            double direction = ((x[topS] - x[nextToTopS])*(y[si] - y[nextToTopS])) - ((y[topS]</span>
+            // direction is the cross-product of
+            //   P[topS], P[si]
+            //      corrected to a center P[nextToTopS]
+            // the cross product is positive when P1 is CW from P2 w.r.t. the center
+<span class="fc" id="L453">            double direction = ((x[topS] - x[nextToTopS])*(y[si] - y[nextToTopS])) - ((y[topS]</span>
                     - y[nextToTopS])*(x[si] - x[nextToTopS]));
 
-<span class="fc bfc" id="L453" title="All 2 branches covered.">            while (direction &lt;= 0) {</span>
+<span class="fc bfc" id="L456" title="All 2 branches covered.">            while (direction &lt;= 0) {</span>
 
-<span class="fc" id="L455">                s.pop();</span>
+<span class="fc" id="L458">                s.pop();</span>
 
-<span class="pc bpc" id="L457" title="1 of 2 branches missed.">                if (s.size() &lt; 2) {</span>
-<span class="nc" id="L458">                    break;</span>
+<span class="pc bpc" id="L460" title="1 of 2 branches missed.">                if (s.size() &lt; 2) {</span>
+<span class="nc" id="L461">                    break;</span>
                 }
 
-<span class="fc" id="L461">                topS = s.peek();</span>
-<span class="fc" id="L462">                nextToTopS = s.peekPopNext();</span>
-<span class="fc" id="L463">                si = i;</span>
-<span class="fc" id="L464">                direction = ((x[topS] - x[nextToTopS])*(y[si] - y[nextToTopS])) - ((y[topS]</span>
+<span class="fc" id="L464">                topS = s.peek();</span>
+<span class="fc" id="L465">                nextToTopS = s.peekNext();</span>
+<span class="fc" id="L466">                si = i;</span>
+<span class="fc" id="L467">                direction = ((x[topS] - x[nextToTopS])*(y[si] - y[nextToTopS])) - ((y[topS]</span>
                         - y[nextToTopS])*(x[si] - x[nextToTopS]));
             }
 
-<span class="fc" id="L468">            s.push(i);</span>
+<span class="fc" id="L471">            s.push(i);</span>
         }
 
-<span class="fc" id="L471">        int n = s.size() + 1;</span>
+<span class="fc" id="L474">        int n = s.size() + 1;</span>
 
-<span class="fc" id="L473">        long[] xHull = new long[n];</span>
-<span class="fc" id="L474">        long[] yHull = new long[n];</span>
-<span class="fc bfc" id="L475" title="All 2 branches covered.">        for (int i = 0; i &lt; (n - 1); ++i) {</span>
-<span class="fc" id="L476">            si = s.pop();</span>
-<span class="fc" id="L477">            xHull[i] = x[si];</span>
-<span class="fc" id="L478">            yHull[i] = y[si];</span>
+<span class="fc" id="L476">        long[] xHull = new long[n];</span>
+<span class="fc" id="L477">        long[] yHull = new long[n];</span>
+<span class="fc bfc" id="L478" title="All 2 branches covered.">        for (int i = 0; i &lt; (n - 1); ++i) {</span>
+<span class="fc" id="L479">            si = s.pop();</span>
+<span class="fc" id="L480">            xHull[i] = x[si];</span>
+<span class="fc" id="L481">            yHull[i] = y[si];</span>
         }
-<span class="fc" id="L480">        xHull[n-1] = xHull[0];</span>
-<span class="fc" id="L481">        yHull[n-1] = yHull[0];</span>
+<span class="fc" id="L483">        xHull[n-1] = xHull[0];</span>
+<span class="fc" id="L484">        yHull[n-1] = yHull[0];</span>
 
-<span class="fc" id="L483">        return new CHL(xHull, yHull);</span>
+<span class="fc" id="L486">        return new CHL(xHull, yHull);</span>
     }
 
     protected static int findIndexOfMinY(double[] x, double[] y) {
-<span class="pc bpc" id="L487" title="1 of 2 branches missed.">        if (x.length &lt; 1) {</span>
-<span class="nc" id="L488">            throw new IllegalArgumentException(&quot;x and y must be longer than 1&quot;);</span>
+<span class="pc bpc" id="L490" title="1 of 2 branches missed.">        if (x.length &lt; 1) {</span>
+<span class="nc" id="L491">            throw new IllegalArgumentException(&quot;x and y must be longer than 1&quot;);</span>
         }
-<span class="fc" id="L490">        int iMin = 0;</span>
-<span class="fc" id="L491">        double minY = y[0];</span>
-<span class="fc" id="L492">        double minX = x[0];</span>
+<span class="fc" id="L493">        int iMin = 0;</span>
+<span class="fc" id="L494">        double minY = y[0];</span>
+<span class="fc" id="L495">        double minX = x[0];</span>
         int i;
-<span class="fc bfc" id="L494" title="All 2 branches covered.">        for (i = 1; i &lt; x.length; ++i) {</span>
-<span class="pc bpc" id="L495" title="1 of 6 branches missed.">            if ((y[i] &lt; minY) || ( (y[i] == minY) &amp;&amp; (x[i] &lt; minX))) {</span>
-<span class="fc" id="L496">                minY = y[i];</span>
-<span class="fc" id="L497">                minX = x[i];</span>
-<span class="fc" id="L498">                iMin = i;</span>
+<span class="fc bfc" id="L497" title="All 2 branches covered.">        for (i = 1; i &lt; x.length; ++i) {</span>
+<span class="pc bpc" id="L498" title="1 of 6 branches missed.">            if ((y[i] &lt; minY) || ( (y[i] == minY) &amp;&amp; (x[i] &lt; minX))) {</span>
+<span class="fc" id="L499">                minY = y[i];</span>
+<span class="fc" id="L500">                minX = x[i];</span>
+<span class="fc" id="L501">                iMin = i;</span>
             }
         }
-<span class="fc" id="L501">        return iMin;</span>
+<span class="fc" id="L504">        return iMin;</span>
     }
 
     protected static int findIndexOfMinY(long[] x, long[] y) {
-<span class="pc bpc" id="L505" title="1 of 2 branches missed.">        if (x.length &lt; 1) {</span>
-<span class="nc" id="L506">            throw new IllegalArgumentException(&quot;x and y must be longer than 1&quot;);</span>
+<span class="pc bpc" id="L508" title="1 of 2 branches missed.">        if (x.length &lt; 1) {</span>
+<span class="nc" id="L509">            throw new IllegalArgumentException(&quot;x and y must be longer than 1&quot;);</span>
         }
-<span class="fc" id="L508">        int iMin = -1;</span>
-<span class="fc" id="L509">        long minY = Integer.MAX_VALUE;</span>
-<span class="fc" id="L510">        long minX = -1;</span>
+<span class="fc" id="L511">        int iMin = -1;</span>
+<span class="fc" id="L512">        long minY = Integer.MAX_VALUE;</span>
+<span class="fc" id="L513">        long minX = -1;</span>
         int i;
-<span class="fc bfc" id="L512" title="All 2 branches covered.">        for (i = 0; i &lt; x.length; ++i) {</span>
-<span class="fc bfc" id="L513" title="All 6 branches covered.">            if ((y[i] &lt; minY) || (y[i] == minY &amp;&amp; x[i] &lt; minX)){</span>
-<span class="fc" id="L514">                minY = y[i];</span>
-<span class="fc" id="L515">                minX = x[i];</span>
-<span class="fc" id="L516">                iMin = i;</span>
+<span class="fc bfc" id="L515" title="All 2 branches covered.">        for (i = 0; i &lt; x.length; ++i) {</span>
+<span class="fc bfc" id="L516" title="All 6 branches covered.">            if ((y[i] &lt; minY) || (y[i] == minY &amp;&amp; x[i] &lt; minX)){</span>
+<span class="fc" id="L517">                minY = y[i];</span>
+<span class="fc" id="L518">                minX = x[i];</span>
+<span class="fc" id="L519">                iMin = i;</span>
             }
         }
-<span class="fc" id="L519">        return iMin;</span>
+<span class="fc" id="L522">        return iMin;</span>
     }
 
 }

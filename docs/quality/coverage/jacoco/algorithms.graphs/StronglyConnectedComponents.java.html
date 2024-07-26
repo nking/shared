@@ -138,60 +138,63 @@ import java.util.logging.Logger;
 <span class="fc" id="L138">            int v = wNode.getKey();</span>
 <span class="fc" id="L139">            log.log(logLevel, &quot;    v=&quot; + toString(v));            </span>
 <span class="fc bfc" id="L140" title="All 2 branches covered.">            if (td[v] == -1) {</span>
-                // Successor v has not yet been visited; recurse on it
-<span class="fc" id="L142">                strongConnect(v);</span>
-<span class="fc" id="L143">                lowLink[u] = Math.min(lowLink[u], lowLink[v]);  // update Low[v]</span>
-<span class="fc bfc" id="L144" title="All 2 branches covered.">            } else if (onStack[v] == 1) {</span>
+                // Successor v has not yet been visited; recurse on it.
+                // this is a tree edge.
+<span class="fc" id="L143">                strongConnect(v);</span>
+<span class="fc" id="L144">                lowLink[u] = Math.min(lowLink[u], lowLink[v]);  // update Low[v]</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">            } else if (onStack[v] == 1) {</span>
                 // v is in stack S and hence in the current SCC
                 // If v is not on stack, then (u, v) is a cross-edge in the 
                 // DFS tree and must be ignored.
-<span class="fc" id="L148">                lowLink[u] = Math.min(lowLink[u], td[v]);  // update Low[u]</span>
+                // this is a back edge.
+<span class="fc" id="L150">                lowLink[u] = Math.min(lowLink[u], td[v]);  // update Low[u]</span>
             }
-<span class="fc" id="L150">            wNode = wNode.getNext();</span>
-<span class="fc" id="L151">        }</span>
+<span class="fc" id="L152">            wNode = wNode.getNext();</span>
+<span class="fc" id="L153">        }</span>
         
         // If v is a root node, pop the stack and generate an SCC
-<span class="pc bpc" id="L154" title="1 of 4 branches missed.">        if (lowLink[u] == td[u] &amp;&amp; inSCC[u] == 0) {</span>
-<span class="fc" id="L155">            log.log(logLevel, &quot;    START scc &quot; + u);</span>
-<span class="fc" id="L156">            SimpleLinkedListNode sccNode = new SimpleLinkedListNode();</span>
-<span class="fc" id="L157">            scc.add(sccNode);</span>
-<span class="fc" id="L158">            inSCC[u] = 1;</span>
+<span class="pc bpc" id="L156" title="1 of 4 branches missed.">        if (lowLink[u] == td[u] &amp;&amp; inSCC[u] == 0) {</span>
+            // found a bridge (no descendants of u who are also descendants of ancestor of u)
+<span class="fc" id="L158">            log.log(logLevel, &quot;    START scc &quot; + u);</span>
+<span class="fc" id="L159">            SimpleLinkedListNode sccNode = new SimpleLinkedListNode();</span>
+<span class="fc" id="L160">            scc.add(sccNode);</span>
+<span class="fc" id="L161">            inSCC[u] = 1;</span>
             int v;
             do {
-<span class="pc bpc" id="L161" title="1 of 2 branches missed.">                if (stack.isEmpty()) {</span>
-<span class="nc" id="L162">                    break;</span>
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">                if (stack.isEmpty()) {</span>
+<span class="nc" id="L165">                    break;</span>
                 }
-<span class="fc" id="L164">                v = stack.pop();</span>
-<span class="fc" id="L165">                onStack[v] = 0;</span>
-<span class="fc" id="L166">                sccNode.insert(v);</span>
-<span class="fc" id="L167">                inSCC[v] = 1;</span>
-<span class="fc" id="L168">                log.log(logLevel, &quot;    add &quot; + v + &quot; to scc&quot;);</span>
-<span class="fc bfc" id="L169" title="All 2 branches covered.">            } while (v != u);</span>
-<span class="fc" id="L170">            log.log(logLevel, &quot;stack size=&quot; + stack.size());</span>
+<span class="fc" id="L167">                v = stack.pop();</span>
+<span class="fc" id="L168">                onStack[v] = 0;</span>
+<span class="fc" id="L169">                sccNode.insert(v);</span>
+<span class="fc" id="L170">                inSCC[v] = 1;</span>
+<span class="fc" id="L171">                log.log(logLevel, &quot;    add &quot; + v + &quot; to scc&quot;);</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">            } while (v != u);</span>
+<span class="fc" id="L173">            log.log(logLevel, &quot;stack size=&quot; + stack.size());</span>
         }
-<span class="fc" id="L172">    }</span>
+<span class="fc" id="L175">    }</span>
 
     private void check(SimpleLinkedListNode[] graph) {
 
-<span class="pc bpc" id="L176" title="1 of 2 branches missed.">        if (graph == null) {</span>
-<span class="nc" id="L177">            throw new IllegalArgumentException(&quot;graph cannot be null&quot;);</span>
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">        if (graph == null) {</span>
+<span class="nc" id="L180">            throw new IllegalArgumentException(&quot;graph cannot be null&quot;);</span>
         }
         
-<span class="fc bfc" id="L180" title="All 2 branches covered.">        for (SimpleLinkedListNode node : graph) {</span>
-<span class="pc bpc" id="L181" title="1 of 2 branches missed.">            if (node == null) {</span>
-<span class="nc" id="L182">                throw new IllegalArgumentException(&quot;graph nodes cannot be null&quot;);</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">        for (SimpleLinkedListNode node : graph) {</span>
+<span class="pc bpc" id="L184" title="1 of 2 branches missed.">            if (node == null) {</span>
+<span class="nc" id="L185">                throw new IllegalArgumentException(&quot;graph nodes cannot be null&quot;);</span>
             }
         }
-<span class="fc" id="L185">    }</span>
+<span class="fc" id="L188">    }</span>
     
     private String toString(int node) {
         
-<span class="fc" id="L189">        StringBuilder sb = new StringBuilder();</span>
-<span class="fc" id="L190">        sb.append(&quot;node=&quot;).append(node).append(&quot;, lowLink=&quot;).append(lowLink[node])</span>
-<span class="fc" id="L191">            .append(&quot;, index=&quot;).append(td[node])</span>
-<span class="fc" id="L192">            .append(&quot;, onStack=&quot;).append(onStack[node])</span>
-<span class="fc" id="L193">            .append(&quot; (time=&quot;).append(time).append(&quot;);&quot;);</span>
-<span class="fc" id="L194">        return sb.toString();</span>
+<span class="fc" id="L192">        StringBuilder sb = new StringBuilder();</span>
+<span class="fc" id="L193">        sb.append(&quot;node=&quot;).append(node).append(&quot;, lowLink=&quot;).append(lowLink[node])</span>
+<span class="fc" id="L194">            .append(&quot;, index=&quot;).append(td[node])</span>
+<span class="fc" id="L195">            .append(&quot;, onStack=&quot;).append(onStack[node])</span>
+<span class="fc" id="L196">            .append(&quot; (time=&quot;).append(time).append(&quot;);&quot;);</span>
+<span class="fc" id="L197">        return sb.toString();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

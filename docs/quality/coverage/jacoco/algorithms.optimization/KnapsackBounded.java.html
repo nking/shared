@@ -329,7 +329,7 @@ import java.util.*;
 <span class="fc bfc" id="L329" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
             // since tab holds current and prev i results,
             // need to traverse weights from high to low
-            // to avoid including an updated low wc2 in current wc
+            // to avoid including an updated low tab[wc2] in current tab[wc]
 <span class="fc bfc" id="L333" title="All 2 branches covered.">            for (int wc = target; wc &gt;= weights[i]; --wc) {</span>
 <span class="fc bfc" id="L334" title="All 2 branches covered.">                for (int q = 1; q &lt;= quantities[i]; ++q) {</span>
                     // wc2 is the remaining sum after q coins subtracted
@@ -348,32 +348,33 @@ import java.util.*;
      * count the number of ways that a combination of an unbounded quantity of weights
      * can sum up to exactly EQ target, where the sequences are counted rather than sets,
      * e.g. [1,2] is counted and [2,1] is counted, though [1,1] is counted once.
+     * TODO: improve the r.t.c.
      * @param target the exact sum that a combination of and unbounded quantity of weights should sum to
      * @param weights non-negative array of item weights
      * @return
      */
     public static long numberOfSequencesForTarget(int[] weights, int[] quantities, int target) {
 
-<span class="fc" id="L357">        int n = weights.length;</span>
+<span class="fc" id="L358">        int n = weights.length;</span>
 
         // tab[wc] holds the number of ways that the item weights sum to wc.
 
         // tabQ[target+1][items.length]
-<span class="fc" id="L362">        Map&lt;Integer, List&lt;int[]&gt;&gt; tabQ = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L363">        Map&lt;Integer, List&lt;int[]&gt;&gt; tabQ = new HashMap&lt;&gt;();</span>
         //int[][] tabQ = new int[target+1][n];
 
-<span class="fc" id="L365">        int[] tab = new int[target + 1];</span>
-<span class="fc" id="L366">        tab[0] = 1;</span>
+<span class="fc" id="L366">        int[] tab = new int[target + 1];</span>
+<span class="fc" id="L367">        tab[0] = 1;</span>
 
-<span class="fc bfc" id="L368" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc bfc" id="L369" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
             // since tab holds current and prev i results,
             // need to traverse weights from high to low
             // to avoid including an updated low wc2 in current wc
-<span class="fc bfc" id="L372" title="All 2 branches covered.">            for (int wc = target; wc &gt;= weights[i]; --wc) {</span>
-<span class="fc bfc" id="L373" title="All 2 branches covered.">                for (int q = 1; q &lt;= quantities[i]; ++q) {</span>
+<span class="fc bfc" id="L373" title="All 2 branches covered.">            for (int wc = target; wc &gt;= weights[i]; --wc) {</span>
+<span class="fc bfc" id="L374" title="All 2 branches covered.">                for (int q = 1; q &lt;= quantities[i]; ++q) {</span>
                     // wc2 is the remaining sum after q coins subtracted
-<span class="fc" id="L375">                    int wc2 = wc - weights[i] * q;</span>
-<span class="fc bfc" id="L376" title="All 2 branches covered.">                    if (wc2 &lt; 0) break;</span>
+<span class="fc" id="L376">                    int wc2 = wc - weights[i] * q;</span>
+<span class="fc bfc" id="L377" title="All 2 branches covered.">                    if (wc2 &lt; 0) break;</span>
                     // adds counts from current sum and remaining sum
 
                     /*tabQ[wc] is a list of existing solution quantities
@@ -381,81 +382,81 @@ import java.util.*;
                     store copy as new list in tabQ[wc]*/
 
                     // make a copy of it.
-<span class="fc" id="L384">                    List&lt;int[]&gt; copy = new ArrayList&lt;&gt;();</span>
-<span class="fc bfc" id="L385" title="All 2 branches covered.">                    for (int[] a : tabQ.getOrDefault(wc2, new ArrayList&lt;&gt;())) {</span>
-<span class="fc" id="L386">                        copy.add(Arrays.copyOf(a, a.length));</span>
-<span class="fc" id="L387">                    }</span>
-<span class="fc bfc" id="L388" title="All 2 branches covered.">                    if (!tabQ.containsKey(wc2)) {</span>
-<span class="fc bfc" id="L389" title="All 2 branches covered.">                        if (wc2 == 0) {</span>
+<span class="fc" id="L385">                    List&lt;int[]&gt; copy = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L386" title="All 2 branches covered.">                    for (int[] a : tabQ.getOrDefault(wc2, new ArrayList&lt;&gt;())) {</span>
+<span class="fc" id="L387">                        copy.add(Arrays.copyOf(a, a.length));</span>
+<span class="fc" id="L388">                    }</span>
+<span class="fc bfc" id="L389" title="All 2 branches covered.">                    if (!tabQ.containsKey(wc2)) {</span>
+<span class="fc bfc" id="L390" title="All 2 branches covered.">                        if (wc2 == 0) {</span>
                             // this is the complement to the initialization of tab[0]=1
-<span class="fc" id="L391">                            int[] tq = new int[n];</span>
-<span class="fc" id="L392">                            tq[i] += q;</span>
-<span class="fc" id="L393">                            copy.add(tq);</span>
-<span class="fc" id="L394">                        }</span>
+<span class="fc" id="L392">                            int[] tq = new int[n];</span>
+<span class="fc" id="L393">                            tq[i] += q;</span>
+<span class="fc" id="L394">                            copy.add(tq);</span>
+<span class="fc" id="L395">                        }</span>
                     } else {
-<span class="fc bfc" id="L396" title="All 2 branches covered.">                        for (int[] tq : copy) {</span>
-<span class="fc" id="L397">                            tq[i] += q;</span>
-<span class="fc" id="L398">                        }</span>
+<span class="fc bfc" id="L397" title="All 2 branches covered.">                        for (int[] tq : copy) {</span>
+<span class="fc" id="L398">                            tq[i] += q;</span>
+<span class="fc" id="L399">                        }</span>
                     }
                     // add the updated quantites from remainder wc2 and q to current solution quantities
-<span class="fc" id="L401">                    tabQ.putIfAbsent(wc, new ArrayList&lt;&gt;());</span>
-<span class="fc" id="L402">                    tabQ.get(wc).addAll(copy);</span>
+<span class="fc" id="L402">                    tabQ.putIfAbsent(wc, new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L403">                    tabQ.get(wc).addAll(copy);</span>
                 }
             }
         }
 
         // handle multiplicities of the solutions
-<span class="fc" id="L408">        List&lt;int[]&gt; tabQs = tabQ.get(target);</span>
-<span class="pc bpc" id="L409" title="2 of 4 branches missed.">        if (tabQs == null || tabQs.isEmpty()) return 0;</span>
+<span class="fc" id="L409">        List&lt;int[]&gt; tabQs = tabQ.get(target);</span>
+<span class="pc bpc" id="L410" title="2 of 4 branches missed.">        if (tabQs == null || tabQs.isEmpty()) return 0;</span>
 
         //TODO: use BigInteer if needed
-<span class="fc" id="L412">        long result = 0;</span>
-<span class="fc bfc" id="L413" title="All 2 branches covered.">        for (int[] tq : tabQs) {</span>
-<span class="fc" id="L414">            int count = 0;</span>
-<span class="fc bfc" id="L415" title="All 2 branches covered.">            for (int q : tq) {</span>
-<span class="fc" id="L416">                count += q;</span>
+<span class="fc" id="L413">        long result = 0;</span>
+<span class="fc bfc" id="L414" title="All 2 branches covered.">        for (int[] tq : tabQs) {</span>
+<span class="fc" id="L415">            int count = 0;</span>
+<span class="fc bfc" id="L416" title="All 2 branches covered.">            for (int q : tq) {</span>
+<span class="fc" id="L417">                count += q;</span>
             }
             // count the multiplicities
-<span class="fc" id="L419">            long denomMult = 1;</span>
-<span class="fc bfc" id="L420" title="All 2 branches covered.">            for (int q : tq) {</span>
-<span class="fc bfc" id="L421" title="All 2 branches covered.">                if (q &gt; 1) {</span>
-<span class="fc" id="L422">                    denomMult *= MiscMath0.factorial(q);</span>
+<span class="fc" id="L420">            long denomMult = 1;</span>
+<span class="fc bfc" id="L421" title="All 2 branches covered.">            for (int q : tq) {</span>
+<span class="fc bfc" id="L422" title="All 2 branches covered.">                if (q &gt; 1) {</span>
+<span class="fc" id="L423">                    denomMult *= MiscMath0.factorial(q);</span>
                 }
             }
-<span class="fc" id="L425">            long nQ = MiscMath0.factorial(count)/denomMult;</span>
-<span class="fc" id="L426">            result += nQ;</span>
+<span class="fc" id="L426">            long nQ = MiscMath0.factorial(count)/denomMult;</span>
+<span class="fc" id="L427">            result += nQ;</span>
             //System.out.printf(&quot;tq=%s, count=%d, count!=%d, denom=%d, ==&gt; %d\n&quot;,
             //        Arrays.toString(tq), count, MiscMath0.factorial(count),
             //        denomMult, nQ);
-<span class="fc" id="L430">        }</span>
+<span class="fc" id="L431">        }</span>
 
         //System.out.printf(&quot;tab=%s\n&quot;, Arrays.toString(tab));
-<span class="fc" id="L433">        return result;</span>
+<span class="fc" id="L434">        return result;</span>
     }
 
     private static String toString(int[][] tab) {
-<span class="nc" id="L437">        StringBuilder sb = new StringBuilder();</span>
-<span class="nc bnc" id="L438" title="All 2 branches missed.">        for (int i = 0; i &lt; tab.length; ++i) {</span>
-<span class="nc" id="L439">            sb.append(String.format(&quot;%d) %s\n&quot;, i, Arrays.toString(tab[i])));</span>
+<span class="nc" id="L438">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc bnc" id="L439" title="All 2 branches missed.">        for (int i = 0; i &lt; tab.length; ++i) {</span>
+<span class="nc" id="L440">            sb.append(String.format(&quot;%d) %s\n&quot;, i, Arrays.toString(tab[i])));</span>
         }
-<span class="nc" id="L441">        sb.delete(sb.length()-1, sb.length());</span>
-<span class="nc" id="L442">        return sb.toString();</span>
+<span class="nc" id="L442">        sb.delete(sb.length()-1, sb.length());</span>
+<span class="nc" id="L443">        return sb.toString();</span>
     }
 
     private static String toString(int[] tab) {
-<span class="nc" id="L446">        StringBuilder sb = new StringBuilder();</span>
-<span class="nc bnc" id="L447" title="All 2 branches missed.">        for (int i = 0; i &lt; tab.length; ++i) {</span>
-<span class="nc bnc" id="L448" title="All 2 branches missed.">            if (tab[i] == Integer.MAX_VALUE) {</span>
-<span class="nc" id="L449">                sb.append(&quot;1000&quot;);</span>
-<span class="nc bnc" id="L450" title="All 2 branches missed.">            } else if (tab[i] == Integer.MIN_VALUE) {</span>
-<span class="nc" id="L451">                sb.append(&quot;-1&quot;);</span>
+<span class="nc" id="L447">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc bnc" id="L448" title="All 2 branches missed.">        for (int i = 0; i &lt; tab.length; ++i) {</span>
+<span class="nc bnc" id="L449" title="All 2 branches missed.">            if (tab[i] == Integer.MAX_VALUE) {</span>
+<span class="nc" id="L450">                sb.append(&quot;1000&quot;);</span>
+<span class="nc bnc" id="L451" title="All 2 branches missed.">            } else if (tab[i] == Integer.MIN_VALUE) {</span>
+<span class="nc" id="L452">                sb.append(&quot;-1&quot;);</span>
             } else {
-<span class="nc" id="L453">                sb.append(tab[i]);</span>
+<span class="nc" id="L454">                sb.append(tab[i]);</span>
             }
-<span class="nc" id="L455">            sb.append(&quot;,&quot;);</span>
+<span class="nc" id="L456">            sb.append(&quot;,&quot;);</span>
         }
-<span class="nc" id="L457">        sb.delete(sb.length()-1, sb.length());</span>
-<span class="nc" id="L458">        return sb.toString();</span>
+<span class="nc" id="L458">        sb.delete(sb.length()-1, sb.length());</span>
+<span class="nc" id="L459">        return sb.toString();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

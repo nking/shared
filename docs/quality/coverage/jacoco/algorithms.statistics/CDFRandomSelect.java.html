@@ -23,22 +23,7 @@ import java.util.Random;
     public static int[] chooseKFromBinarySearch(double[] cdf, int k, Random rand) {
 <span class="fc" id="L24">        return chooseKFromBinarySearch(cdf, k, rand, 1.e-15);</span>
     }
-    
-    /**
-     * choose k indexes from the cdf by randomly drawing each time from rand[0,1] and
-     * using binary search to find the nearest cumulative probability in the cdf,
-     * then returning the index as the step that the random value truly belongs to).
-     * 
-     *@param cdf cumulative distribution function.  NOTE that the values should
-     * be normalized such that the last item is 1.
-     @param k number of random selects
-     @param rand random number generator
-     @return indexes from randomly selected cdf distribution values
-     */
-    public static int[] chooseKFromBinarySearchFloor(double[] cdf, int k, Random rand) {
-<span class="fc" id="L39">        return chooseKFromBinarySearchFloor(cdf, k, rand, 1.e-15);</span>
-    }
-    
+
     /**
      * choose k indexes from the cdf by randomly drawing from rand[0,1] and
      * using binary search to find the nearest cumulative probability in the cdf,
@@ -54,42 +39,13 @@ import java.util.Random;
     public static int[] chooseKFromBinarySearch(double[] cdf, int k, Random rand,
         double tolerance) {
         
-<span class="fc" id="L57">        int[] selected = new int[k];</span>
+<span class="fc" id="L42">        int[] selected = new int[k];</span>
         
-<span class="fc bfc" id="L59" title="All 2 branches covered.">        for (int i = 0; i &lt; k; ++i) {</span>
-<span class="fc" id="L60">            selected[i] = binarySearchForQuantile(cdf, rand.nextDouble());</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        for (int i = 0; i &lt; k; ++i) {</span>
+<span class="fc" id="L45">            selected[i] = binarySearchForQuantile(cdf, rand.nextDouble());</span>
         }
         
-<span class="fc" id="L63">        return selected;</span>
-    }
-    
-    /**
-     * choose k indexes from the cdf by randomly drawing each time from rand[0,1] and
-     * using binary search to find the nearest cumulative probability in the cdf,
-     * then returning the index as the step that the random value truly belongs to).
-     * 
-     @param cdf cumulative distribution function.  NOTE that the values should
-     * be normalized such that the last item is 1.
-     @param k number of random selects
-     @param rand random number generator
-     @param tolerance tolerance for equality of doubles
-     @return indexes from randomly selected cdf distribution values
-     */
-    public static int[] chooseKFromBinarySearchFloor(double[] cdf, int k, Random rand,
-        double tolerance) {
-        
-<span class="fc" id="L81">        int[] selected = new int[k];</span>
-        double a;
-        
-<span class="fc bfc" id="L84" title="All 2 branches covered.">        for (int i = 0; i &lt; k; ++i) {</span>
-<span class="fc" id="L85">            a = rand.nextDouble();</span>
-<span class="fc" id="L86">            selected[i] = binarySearchForQuantile(cdf, a);</span>
-<span class="pc bpc" id="L87" title="3 of 4 branches missed.">            if (a &gt; cdf[selected[i]] &amp;&amp; selected[i] &gt; 0) {</span>
-<span class="nc" id="L88">                selected[i]--;</span>
-            }
-        }
-        
-<span class="fc" id="L92">        return selected;</span>
+<span class="fc" id="L48">        return selected;</span>
     }
  
     /**
@@ -118,36 +74,36 @@ import java.util.Random;
         search for that.
          */
         
-<span class="pc bpc" id="L121" title="2 of 4 branches missed.">        if (cdf == null || cdf.length == 0) {</span>
-<span class="nc" id="L122">            throw new IllegalArgumentException(&quot;cdf cannot be null or length 0&quot;);</span>
+<span class="pc bpc" id="L77" title="2 of 4 branches missed.">        if (cdf == null || cdf.length == 0) {</span>
+<span class="nc" id="L78">            throw new IllegalArgumentException(&quot;cdf cannot be null or length 0&quot;);</span>
         }
 
-<span class="fc" id="L125">        int n = cdf.length;</span>
+<span class="fc" id="L81">        int n = cdf.length;</span>
 
         // assuming machine precision is ~ 1E-11, use larger val for eps
-<span class="fc" id="L128">        double srch2 = srch - 5E-10;</span>
+<span class="fc" id="L84">        double srch2 = srch - 5E-10;</span>
            
-<span class="fc" id="L130">        int lowIdx = 0;</span>
-<span class="fc" id="L131">        int highIdx = n - 1;</span>
+<span class="fc" id="L86">        int lowIdx = 0;</span>
+<span class="fc" id="L87">        int highIdx = n - 1;</span>
         int midIdx;
 
-<span class="fc bfc" id="L134" title="All 2 branches covered.">        while (lowIdx &lt;= highIdx) {</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">        while (lowIdx &lt;= highIdx) {</span>
 
-<span class="fc" id="L136">            midIdx = lowIdx + ((highIdx - lowIdx)/2);</span>
+<span class="fc" id="L92">            midIdx = lowIdx + ((highIdx - lowIdx)/2);</span>
 
-<span class="fc bfc" id="L138" title="All 2 branches covered.">            if (cdf[midIdx] &lt;= srch2) {</span>
-<span class="fc" id="L139">                lowIdx = midIdx + 1;</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">            if (cdf[midIdx] &lt;= srch2) {</span>
+<span class="fc" id="L95">                lowIdx = midIdx + 1;</span>
             } else {
-<span class="fc" id="L141">                highIdx = midIdx - 1;</span>
+<span class="fc" id="L97">                highIdx = midIdx - 1;</span>
             }
 
         }
 
-<span class="fc bfc" id="L146" title="All 2 branches covered.">        if (lowIdx == n) {</span>
-<span class="fc" id="L147">            lowIdx = n - 1;</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        if (lowIdx == n) {</span>
+<span class="fc" id="L103">            lowIdx = n - 1;</span>
         }
         
-<span class="fc" id="L150">        return lowIdx;</span>
+<span class="fc" id="L106">        return lowIdx;</span>
     }
             
     /**

@@ -220,29 +220,86 @@ import java.util.List;
      *      finds the largest index for which the value is LT srch.
      *      range of values from floor is [-1, a.length-1] inclusive.
      */
-    public static int floor(int[] a, int srch, int lo, int hi) {
-<span class="fc bfc" id="L224" title="All 2 branches covered.">        if (srch &lt; a[lo]) {</span>
-<span class="fc" id="L225">            return -1;</span>
+    protected static int _floor(int[] a, int srch, int lo, int hi) {
+<span class="nc bnc" id="L224" title="All 2 branches missed.">        if (srch &lt; a[lo]) {</span>
+<span class="nc" id="L225">            return -1;</span>
+<span class="nc bnc" id="L226" title="All 2 branches missed.">        } else if (srch &gt; a[hi]) {</span>
+<span class="nc" id="L227">            return hi;</span>
         }
-<span class="fc bfc" id="L227" title="All 2 branches covered.">        while (lo &lt;= hi) {</span>
-<span class="fc" id="L228">            int mid = lo + (hi - lo) / 2;</span>
-<span class="fc bfc" id="L229" title="All 2 branches covered.">            if (a[mid] == srch) {</span>
+<span class="nc bnc" id="L229" title="All 2 branches missed.">        while (lo &lt;= hi) {</span>
+<span class="nc" id="L230">            int mid = lo + (hi - lo) / 2;</span>
+<span class="nc bnc" id="L231" title="All 2 branches missed.">            if (a[mid] == srch) {</span>
                 //we want the smallest index whose value == srch, so search further in lower half of array
-<span class="fc bfc" id="L231" title="All 2 branches covered.">                if (mid == lo) {</span>
-<span class="fc" id="L232">                    return mid;</span>
+<span class="nc bnc" id="L233" title="All 2 branches missed.">                if (mid == lo) {</span>
+<span class="nc" id="L234">                    return mid;</span>
                 }
-<span class="fc" id="L234">                int idx = floor(a, srch, lo, mid - 1);</span>
-<span class="pc bpc" id="L235" title="2 of 4 branches missed.">                if (idx == -1 || a[idx] &lt; srch) {</span>
-<span class="fc" id="L236">                    return mid;</span>
+<span class="nc" id="L236">                int idx = _floor(a, srch, lo, mid - 1);</span>
+<span class="nc bnc" id="L237" title="All 4 branches missed.">                if (idx == -1 || a[idx] &lt; srch) {</span>
+<span class="nc" id="L238">                    return mid;</span>
                 }
-<span class="nc" id="L238">                return idx;</span>
-<span class="fc bfc" id="L239" title="All 2 branches covered.">            } else if (a[mid] &lt; srch) {</span>
-<span class="fc" id="L240">                lo = mid + 1;</span>
+<span class="nc" id="L240">                return idx;</span>
+<span class="nc bnc" id="L241" title="All 2 branches missed.">            } else if (a[mid] &lt; srch) {</span>
+<span class="nc" id="L242">                lo = mid + 1;</span>
             } else {
-<span class="fc" id="L242">                hi = mid - 1;</span>
+<span class="nc" id="L244">                hi = mid - 1;</span>
             }
-<span class="fc" id="L244">        }</span>
-<span class="fc" id="L245">        return Math.min(lo, hi);</span>
+<span class="nc" id="L246">        }</span>
+<span class="nc" id="L247">        return Math.min(lo, hi);</span>
+    }
+
+    /**
+     Finds the smallest index for which value == srch, or if doesn't exist,
+     finds the largest index for which the value is LT srch.
+
+     * This is a floor function.
+     *
+     * If the method returns -1, the srch is smaller than all elements in the
+     * array.
+     * if srch is larger than every element in list 'a', this method will return
+     * the last index of a.
+     &lt;pre&gt;
+     e.g.
+
+     a = [0,1,2,2,3]
+     srch = 2
+     returns  2
+
+     a = [0,3,4,4,6};
+     srch = 5;
+     returns 3
+
+     a = [2,3,4,4,6};
+     srch = 0;
+     returns -1
+
+     a = [2,3,4,4,6};
+     srch = 7;
+     returs 4
+
+     &lt;/pre&gt;
+     * @param a an ascending ordered list (non-decreasing, adjacent values can be ==).
+     * @param srch the value to search for in a
+     * @param lo smallest index for search range
+     * @param hi largets index for search range, inclusive.
+     * @return the floor index, that is,
+     * finds the smallest index for which value == srch, or if doesn't exist,
+     *      finds the largest index for which the value is LT srch.
+     *      range of values from floor is [-1, a.length-1] inclusive.
+     */
+    public static int floor(int[] a, int srch, int lo, int hi) {
+<span class="fc" id="L290">        boolean found = false;</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">        while (lo &lt;= hi) {</span>
+<span class="fc" id="L292">            int mid = lo + (hi - lo) / 2;</span>
+<span class="fc bfc" id="L293" title="All 2 branches covered.">            if (a[mid] == srch) {</span>
+<span class="fc" id="L294">                found = true;</span>
+<span class="fc" id="L295">                hi = mid - 1;</span>
+<span class="fc bfc" id="L296" title="All 2 branches covered.">            } else if (a[mid] &lt; srch) {</span>
+<span class="fc" id="L297">                lo = mid + 1;</span>
+            } else {
+<span class="fc" id="L299">                hi = mid - 1;</span>
+            }
+<span class="fc" id="L301">        }</span>
+<span class="fc bfc" id="L302" title="All 2 branches covered.">        return found ? lo : Math.min(lo, hi);</span>
     }
 
     /**
@@ -282,26 +339,81 @@ import java.util.List;
      *      finds the largest index for which the value is LT srch.
      */
     public static int floor(List&lt;Integer&gt; a, int srch) {
-<span class="fc" id="L285">        return floor(a, srch, 0, a.size() - 1);</span>
+<span class="fc" id="L342">        return floor(a, srch, 0, a.size() - 1);</span>
     }
+    /**
+     Finds the smallest index for which value == srch, or if doesn't exist,
+     finds the largest index for which the value is LT srch.
+
+     * This is a floor function.
+     *
+     * If the method returns -1, the srch is smaller than all elements in the
+     * array.
+     * if srch is larger than every element in list 'a', this method will return
+     * the last index of a.
+     &lt;pre&gt;
+     e.g.
+
+     a = [0,1,2,2,3]
+     srch = 2
+     returns  2
+
+     a = [0,3,4,4,6};
+     srch = 5;
+     returns 3
+
+     a = [2,3,4,4,6};
+     srch = 0;
+     returns -1
+
+     a = [2,3,4,4,6};
+     srch = 7;
+     returs 4
+
+     &lt;/pre&gt;
+     * @param a an ascending ordered list (non-decreasing, adjacent values can be ==).
+     * @param srch the value to search for in a
+     * @param lo smallest index for search range
+     * @param hi largets index for search range, inclusive.
+     * @return the floor index, that is,
+     * finds the smallest index for which value == srch, or if doesn't exist,
+     *      finds the largest index for which the value is LT srch.
+     *      range of values from floor is [-1, a.length-1] inclusive.
+     */
     public static int floor(List&lt;Integer&gt; a, int srch, int lo, int hi) {
-<span class="fc bfc" id="L288" title="All 2 branches covered.">        if (srch &lt; a.get(lo)) {</span>
-<span class="fc" id="L289">            return -1;</span>
-        }
-<span class="fc bfc" id="L291" title="All 2 branches covered.">        while (lo &lt;= hi) {</span>
-<span class="fc" id="L292">            int mid = lo + (hi - lo) / 2;</span>
-<span class="fc bfc" id="L293" title="All 2 branches covered.">            if (a.get(mid) == srch) {</span>
-                //we want the smallest index whose value == srch, so search further in lower half of array
-<span class="fc" id="L295">                int idx = floor(a, srch, lo, mid - 1);</span>
-<span class="pc bpc" id="L296" title="2 of 4 branches missed.">                if (idx == -1 || a.get(idx) &lt; srch) return mid;</span>
-<span class="nc" id="L297">                return idx;</span>
-<span class="fc bfc" id="L298" title="All 2 branches covered.">            } else if (a.get(mid) &lt; srch) {</span>
-<span class="fc" id="L299">                lo = mid + 1;</span>
+<span class="fc" id="L384">        boolean found = false;</span>
+<span class="fc bfc" id="L385" title="All 2 branches covered.">        while (lo &lt;= hi) {</span>
+<span class="fc" id="L386">            int mid = lo + (hi - lo) / 2;</span>
+<span class="fc bfc" id="L387" title="All 2 branches covered.">            if (a.get(mid) == srch) {</span>
+<span class="fc" id="L388">                found = true;</span>
+<span class="fc" id="L389">                hi = mid - 1;</span>
+<span class="fc bfc" id="L390" title="All 2 branches covered.">            } else if (a.get(mid) &lt; srch) {</span>
+<span class="fc" id="L391">                lo = mid + 1;</span>
             } else {
-<span class="fc" id="L301">                hi = mid - 1;</span>
+<span class="fc" id="L393">                hi = mid - 1;</span>
             }
-<span class="fc" id="L303">        }</span>
-<span class="fc" id="L304">        return Math.min(lo, hi);</span>
+<span class="fc" id="L395">        }</span>
+<span class="fc bfc" id="L396" title="All 2 branches covered.">        return found ? lo : Math.min(lo, hi);</span>
+    }
+
+    public static int _floor(List&lt;Integer&gt; a, int srch, int lo, int hi) {
+<span class="nc bnc" id="L400" title="All 2 branches missed.">        if (srch &lt; a.get(lo)) {</span>
+<span class="nc" id="L401">            return -1;</span>
+        }
+<span class="nc bnc" id="L403" title="All 2 branches missed.">        while (lo &lt;= hi) {</span>
+<span class="nc" id="L404">            int mid = lo + (hi - lo) / 2;</span>
+<span class="nc bnc" id="L405" title="All 2 branches missed.">            if (a.get(mid) == srch) {</span>
+                //we want the smallest index whose value == srch, so search further in lower half of array
+<span class="nc" id="L407">                int idx = floor(a, srch, lo, mid - 1);</span>
+<span class="nc bnc" id="L408" title="All 4 branches missed.">                if (idx == -1 || a.get(idx) &lt; srch) return mid;</span>
+<span class="nc" id="L409">                return idx;</span>
+<span class="nc bnc" id="L410" title="All 2 branches missed.">            } else if (a.get(mid) &lt; srch) {</span>
+<span class="nc" id="L411">                lo = mid + 1;</span>
+            } else {
+<span class="nc" id="L413">                hi = mid - 1;</span>
+            }
+<span class="nc" id="L415">        }</span>
+<span class="nc" id="L416">        return Math.min(lo, hi);</span>
     }
 
     /**
@@ -327,7 +439,7 @@ import java.util.List;
     range is [0, n] inclusive where n = a.length.
      */
     public static int ceiling(List&lt;Integer&gt; a, int srch) {
-<span class="fc" id="L330">        return ceiling(a, srch, 0, a.size() - 1);</span>
+<span class="fc" id="L442">        return ceiling(a, srch, 0, a.size() - 1);</span>
     }
 
     /**
@@ -355,36 +467,21 @@ import java.util.List;
     range is [0, n] inclusive where n = a.length.
      */
     public static int ceiling(List&lt;Integer&gt; a, int srch, int lo, int hi) {
-        //System.out.printf(&quot;a=%s, srch=%d, lo=%d, hi=%d\n&quot;,
-        //        Arrays.toString(a.stream().mapToInt(Integer::intValue).toArray()),
-        //        srch, lo, hi);
-<span class="fc bfc" id="L361" title="All 2 branches covered.">        if (srch &gt; a.get(hi)) {</span>
-<span class="fc" id="L362">            return a.size();</span>
-<span class="fc bfc" id="L363" title="All 2 branches covered.">        } else if (srch &lt; a.get(lo)) {</span>
-<span class="fc" id="L364">            return lo;</span>
-        }
-<span class="fc" id="L366">        int lastEq = hi;</span>
-<span class="fc bfc" id="L367" title="All 2 branches covered.">        while (lo &lt;= hi) {</span>
-<span class="fc" id="L368">            int mid = lo + (hi - lo) / 2;</span>
-<span class="fc bfc" id="L369" title="All 2 branches covered.">            if (a.get(mid) == srch) {</span>
-<span class="fc bfc" id="L370" title="All 2 branches covered.">                if (mid + 1 &gt; hi){</span>
-<span class="fc" id="L371">                    return mid;</span>
-                }
-                //we want the largest index whose value == srch, so search further in higher half of array
-                /*int idx = ceiling(a, srch, mid+1, hi);
-                if (idx == -1 || idx == hi+1 || a.get(idx) &gt; srch) {
-                    return mid;
-                }
-                return idx;*/
-<span class="fc" id="L379">                lastEq = mid;</span>
-<span class="fc" id="L380">                lo = mid + 1;</span>
-<span class="fc bfc" id="L381" title="All 2 branches covered.">            } else if (a.get(mid) &lt; srch) {</span>
-<span class="fc" id="L382">                lo = mid + 1;</span>
+<span class="fc" id="L470">        boolean found = false;</span>
+<span class="fc bfc" id="L471" title="All 2 branches covered.">        while (lo &lt;= hi) {</span>
+<span class="fc" id="L472">            int mid = lo + (hi - lo) / 2;</span>
+<span class="fc bfc" id="L473" title="All 2 branches covered.">            if (a.get(mid) == srch) {</span>
+                //we want the largest index whose value == srch, so search further in higher half of arra
+<span class="fc" id="L475">                lo = mid + 1;</span>
+<span class="fc" id="L476">                found = true;</span>
+<span class="fc bfc" id="L477" title="All 2 branches covered.">            } else if (a.get(mid) &lt; srch) {</span>
+<span class="fc" id="L478">                lo = mid + 1;</span>
             } else {
-<span class="fc" id="L384">                hi = mid - 1;</span>
+<span class="fc" id="L480">                hi = mid - 1;</span>
             }
-<span class="fc" id="L386">        }</span>
-<span class="fc" id="L387">        return Math.min(lastEq, lo);//Math.min(lo, hi);</span>
+<span class="fc" id="L482">        }</span>
+        //return found ? hi : Math.max(lo, hi);// works too and easier to remember as complement of floor return
+<span class="fc bfc" id="L484" title="All 2 branches covered.">        return found ? hi : lo;</span>
     }
 
     /**
@@ -412,7 +509,7 @@ import java.util.List;
      range is [0, n] inclusive where n = a.length.
      */
     public static int ceiling(int[] a, int srch) {
-<span class="fc" id="L415">        return ceiling(a, srch, 0, a.length - 1);</span>
+<span class="fc" id="L512">        return ceiling(a, srch, 0, a.length - 1);</span>
     }
 
     /**
@@ -439,33 +536,20 @@ import java.util.List;
      * range is [0, n] inclusive where n = a.length.
      */
     public static int ceiling(int[] a, int srch, int lo, int hi) {
-<span class="fc bfc" id="L442" title="All 2 branches covered.">        if (srch &gt; a[hi]) {</span>
-<span class="fc" id="L443">            return a.length;</span>
-<span class="fc bfc" id="L444" title="All 2 branches covered.">        } else if (srch &lt; a[lo]) {</span>
-<span class="fc" id="L445">            return lo;</span>
-        }
-<span class="fc" id="L447">        int lastEq = hi;</span>
-<span class="fc bfc" id="L448" title="All 2 branches covered.">        while (lo &lt;= hi) {</span>
-<span class="fc" id="L449">            int mid = lo + (hi - lo) / 2;</span>
-<span class="fc bfc" id="L450" title="All 2 branches covered.">            if (a[mid] == srch) {</span>
-<span class="fc bfc" id="L451" title="All 2 branches covered.">                if (mid + 1 &gt; hi) {</span>
-<span class="fc" id="L452">                    return mid;</span>
-                }
-                //we want the largest index whose value == srch, so search further in higher half of array
-                /*int idx = ceiling(a, srch, mid+1, hi);
-                if (idx == -1 || idx == hi+1 || a[idx] &gt; srch) {
-                    return mid;
-                }
-                return idx;*/
-<span class="fc" id="L460">                lastEq = mid;</span>
-<span class="fc" id="L461">                lo = mid + 1;</span>
-<span class="fc bfc" id="L462" title="All 2 branches covered.">            } else if (a[mid] &lt; srch) {</span>
-<span class="fc" id="L463">                lo = mid + 1;</span>
+<span class="fc" id="L539">        boolean found = false;</span>
+<span class="fc bfc" id="L540" title="All 2 branches covered.">        while (lo &lt;= hi) {</span>
+<span class="fc" id="L541">            int mid = lo + (hi - lo) / 2;</span>
+<span class="fc bfc" id="L542" title="All 2 branches covered.">            if (a[mid] == srch) {</span>
+                //we want the largest index whose value == srch, so search further in higher half of arra
+<span class="fc" id="L544">                lo = mid + 1;</span>
+<span class="fc" id="L545">                found = true;</span>
+<span class="fc bfc" id="L546" title="All 2 branches covered.">            } else if (a[mid] &lt; srch) {</span>
+<span class="fc" id="L547">                lo = mid + 1;</span>
             } else {
-<span class="fc" id="L465">                hi = mid - 1;</span>
+<span class="fc" id="L549">                hi = mid - 1;</span>
             }
-<span class="fc" id="L467">        }</span>
-<span class="fc" id="L468">        return Math.min(lastEq, lo);//Math.min(lo, hi);</span>
+<span class="fc" id="L551">        }</span>
+<span class="fc bfc" id="L552" title="All 2 branches covered.">        return found ? hi : lo;</span>
     }
 
     /**
@@ -478,15 +562,15 @@ import java.util.List;
     public static int predecessor(int[] a, int srch) {
 
         // range of values from floor is [-1, a.length-1]
-<span class="fc" id="L481">        int floorIdx = MiscBisectingSearch.floor(a, srch);</span>
+<span class="fc" id="L565">        int floorIdx = MiscBisectingSearch.floor(a, srch);</span>
 
-<span class="fc bfc" id="L483" title="All 2 branches covered.">        if (floorIdx == -1) {</span>
-<span class="fc" id="L484">            return floorIdx;</span>
+<span class="fc bfc" id="L567" title="All 2 branches covered.">        if (floorIdx == -1) {</span>
+<span class="fc" id="L568">            return floorIdx;</span>
         }
-<span class="fc bfc" id="L486" title="All 2 branches covered.">        if (a[floorIdx] == srch) {</span>
-<span class="fc" id="L487">            return floorIdx - 1;</span>
+<span class="fc bfc" id="L570" title="All 2 branches covered.">        if (a[floorIdx] == srch) {</span>
+<span class="fc" id="L571">            return floorIdx - 1;</span>
         }
-<span class="fc" id="L489">        return floorIdx;</span>
+<span class="fc" id="L573">        return floorIdx;</span>
     }
 
     /**
@@ -499,11 +583,11 @@ import java.util.List;
     public static int predecessor(List&lt;Integer&gt; a, int srch) {
 
         // range of values from floor is [-1, a.length-1]
-<span class="fc" id="L502">        int floorIdx = MiscBisectingSearch.floor(a, srch);</span>
+<span class="fc" id="L586">        int floorIdx = MiscBisectingSearch.floor(a, srch);</span>
 
-<span class="fc bfc" id="L504" title="All 2 branches covered.">        if (floorIdx == -1) return floorIdx;</span>
-<span class="fc bfc" id="L505" title="All 2 branches covered.">        if (a.get(floorIdx) == srch) return floorIdx - 1;</span>
-<span class="fc" id="L506">        return floorIdx;</span>
+<span class="fc bfc" id="L588" title="All 2 branches covered.">        if (floorIdx == -1) return floorIdx;</span>
+<span class="fc bfc" id="L589" title="All 2 branches covered.">        if (a.get(floorIdx) == srch) return floorIdx - 1;</span>
+<span class="fc" id="L590">        return floorIdx;</span>
     }
 
 }

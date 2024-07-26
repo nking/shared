@@ -116,7 +116,7 @@ public class GrahamScanPairInt&lt;T extends PairInt&gt; {
 <span class="fc bfc" id="L116" title="All 2 branches covered.">        for (int i = 3; i &lt; nPointsUsable; i++) {</span>
             
 <span class="fc" id="L118">            T top = points.peek();</span>
-<span class="fc" id="L119">            T nextToTop = points.peekPopNext();</span>
+<span class="fc" id="L119">            T nextToTop = points.peekNext();</span>
 
 <span class="fc" id="L121">            double direction = LinesAndAngles.direction(nextToTop, top, input[i]);</span>
             
@@ -132,7 +132,7 @@ public class GrahamScanPairInt&lt;T extends PairInt&gt; {
                 }
 
 <span class="fc" id="L134">                top = points.peek();</span>
-<span class="fc" id="L135">                nextToTop = points.peekPopNext();</span>
+<span class="fc" id="L135">                nextToTop = points.peekNext();</span>
                 
 <span class="fc" id="L137">                direction = LinesAndAngles.direction(nextToTop, top, input[i]);              </span>
             }

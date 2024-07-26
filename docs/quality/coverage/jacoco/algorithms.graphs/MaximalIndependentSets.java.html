@@ -224,11 +224,11 @@ import thirdparty.HungarianAlgorithm;
 <span class="fc" id="L224">                d = gP.get(v).size();</span>
                 //pV = 1./(2.*d);
 <span class="fc" id="L226">                pV = 1./d;</span>
-                
+
 <span class="fc" id="L228">                r = rand.nextDouble();</span>
-<span class="fc" id="L229">                System.out.printf(&quot;r=%.4f, pV=%.4f\n&quot;, r, pV);</span>
+                //System.out.printf(&quot;r=%.4f, pV=%.4f\n&quot;, r, pV);
                                 
-<span class="fc bfc" id="L231" title="All 2 branches covered.">                if (r &lt;= pV) {</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">                if (r &lt; pV) {</span>
 <span class="fc" id="L232">                    s.add(v);</span>
                 }
             }

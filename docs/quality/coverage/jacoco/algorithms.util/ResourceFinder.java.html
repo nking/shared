@@ -282,7 +282,7 @@ import java.util.logging.Logger;
     }
 
     /**
-     * get the base directory of the project.  note that the string does not end with
+     * get the project base directory of the project.  note that the string does not end with
      * a file separator &quot;/&quot;.
      * @return
      * @throws IOException
@@ -297,15 +297,13 @@ import java.util.logging.Logger;
         }
 
 <span class="fc" id="L299">        String filePath = basedir.getPath();</span>
-
-<span class="fc" id="L301">        String[] rep = new String[]{&quot;/bin/classes/&quot;, &quot;/bin/test-classes/&quot;};</span>
-<span class="fc bfc" id="L302" title="All 2 branches covered.">        for (String r : rep) {</span>
-<span class="fc bfc" id="L303" title="All 2 branches covered.">            if (filePath.endsWith(r)) {</span>
-<span class="fc" id="L304">                filePath = filePath.replace(r, &quot;&quot;);</span>
-            }
+<span class="fc" id="L300">        int idx = filePath.indexOf(&quot;/bin/&quot;);</span>
+<span class="pc bpc" id="L301" title="1 of 2 branches missed.">        if (idx &gt; -1) {</span>
+<span class="fc" id="L302">            filePath = filePath.substring(0, idx);</span>
+<span class="fc" id="L303">            return filePath;</span>
         }
 
-<span class="fc" id="L308">        return filePath;</span>
+<span class="nc" id="L306">        return filePath;</span>
     }
 
     /**
@@ -316,9 +314,9 @@ import java.util.logging.Logger;
      */
     public static String getAFilePathInCWD(String fileName) throws IOException {
 
-<span class="nc" id="L319">        String filePath = getCWD() + sep + fileName;</span>
+<span class="nc" id="L317">        String filePath = getCWD() + sep + fileName;</span>
 
-<span class="nc" id="L321">        return filePath;</span>
+<span class="nc" id="L319">        return filePath;</span>
     }
 
     /**
@@ -328,7 +326,7 @@ import java.util.logging.Logger;
      */
     public static String findTmpDataDirectory() throws IOException {
 
-<span class="nc" id="L331">        return findDirectory(&quot;tmpdata&quot;);</span>
+<span class="nc" id="L329">        return findDirectory(&quot;tmpdata&quot;);</span>
     }
 
     /**
@@ -339,13 +337,13 @@ import java.util.logging.Logger;
      */
     public static File findFileInTmpData(String fileName) throws IOException {
 
-<span class="nc" id="L342">        String filePath = getAFilePathInTmpData(fileName);</span>
+<span class="nc" id="L340">        String filePath = getAFilePathInTmpData(fileName);</span>
 
-<span class="nc" id="L344">        File fl = new File(filePath);</span>
-<span class="nc bnc" id="L345" title="All 2 branches missed.">        if (!fl.exists()) {</span>
-<span class="nc" id="L346">            throw new IOException(&quot;could not find file at &quot; + filePath);</span>
+<span class="nc" id="L342">        File fl = new File(filePath);</span>
+<span class="nc bnc" id="L343" title="All 2 branches missed.">        if (!fl.exists()) {</span>
+<span class="nc" id="L344">            throw new IOException(&quot;could not find file at &quot; + filePath);</span>
         }
-<span class="nc" id="L348">        return fl;</span>
+<span class="nc" id="L346">        return fl;</span>
     }
 
     /**
@@ -356,11 +354,11 @@ import java.util.logging.Logger;
      */
     public static String getAFilePathInTmpData(String fileName) throws IOException {
 
-<span class="nc" id="L359">        String baseDir = findTmpDataDirectory();</span>
+<span class="nc" id="L357">        String baseDir = findTmpDataDirectory();</span>
 
-<span class="nc" id="L361">        String filePath = baseDir + sep + fileName;</span>
+<span class="nc" id="L359">        String filePath = baseDir + sep + fileName;</span>
 
-<span class="nc" id="L363">        return filePath;</span>
+<span class="nc" id="L361">        return filePath;</span>
     }
 
     /**
@@ -372,9 +370,9 @@ import java.util.logging.Logger;
      */
     public static String writeToCWD(String fileContent, String fileName) throws IOException {
 
-<span class="nc" id="L375">        String filePath = getAFilePathInCWD(fileName);</span>
+<span class="nc" id="L373">        String filePath = getAFilePathInCWD(fileName);</span>
 
-<span class="nc" id="L377">        return writeDataToDirectory(fileContent, filePath);</span>
+<span class="nc" id="L375">        return writeDataToDirectory(fileContent, filePath);</span>
     }
 
     /**
@@ -386,37 +384,37 @@ import java.util.logging.Logger;
      */
     protected static String writeDataToDirectory(String fileContent, String filePath) throws IOException {
 
-<span class="fc" id="L389">        FileWriter fw = null;</span>
-<span class="fc" id="L390">        BufferedWriter writer = null;</span>
+<span class="fc" id="L387">        FileWriter fw = null;</span>
+<span class="fc" id="L388">        BufferedWriter writer = null;</span>
         try {
-<span class="fc" id="L392">            File file = new File(filePath);</span>
-<span class="fc bfc" id="L393" title="All 2 branches covered.">            if (file.exists()) {</span>
-<span class="fc" id="L394">                boolean deleted = file.delete();</span>
-<span class="pc bpc" id="L395" title="1 of 2 branches missed.">                if (!deleted) {</span>
-<span class="nc" id="L396">                    throw new IOException(&quot;could not delete file &quot; + file.getPath());</span>
+<span class="fc" id="L390">            File file = new File(filePath);</span>
+<span class="fc bfc" id="L391" title="All 2 branches covered.">            if (file.exists()) {</span>
+<span class="fc" id="L392">                boolean deleted = file.delete();</span>
+<span class="pc bpc" id="L393" title="1 of 2 branches missed.">                if (!deleted) {</span>
+<span class="nc" id="L394">                    throw new IOException(&quot;could not delete file &quot; + file.getPath());</span>
                 }
             }
-<span class="fc" id="L399">            boolean dreated = file.createNewFile();</span>
-<span class="pc bpc" id="L400" title="1 of 2 branches missed.">            if (!dreated) {</span>
-<span class="nc" id="L401">                throw new IOException(&quot;could not create new file &quot; + file.getPath());</span>
+<span class="fc" id="L397">            boolean dreated = file.createNewFile();</span>
+<span class="pc bpc" id="L398" title="1 of 2 branches missed.">            if (!dreated) {</span>
+<span class="nc" id="L399">                throw new IOException(&quot;could not create new file &quot; + file.getPath());</span>
             }
 
-<span class="fc" id="L404">            fw = new FileWriter(file);</span>
-<span class="fc" id="L405">            writer = new BufferedWriter(fw);</span>
-<span class="fc" id="L406">            writer.write(fileContent);</span>
+<span class="fc" id="L402">            fw = new FileWriter(file);</span>
+<span class="fc" id="L403">            writer = new BufferedWriter(fw);</span>
+<span class="fc" id="L404">            writer.write(fileContent);</span>
 
-<span class="fc" id="L408">            writer.flush();</span>
+<span class="fc" id="L406">            writer.flush();</span>
 
         } finally {
 
-<span class="pc bpc" id="L412" title="1 of 2 branches missed.">            if (writer != null) {</span>
-<span class="fc" id="L413">                writer.close();</span>
+<span class="pc bpc" id="L410" title="1 of 2 branches missed.">            if (writer != null) {</span>
+<span class="fc" id="L411">                writer.close();</span>
             }
-<span class="pc bpc" id="L415" title="1 of 2 branches missed.">            if (fw != null) {</span>
-<span class="fc" id="L416">                fw.close();</span>
+<span class="pc bpc" id="L413" title="1 of 2 branches missed.">            if (fw != null) {</span>
+<span class="fc" id="L414">                fw.close();</span>
             }
         }
-<span class="fc" id="L419">        return filePath;</span>
+<span class="fc" id="L417">        return filePath;</span>
     }
 
 }

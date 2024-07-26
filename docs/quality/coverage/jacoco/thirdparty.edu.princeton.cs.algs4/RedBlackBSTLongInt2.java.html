@@ -450,8 +450,8 @@ import java.util.Stack;
 <span class="fc" id="L450">        long left = nodeMap.getLeft(h);</span>
         //assert(parent == h);
         
-<span class="fc bfc" id="L453" title="All 2 branches covered.">        if (output.length == 3) {</span>
-<span class="fc" id="L454">            output[2] = left;</span>
+<span class="pc bpc" id="L453" title="1 of 2 branches missed.">        if (output.length == 3) {</span>
+<span class="nc" id="L454">            output[2] = left;</span>
         }
         
 <span class="fc" id="L457">        deleteMin(left, output);</span>
@@ -715,7 +715,7 @@ import java.util.Stack;
 <span class="fc bfc" id="L715" title="All 2 branches covered.">                    if (nodeMap.leftIsSet(minParent)</span>
 <span class="pc bpc" id="L716" title="1 of 2 branches missed.">                        &amp;&amp; nodeMap.getLeft(minParent) == x) {</span>
 <span class="nc" id="L717">                        nodeMap.unsetLeft(minParent);</span>
-<span class="fc bfc" id="L718" title="All 2 branches covered.">                    } else if (nodeMap.rightIsSet(minParent)</span>
+<span class="pc bpc" id="L718" title="1 of 2 branches missed.">                    } else if (nodeMap.rightIsSet(minParent)</span>
 <span class="pc bpc" id="L719" title="1 of 2 branches missed.">                            &amp;&amp; nodeMap.getRight(minParent) == x) {</span>
 <span class="fc" id="L720">                        nodeMap.unsetRight(minParent);</span>
                     }
@@ -725,7 +725,7 @@ import java.util.Stack;
 <span class="fc" id="L725">                    nodeMap.remove(x);</span>
                 }
                 
-<span class="pc bpc" id="L728" title="1 of 4 branches missed.">                if (hRightExists &amp;&amp; hRight == x) {</span>
+<span class="pc bpc" id="L728" title="2 of 4 branches missed.">                if (hRightExists &amp;&amp; hRight == x) {</span>
 <span class="fc" id="L729">                    hRightExists = false;</span>
                 }
                 
@@ -2360,11 +2360,11 @@ import java.util.Stack;
 <span class="pc bnc" id="L2360" title="All 2 branches missed.">        assert(x != h);</span>
 <span class="fc" id="L2361">        nodeMap.put(x, xVal, hClr, hSize);</span>
      
-<span class="fc bfc" id="L2363" title="All 2 branches covered.">        if (hParentExists) {</span>
+<span class="pc bpc" id="L2363" title="1 of 2 branches missed.">        if (hParentExists) {</span>
 <span class="fc" id="L2364">            nodeMap.updateParent(x, hParent);</span>
 <span class="pc bpc" id="L2365" title="1 of 2 branches missed.">            if (nodeMap.leftIsSet(hParent) </span>
-<span class="fc bfc" id="L2366" title="All 2 branches covered.">                &amp;&amp; nodeMap.getLeft(hParent) == h) {</span>
-<span class="fc" id="L2367">                nodeMap.updateLeft(hParent, x);</span>
+<span class="pc bpc" id="L2366" title="1 of 2 branches missed.">                &amp;&amp; nodeMap.getLeft(hParent) == h) {</span>
+<span class="nc" id="L2367">                nodeMap.updateLeft(hParent, x);</span>
             } else {
 <span class="pc bnc" id="L2369" title="All 2 branches missed.">                assert(nodeMap.rightIsSet(hParent) </span>
 <span class="nc bnc" id="L2370" title="All 2 branches missed.">                    &amp;&amp; nodeMap.getRight(hParent) == h);</span>
@@ -2378,9 +2378,9 @@ import java.util.Stack;
 <span class="fc" id="L2378">            nodeMap.updateParent(hLeft, x);</span>
 <span class="fc" id="L2379">            nodeMap.updateLeft(x, hLeft);</span>
         }
-<span class="fc bfc" id="L2381" title="All 2 branches covered.">        if (hRightExists) {</span>
-<span class="fc" id="L2382">            nodeMap.updateParent(hRight, x);</span>
-<span class="fc" id="L2383">            nodeMap.updateRight(x, hRight);</span>
+<span class="pc bpc" id="L2381" title="1 of 2 branches missed.">        if (hRightExists) {</span>
+<span class="nc" id="L2382">            nodeMap.updateParent(hRight, x);</span>
+<span class="nc" id="L2383">            nodeMap.updateRight(x, hRight);</span>
         }
         
 <span class="fc" id="L2386">        nodeMap.remove(h); </span>

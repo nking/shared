@@ -554,11 +554,11 @@ key, left or right field.
 <span class="fc bfc" id="L554" title="All 2 branches covered.">        if (isRed(h.right))   {</span>
 <span class="fc" id="L555">            h = rotateLeft(h);</span>
         }
-<span class="pc bpc" id="L557" title="1 of 4 branches missed.">        if (isRed(h.left) &amp;&amp; isRed(h.left.left)) {</span>
-<span class="nc" id="L558">            h = rotateRight(h);</span>
+<span class="fc bfc" id="L557" title="All 4 branches covered.">        if (isRed(h.left) &amp;&amp; isRed(h.left.left)) {</span>
+<span class="fc" id="L558">            h = rotateRight(h);</span>
         }
-<span class="pc bpc" id="L560" title="1 of 4 branches missed.">        if (isRed(h.left) &amp;&amp; isRed(h.right))  {</span>
-<span class="nc" id="L561">            flipColors(h);</span>
+<span class="fc bfc" id="L560" title="All 4 branches covered.">        if (isRed(h.left) &amp;&amp; isRed(h.right))  {</span>
+<span class="fc" id="L561">            flipColors(h);</span>
         }
 
 <span class="fc" id="L564">        h.size = size(h.left) + size(h.right) + 1;</span>

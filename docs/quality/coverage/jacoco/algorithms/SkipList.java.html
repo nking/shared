@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SkipList.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms</a> &gt; <span class="el_source">SkipList.java</span></div><h1>SkipList.java</h1><pre class="source lang-java linenums">package algorithms;
+
+/**
+ * data structure which is relatively easy to implement and has O(log(n))
+ * r.t.c on average for all operations, though worse case r.t.c. is O(n).
+ *
+ * the implementation follows the paper by William Pugh, 1989
+ &lt;pre&gt;
+ reference:
+ &quot;A SkipList Cookbook&quot;, by Willianm Pugh, 1989
+ UMIACS-TR-89-72.1
+ CS-TR-2286.1
+ &lt;/pre&gt;
+ */
+public class SkipList {
+
+    protected final double P;
+    protected final int MAX_LEVEL;
+    protected int level;
+    protected Node header;
+
+    protected static class Node {
+        Object data;
+        final int key;
+        final Node[] forward;
+        public Node(int key, Object data, int nLevels) {
+            this.key = key;
+            this.data = data;
+            forward = new Node[nLevels];
+        }
+    }
+
+    /**
+     * ideally, maxLevel should be log_{1/p}(n) where n is the number of expected elements
+     * @param p
+     * @param maxLevel
+     */
+<span class="nc" id="L38">    public SkipList(double p, int maxLevel) {</span>
+<span class="nc" id="L39">        this.P = p;</span>
+<span class="nc" id="L40">        this.MAX_LEVEL = maxLevel;</span>
+<span class="nc" id="L41">        this.header = new Node(-1, null, MAX_LEVEL+1);</span>
+<span class="nc" id="L42">    }</span>
+
+    /**
+     * given expected number of elements in list and a probability threshold
+     * the method internally calculates the ideal max level os
+     * log_{1/p}(n) where n is the number of expected elements
+     *
+     * @param expectedNumberOfElements
+     * @param p
+     */
+<span class="nc" id="L52">    public SkipList(int expectedNumberOfElements, double p) {</span>
+<span class="nc" id="L53">        this.P = p;</span>
+<span class="nc" id="L54">        this.MAX_LEVEL = (int)Math.ceil(Math.log(</span>
+<span class="nc" id="L55">                expectedNumberOfElements)/Math.log(1./P));</span>
+<span class="nc" id="L56">        this.header = new Node(-1, null, MAX_LEVEL+1);</span>
+<span class="nc" id="L57">    }</span>
+
+    /**
+     * given expected number of elements in list, the method
+     * internally sets a probability threshold to 0.5 and
+     * calculates the ideal max level os
+     * log_{1/p}(n) where n is the number of expected elements
+     *
+     * @param expectedNumberOfElements
+     * @param p
+     */
+<span class="nc" id="L68">    public SkipList(int expectedNumberOfElements) {</span>
+<span class="nc" id="L69">        this.P = 0.5;</span>
+<span class="nc" id="L70">        this.MAX_LEVEL = (int)Math.ceil(Math.log(</span>
+<span class="nc" id="L71">                expectedNumberOfElements)/Math.log(1./P));</span>
+<span class="nc" id="L72">        this.header = new Node(-1, null, MAX_LEVEL+1);</span>
+<span class="nc" id="L73">    }</span>
+
+    /**
+     *
+     * @param key
+     * @param update can be null.  if not null, should be length MAX_LEVEL
+     * @return
+     */
+    protected Node findNode(int key, Node[] update) {
+<span class="nc" id="L82">        Node x = header;</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">        for (int i = level; i &gt;= 0; --i) {</span>
+<span class="nc bnc" id="L84" title="All 4 branches missed.">            while (x.forward[i] != null &amp;&amp; x.forward[i].key &lt; key) {</span>
+<span class="nc" id="L85">                x = x.forward[i];</span>
+            }
+<span class="nc bnc" id="L87" title="All 2 branches missed.">            if (update != null) {</span>
+<span class="nc" id="L88">                update[i] = x;</span>
+            }
+        }
+<span class="nc" id="L91">        x = x.forward[0];</span>
+<span class="nc" id="L92">        return x;</span>
+    }
+
+    public Object search(int key) {
+<span class="nc" id="L96">        Node x = findNode(key, null);</span>
+
+<span class="nc bnc" id="L98" title="All 4 branches missed.">        if (x != null &amp;&amp; x.key == key) {</span>
+<span class="nc" id="L99">            return x.data;</span>
+        }
+<span class="nc" id="L101">        return null;</span>
+    }
+
+    /**
+     * insert key into skiplist.  NOTE that if key exists, the new data overwrites
+     * the old data and the old data is returned.
+     * @param key
+     * @param data
+     * @return after inserting the key into the list,
+     * returns former data for given key if key was already in list,
+     * else returns null if key was not in list.
+     */
+    public Object insert(int key, Object data) {
+<span class="nc" id="L114">        Node[] update = new Node[MAX_LEVEL];</span>
+<span class="nc" id="L115">        Node x = findNode(key, update);</span>
+
+<span class="nc bnc" id="L117" title="All 4 branches missed.">        if (x != null &amp;&amp; x.key == key) {</span>
+<span class="nc" id="L118">            Object old = x.data;</span>
+<span class="nc" id="L119">            x.data = data;</span>
+<span class="nc" id="L120">            return old;</span>
+        }
+
+<span class="nc" id="L123">        int newLevel = randomLevel();</span>
+<span class="nc bnc" id="L124" title="All 2 branches missed.">        if (newLevel &gt; level) {</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">            for (int i = level + 1; i &lt;= newLevel; ++i) {</span>
+<span class="nc" id="L126">                update[i] = header;</span>
+            }
+<span class="nc" id="L128">            level = newLevel;</span>
+        }
+<span class="nc" id="L130">        x = new Node(key, data, newLevel);</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">        for (int i = 0; i &lt;= newLevel; ++i) {</span>
+<span class="nc" id="L132">            x.forward[i] = update[i].forward[i];</span>
+<span class="nc" id="L133">            update[i].forward[i] = x;</span>
+        }
+<span class="nc" id="L135">        return null;</span>
+    }
+
+    private int randomLevel() {
+<span class="nc" id="L139">        int lvl = 0;</span>
+<span class="nc bnc" id="L140" title="All 4 branches missed.">        while (Math.random() &lt; P &amp;&amp; lvl &lt; MAX_LEVEL) {</span>
+<span class="nc" id="L141">            ++lvl;</span>
+        }
+<span class="nc" id="L143">        return lvl;</span>
+    }
+
+    /**
+     * insert key into skiplist.  NOTE that if key exists, the new data overwrites
+     * the old data and the old data is returned.
+     * @param key
+     * @param data
+     * @return after inserting the key into the list,
+     * returns former data for given key if key was already in list,
+     * else returns null if key was not in list.
+     */
+    public Object delete(int key) {
+<span class="nc" id="L156">        Node[] update = new Node[MAX_LEVEL];</span>
+<span class="nc" id="L157">        Node x = findNode(key, update);</span>
+<span class="nc" id="L158">        Object data = null;</span>
+<span class="nc bnc" id="L159" title="All 4 branches missed.">        if (x != null &amp;&amp; x.key == key) {</span>
+<span class="nc" id="L160">            data = x.data;</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">            for (int i = 0; i &lt;= level; ++i) {</span>
+<span class="nc bnc" id="L162" title="All 2 branches missed.">                if (!update[i].forward[i].equals(x)) {</span>
+<span class="nc" id="L163">                    break;</span>
+                }
+<span class="nc" id="L165">                update[i].forward[i] = x.forward[i];</span>
+            }
+<span class="nc bnc" id="L167" title="All 4 branches missed.">            while (level &gt; 0 &amp;&amp; header.forward[level] == null) {</span>
+<span class="nc" id="L168">                --level;</span>
+            }
+        }
+
+<span class="nc" id="L172">        int newLevel = randomLevel();</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">        if (newLevel &gt; level) {</span>
+<span class="nc bnc" id="L174" title="All 2 branches missed.">            for (int i = level + 1; i &lt;= newLevel; ++i) {</span>
+<span class="nc" id="L175">                update[i] = header;</span>
+            }
+<span class="nc" id="L177">            level = newLevel;</span>
+        }
+<span class="nc" id="L179">        x = new Node(key, data, newLevel);</span>
+<span class="nc bnc" id="L180" title="All 2 branches missed.">        for (int i = 0; i &lt; newLevel; ++i) {</span>
+<span class="nc" id="L181">            x.forward[i] = update[i].forward[i];</span>
+<span class="nc" id="L182">            update[i].forward[i] = x;</span>
+        }
+<span class="nc" id="L184">        return data;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

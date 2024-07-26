@@ -371,8 +371,8 @@ import no.uib.cipr.matrix.SVD;
             }
         }
         
-<span class="fc bfc" id="L374" title="All 2 branches covered.">        if (rank == 0) {</span>
-<span class="fc" id="L375">            throw new IllegalArgumentException(&quot;factorization cannot continue as&quot;</span>
+<span class="pc bpc" id="L374" title="1 of 2 branches missed.">        if (rank == 0) {</span>
+<span class="nc" id="L375">            throw new IllegalArgumentException(&quot;factorization cannot continue as&quot;</span>
             + &quot; the number of selected indexes is too small&quot;);
         }
         
@@ -380,7 +380,7 @@ import no.uib.cipr.matrix.SVD;
 <span class="fc" id="L380">        double[][] sInvSq = MatrixUtil.zeros(nr, nc);</span>
 <span class="fc" id="L381">        int len = Math.min(nr, nc);</span>
 <span class="fc bfc" id="L382" title="All 2 branches covered.">        for (i = 0; i &lt; len; ++i) {</span>
-<span class="pc bpc" id="L383" title="1 of 2 branches missed.">            if (s[i] &gt; eps) {</span>
+<span class="fc bfc" id="L383" title="All 2 branches covered.">            if (s[i] &gt; eps) {</span>
 <span class="fc" id="L384">                sInvSq[i][i] = 1./(s[i]*s[i]);</span>
             }
         }

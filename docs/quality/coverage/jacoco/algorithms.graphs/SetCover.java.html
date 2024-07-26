@@ -260,7 +260,7 @@ public class SetCover {
 <span class="fc" id="L260">                idx = iter.next();</span>
 <span class="fc" id="L261">                r = rand.nextDouble();</span>
                 //System.out.printf(&quot;%d) r=%.3f, yP[%d]=%.3f\n&quot;, i, r, idx, yProbabilities[idx]);
-<span class="fc bfc" id="L263" title="All 2 branches covered.">                if (r &lt;= yProbabilities[idx]) {</span>
+<span class="fc bfc" id="L263" title="All 2 branches covered.">                if (r &lt; yProbabilities[idx]) {</span>
 <span class="fc" id="L264">                    c.add(idx);</span>
 <span class="fc" id="L265">                    rm.add(idx);</span>
                 }
