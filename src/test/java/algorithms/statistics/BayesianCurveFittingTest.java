@@ -88,12 +88,20 @@ public class BayesianCurveFittingTest extends TestCase {
 
         for (int i = 0; i < yExpected.length; ++i) {
             diff = predictionC.getYFit()[i] - yExpected[i];
+            if (!(Math.abs(diff) < 2.5*prediction.getYErr()[i])) {
+                System.out.printf("diff=%f, 2.5*err = %f\n", diff, 2.5*prediction.getYErr()[i]);
+                System.out.flush();
+            }
             assertTrue(Math.abs(diff) < 2.5*prediction.getYErr()[i]);
         }
 
         ModelPrediction predictionRandom = BayesianCurveFitting.predictRandomSample(fitC, phiXTestC);
         for (int i = 0; i < yExpected.length; ++i) {
             diff = predictionRandom.getYFit()[i] - yExpected[i];
+            if (!(Math.abs(diff) < 2.5*prediction.getYErr()[i])) {
+                System.out.printf("diff=%f, 2.5*err = %f\n", diff, 2.5*prediction.getYErr()[i]);
+                System.out.flush();
+            }
             assertTrue(Math.abs(diff) < 2.5*prediction.getYErr()[i]);
         }
 
