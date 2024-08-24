@@ -9,6 +9,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import algorithms.util.FormatArray;
+import gnu.trove.set.TDoubleSet;
+import gnu.trove.set.hash.TDoubleHashSet;
 import junit.framework.TestCase;
 import no.uib.cipr.matrix.*;
 

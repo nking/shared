@@ -12,6 +12,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 
+import gnu.trove.set.TDoubleSet;
+import gnu.trove.set.hash.TDoubleHashSet;
 import no.uib.cipr.matrix.*;
 import gnu.trove.iterator.TIntIntIterator;
 import gnu.trove.iterator.TIntIterator;
@@ -602,6 +604,73 @@ public class MatrixUtil {
         multiply(m, n, c);
 
         return c;
+    }
+
+
+    /**
+     * multiply matrix m by matrix n
+     @param m two dimensional array in row major format
+     @param n two dimensional array in row major format
+     @return multiplication of m by n.  resulting matrix is size mrows X ncols.
+     */
+    public static String[][] multiply(String[][] m, String[][] n) {
+
+        if (m == null || m.length == 0) {
+            throw new IllegalArgumentException("m cannot be null or empty");
+        }
+        if (n == null || n.length == 0) {
+            throw new IllegalArgumentException("n cannot be null or empty");
+        }
+
+        int mrows = m.length;
+
+        int mcols = m[0].length;
+
+        int nrows = n.length;
+
+        int ncols = n[0].length;
+
+        if (mcols != nrows) {
+            throw new IllegalArgumentException(
+                    "the number of columns in m (=" + mcols + ") "
+                            + " must equal the number of rows in n (=" + nrows + ")");
+        }
+
+        String[][] out = new String[mrows][ncols];
+
+        for (int mrow = 0; mrow < mrows; mrow++) {
+            for (int ncol = 0; ncol < ncols; ncol++) {
+                StringBuilder sum = new StringBuilder();
+                for (int mcol = 0; mcol < mcols; mcol++) {
+                    if (sum.length() != 0) {
+                        sum.append(" + ");
+                    }
+                    sum.append(String.format("(%s * %s)", m[mrow][mcol], n[mcol][ncol]));
+                }
+                out[mrow][ncol] = sum.toString();
+            }
+        }
+
+        return out;
+    }
+
+    public static String[][] transpose(String[][] m) {
+        if (m == null || m.length == 0) {
+            throw new IllegalArgumentException("m cannot be null or empty");
+        }
+
+        int mRows = m.length;
+        int mCols = m[0].length;
+
+        String[][] t = new String[mCols][mRows];
+        int i, j;
+        for (i = 0; i < mRows; i++) {
+            for (j = 0; j < mCols; j++) {
+                t[j][i] = m[i][j];
+            }
+        }
+
+        return t;
     }
     
     /**
@@ -2127,7 +2196,7 @@ public class MatrixUtil {
        
         int m = a.length;
         int n = a[0].length;
-        int rank = 0;
+
         if (m == n) {
             int rU = 0;
             LU lu = LinearEquations.LUDecomposition(a);
@@ -2150,13 +2219,7 @@ public class MatrixUtil {
         final double EPS = 1e-12;
         int rank2 =  qrp.getRank();
         */
-       
-        SVDProducts svd = performSVD(a);
-        for (double sv : svd.s) {
-            if (sv > eps) {
-                rank++;
-            }
-        }
+        int rank = rank(a);
         return rank;
     }
 
@@ -2324,18 +2387,11 @@ public class MatrixUtil {
             svd = SVD.factorize(new DenseMatrix(aaT));
             u = svd.getU();
         }
-        int rank = 0;
-        double eps = 1E-15;
-        for (double sv : svd.getS()) {
-            if (sv > eps) {
-                rank++;
-            }
-        }
         SVDProducts out = new SVDProducts();
         out.u = (u != null) ? MatrixUtil.convertToRowMajor(u) : null;
         out.vT = (vT != null) ? MatrixUtil.convertToRowMajor(vT) : null;
         out.s = sDiag;
-        out.rank = rank;
+        out.rank = rank(svd);
         return out;
     }
 
@@ -2725,10 +2781,10 @@ public class MatrixUtil {
             throw new IllegalArgumentException("matrix a must be square");
         }
         if (a.length == 1) {
-            return a[0][0];
+            return roundToMachineTol(a[0][0]);
         } else if (a.length == 2) {
             double s = ( a[0][0]*a[1][1] ) - ( a[0][1]*a[1][0] );
-            return s;
+            return roundToMachineTol(s);
         } else {
             double s = 0.0;
             // use 1st row as cofactors and minors
@@ -2744,8 +2800,12 @@ public class MatrixUtil {
                     s -=  tmp;
                 }
             }
-            return s;
+            return roundToMachineTol(s);
         }
+    }
+
+    private static double roundToMachineTol(double a) {
+        return Math.round(a * 1E11)/1E11;
     }
 
     /**
@@ -3904,12 +3964,7 @@ public class MatrixUtil {
         double eps = 1E-15;
         MatrixUtil.SVDProducts svd = MatrixUtil.performSVD(a);
 
-        int rank = 0;
-        for (double sv : svd.s) {
-            if (sv > eps) {
-                rank++;
-            }
-        }
+        int rank = rank(svd);
 
         if (rank < svd.u.length) {
             // this case has eigenvalues that are 0.
@@ -3999,12 +4054,8 @@ public class MatrixUtil {
             sMatrix[i][i] = Math.sqrt(s[i]);
         }
 
-        int rank = 0;
-        for (double sv : s) {
-            if (sv > eps) {
-                rank++;
-            }
-        }
+        int rank = rank(svd);
+
         // the number of distinct non-zero eigenvalues is rank.
         // there are 2^(rank) square roots
 
@@ -4180,6 +4231,24 @@ public class MatrixUtil {
     }
 
     /**
+     * check whether all eigenvalues are >=  tol
+     * @param a
+     * @param tol
+     * @return
+     */
+    public static boolean allEigenValuesGEQ(double[][] a, double tol) throws NotConvergedException {
+        EVD evd = EVD.factorize(new DenseMatrix(a));
+        int i;
+        double[] eig = evd.getRealEigenvalues();
+        for (i = 0; i < eig.length; ++i) {
+            if (eig[i] < tol) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * A matrix is positive definite if it’s symmetric and all its eigenvalues are positive,
      * which means its pivots are positive.
      * a quick test is that x^T * A * x is strictly positive for every non-zero
@@ -4189,7 +4258,16 @@ public class MatrixUtil {
      @param a matrix a
      @return true if a is positive definite
      */
-    public static boolean isPositiveDefinite(double[][] a) {
+    public static boolean isPositiveDefinite(double[][] a) throws NotConvergedException {
+
+        if (true) {
+            // checking that eigenvalues are all >0 within machine precision
+            return allEigenValuesGEQ(a, 1E-11);
+        }
+        if (true) {
+            DenseCholesky chol = no.uib.cipr.matrix.DenseCholesky.factorize(new DenseMatrix(a));
+            return (chol.getU() != null);
+        }
 
         if (!isSymmetric(a, 1E-7)) {
             System.err.println("matrix is not symmetric in current form");
@@ -5531,18 +5609,11 @@ public class MatrixUtil {
      */
     public static double[][] nullSpaceUsingSVD(double[][] a, double tol) throws NotConvergedException {
         SVDProducts svd = MatrixUtil.performSVD(a);
-        int rank = 0;
-        int i;
-        for (i = 0; i < svd.s.length; ++i) {
-            if (svd.s[i] > tol) {
-                rank++;
-            }
-        }
+        int rank = rank(svd);
         int n = a[0].length;
         // the last n-rank columns of V hold the nullspace
         double[][] nullspace = new double[n-rank][];
-        int c;
-        for (i = rank, c = 0; i < n; ++i, ++c) {
+        for (int i = rank, c = 0; i < n; ++i, ++c) {
             nullspace[c] = Arrays.copyOf(svd.vT[i], svd.vT[i].length);
         }
         return nullspace;
@@ -5600,6 +5671,37 @@ public class MatrixUtil {
         return c[0]*(a[1]*b[2] - b[1]*a[2])
                 + c[1]*(a[2]*b[0] - b[2]*a[0])
                 + c[2]*(a[0]*b[1] - b[0]*a[1]);
+    }
+
+
+    public static int rank(SVD svd) {
+        int rank = 0;
+        TDoubleSet set = new TDoubleHashSet();
+        // machine tolerance for 0:
+        double tol = 1E-11;
+        for (double s : svd.getS()) {
+            if (Math.abs(s) > tol) {
+                set.add(s);
+            }
+        }
+        return set.size();
+    }
+
+    public static int rank(MatrixUtil.SVDProducts svd) {
+        int rank = 0;
+        TDoubleSet set = new TDoubleHashSet();
+        // machine tolerance for 0:
+        double tol = 1E-11;
+        for (double s : svd.s) {
+            if (Math.abs(s) > tol) {
+                set.add(s);
+            }
+        }
+        return set.size();
+    }
+
+    public static int rank(double[][] a) throws NotConvergedException {
+        return rank(SVD.factorize(new DenseMatrix(a)));
     }
 
 }

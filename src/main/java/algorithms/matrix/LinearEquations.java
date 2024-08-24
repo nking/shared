@@ -836,13 +836,6 @@ public class LinearEquations {
             throw new IllegalArgumentException(name + " must be a square matrix");
         }
     }
-    
-    private static void assertPositiveDefinite(double[][] a, String name) {
-        int n = a.length;
-        if (!MatrixUtil.isPositiveDefinite(a)) {
-            throw new IllegalArgumentException(name + " must be a positive definite matrix");
-        }
-    }
 
     private static void assertArrayLength(int n, double[] a, String name) {
         if (a.length != n) {
