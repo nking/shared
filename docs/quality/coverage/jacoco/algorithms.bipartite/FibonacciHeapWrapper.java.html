@@ -15,26 +15,26 @@ public class FibonacciHeapWrapper {
     
     private final Heap[] heaps;
     
-<span class="nc" id="L18">    private long lastKnownMinKey = 0;</span>
-<span class="nc" id="L19">    private int lastKnownMinKeyIdx = 0;</span>
-<span class="nc" id="L20">    private long lastKnownMaxKey = -1;</span>
+<span class="fc" id="L18">    private long lastKnownMinKey = 0;</span>
+<span class="fc" id="L19">    private int lastKnownMinKeyIdx = 0;</span>
+<span class="fc" id="L20">    private long lastKnownMaxKey = -1;</span>
     
     private final int binSz;
     
-<span class="nc" id="L24">    private int n = 0;</span>
+<span class="fc" id="L24">    private int n = 0;</span>
     
     /**
      *
      @param nEstimate
      @param maxC
      */
-<span class="nc" id="L31">    public FibonacciHeapWrapper(int nEstimate, int maxC) {</span>
+<span class="fc" id="L31">    public FibonacciHeapWrapper(int nEstimate, int maxC) {</span>
         
-<span class="nc" id="L33">        int pow2 = (int)Math.ceil(Math.log(nEstimate)/Math.log(2));</span>
+<span class="fc" id="L33">        int pow2 = (int)Math.ceil(Math.log(nEstimate)/Math.log(2));</span>
     
-<span class="nc" id="L35">        nApprox = nEstimate;</span>
+<span class="fc" id="L35">        nApprox = nEstimate;</span>
         
-<span class="nc bnc" id="L37" title="All 4 branches missed.">        if (pow2 &gt; 6 &amp;&amp; (maxC &gt; 1)) {</span>
+<span class="pc bpc" id="L37" title="3 of 4 branches missed.">        if (pow2 &gt; 6 &amp;&amp; (maxC &gt; 1)) {</span>
             
             // make multiple maps separated by sequential partitions of values
 <span class="nc" id="L40">            int nBins = pow2;</span>
@@ -49,10 +49,10 @@ public class FibonacciHeapWrapper {
 <span class="nc" id="L49">            heaps = new Heap[nBins];</span>
             
 <span class="nc" id="L51">        } else {</span>
-<span class="nc" id="L52">            heaps = new Heap[1];</span>
-<span class="nc" id="L53">            binSz = Integer.MAX_VALUE;</span>
+<span class="fc" id="L52">            heaps = new Heap[1];</span>
+<span class="fc" id="L53">            binSz = Integer.MAX_VALUE;</span>
         }
-<span class="nc" id="L55">    }</span>
+<span class="fc" id="L55">    }</span>
     
     /**
      * runtime is O(1).  makes no attempt to consolidate tree.
@@ -60,31 +60,31 @@ public class FibonacciHeapWrapper {
      */
     public void insert(HeapNode node) {
         
-<span class="nc" id="L63">        int key = (int)node.getKey();</span>
+<span class="fc" id="L63">        int key = (int)node.getKey();</span>
         
         int binIdx;
-<span class="nc bnc" id="L66" title="All 2 branches missed.">        if (heaps.length == 1) {</span>
-<span class="nc" id="L67">            binIdx = 0;</span>
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">        if (heaps.length == 1) {</span>
+<span class="fc" id="L67">            binIdx = 0;</span>
         } else {
 <span class="nc" id="L69">            binIdx = key/binSz;</span>
         }
         
-<span class="nc bnc" id="L72" title="All 2 branches missed.">        if (heaps[binIdx] == null) {</span>
-<span class="nc" id="L73">            heaps[binIdx] = new Heap();</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        if (heaps[binIdx] == null) {</span>
+<span class="fc" id="L73">            heaps[binIdx] = new Heap();</span>
         }
         
-<span class="nc" id="L76">        heaps[binIdx].insert(node);</span>
+<span class="fc" id="L76">        heaps[binIdx].insert(node);</span>
         
-<span class="nc" id="L78">        n++;</span>
+<span class="fc" id="L78">        n++;</span>
         
-<span class="nc bnc" id="L80" title="All 2 branches missed.">        if (key &lt; lastKnownMinKey) {</span>
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">        if (key &lt; lastKnownMinKey) {</span>
 <span class="nc" id="L81">            lastKnownMinKey = key;</span>
 <span class="nc" id="L82">            lastKnownMinKeyIdx = binIdx;</span>
         }
-<span class="nc bnc" id="L84" title="All 2 branches missed.">        if (key &gt; lastKnownMaxKey) {</span>
-<span class="nc" id="L85">            lastKnownMaxKey = key;</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">        if (key &gt; lastKnownMaxKey) {</span>
+<span class="fc" id="L85">            lastKnownMaxKey = key;</span>
         }
-<span class="nc" id="L87">    }</span>
+<span class="fc" id="L87">    }</span>
 
     /**
      * note, key1 and key2 are in same heap, the runtime is 
@@ -96,20 +96,20 @@ public class FibonacciHeapWrapper {
      */
     public void decreaseKey(HeapNode node, long key2) {
         
-<span class="nc" id="L99">        int key = (int)node.getKey();</span>
+<span class="fc" id="L99">        int key = (int)node.getKey();</span>
         
         int binIdx1, binIdx2;
-<span class="nc bnc" id="L102" title="All 2 branches missed.">        if (heaps.length == 1) {</span>
-<span class="nc" id="L103">            binIdx1 = 0;</span>
-<span class="nc" id="L104">            binIdx2 = 0;</span>
+<span class="pc bpc" id="L102" title="1 of 2 branches missed.">        if (heaps.length == 1) {</span>
+<span class="fc" id="L103">            binIdx1 = 0;</span>
+<span class="fc" id="L104">            binIdx2 = 0;</span>
         } else {
 <span class="nc" id="L106">            binIdx1 = key/binSz;</span>
 <span class="nc" id="L107">            binIdx2 = (int)key2/binSz;</span>
         }
                 
-<span class="nc bnc" id="L110" title="All 2 branches missed.">        if (binIdx1 == binIdx2) {</span>
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">        if (binIdx1 == binIdx2) {</span>
             
-<span class="nc" id="L112">            heaps[binIdx1].decreaseKey(node, key2);</span>
+<span class="fc" id="L112">            heaps[binIdx1].decreaseKey(node, key2);</span>
             
         } else {
         
@@ -126,11 +126,11 @@ public class FibonacciHeapWrapper {
 <span class="nc" id="L126">            heaps[binIdx2].insert(node);</span>
         }
         
-<span class="nc bnc" id="L129" title="All 2 branches missed.">        if (key2 &lt; lastKnownMinKey) {</span>
+<span class="pc bpc" id="L129" title="1 of 2 branches missed.">        if (key2 &lt; lastKnownMinKey) {</span>
 <span class="nc" id="L130">            lastKnownMinKey = key2;</span>
 <span class="nc" id="L131">            lastKnownMinKeyIdx = binIdx2;</span>
         }
-<span class="nc" id="L133">    }</span>
+<span class="fc" id="L133">    }</span>
     
     /**
      * runtime is O(log_2 N) or better.
@@ -138,21 +138,21 @@ public class FibonacciHeapWrapper {
      */
     public HeapNode extractMin() {
         
-<span class="nc bnc" id="L141" title="All 2 branches missed.">        if (n == 0) {</span>
+<span class="pc bpc" id="L141" title="1 of 2 branches missed.">        if (n == 0) {</span>
 <span class="nc" id="L142">            return null;</span>
         }
      
-<span class="nc bnc" id="L145" title="All 2 branches missed.">        for (int i = (int)lastKnownMinKey; i &lt; heaps.length; ++i) {</span>
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">        for (int i = (int)lastKnownMinKey; i &lt; heaps.length; ++i) {</span>
             
-<span class="nc bnc" id="L147" title="All 4 branches missed.">            if ((heaps[i] == null) || (heaps[i].getNumberOfNodes() == 0)) {</span>
+<span class="pc bpc" id="L147" title="2 of 4 branches missed.">            if ((heaps[i] == null) || (heaps[i].getNumberOfNodes() == 0)) {</span>
 <span class="nc" id="L148">                continue;</span>
             }
             
-<span class="nc" id="L151">            HeapNode node = heaps[i].extractMin();</span>
-<span class="nc" id="L152">            lastKnownMinKey = i;</span>
-<span class="nc" id="L153">            n--;</span>
+<span class="fc" id="L151">            HeapNode node = heaps[i].extractMin();</span>
+<span class="fc" id="L152">            lastKnownMinKey = i;</span>
+<span class="fc" id="L153">            n--;</span>
             
-<span class="nc" id="L155">            return node;</span>
+<span class="fc" id="L155">            return node;</span>
         }
         
 <span class="nc" id="L158">        return null;</span>
@@ -183,7 +183,7 @@ public class FibonacciHeapWrapper {
      @return
      */
     public long getNumberOfNodes() {
-<span class="nc" id="L186">        return n;</span>
+<span class="fc" id="L186">        return n;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

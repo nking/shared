@@ -220,7 +220,7 @@ public class UniformCostSearch {
 <span class="fc" id="L220">                    nodes[v] = node;</span>
 <span class="fc" id="L221">                    predecessor[v] = u;</span>
 <span class="fc" id="L222">                } else {</span>
-<span class="fc bfc" id="L223" title="All 4 branches covered.">                    if (nodes[v] != null &amp;&amp; dist[v] &gt; dUPlusWUV) {</span>
+<span class="pc bpc" id="L223" title="1 of 4 branches missed.">                    if (nodes[v] != null &amp;&amp; dist[v] &gt; dUPlusWUV) {</span>
 <span class="fc" id="L224">                        log.log(logLevel, &quot;    decrease key to &quot; + dUPlusWUV);</span>
 <span class="fc" id="L225">                        dist[v] = dUPlusWUV;</span>
 <span class="fc" id="L226">                        predecessor[v] = u;</span>

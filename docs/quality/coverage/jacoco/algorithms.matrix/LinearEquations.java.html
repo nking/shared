@@ -836,25 +836,18 @@ import no.uib.cipr.matrix.*;
 <span class="nc" id="L836">            throw new IllegalArgumentException(name + &quot; must be a square matrix&quot;);</span>
         }
 <span class="fc" id="L838">    }</span>
-    
-    private static void assertPositiveDefinite(double[][] a, String name) {
-<span class="nc" id="L841">        int n = a.length;</span>
-<span class="nc bnc" id="L842" title="All 2 branches missed.">        if (!MatrixUtil.isPositiveDefinite(a)) {</span>
-<span class="nc" id="L843">            throw new IllegalArgumentException(name + &quot; must be a positive definite matrix&quot;);</span>
-        }
-<span class="nc" id="L845">    }</span>
 
     private static void assertArrayLength(int n, double[] a, String name) {
-<span class="pc bpc" id="L848" title="1 of 2 branches missed.">        if (a.length != n) {</span>
-<span class="nc" id="L849">            throw new IllegalArgumentException(name + &quot; must be length &quot; + n);</span>
+<span class="pc bpc" id="L841" title="1 of 2 branches missed.">        if (a.length != n) {</span>
+<span class="nc" id="L842">            throw new IllegalArgumentException(name + &quot; must be length &quot; + n);</span>
         }
-<span class="fc" id="L851">    }</span>
+<span class="fc" id="L844">    }</span>
 
     private static void assertArrayLength(int n, int[] a, String name) {
-<span class="pc bpc" id="L854" title="1 of 2 branches missed.">        if (a.length != n) {</span>
-<span class="nc" id="L855">            throw new IllegalArgumentException(name + &quot; must be length &quot; + n);</span>
+<span class="pc bpc" id="L847" title="1 of 2 branches missed.">        if (a.length != n) {</span>
+<span class="nc" id="L848">            throw new IllegalArgumentException(name + &quot; must be length &quot; + n);</span>
         }
-<span class="fc" id="L857">    }</span>
+<span class="fc" id="L850">    }</span>
 
 } 
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

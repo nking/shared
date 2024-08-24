@@ -307,7 +307,7 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
 <span class="pc bpc" id="L307" title="1 of 2 branches missed.">        if (isEmpty()) throw new NoSuchElementException(&quot;BST underflow&quot;);</span>
 
         // if both children of root are black, set root to red
-<span class="pc bpc" id="L310" title="1 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
+<span class="pc bpc" id="L310" title="2 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
 <span class="fc" id="L311">            root.color = RED;</span>
 
 <span class="fc" id="L313">        root = deleteMax(root);</span>
@@ -343,8 +343,8 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
 <span class="pc bpc" id="L343" title="1 of 2 branches missed.">        if (!contains(key)) return;</span>
 
         // if both children of root are black, set root to red
-<span class="pc bpc" id="L346" title="3 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
-<span class="nc" id="L347">            root.color = RED;</span>
+<span class="pc bpc" id="L346" title="2 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
+<span class="fc" id="L347">            root.color = RED;</span>
 
 <span class="fc" id="L349">        root = delete(root, key);</span>
 <span class="pc bpc" id="L350" title="1 of 2 branches missed.">        if (!isEmpty()) root.color = BLACK;</span>
@@ -357,7 +357,7 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
         // assert get(h, key) != null;
 
 <span class="fc bfc" id="L359" title="All 2 branches covered.">        if (key.compareTo(h.key) &lt; 0)  {</span>
-<span class="pc bpc" id="L360" title="1 of 4 branches missed.">            if (!isRed(h.left) &amp;&amp; !isRed(h.left.left))</span>
+<span class="fc bfc" id="L360" title="All 4 branches covered.">            if (!isRed(h.left) &amp;&amp; !isRed(h.left.left))</span>
 <span class="fc" id="L361">                h = moveRedLeft(h);</span>
 <span class="fc" id="L362">            h.left = delete(h.left, key);</span>
         }
