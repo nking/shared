@@ -124,7 +124,7 @@ public class Standardization {
     }
 
     /**
-     * unit standard normlize data and return the mean and standard deviation of the zero-centered data.
+     * unit standard normalize data and return the mean and standard deviation of the zero-centered data.
      * @param im
      * @return the mean and standard deviation of zero-centered data
      */
@@ -158,6 +158,48 @@ public class Standardization {
         }
         return new double[]{mean, std};
     }
+
+    /**
+     * apply min max normalization to image and return the min and max.
+     * The operation changes the data values so that they are all in range [0, 1].
+     * @param im
+     * @return the mean and standard deviation of zero-centered data
+     */
+    public static double[] minMaxNormalizeImage(double[][] im) {
+        double min = Double.POSITIVE_INFINITY;
+        double max = Double.NEGATIVE_INFINITY;
+        int col;
+        for (int row = 0; row < im.length; ++row) {
+            for (col = 0; col < im[row].length; ++col) {
+                min = Math.min(min, im[row][col]);
+                max = Math.max(max, im[row][col]);
+            }
+        }
+        double range = max - min;
+        for (int row = 0; row < im.length; ++row) {
+            for (col = 0; col < im[row].length; ++col) {
+                im[row][col] = (im[row][col] - min)/range;
+            }
+        }
+        return new double[]{min, max};
+    }
+
+    /**
+     * apply min max normalization to image, given the min and max.  useful if need to
+     * apply same normalization to different dataset
+     * @param im
+     * @return the mean and standard deviation of zero-centered data
+     */
+    public static void minMaxNormalizeImage(double[][] im, double min, double max) {
+        double range = max - min;
+        int col;
+        for (int row = 0; row < im.length; ++row) {
+            for (col = 0; col < im[row].length; ++col) {
+                im[row][col] = (im[row][col] - min)/range;
+            }
+        }
+    }
+
 
     /**
      * subtract mean from data then divide by std.  used to perform same normalization on different images.

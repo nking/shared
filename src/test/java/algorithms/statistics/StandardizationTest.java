@@ -397,5 +397,28 @@ public class StandardizationTest extends TestCase {
         }
 
     }
+
+    public void testMinMaxNormalizeImage() {
+
+        double[][] im = new double[][]{{3,9,12}};
+        double[] minMax = Standardization.minMaxNormalizeImage(im);
+        assertTrue(Math.abs(minMax[0] - 3) < 1E-7);
+        assertTrue(Math.abs(minMax[1] - 12) < 1E-7);
+
+        for (int i = 0; i < im.length; ++i) {
+            for (int j = 0; j < im[i].length; ++j) {
+                assertTrue(im[i][j] >= 0.);
+                assertTrue(im[i][j] <= 1.);
+            }
+        }
+
+        double[][] im2 = new double[][]{{3,9,12}};
+        Standardization.minMaxNormalizeImage(im2, minMax[0], minMax[1]);
+
+        for (int i = 0; i < im[0].length; ++i) {
+            assertTrue(Math.abs(im[0][i] - im2[0][i]) < 1E-7);
+        }
+
+    }
     
 }
