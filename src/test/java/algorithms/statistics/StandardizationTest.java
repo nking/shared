@@ -377,5 +377,25 @@ public class StandardizationTest extends TestCase {
             */
         }
     }
+
+    public void testUnitStandardNormalizeImage() {
+
+        double[][] im = new double[][]{{3,9,12}};
+        double[] meanStd = Standardization.unitStandardNormalizeImage(im);
+        assertTrue(Math.abs(meanStd[0] - 8) < 1E-7);
+        assertTrue(Math.abs(meanStd[1] - 4.58257569) < 1E-7);
+
+        double[] res = MiscMath0.getAvgAndStDev(im[0]);
+        assertTrue(Math.abs(res[0]) < 1E-7);
+        assertTrue(Math.abs(res[1] - 1.) < 1E-7);
+
+        double[][] im2 = new double[][]{{3,9,12}};
+        Standardization.applyMeanAndStdToImage(im2, meanStd[0], meanStd[1]);
+
+        for (int i = 0; i < im[0].length; ++i) {
+            assertTrue(Math.abs(im[0][i] - im2[0][i]) < 1E-7);
+        }
+
+    }
     
 }

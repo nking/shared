@@ -122,6 +122,58 @@ public class Standardization {
         
         return out;
     }
+
+    /**
+     * unit standard normlize data and return the mean and standard deviation of the zero-centered data.
+     * @param im
+     * @return the mean and standard deviation of zero-centered data
+     */
+    public static double[] unitStandardNormalizeImage(double[][] im) {
+        double mean = 0;
+        int np = 0;
+        for (double[] rows : im) {
+            for (double val : rows) {
+                mean += val;
+                ++np;
+            }
+        }
+        mean /= (double)(np);
+
+        double std = 0;
+        int col;
+        for (int row = 0; row < im.length; ++row) {
+            for (col = 0; col < im[row].length; ++col) {
+                im[row][col] -= mean;
+                // stdev of 0 centered mean.  diff from 0:
+                std += (im[row][col] * im[row][col]);
+            }
+        }
+        // remove 1 degree of freedom for having to calculate the mean:
+        std = Math.sqrt(std/(np - 1.));
+
+        for (int row = 0; row < im.length; ++row) {
+            for (col = 0; col < im[row].length; ++col) {
+                im[row][col] /= std;
+            }
+        }
+        return new double[]{mean, std};
+    }
+
+    /**
+     * subtract mean from data then divide by std.  used to perform same normalization on different images.
+     * @param im
+     * @param the mean to subtract from data
+     * @param the standard deviation to divide data by
+     */
+    public static void applyMeanAndStdToImage(double[][] im, double mean, double std) {
+        int col;
+        for (int row = 0; row < im.length; ++row) {
+            for (col = 0; col < im[row].length; ++col) {
+                im[row][col] -= mean;
+                im[row][col] /= std;
+            }
+        }
+    }
     
      /**
      * performs "standard unit normalization" on the points, that is,
