@@ -565,9 +565,18 @@ public class MatrixUtilTest extends TestCase {
         Matrix a = aT.transpose();
         det = MatrixUtil.determinant(a);
         assertTrue(Math.abs(148. - det) < 1e-7);
+
+        float[][] m2 = new float[3][3];
+        m2[0] = new float[]{1, -5, 2};
+        m2[1] = new float[]{7, 3, 4};
+        m2[2] = new float[]{2, 1, 5};
+
+        float det2 = MatrixUtil.determinant(m2);
+
+        assertTrue(Math.abs(148. - det2) < 1e-7);
     }
    
-    public static void testPowerMethod() {
+    public void testPowerMethod() {
         
         // unit test from Strang "Linear Algebra"
         double[][] a = new double[2][2];
@@ -594,7 +603,7 @@ public class MatrixUtilTest extends TestCase {
         assertTrue(diff < tol);
     }
     
-    public static void testPowerMethod2() {
+    public void testPowerMethod2() {
         
         // unit test from Strang "Linear Algebra"
         double[][] a = new double[2][2];
@@ -618,7 +627,7 @@ public class MatrixUtilTest extends TestCase {
         
     }
     
-    public static void testSquareRoot() throws NotConvergedException {
+    public void testSquareRoot() throws NotConvergedException {
         
         double[][] a = new double[2][2];
         a[0] = new double[]{33, 24};
@@ -630,7 +639,7 @@ public class MatrixUtilTest extends TestCase {
         assertEquals(2, jj.length);
     }
     
-    public static void testCopySubmatrix() {
+    public void testCopySubmatrix() {
         
         double eps = 1e-17;
         
@@ -751,7 +760,7 @@ public class MatrixUtilTest extends TestCase {
      
      }
      
-     public static void testAMinusVectorTimesIdentity() {
+     public void testAMinusVectorTimesIdentity() {
          
          double[][] a = new double[3][3];
          a[0] = new double[]{3, 2, 1};
@@ -774,7 +783,7 @@ public class MatrixUtilTest extends TestCase {
          assertTrue(Arrays.equals(expected[2], result[2]));
      }
      
-     public static void testTrace() {
+     public void testTrace() {
          
          double[][] a = new double[3][3];
          a[0] = new double[]{3, 2, 1};
@@ -794,8 +803,23 @@ public class MatrixUtilTest extends TestCase {
          assertTrue(Math.abs(expectedA - resultA) < tol);
          assertTrue(Math.abs(expectedV - resultV) < tol);
      }
-     
-    
+
+    public void testTrace_foat() {
+
+        float[][] a = new float[3][3];
+        a[0] = new float[]{3, 2, 1};
+        a[1] = new float[]{0, 0, 0};
+        a[2] = new float[]{3, 2, 1};
+
+        float expectedA = 4;
+
+        float tol = 0.01f;
+
+        float resultA = MatrixUtil.trace(a);
+
+        assertTrue(Math.abs(expectedA - resultA) < tol);
+    }
+
      public void testProjection() throws NotConvergedException {
          // from Chap 4 of "Introduction to Linear Algebra" by String
          double[][] a = new double[3][2];
@@ -1941,7 +1965,7 @@ public class MatrixUtilTest extends TestCase {
 
     }
 
-    public static void testMultiplyDiagonals() {
+    public void testMultiplyDiagonals() {
 
         double[][] a = new double[3][2];
         a[0] = new double[]{1, 2};
@@ -2049,5 +2073,22 @@ public class MatrixUtilTest extends TestCase {
 
         // need an ill-conditioned matrix to test
 
+    }
+
+    public void testEigenvalues2X2() {
+        double[][] a = new double[][]{
+                {4, 3}, {-2, -3}
+        };
+        double[] eig = MatrixUtil.eigenvalues2X2(a);
+        assertTrue(Math.abs(eig[0] - 3) < 1E-7);
+        assertTrue(Math.abs(eig[1] - -2) < 1E-7);
+    }
+    public void testEigenvalues2X2_float() {
+        float[][] a = new float[][]{
+                {4, 3}, {-2, -3}
+        };
+        float[] eig = MatrixUtil.eigenvalues2X2(a);
+        assertTrue(Math.abs(eig[0] - 3) < 1E-7);
+        assertTrue(Math.abs(eig[1] - -2) < 1E-7);
     }
 }

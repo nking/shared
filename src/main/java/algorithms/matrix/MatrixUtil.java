@@ -2804,8 +2804,63 @@ public class MatrixUtil {
         }
     }
 
+
+    /**
+     * using cofactors and minors of the matrix, return the determinant.
+     * in practice one can use any row as the primary set of cofactors or
+     * any column.  this method may be optimized in the future, but for now,
+     * uses the first column as the cofactors.
+     *
+     * e.g.    | 1  -5  2 |         | 3 4 |         | 7 4 |         | 7 3 |
+     *         | 7   3  4 |  =  1 * | 1 5 |  +  5 * | 2 5 |  +  2 * | 2 1 |  = 11 + 135 + 2 = 148
+     *         | 2   1  5 |
+     * <pre>
+     * Note that det(a) = 0 shows that matrix a is a singular matrix and is not
+     * invertible.
+     * </pre>
+     @param a a square matrix
+     @return determinant of a
+     */
+    public static float determinant(float[][] a) {
+
+        if (a == null || a.length == 0) {
+            throw new IllegalArgumentException("matrix a cannot be null or empty");
+        }
+        if (a.length != a[0].length) {
+            throw new IllegalArgumentException("matrix a must be square");
+        }
+        if (a.length == 1) {
+            return roundToMachineTol(a[0][0]);
+        } else if (a.length == 2) {
+            float s = ( a[0][0]*a[1][1] ) - ( a[0][1]*a[1][0] );
+            return roundToMachineTol(s);
+        } else {
+
+            float[][] n = new float[a.length - 1][a.length - 1];
+
+            float s = 0.0f;
+            // use 1st row as cofactors and minors
+            for (int i = 0; i < a.length; i++) {
+
+                copyExcept(a, i, 0, n);
+
+                float tmp = a[i][0] * determinant(n);
+
+                if ((i & 1) == 0) {
+                    s +=  tmp;
+                } else {
+                    s -=  tmp;
+                }
+            }
+            return roundToMachineTol(s);
+        }
+    }
+
     private static double roundToMachineTol(double a) {
         return Math.round(a * 1E11)/1E11;
+    }
+    private static float roundToMachineTol(float a) {
+        return (float)(Math.round(a * 1E11)/1E11);
     }
 
     /**
@@ -2839,6 +2894,76 @@ public class MatrixUtil {
                 return d;
             }
         }
+    }
+
+
+    /**
+     * create copy of matrix m except row and col and store it in out matrix
+     @param m matrix
+     @param col column
+     @param row row
+     @return extracted copy of matrix minus row and col
+     */
+    private static void copyExcept(float[][] m, int col, int row, float[][] out) {
+
+        if (out.length != m.length - 1 || out[0].length != m.length - 1) {
+            throw new IllegalArgumentException("out must be [m.length-1 X m.length-1]");
+        }
+
+        int nr = 0;
+        int nc = 0;
+
+        for (int mCol = 0; mCol < m.length; mCol++) {
+            if (mCol == col) {
+                continue;
+            }
+
+            nr = 0;
+            for (int mRow = 0; mRow < m[0].length; mRow++) {
+                if (mRow == row) {
+                    continue;
+                }
+
+                out[nc][nr] = m[mCol][mRow];
+                nr++;
+            }
+            nc++;
+        }
+    }
+
+    /**
+     * create copy of matrix m except row and col
+     @param m matrix
+     @param col column
+     @param row row
+     @param out extracted copy of matrix minus row and col
+     */
+    private static void copyExcept(double[][] m, int col, int row, double[][] out) {
+
+        if (out.length != m.length - 1 || out[0].length != m.length - 1) {
+            throw new IllegalArgumentException("out must be [m.length-1 X m.length-1]");
+        }
+
+        int nr = 0;
+        int nc = 0;
+
+        for (int mCol = 0; mCol < m.length; mCol++) {
+            if (mCol == col) {
+                continue;
+            }
+
+            nr = 0;
+            for (int mRow = 0; mRow < m[0].length; mRow++) {
+                if (mRow == row) {
+                    continue;
+                }
+
+                out[nc][nr] = m[mCol][mRow];
+                nr++;
+            }
+            nc++;
+        }
+
     }
 
     /**
@@ -4523,6 +4648,29 @@ public class MatrixUtil {
         return sum;
     }
 
+
+    /**
+     * calculate the sum of the diagonal elements of a.
+     * Note that the trace of matrix A equals the sum of its eigenvalues.
+     * Note: the trace of A is equal to the sum of its eigenvalues.
+     @param a a square matrix.
+     @return the sum of the diagonal elements of a
+     */
+    public static float trace(float[][] a) {
+        int n = a.length;
+        if (n != a[0].length) {
+            throw new IllegalArgumentException("a must be a square matrix");
+        }
+
+        float sum = 0f;
+
+        int i;
+        for (i = 0; i < n; ++i) {
+            sum += a[i][i];
+        }
+
+        return sum;
+    }
     /**
      * calculate the sum of the diagonal elements of v*I (i.e. sum of all elements of v)
      @param v a vector to be treated as diagonal elements of an identity matrix.
@@ -5704,4 +5852,45 @@ public class MatrixUtil {
         return rank(SVD.factorize(new DenseMatrix(a)));
     }
 
+    /**
+     * calculate for matrix A, the 2 eigenvalues.
+     * The method uses the determinant, trace and quadratic formula.
+     <pre>
+     https://en.wikipedia.org/wiki/Eigenvalue_algorithm
+     </pre>
+     * @param a
+     * @return
+     */
+    public static double[] eigenvalues2X2(double[][] a) {
+        if (a.length != 2 || a[0].length != 2) {
+            throw new IllegalArgumentException("a must be [2 X 2] in size");
+        }
+        double trA = trace(a);
+        double detA = determinant(a);
+        double gap = Math.sqrt(trA*trA - 4*detA);
+        double eig1 = (trA + gap)/2;
+        double eig2 = (trA - gap)/2.;
+        return new double[]{eig1, eig2};
+    }
+
+    /**
+     * calculate for matrix A, the 2 eigenvalues.
+     * The method uses the determinant, trace and quadratic formula.
+     <pre>
+     https://en.wikipedia.org/wiki/Eigenvalue_algorithm
+     </pre>
+     * @param a
+     * @return
+     */
+    public static float[] eigenvalues2X2(float[][] a) {
+        if (a.length != 2 || a[0].length != 2) {
+            throw new IllegalArgumentException("a must be [2 X 2] in size");
+        }
+        float trA = trace(a);
+        float detA = determinant(a);
+        float gap = (float) Math.sqrt(trA*trA - 4*detA);
+        float eig1 = (trA + gap)/2;
+        float eig2 = (trA - gap)/2.f;
+        return new float[]{eig1, eig2};
+    }
 }

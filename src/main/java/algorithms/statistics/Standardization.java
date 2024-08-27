@@ -186,7 +186,7 @@ public class Standardization {
 
     /**
      * apply min max normalization to image, given the min and max.  useful if need to
-     * apply same normalization to different dataset
+     * apply same normalization to different dataset.  note that if data is < min, it is set to 0.
      * @param im
      * @return the mean and standard deviation of zero-centered data
      */
@@ -195,7 +195,11 @@ public class Standardization {
         int col;
         for (int row = 0; row < im.length; ++row) {
             for (col = 0; col < im[row].length; ++col) {
-                im[row][col] = (im[row][col] - min)/range;
+                if (im[row][col] < min) {
+                    im[row][col] = 0;
+                } else {
+                    im[row][col] = (im[row][col] - min) / range;
+                }
             }
         }
     }
