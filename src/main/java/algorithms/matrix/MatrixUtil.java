@@ -3041,6 +3041,28 @@ public class MatrixUtil {
        Note that the skew symmetric matrix equals its own negative, i.e. A^T = -A.
        </pre>
      * the operator is also called "hat operator".
+     Its opposite is the anti-symmetric matrix and is equal to -1 * skewSymmetric.
+     <pre>
+     some of its properties:
+        let [u]_x be the skew symmetric of u and [v]_x be the skew-symmetric of v.
+     where u and v are column vectors.
+
+     -[u]_x * v = [v]_x * u
+
+     -[u]_x * u = 0
+
+     [u]_x = [ -[u]_x ]^T
+
+     -[u]_x * -[v]_x = (u dot v) * I + v * u^T where '*' is matrix multiplication as usual.
+     [u]_x * [v]_x = (u dot v) * I + v * u^T
+
+     [u]_x * [v]_x - [v]_x * [u]_x = v * u^T - u*v^T = [u cross v]]_x
+
+     u * v^T * -[w]_x + -[w]_x * v * u^T = -[u cross (v cross w)]_x
+           where the later, triple cross product is used in making the Fundamental Matrix
+           of photogrammetry, for example.
+
+     </pre>
      @param v direction vector
      @param out output skew-symmetric matrix for v
      */

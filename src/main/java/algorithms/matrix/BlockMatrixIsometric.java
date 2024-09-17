@@ -452,7 +452,7 @@ public class BlockMatrixIsometric {
      @return
      */
     public BlockMatrixIsometric copy() {
-        BlockMatrixIsometric c = new BlockMatrixIsometric(a, bSize0, bSize1);
+        BlockMatrixIsometric c = new BlockMatrixIsometric(MatrixUtil.copy(a), bSize0, bSize1);
         c.set(this);
         return c;
     }
