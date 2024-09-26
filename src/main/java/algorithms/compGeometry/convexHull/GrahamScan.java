@@ -284,10 +284,10 @@ public class GrahamScan {
             throw new GrahamScanTooFewPointsException("polar angle sorting has reduced the number of points to less than 3");
         }
 
-        Stack<Integer> s = new Stack<Integer>();
-        s.push(p0Index);
-        s.push(1);
-        s.push(2);
+        Stack<Integer> sIdxs = new Stack<Integer>();
+        sIdxs.push(p0Index);
+        sIdxs.push(1);
+        sIdxs.push(2);
 
         int topS;
         int nextToTopS;
@@ -299,37 +299,35 @@ public class GrahamScan {
         //    push(pi, S)
         for (int i = 3; i < nPointsUsable; i++) {
 
-            topS = s.peek();
-            nextToTopS = s.peekNext();
-            si = i;
+            while (true) {
 
-            double direction = ((x[topS] - x[nextToTopS])*(y[si] - y[nextToTopS])) - ((y[topS]
-                    - y[nextToTopS])*(x[si] - x[nextToTopS]));
+                topS = sIdxs.peek();
+                nextToTopS = sIdxs.peekNext();
+                si = i;
 
-            while (direction <= 0) {
+                double direction = ((x[topS] - x[nextToTopS]) * (y[si] - y[nextToTopS])) - ((y[topS]
+                        - y[nextToTopS]) * (x[si] - x[nextToTopS]));
 
-                s.pop();
-
-                if (s.size() < 2) {
+                if (direction > 0) {
                     break;
                 }
 
-                topS = s.peek();
-                nextToTopS = s.peekNext();
-                si = i;
-                direction = ((x[topS] - x[nextToTopS])*(y[si] - y[nextToTopS])) - ((y[topS]
-                        - y[nextToTopS])*(x[si] - x[nextToTopS]));
+                sIdxs.pop();
+
+                if (sIdxs.size() < 2) {
+                    break;
+                }
             }
 
-            s.push(i);
+            sIdxs.push(i);
         }
 
-        int n = s.size() + 1;
+        int n = sIdxs.size() + 1;
 
         double[] xHull = new double[n];
         double[] yHull = new double[n];
         for (int i = 0; i < (n - 1); ++i) {
-            si = s.pop();
+            si = sIdxs.pop();
             xHull[i] = x[si];
             yHull[i] = y[si];
         }
@@ -427,10 +425,10 @@ public class GrahamScan {
             throw new GrahamScanTooFewPointsException("polar angle sorting has reduced the number of points to less than 3");
         }
 
-        Stack<Integer> s = new Stack<Integer>();
-        s.push(p0Index);
-        s.push(1);
-        s.push(2);
+        Stack<Integer> sIdxs = new Stack<Integer>();
+        sIdxs.push(p0Index);
+        sIdxs.push(1);
+        sIdxs.push(2);
 
         int topS;
         int nextToTopS;
@@ -442,41 +440,38 @@ public class GrahamScan {
         //    push(pi, S)
         for (int i = 3; i < nPointsUsable; i++) {
 
-            topS = s.peek();
-            nextToTopS = s.peekNext();
-            si = i;
+            while (true) {
 
-            // direction is the cross-product of
-            //   P[topS], P[si]
-            //      corrected to a center P[nextToTopS]
-            // the cross product is positive when P1 is CW from P2 w.r.t. the center
-            double direction = ((x[topS] - x[nextToTopS])*(y[si] - y[nextToTopS])) - ((y[topS]
-                    - y[nextToTopS])*(x[si] - x[nextToTopS]));
+                topS = sIdxs.peek();
+                nextToTopS = sIdxs.peekNext();
+                si = i;
 
-            while (direction <= 0) {
+                // direction is the cross-product of
+                //   P[topS], P[si]
+                //      corrected to a center P[nextToTopS]
+                // the cross product is positive when P1 is CW from P2 w.r.t. the center
+                double direction = ((x[topS] - x[nextToTopS])*(y[si] - y[nextToTopS])) - ((y[topS]
+                        - y[nextToTopS])*(x[si] - x[nextToTopS]));
 
-                s.pop();
-
-                if (s.size() < 2) {
+                if (direction > 0) {
                     break;
                 }
+                sIdxs.pop();
 
-                topS = s.peek();
-                nextToTopS = s.peekNext();
-                si = i;
-                direction = ((x[topS] - x[nextToTopS])*(y[si] - y[nextToTopS])) - ((y[topS]
-                        - y[nextToTopS])*(x[si] - x[nextToTopS]));
+                if (sIdxs.size() < 2) {
+                    break;
+                }
             }
 
-            s.push(i);
+            sIdxs.push(i);
         }
 
-        int n = s.size() + 1;
+        int n = sIdxs.size() + 1;
 
         long[] xHull = new long[n];
         long[] yHull = new long[n];
         for (int i = 0; i < (n - 1); ++i) {
-            si = s.pop();
+            si = sIdxs.pop();
             xHull[i] = x[si];
             yHull[i] = y[si];
         }

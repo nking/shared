@@ -120,9 +120,16 @@ public class LongestIncreasingSubsequenceTest extends TestCase {
         int[] a;
         List<Integer> ans;
 
+        /*
+        3   7   9
+        2   6   9
+        1
+         */
+
         a = new int[]{3, 2, 1, 7, 6, 9, 8};
         ans = LongestIncreasingSubsequence.findAnyStrictlyIncreasing(a);
 
+        // expected are indexes not values
         Set<int[]> expected = new HashSet<>();
         expected.add(new int[]{0,3,5});
         expected.add(new int[]{0,3,6});
@@ -136,6 +143,55 @@ public class LongestIncreasingSubsequenceTest extends TestCase {
         expected.add(new int[]{2,3,6});
         expected.add(new int[]{2,4,5});
         expected.add(new int[]{2,4,6});
+
+        //int[] ansI = ans.stream().collect(
+        //       Collectors.toList()).stream().mapToInt(Integer::intValue).toArray();
+
+        int[] ansI = ans.stream().mapToInt(Integer::intValue).toArray();
+
+        int[] m = null;
+        for (int[] s : expected) {
+            if (Arrays.equals(ansI, s)) {
+                m = s;
+                break;
+            }
+        }
+        assertNotNull(m);
+        assertTrue(expected.remove(m));
+
+        int[] ans2 = LongestIncreasingSubsequence.findSizeAndNumberStrictlyIncreasing(a);
+        assertEquals(ans2[0], 3);
+        assertEquals(ans2[1], 12);
+
+    }
+
+    public void testFindAny2() {
+        int[] a;
+        List<Integer> ans;
+
+        /*
+        3   7   9
+        2   6   9
+        1
+         */
+
+        a = new int[]{3, 2, 7, 1, 6, 9, 8};
+        ans = LongestIncreasingSubsequence.findAnyStrictlyIncreasing(a);
+
+        // expected are indexes not values
+        Set<int[]> expected = new HashSet<>();
+        expected.add(new int[]{0,2,5});
+        expected.add(new int[]{0,2,6});
+        expected.add(new int[]{0,4,5});
+        expected.add(new int[]{0,4,6});
+        expected.add(new int[]{1,2,5});
+        expected.add(new int[]{1,2,6});
+        expected.add(new int[]{1,4,5});
+        expected.add(new int[]{1,4,6});
+        expected.add(new int[]{3,2,5});
+        expected.add(new int[]{3,2,6});
+        expected.add(new int[]{3,4,5});
+        expected.add(new int[]{3,4,6});
 
         //int[] ansI = ans.stream().collect(
         //       Collectors.toList()).stream().mapToInt(Integer::intValue).toArray();

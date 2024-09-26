@@ -16,6 +16,16 @@ import java.util.Arrays;
  tree edges connect a parent with its child in the DFS tree.
  back edges connect a (non-parent) ancestor with a (non-child) descendant.
  2-Edge Connected: A graph is 2-edge connected if it contains no bridges
+
+          (  1  )     1 to 2 is a tree edge
+          /   /\\     2 to 3 is a tree edge
+        \/      \     3 to 1 is a back edge (1 is an ancestor of 3 but not its parent)
+      ( 2 )      \
+          \      |
+            \    |
+            \/  |
+             ( 3 )
+
  </pre>
 
  * An edge (u,v) is a bridge if and only if it is a tree edge and (assuming 
@@ -43,10 +53,6 @@ import java.util.Arrays;
 * and so we will invoke DFSvisit(v). While we are doing this, we will keep 
 * track of the back edges in the subtree rooted at v.
  *
- * An edge (u,v) is a bridge if and only if it is a tree edge and (assuming 
- * that u is the parent of v) there is no back edge within v’s subtree that 
- * leads to a vertex whose discovery time is strictly smaller than v’s 
- * discovery time.
  */
 public class FindAllBridgesDFS {
 

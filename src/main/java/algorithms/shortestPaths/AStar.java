@@ -70,6 +70,13 @@ import java.util.logging.Logger;
      - If h(n) is very high relative to g(n), then only h(n) plays a role, 
          and A* turns into Greedy Best-First-Search.
      </pre>
+
+ Not that if your intention is motion planning and the system is imperfect in its motion
+ results (e.g. a move to a cell has error and another cell is reached instead)
+ then one should consider a Markov Decision Process (MDP) model if the state of the
+ world is known perfectly, else a Partially Observable Markov Decision Process (POMDP) model
+ if the state of the world is not perfectly known.
+
  * @author nichole
  */
 public class AStar {

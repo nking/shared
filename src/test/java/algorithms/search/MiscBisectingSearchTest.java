@@ -250,6 +250,7 @@ public class MiscBisectingSearchTest extends TestCase {
         assertEquals(expAns, ans);
         ans = MiscBisectingSearch.ceiling(a, srch);
         assertEquals(expAns, ans);
+        assert(ans == a.length);
 
         srch = 0;
         expAns = 0;

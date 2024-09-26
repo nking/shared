@@ -172,7 +172,7 @@ public class StringEditDistance {
                         + "=>[" + (i-1) + " " + (j-1) + "]"
                 );*/
                 if (stringEdit) {
-                    d[i][j] = minimum(d[i - 1][j - 1] + c, d[i - 1][j] + cDel, d[i][j - 1] + cIns);
+                    d[i][j] = Math.min(Math.min(d[i - 1][j - 1] + c, d[i - 1][j] + cDel), d[i][j - 1] + cIns);
                 } else {
                     d[i][j] = Math.max(Math.max(d[i - 1][j - 1] + c, d[i - 1][j] + cDel), d[i][j - 1] + cIns);
                 }
@@ -196,9 +196,9 @@ public class StringEditDistance {
             } else if (d[i][j] == d[i][j-1] + cIns) {
                 j--;
             } else {
-                outIndexes.add(i-1, j-1);// subtracting 1 for 0-based indexes
                 i--;
                 j--;
+                outIndexes.add(i, j);
             }
         }
         //System.out.printf("m=%d, n=%d, d=\n%s\n", m, n, FormatArray.toString(d, "%d"));

@@ -1756,7 +1756,7 @@ public class MiscSorter {
     /**
      * sort the given points in place by polar angle in counterclockwise order
      * around the first point x[0], y[0].
-     * NOTE that the angles are rounded to degree integers for the "reduce to
+     * NOTE that the angles are <bf>rounded to degree integers</bf> for the "reduce to
      * unique" step.
      * The runtime complexity is O(n) where n = x.length.
      * @param x array of x points

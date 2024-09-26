@@ -155,14 +155,12 @@ public class PolarAngleMergeSort {
 
         int n1 = x1.length;
         int i;
-        double theta;
         for (i = 0; i < n1; i++) {
             // these are in radians
-            theta = Math.atan2((y1[i] - y0), (x1[i] - x0));
-            if (theta < 0) {
-                theta += 2. * Math.PI;
+            p1[i] = Math.atan2((y1[i] - y0), (x1[i] - x0));
+            if (p1[i] < 0) {
+                p1[i] += 2. * Math.PI;
             }
-            p1[i] = theta;
             // to convert to degrees: multiply by (180/math.pi)
         }
 

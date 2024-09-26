@@ -46,14 +46,14 @@ public class TransitiveClosure {
      @return 
      */
     public boolean[][] calc(boolean[][] w) {
+
+        if (w.length != w[0].length) {
+            throw new IllegalArgumentException("w must be a square matrix");
+        }
                 
         int n = w.length;
         
         boolean[][] t = new boolean[n][n];
-        for (int i = 0; i < n; i++) {
-            t[i] = Arrays.copyOf(w[i], w[i].length);
-        }
-        
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 if (i == j || w[i][j]) {

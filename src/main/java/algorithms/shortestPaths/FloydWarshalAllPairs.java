@@ -67,11 +67,10 @@ public class FloydWarshalAllPairs {
                 
         int n = w.length;
         
-        dist = new int[n][n];
+        dist = new int[n][];
         prev = new int[n][n];
         for (int i = 0; i < n; i++) {
             dist[i] = Arrays.copyOf(w[i], w[i].length);
-            prev[i] = new int[n];
         }
         
         /*
