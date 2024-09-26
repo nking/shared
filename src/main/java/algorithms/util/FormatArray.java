@@ -3,6 +3,8 @@ package algorithms.util;
 import algorithms.misc.Complex;
 import no.uib.cipr.matrix.DenseMatrix;
 
+import java.util.Collection;
+
 /**
  *
  * @author nichole
@@ -159,6 +161,22 @@ public class FormatArray {
             if (i < a.length - 1) {
                 sb.append(",");
             }
+        }
+        return sb.toString();
+    }
+
+    public static String toString(Collection<Integer> a, String decimalFormat) {
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+        for (int aI : a) {
+            if (i > 0) {
+                sb.append(" ");
+            }
+            sb.append(String.format(decimalFormat, aI));
+            if (i < (a.size() - 1)) {
+                sb.append(",");
+            }
+            ++i;
         }
         return sb.toString();
     }

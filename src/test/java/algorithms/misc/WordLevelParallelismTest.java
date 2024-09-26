@@ -18,7 +18,7 @@ public class WordLevelParallelismTest extends TestCase {
     static {
         rand = Misc0.getSecureRandom();
         long seed = System.nanoTime();
-        seed = 377949482646163L;
+        //seed = 377949482646163L;
         System.out.println("SEED=" + seed);
         rand.setSeed(seed);
     }

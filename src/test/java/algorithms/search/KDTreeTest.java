@@ -213,14 +213,14 @@ public class KDTreeTest extends TestCase {
     	      {7, 9}
     	      {9, 6}
 
- :LEFT 4:LEFT 6:LEFT 30(3,6)
- :LEFT 4:LEFT 6:RIGHT 30(4,0)
- :LEFT 4:RIGHT 6:LEFT 20(2,9)
- :LEFT 4:RIGHT 6:RIGHT 20(4,9)
- :RIGHT 4:LEFT 5:LEFT 50(5,5)
- :RIGHT 4:LEFT 5:RIGHT 50(6,1)
- :RIGHT 4:RIGHT 5:LEFT 70(7,9)
- :RIGHT 4:RIGHT 5:RIGHT 70(9,6)
+		 :LEFT 4:LEFT 6:LEFT 30(3,6)
+		 :LEFT 4:LEFT 6:RIGHT 30(4,0)
+		 :LEFT 4:RIGHT 6:LEFT 20(2,9)
+		 :LEFT 4:RIGHT 6:RIGHT 20(4,9)
+		 :RIGHT 4:LEFT 5:LEFT 50(5,5)
+		 :RIGHT 4:LEFT 5:RIGHT 50(6,1)
+		 :RIGHT 4:RIGHT 5:LEFT 70(7,9)
+		 :RIGHT 4:RIGHT 5:RIGHT 70(9,6)
     	*/
     	KDTree kdtree = new KDTree(x, y);
     	kdtree.printTree();

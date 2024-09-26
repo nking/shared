@@ -2208,4 +2208,55 @@ public class MiscMath0 {
         }
         return true;
     }
+
+    /**
+     * convert multiple indexes of a the given dimensions to a single index.
+     * e.g. given indexes = 1,4 as x,y and dimensions=10,11 as width,height
+     * returns indexes[1]*dimensions[0] + indexes[0] = 4*10 + 1 = 41
+     *
+     * @param indexes
+     * @param dimensionWidths
+     * @return a single indexes composed of a decomposable result of multiples and
+     * additions of indexes and dimensions.
+     */
+    public static int multiDimensionToSingleIndex(int[] indexes, int[] dimensionWidths) {
+        if (indexes.length != dimensionWidths.length) {
+            throw new IllegalArgumentException("indexes and dimensionWidths must be the same");
+        }
+        int idx = 0;
+        int factor = 1;
+        for (int i = 0; i < indexes.length; ++i) {
+            idx += (indexes[i] * factor);
+            factor *= dimensionWidths[i];
+        }
+        return idx;
+    }
+
+    /**
+     * given an index created with multiDimensionToSingleIndex(...), decompose it into the individual indexes for each
+     * dimension.
+     * e.g., given idx=41, and dimensions=10,11 as width,height,
+     * returns outIndexes[0] = idx % dimensionWidths[0]=1 and outIndexes[1] = idx / dimensionWidths[0]=4
+     * @param index
+     * @param dimensionWidths
+     * @param outIndexes
+     */
+    public static void singleIndexToMultiDimension(int index, int[] dimensionWidths,
+                                                   int[] outIndexes) {
+        if (outIndexes.length != dimensionWidths.length) {
+            throw new IllegalArgumentException("outIndexes and dimensionWidths must be the same");
+        }
+        int denom = 1;
+        for (int i = 0; i < dimensionWidths.length-1; ++i) {
+            denom *= dimensionWidths[i];
+        }
+        int idx = index;
+        for (int i = outIndexes.length - 1; i >= 1; --i) {
+            outIndexes[i] = idx / denom;
+            idx -= (outIndexes[i] * denom);
+            denom /= dimensionWidths[i - 1];
+        }
+        outIndexes[0] = idx % dimensionWidths[0];
+    }
+
 }

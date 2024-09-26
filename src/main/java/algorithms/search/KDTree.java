@@ -188,13 +188,8 @@ public class KDTree {
 		int n = (stopSortRangeExclusive - startSortRange);
 		int index = startSortRange + (n >> 1);
 		int xMedian = x[index];
-		while ((index+1) < stopSortRangeExclusive) {
-			if (x[index + 1] == xMedian) {
-				index++;
-			} else {
-				break;
-			}
-		}
+		// find last index with same value as xMedian in range
+		int index0 = MiscBisectingSearch.ceiling(x, xMedian, index, stopSortRangeExclusive-1);
 		return index;
 	}
 	
@@ -216,13 +211,8 @@ public class KDTree {
 		int n = (stopSortRangeExclusive - startSortRange);
 		int index = startSortRange + (n >> 1); // rounds towards zero
 		int yMedian = y[index];
-		while ((index+1) < stopSortRangeExclusive) {
-			if (y[index + 1] == yMedian) {
-				index++;
-			} else {
-				break;
-			}
-		}
+		// find last index with same value as xMedian in range
+		int index0 = MiscBisectingSearch.ceiling(y, yMedian, index, stopSortRangeExclusive-1);
 		return index;
 	}
         		
@@ -258,9 +248,11 @@ public class KDTree {
 		
 	    // if depth of tree is even, partition the points by x, else y
 		if (depth % 2 == 0) {
+			// sort by x and return last index within range that has same value as median
 			medianIndex = partitionByX(x, y, startSortRange, stopSortRangeExclusive);
 			median = x[medianIndex];
 		} else {
+			//sort by y and return last index within range that has same value as median
 			medianIndex = partitionByY(x, y, startSortRange, stopSortRangeExclusive);
 			median = y[medianIndex];
 		}

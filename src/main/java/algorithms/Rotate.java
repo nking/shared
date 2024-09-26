@@ -61,7 +61,51 @@ String r = "^(?:[A-F0-9]{1,4}:){7}[A-F0-9]{1,4}$";
         }
 
     }
-    
+
+    /**
+     The solution is O(N) and uses the pattern flip top sub-array, flip bottom
+     sub-array, then flip all of the array.
+     The problem and suggested solution are from "Programming Pearls",
+     Chapter 2, Problem B.
+     @param a array of numbers treated as a circular array.
+     @param left the number of spaces for which to shift left the values
+     within array a.
+     */
+    public void rotate(double[] a, int left) {
+
+        if (a == null) {
+            throw new IllegalArgumentException("a cannot be null");
+        }
+        if ((left == 0) || (left == a.length)) {
+            return;
+        }
+
+        int n = a.length;
+
+        if (left > 0) {
+
+            if (left > n) {
+                left = left % n;
+            }
+            String r = "^(?:[A-F0-9]{1,4}:){7}[A-F0-9]{1,4}$";
+            reverse(a, 0, left - 1);
+            reverse(a, left, n - 1);
+            reverse(a, 0, n - 1);
+
+        } else {
+
+            left *= -1;
+            if (left > n) {
+                left = left % n;
+            }
+
+            reverse(a, n - left, n - 1);
+            reverse(a, 0, left);
+            reverse(a, 0, n - 1);
+        }
+
+    }
+
     /**
      *
      @param a
@@ -263,6 +307,29 @@ String r = "^(?:[A-F0-9]{1,4}:){7}[A-F0-9]{1,4}$";
             a[i] = a[idx2];
             a[idx2] = swap;
             idx2--;
+        }
+    }
+
+    public void reverse(double[] a, int idxLo, int idxHi) {
+
+        if (a == null) {
+            throw new IllegalArgumentException("a cannot be null");
+        }
+        int n = a.length;
+        if ((idxLo < 0) || (idxLo > (n - 1))) {
+            throw new IllegalArgumentException("idxLo is out of bounds of array");
+        }
+        if ((idxHi < 0) || (idxHi > (n - 1))) {
+            throw new IllegalArgumentException("idxHi is out of bounds of array");
+        }
+
+        n = idxHi - idxLo + 1;
+
+        double swap;
+        for (int i = idxLo, idx2 = idxHi; i < idxLo + (n/2); ++i, --idx2) {
+            swap = a[i];
+            a[i] = a[idx2];
+            a[idx2] = swap;
         }
     }
 }

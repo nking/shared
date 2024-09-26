@@ -952,4 +952,45 @@ public class MiscMath0Test extends TestCase {
         assertTrue(Math.abs(exAns - hm) < 1E-11);
     }
 
+    public void testMultiDimensionToSingleIndex() {
+        int[] indexes, dims, out;
+        int idx;
+
+        indexes = new int[]{1, 4};
+        dims = new int[]{10, 11};
+        out = new int[2];
+        idx = MiscMath0.multiDimensionToSingleIndex(indexes, dims);
+        MiscMath0.singleIndexToMultiDimension(idx, dims, out);
+        assertTrue(Arrays.equals(indexes, out));
+
+        long seed = System.nanoTime();
+        //seed = 23539291542956L;
+        System.out.println("seed=" + seed);
+        Random rand = new Random(seed);
+
+        int nTests = 100;
+        int maxDim = 5;
+        // maxVal^(maxDim) <= Integer.MAX_VALUE
+        int maxIdx = (int)Math.pow(Integer.MAX_VALUE, 1./maxDim);
+
+        int nDim, maxWidth;
+        for (int i = 0; i < nTests; ++i) {
+            nDim = 1 + rand.nextInt(maxDim - 1);
+            maxWidth = 2 + rand.nextInt(maxIdx - 2);
+
+            indexes = new int[nDim];
+            dims = new int[nDim];
+            out = new int[nDim];
+
+            for (int k = 0; k < nDim; ++k) {
+                dims[k] = 1 + rand.nextInt(maxWidth - 1);
+                indexes[k] = rand.nextInt(dims[k]);
+            }
+
+            idx = MiscMath0.multiDimensionToSingleIndex(indexes, dims);
+            MiscMath0.singleIndexToMultiDimension(idx, dims, out);
+            assertTrue(Arrays.equals(indexes, out));
+
+        }
+    }
 }
