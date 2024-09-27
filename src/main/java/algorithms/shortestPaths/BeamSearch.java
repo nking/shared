@@ -177,7 +177,9 @@ public class BeamSearch {
 
                 vNode = vNode.getNext();
             }
-            
+
+            //TODO: revisit this.  doesn't make sense to sort without a heuristic cost since BFS level (dist) is same
+            // for all points here.
             Index[] sortedArray = sorted.getArray();
             for (int z = 0; z < sorted.getNumberOfItems(); z++) {
                 queue.enqueue(sortedArray[z].idx);
