@@ -12,9 +12,8 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.IntStream;
 
 /**
  *
@@ -134,7 +133,7 @@ public class Misc {
      * given a set S = {1, . . . , n} of n activity requests, 
      * where each activity is expressed as an interval [s_i, f_i] from a given 
      * start time si to a given finish time f_i
-     * and each request is associated with a numeric weight or value v_i.
+     * and each request is associated with a numeric weight or value v_i (a.k.a. profit).
      * 
      * The objective is to find a set of non-overlapping requests such that sum 
      * of values of the scheduled requests is maximum.
@@ -159,7 +158,7 @@ public class Misc {
         int n = f.length;
         
         // ascending order sort by f
-        // runtime complexity is O(log_2(n))
+        // runtime complexity is O(n*log_2(n))
         int[] origIndexes = sort2(f, s, v);
         //System.out.printf("sorted indexes=%s\n", Arrays.toString(origIndexes));
         
@@ -210,28 +209,17 @@ public class Misc {
     }
     
     /**
-     * The objective is to compute any maximum sized subset of non-overlapping intervals.
-     * Weighted Interval Scheduling: 
-     * given a set S = {1, . . . , n} of n activity requests, 
-     * where each activity is expressed as an interval [s_i, f_i] from a given 
-     * start time si to a given finish time f_i
-     * and each request is associated with a numeric weight or value v_i.
+     * The objective is to compute any maximum sized subset of non-overlapping intervals that produce the highest
+     * sum of values (profits).
+
+     * The algorithm uses dynamic programming and has runtime complexity O(n^2).
      * 
-     * The objective is to find a set of non-overlapping requests such that sum 
-     * of values of the scheduled requests is maximum.
-     * 
-     * This code uses dynamic programming and has runtime complexity O(n^2).
-     * 
-     * The problem is from the lecture notes of David Mount for CMSC 451 
+     * The problem is adapted from the lecture notes of David Mount for CMSC 451
      * Design and Analysis of Computer Algorithms (with some corrections for pseudocode indexes).
      * https://www.cs.umd.edu/class/fall2017/cmsc451-0101/Lects/lect10-dp-intv-sched.pdf
-     * 
-     * His pseudocode is present in the version of this method called 
-     * weightedIntervalBottomUp().
-     * 
-     * runtime complexity is O(n^2)
-     * 
-     * The version here is a simpler dynamic programming solution:
+     * That lecture's solution is implemented here in method: weightedIntervalBottomUp().
+     *
+     * The algorithm solution here is a simpler dynamic program.
      * 
        <pre>
          Roughly:
@@ -271,32 +259,13 @@ public class Misc {
                         i=1.  combinations max([1,4], [1,5]) = max(w[1]+memo[4], w[1]+memo[5])
                         i=0.  combinations max([0,2], [0,4], [0,5]) = max(w[0]+memo[2], w[0]+memo[4], w[0]+memo[5])
 
-             so memo can be a 1-dimensional array
-             can also store the indexes in a map with key=integer and value=integer hashset
+           Then use dynamic programming with tabulation to store the best schedule starting at n-1
+              as scheduline including that task and its profits.
+           Then proceed to n-2 and find the max profit schedule already calcuated for higher indexes that can
+              fit after this task's finish time.
+           repeating until reach first task.
 
-        sort tasks by finish time.
-
-        for i=[n-1,0]
-          max = int.min
-          jmax = -1
-          for j=[i+1, n) { // memo[j] will already exist and hold best max sum for its part of the schedule to end
-            if (s[j] .geq. f[i]) { // task j can be appended after task i
-              if (memo[j] .gt. max) {
-                jmax = j;
-                max = memo[j];
-              }
-            }
-          }
-          set = new hashset int();
-          map.put(i, set);
-          set.add(i);
-          if (jmax==-1) {
-            memo[i] = w[i];
-          } else {
-            memo[i] = w[i] + max;
-            set.add(jmax);
-          }
-        }
+           Then the highest profit schedule in tabulation is kept.
      * </pre>
      * 
      @param s interval start times
@@ -306,76 +275,66 @@ public class Misc {
      */
     public int[] weightedIntervalBottomUp2(double[] s, double[] f, double[] v) {
         //interval [si, fi] of start and finish times
-        s = Arrays.copyOf(s, s.length);
-        f = Arrays.copyOf(f, f.length);
-        v = Arrays.copyOf(v, v.length);
 
         int n = f.length;
 
         // ascending order sort by f
         // runtime complexity is O(n*log_2(n))
-        int[] origIndexes = sort2(f, s, v);
-        //System.out.printf("sorted indexes=%s\n", Arrays.toString(origIndexes));
+        int[] sortedIdxs = IntStream.range(0,n).boxed()
+                .sorted((i, j)-> Double.compare(f[i], f[j]))
+                .mapToInt(ele -> ele)
+                .toArray();
 
-        // memo is populated from the bottom up.
-        // the index of memo is the same index of sorted arrays.
-        // memo[i=n-1] holds best solution schedulable from i to higher indexes,
-        // so one can see that memo[i=n-1] must be values[n-1].
-        // then we solve for memo[i=n-2] by iterating over j=n-2+1 to j=n-1
-        // to find the max memo[j] that is schedulable, and assign memo[i] = that
-        // max of value[j] plus values[i].
-        // continuing this way, solving sub-problems from bottom-up, reusing already
-        // solved memo of higher indexes.
-        // then the memo array is scanned for maximum solution.
-        // meanwhile, in the memo[i] solutions above, a map was made to keep track of which
-        // indexes were added, so that the schedule can be constructed from it afterwards.
+        //System.out.printf("sorted indexes=%s\n", Arrays.toString(sortedIdxs));
 
-        // index is same as sorted f.  value is max sum of schedulable values from memo[i] and higher.
-        double[] memo = new double[n];
-        TIntObjectMap<TIntSet> map = new TIntObjectHashMap<TIntSet>();
+        // use dynamic programming with tabulation
+        double[] tabProfits = new double[n];
+        Map<Integer, Set<Integer>> tabIndices = new HashMap<>();
 
         int i;
         int j;
         double max;
-        int jMax;
-        TIntSet set;
+        int jjMax;
 
         // runtime complexity is O(n^2)
-        for (i = n - 1; i >= 0; --i) {
-            set = new TIntHashSet();
-            map.put(i, set);
-            set.add(i);
-            memo[i] = v[i];
+        for (int ii = n - 1; ii >= 0; --ii) {
+            i = sortedIdxs[ii];
+            tabIndices.putIfAbsent(ii, new HashSet<>());
+            tabIndices.get(ii).add(i);
+            tabProfits[ii] = v[i];
 
             max = Double.NEGATIVE_INFINITY;
-            jMax = -1;
-            for (j = i + 1; j < n; ++j) { // memo[j] will already exist and hold best max sum for its part of the schedule to end
+            jjMax = -1;
+            for (int jj = n-1; jj > ii; --jj) { // tabProfits[jj] will already exist and hold best max sum for its part of the schedule to end
+                j = sortedIdxs[jj];
                 if (s[j] >= f[i]) { // task j can be appended after task i
-                    if (memo[j] > max) {
-                        jMax = j;
-                        max = memo[j];
+                    if (tabProfits[jj] > max) {
+                        jjMax = jj;
+                        max = tabProfits[jj];
                     }
                 }
-            }// end loop over j
+            }// end loop over jj
 
-            if (jMax > -1) {
-                memo[i] += memo[jMax];
-                set.addAll( map.get(jMax) );
+            if (jjMax > -1) {
+                tabProfits[ii] += tabProfits[jjMax];
+                tabIndices.get(ii).addAll( tabIndices.get(jjMax) );
             }
         }//end loop over i
 
+        // choose sched w/ max profit:
         max = Double.NEGATIVE_INFINITY;
-        jMax = -1;
+        jjMax = -1;
         for (i = 0; i < n; ++i) {
-            if (memo[i] > max) {
-                max = memo[i];
-                jMax = i;
+            if (tabProfits[i] > max) {
+                max = tabProfits[i];
+                jjMax = i;
             }
         }
 
-        int[] sched = map.get(jMax).toArray();
-        for (i = 0; i < sched.length; ++i) {
-            sched[i] = origIndexes[sched[i]];
+        int[] sched = new int[tabIndices.get(jjMax).size()];
+        i = 0;
+        for (int idx : tabIndices.get(jjMax)) {
+            sched[i++] = idx;
         }
 
         Arrays.sort(sched);

@@ -125,6 +125,32 @@ public class GraphUtil {
     }
 
     /**
+     * convert the adjacency graph g in TIntObjectMap TIntSet  into a graph built with
+     * SimpleLinkedListNode[].  note that this method assumes that the vertexes are ordered such
+     * that the final range of indexes returned is [0, max Vertex number].
+     @param g
+     @return
+     */
+    public static SimpleLinkedListNode[] convertGraph(Map<Integer, Set<Integer>> g) {
+        int[] minMax = minAndMaxVertexNumbers(g);
+        int n = minMax[1] + 1;
+
+        SimpleLinkedListNode[] g2 = new SimpleLinkedListNode[n];
+        for (int i = 0; i < n; ++i) {
+            g2[i] = new SimpleLinkedListNode();
+        }
+
+        int u;
+        for (Map.Entry<Integer, Set<Integer>> entry : g.entrySet()) {
+            u = entry.getKey();
+            for (int v : entry.getValue()) {
+                g2[u].insert(v);
+            }
+        }
+        return g2;
+    }
+
+    /**
      *
      @param g
      @return
@@ -153,6 +179,22 @@ public class GraphUtil {
                 if (v > max) {
                     max = v;
                 }
+            }
+        }
+        return new int[]{min, max};
+    }
+
+    public static int[] minAndMaxVertexNumbers(Map<Integer, Set<Integer>> g) {
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        int u;
+        for (Map.Entry<Integer, Set<Integer>> entry : g.entrySet()) {
+            u = entry.getKey();
+            min = Math.min(u, min);
+            max = Math.max(u, max);
+            for (int v : entry.getValue()) {
+                min = Math.min(v, min);
+                max = Math.max(v, max);
             }
         }
         return new int[]{min, max};

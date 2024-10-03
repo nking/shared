@@ -2569,6 +2569,27 @@ public class MatrixUtil {
 
         return c;
     }
+    public static int[][] copy(int[][] a) {
+
+        int[][] c = new int[a.length][a[0].length];
+
+        for (int i = 0; i < a.length; ++i) {
+            System.arraycopy(a[i], 0, c[i], 0, a[0].length);
+        }
+
+        return c;
+    }
+
+    public static boolean equals(int[][] a, int[][] b) {
+        if (a.length != b.length) return false;
+        if (a[0].length != b[0].length) return false;
+        for (int i = 0; i < a.length; ++i) {
+            if (!Arrays.equals(a[i], b[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     /**
      *
