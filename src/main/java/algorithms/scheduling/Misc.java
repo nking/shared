@@ -140,88 +140,7 @@ public class Misc {
         scheduled = Arrays.copyOfRange(scheduled, 0, count);
         return scheduled;
     }
-    
-    /**
-     * The objective is to compute any maximum sized subset of non-overlapping intervals.
-     * Weighted Interval Scheduling: 
-     * given a set S = {1, . . . , n} of n activity requests, 
-     * where each activity is expressed as an interval [s_i, f_i] from a given 
-     * start time si to a given finish time f_i
-     * and each request is associated with a numeric weight or value v_i (a.k.a. profit).
-     * 
-     * The objective is to find a set of non-overlapping requests such that sum 
-     * of values of the scheduled requests is maximum.
-     * 
-     * This code uses dynamic programming and has runtime complexity O(n^2).
-     * 
-     * The code follows the lecture notes of David Mount for CMSC 451 
-     * Design and Analysis of Computer Algorithms (with some corrections for pseudocode indexes).
-     * https://www.cs.umd.edu/class/fall2017/cmsc451-0101/Lects/lect10-dp-intv-sched.pdf
-     
-     @param s interval start times
-     @param f interval finish times
-     @param v interval weights
-     @return indexes of scheduled intervals.
-     */
-    public int[] weightedIntervalBottomUp(double[] s, double[] f, double[] v) {
-        //interval [si, fi] of start and finish times
-        s = Arrays.copyOf(s, s.length);
-        f = Arrays.copyOf(f, f.length);
-        v = Arrays.copyOf(v, v.length);
-        
-        int n = f.length;
-        
-        // ascending order sort by f
-        // runtime complexity is O(n*log_2(n))
-        int[] origIndexes = sort2(f, s, v);
-        //System.out.printf("sorted indexes=%s\n", Arrays.toString(origIndexes));
-        
-        // p[i] is the largest index such that f[p(i)] < s[i]
-        //     p[i] is < i
-        // runtime complexity is less than O(n^2)
-        int[] p = calcP(s, f);
-        
-        int[] pred = new int[n+1];
-        
-        double[] memo = new double[n+1];
-        Arrays.fill(memo, -1);
-        memo[0] = 0;
-        int j;
-        double leaveWeight, takeWeight;
-        // runtime complexity is O(n)
-        for (j = 0; j < n; ++j) {
-            leaveWeight = memo[j];                // total weight if we leave j
-            takeWeight = v[j] + memo[p[j]];         // total weight if we take j
-            //System.out.printf("j=%d lw=M[j]=%.2f tw=v[j]+M[p[j]]=%.2f+%.2f=%.2f (where p[j]=%d) ", 
-            //    j, leaveWeight, v[j], memo[p[j]], takeWeight, p[j]);
-            if (leaveWeight > takeWeight) {
-                memo[j + 1] = leaveWeight;              // better to leave j
-                pred[j+1] = j;                   // previous is j-1
-            } else {
-                memo[j + 1] = takeWeight;               // better to take j
-                pred[j+1] = p[j];                  // previous is p[j]
-            }
-           // System.out.printf("  M[j+1]=%.2f\n", memo[j+1]);
-        }
-         
-        //System.out.printf("memo=%s\n", FormatArray.toString(memo, "%.3f"));
-        //System.out.printf("   p=%s\n", Arrays.toString(p));
-        //System.out.printf("pred=%s\n", Arrays.toString(pred));
-        
-        int[] sched = new int[j];
-        int count = 0;
-        j = pred.length-1;
-        while (j > 0) {
-            if (pred[j] == p[j-1]) {
-                //System.out.printf("  sched[%d]=%d\n", j-1, origIndexes[j-1]);
-                sched[count++] = origIndexes[j - 1];
-            }
-            j = pred[j];
-        }
-        sched = Arrays.copyOfRange(sched, 0, count);
-        return sched;
-    }
-    
+
     /**
      * The objective is to compute any maximum sized subset of non-overlapping intervals that produce the highest
      * sum of values (profits).
@@ -231,7 +150,6 @@ public class Misc {
      * The problem is adapted from the lecture notes of David Mount for CMSC 451
      * Design and Analysis of Computer Algorithms (with some corrections for pseudocode indexes).
      * https://www.cs.umd.edu/class/fall2017/cmsc451-0101/Lects/lect10-dp-intv-sched.pdf
-     * That lecture's solution is implemented here in method: weightedIntervalBottomUp().
      *
      * The algorithm solution here is a simpler dynamic program.
      * 
@@ -287,7 +205,7 @@ public class Misc {
      @param v interval weights
      @return indexes of scheduled intervals.
      */
-    public int[] weightedIntervalBottomUp2(double[] s, double[] f, double[] v) {
+    public int[] weightedIntervalBottomUp(double[] s, double[] f, double[] v) {
         //interval [si, fi] of start and finish times
 
         int n = f.length;
@@ -405,69 +323,57 @@ public class Misc {
         // interval [si, fi] of start and finish times
         // where finish time f is calculated as time + duration of task.
 
-        // memo needs a composite key of index and f
-        // memo value is the summed profit
-        TIntObjectMap<TIntDoubleMap> memo = new TIntObjectHashMap<TIntDoubleMap>();
+        // tabProfits key = tab index, value = map w/ key=f, value=summed profits (==summed v).
+        //     f is a summed property too.
+        TIntObjectMap<TIntDoubleMap> tabProfits = new TIntObjectHashMap<TIntDoubleMap>();
 
-        // fMap key is index, and value is set of fi values stored from evaluation at index.  the fi values are used
-        // to find summed profits in the memo map.
-        TIntObjectMap<TIntSet> fMap = new TIntObjectHashMap<TIntSet>();
+        // tabProfitsF key = tab index, value = set of fs added to this schedule. the f values are used
+        // to find summed profits in the tabProfits map.
+        TIntObjectMap<TIntSet> tabProfitsF = new TIntObjectHashMap<TIntSet>();
 
-        // populating memo and fMap is at worst 2*(2^n))
+        // populating tabProfits and tabProfitsF is at worst 2*(2^n))
 
         // dynamic programming using maps instead of dense matrix
 
         int f;
         double sumP;
-        TIntSet prevFMapSet, fMapSet;
-        TIntDoubleMap memoFPMap;
 
         int count = 0;
-
-        // init:
-        // include i=0 task
-        int ii = 0;
-        int i = sortedIndexes[ii];
-        fMapSet = new TIntHashSet();
-        memoFPMap = new TIntDoubleHashMap();
-        if (duration[i] <= deadline[i]) {
-            f = duration[i];
-            sumP = v[i];
-            fMapSet.add(f);
-            memoFPMap.put(f, sumP);
-        }
-        // exclude i=0 task
-        f = 0;
-        sumP = 0;
-        fMapSet.add(f);
-        memoFPMap.put(f, sumP);
-
-        // update memo and fMap
-        memo.put(ii, memoFPMap);
-        fMap.put(ii, fMapSet);
-
-        count+=2;
 
         TIntIterator iter;
         int fPrev;
         double pPrev;
-        for (ii = 1; ii < n; ++ii) {
-            i = sortedIndexes[ii];
+        for (int ii = 0; ii < n; ++ii) {
+            final int i = sortedIndexes[ii];
 
-            // get f's from prev index
-            prevFMapSet = fMapSet;
-            fMapSet = new TIntHashSet();
-            memoFPMap = new TIntDoubleHashMap();//int f, double v
+            // update tabProfits and tabProfitsF
+            tabProfits.put(ii, new TIntDoubleHashMap()); // map has key=f, value=v
+            tabProfitsF.put(ii, new TIntHashSet());
 
-            memo.put(ii, memoFPMap);
-            fMap.put(ii, fMapSet);
+            if (ii == 0) {
+                if (duration[i] <= deadline[i]) {
+                    // include if possible
+                    f = duration[i];
+                    sumP = v[i];
+                    tabProfitsF.get(ii).add(f);
+                    tabProfits.get(ii).put(f, sumP);
+                }
+                // exclude
+                f = 0;
+                sumP = 0;
+                tabProfitsF.get(ii).add(f);
+                tabProfits.get(ii).put(f, sumP);
+
+                count += 2;
+                continue;
+            }
 
             ++count;
 
-            iter = prevFMapSet.iterator();
+            iter = tabProfitsF.get(ii-1).iterator();
             while (iter.hasNext()) {
                 fPrev = iter.next();
-                pPrev = memo.get(ii - 1).get(fPrev);
+                pPrev = tabProfits.get(ii - 1).get(fPrev);
                 // tentative f
                 f = fPrev + duration[i];
 
@@ -476,38 +382,37 @@ public class Misc {
                 if (f <= deadline[i]) {
                     // === include task i ====
                     sumP = pPrev + v[i];
-                    if (memoFPMap.containsKey(f)) {
+                    if (tabProfits.get(ii).containsKey(f)) {
                         // if entry already exists, take max of this and that
-                        if (memoFPMap.get(f) < sumP) {
-                            memoFPMap.put(f, sumP);
+                        if (tabProfits.get(ii).get(f) < sumP) {
+                            tabProfits.get(ii).put(f, sumP);
                         }
                     } else {
-                        memoFPMap.put(f, sumP);
-                        fMapSet.add(f);
+                        tabProfits.get(ii).put(f, sumP);
+                        tabProfitsF.get(ii).add(f);
                     }
                 }
 
                 // === exclude task i ====
-                // by storing fPrev and pPrev after a check for existing entry in current memo for i
-                if (memoFPMap.containsKey(fPrev)) {
-                    if (memoFPMap.get(fPrev) < pPrev) {
-                        memoFPMap.put(fPrev, pPrev);
+                // by storing fPrev and pPrev after a check for existing entry in current tabProfits for i
+                if (tabProfits.get(ii).containsKey(fPrev)) {
+                    if (tabProfits.get(ii).get(fPrev) < pPrev) {
+                        tabProfits.get(ii).put(fPrev, pPrev);
                     }
                 } else {
-                    memoFPMap.put(fPrev, pPrev);
-                    fMapSet.add(fPrev);
+                    tabProfits.get(ii).put(fPrev, pPrev);
+                    tabProfitsF.get(ii).add(fPrev);
                 }
             } // end loop over f
         } // end loop over i
 
         System.out.printf("count=%d\n", count);
 
-        // get max of memo[n-1]
-        memoFPMap = memo.get(n - 1);
+        // get max of tabProfits[n-1]
         int maxF = -1;
         double p;
         double maxP = Double.NEGATIVE_INFINITY;
-        TIntDoubleIterator iter2 = memoFPMap.iterator();
+        TIntDoubleIterator iter2 = tabProfits.get(n - 1).iterator();
         while (iter2.hasNext()) {
             iter2.advance();
             f = iter2.key();
@@ -522,12 +427,12 @@ public class Misc {
         f = maxF;
         p = maxP;
         TIntList sched = new TIntArrayList();
-        for (ii = n - 1; ii >= 0; --ii) {
-            i = sortedIndexes[ii];
+        for (int ii = n - 1; ii >= 0; --ii) {
+            int i = sortedIndexes[ii];
             if (p <= 0) {
                 break;
             }
-            if ((ii-1 >= 0) && p == memo.get(ii-1).get(f)) {
+            if ((ii-1 >= 0) && p == tabProfits.get(ii-1).get(f)) {
                 continue;
             } else {
                 sched.add(i);
@@ -545,15 +450,14 @@ public class Misc {
             TIntSet schedSet = new TIntHashSet(sched);
             // add the remaining tasks.  since they are ordered by deadline already,
             // this will minimize the lateness
-            for (i = 0; i < n; ++i) {
+            for (int i = 0; i < n; ++i) {
                 if (!schedSet.contains(i)) {
                     sched.add(i);
                 }
             }
         }
 
-        // transform to original indexes
-        for (i = 0; i < n; ++i) {
+        for (int i = 0; i < n; ++i) {
             outputSchedule[i] = sched.get(i);
         }
 
@@ -562,13 +466,15 @@ public class Misc {
 
     // s and f are sorted by ascending order of f before passed to this method
     // runtime complexity is O(n^2)
-    private int[] calcP(double[] s, double[] f) {
+    private int[] calcP(double[] s, double[] f, int[] sortedIndexes) {
         // iterating from highest index to lowest,
         // find for each s, highest previous index in which f[i-...] < s_i
         int i, j;
         int[] p = new int[f.length+1];
-        for (i = s.length - 1; i > -1; i--) {
-            for (j = i - 1; j > -1; j--) {
+        for (int ii = s.length - 1; ii > -1; ii--) {
+            i = sortedIndexes[ii];
+            for (int jj = ii - 1; jj > -1; jj--) {
+                j = sortedIndexes[jj];
                 //System.out.printf("calcP: %d,%d) f[%d]=%.2f s[%d]=%.2f\n", i,j, j, f[j], i, s[i]);
                 if (f[j] <= s[i]) {
                     p[i] = j+1;
@@ -723,193 +629,6 @@ public class Misc {
             ao[i] = a.get(i);
         }
         return ao;
-    }
-
-    private static int[] sort2(double[] a, double[] b, double[] c) {
-        int[] oIdxs = new int[a.length];
-        int i;
-        for (i = 0; i < a.length; ++i) {
-            oIdxs[i] = i;
-        }
-        mergesort(a, oIdxs, 0, a.length - 1);
-        double[] t = new double[b.length];
-        for (i = 0; i < a.length; ++i) {
-            t[i] = b[oIdxs[i]];
-        }
-        System.arraycopy(t, 0, b, 0, b.length);
-        for (i = 0; i < a.length; ++i) {
-            t[i] = c[oIdxs[i]];
-        }
-        System.arraycopy(t, 0, c, 0, c.length);
-        return oIdxs;
-    }
-
-    private static int[] sort2(double[] a, int[] b, double[] c) {
-
-        int[] oIdxs = MiscSorter.mergeSortIncreasing(a);
-        int i;
-        int[] tb = new int[b.length];
-        for (i = 0; i < a.length; ++i) {
-            tb[i] = b[oIdxs[i]];
-        }
-        System.arraycopy(tb, 0, b, 0, b.length);
-
-        double[] tc = new double[b.length];
-        for (i = 0; i < a.length; ++i) {
-            tc[i] = c[oIdxs[i]];
-        }
-        System.arraycopy(tc, 0, c, 0, c.length);
-
-        return oIdxs;
-    }
-
-    private static void mergesort(double[] a, int[] b, int idxLo, int idxHi) {
-        if (idxLo < idxHi) {
-            int idxMid = (idxLo + idxHi) >> 1;
-            mergesort(a, b, idxLo, idxMid);           
-            mergesort(a, b, idxMid + 1, idxHi);       
-            merge(a, b, idxLo, idxMid, idxHi);
-        }
-    }
-
-    private static void merge(double[] a, int[] b, int idxLo, int idxMid, int idxHi) {
-        double[] aL = Arrays.copyOfRange(a, idxLo, idxMid + 2);
-        double[] aR = Arrays.copyOfRange(a, idxMid + 1, idxHi + 2); 
-        aL[aL.length - 1] = Double.POSITIVE_INFINITY;
-        aR[aR.length - 1] = Double.POSITIVE_INFINITY;
-
-        int[] bL = Arrays.copyOfRange(b, idxLo, idxMid + 2);
-        int[] bR = Arrays.copyOfRange(b, idxMid + 1, idxHi + 2); 
-        bL[bL.length - 1] = Integer.MAX_VALUE;
-        bR[bR.length - 1] = Integer.MAX_VALUE;
-        
-        int posL = 0;
-        int posR = 0;
-        for (int k = idxLo; k <= idxHi; k++) {
-            if (aL[posL] <= aR[posR]) {
-                a[k] = aL[posL];
-                b[k] = bL[posL];
-                posL++;
-            } else {
-                a[k] = aR[posR];
-                b[k] = bR[posR];
-                posR++;
-            }
-        }
-    }
-
-    private int[] mergesortIncreasingADecreasingB(int[] a, int[] b) {
-        int[] indexes = new int[a.length];
-        int i;
-        for (i = 0; i < a.length; ++i) {
-            indexes[i] = i;
-        }
-        mergesortIncreasingADecreasingB(a, b, indexes, 0, a.length-1);
-        return indexes;
-    }
-
-    private void mergesortIncreasingADecreasingB(int[] a, int[] b, int[] c, int idxLo, int idxHi) {
-        if (idxLo < idxHi) {
-            int idxMid = (idxHi + idxLo)/2;
-            mergesortIncreasingADecreasingB(a, b, c, 0, idxMid);
-            mergesortIncreasingADecreasingB(a, b, c, idxMid + 1, idxHi);
-            mergeIncreasingADecreasingB(a, b, c, idxLo, idxMid, idxHi);
-        }
-    }
-
-    private void mergeIncreasingADecreasingB(int[] a, int[] b, int[] c, 
-        int idxLo, int idxMid, int idxHi) {
-        
-        int[] aL = Arrays.copyOfRange(a, idxLo, idxMid + 2);
-        int[] aR = Arrays.copyOfRange(a, idxMid + 1, idxHi + 2); 
-        aL[aL.length - 1] = Integer.MAX_VALUE;
-        aR[aR.length - 1] = Integer.MAX_VALUE;
-
-        int[] bL = Arrays.copyOfRange(b, idxLo, idxMid + 2);
-        int[] bR = Arrays.copyOfRange(b, idxMid + 1, idxHi + 2); 
-        bL[bL.length - 1] = Integer.MAX_VALUE;
-        bR[bR.length - 1] = Integer.MAX_VALUE;
-        
-        int[] cL = Arrays.copyOfRange(c, idxLo, idxMid + 2);
-        int[] cR = Arrays.copyOfRange(c, idxMid + 1, idxHi + 2); 
-        cL[cL.length - 1] = Integer.MAX_VALUE;
-        cR[cR.length - 1] = Integer.MAX_VALUE;
-        
-        int posL = 0;
-        int posR = 0;
-        for (int k = idxLo; k <= idxHi; ++k) {
-            if (aL[posL] < aR[posR]) {
-                a[k] = aL[posL];
-                b[k] = bL[posL];
-                c[k] = cL[posL];
-                posL++;
-            } else if (aL[posL] > aR[posR]) {
-                a[k] = aR[posR];
-                b[k] = bR[posR];
-                c[k] = cR[posR];
-                posR++;
-            } else {
-                // they're equal, so break ties by values of b
-                if (bL[posL] >= bR[posR]) {
-                    a[k] = aL[posL];
-                    b[k] = bL[posL];
-                    c[k] = cL[posL];
-                    posL++;
-                } else {
-                    a[k] = aR[posR];
-                    b[k] = bR[posR];
-                    c[k] = cR[posR];
-                    posR++;
-                }
-            }
-        }
-    }
-    
-    
-    private int[] sortDecr(int[] a, int[] b) {
-        int[] oIdxs = new int[a.length];
-        for (int i = 0; i < a.length; ++i) {
-            oIdxs[i] = i;
-        }
-        quicksortDecr(a, oIdxs, 0, a.length - 1);
-        int[] t = new int[b.length];
-        int i;
-        for (i = 0; i < a.length; ++i) {
-            t[i] = b[oIdxs[i]];
-        }
-        System.arraycopy(t, 0, b, 0, b.length);
-        return oIdxs;
-    }
-    
-    private void quicksortDecr(int[] a, int[] b, int idxLo, int idxHi) {
-        if (idxLo < idxHi) {
-            int idxMid = partitionDecr(a, b, idxLo, idxHi);
-            quicksortDecr(a, b, idxLo, idxMid-1);
-            quicksortDecr(a, b, idxMid+1, idxHi);
-        }
-    }
-    private int partitionDecr(int[] a, int[] b, int idxLo, int idxHi) {
-        int xa = a[idxHi];
-        int i = idxLo - 1;  
-        int swap;
-        for (int j = idxLo; j < idxHi ; j++ ) {
-            if (a[j] >= xa) { 
-                i++;
-                swap = a[i];
-                a[i] = a[j];
-                a[j] = swap;
-                swap = b[i];
-                b[i] = b[j];
-                b[j] = swap;
-            }
-        }
-        swap = a[i + 1];
-        a[i + 1] = a[idxHi];
-        a[idxHi] = swap;
-        swap = b[i + 1];
-        b[i + 1] = b[idxHi];
-        b[idxHi] = swap;
-        return i + 1;
     }
 
     /**

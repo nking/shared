@@ -64,7 +64,7 @@ public class MiscTest extends TestCase {
         double[] v = new double[]{2, 6, 3.5, 7, 8, 1.1};
 
         Misc misc = new Misc();
-        int[] indexes = misc.weightedIntervalBottomUp2(s, f, v);
+        int[] indexes = misc.weightedIntervalBottomUp(s, f, v);
         //System.out.println("scheduled intervals = " + Arrays.toString(indexes));
         int i;
         double sum = 0;
@@ -85,7 +85,7 @@ public class MiscTest extends TestCase {
         v = new double[]{7, 2, 8, 6, 3.5, 1.1};
 
         misc = new Misc();
-        indexes = misc.weightedIntervalBottomUp2(s, f, v);
+        indexes = misc.weightedIntervalBottomUp(s, f, v);
         //System.out.println("scheduled intervals = " + Arrays.toString(indexes));
         sum = 0;
         for (i = 0; i < indexes.length; ++i) {
@@ -104,7 +104,7 @@ public class MiscTest extends TestCase {
         v = new double[]{7, 2, 8, 6, 3.5, 1.1, 1};
 
         misc = new Misc();
-        indexes = misc.weightedIntervalBottomUp2(s, f, v);
+        indexes = misc.weightedIntervalBottomUp(s, f, v);
         //System.out.println("scheduled intervals = " + Arrays.toString(indexes));
         sum = 0;
         for (i = 0; i < indexes.length; ++i) {
@@ -150,7 +150,7 @@ public class MiscTest extends TestCase {
         v = new double[]{2, 2, 2, 2,   5, 2};
 
         expected = new int[]{0, 2, 4};
-        indexes = misc.weightedIntervalBottomUp2(s, f, v);
+        indexes = misc.weightedIntervalBottomUp(s, f, v);
         sum = 0;
         for (i = 0; i < indexes.length; ++i) {
             //System.out.printf("%d [%.2f : %.2f]  sum=%.2f\n", indexes[i], s[indexes[i]], f[indexes[i]], sum);
