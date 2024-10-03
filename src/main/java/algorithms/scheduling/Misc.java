@@ -59,24 +59,32 @@ public class Misc {
         if (outputLate.length != n) {
             throw new IllegalArgumentException("outputLate.length must equal t.length");
         }
-        duration = Arrays.copyOf(duration, duration.length);
-        deadline = Arrays.copyOf(deadline, deadline.length);
+        //duration = Arrays.copyOf(duration, duration.length);
+        //deadline = Arrays.copyOf(deadline, deadline.length);
         Arrays.fill(outputStart, 0);
         Arrays.fill(outputLate, 0);
         
         //sort tasks by increasing deadline to minimize the lateness
-        int[] indexes = MiscSorter.mergeBy1stArgThen2nd(deadline, duration);
+        int[] sortedIndexes = IntStream.range(0, deadline.length).boxed()
+                .sorted((i, j) -> {
+                    int c = Double.compare(deadline[i], deadline[j]);
+                    if (c != 0) return c;
+                    return Double.compare(duration[i], duration[j]);
+                })
+                .mapToInt(ele -> ele)
+                .toArray();
 
         double f_prev = 0; // f is the finish time of previous task
         int i; 
-        for (i = 0; i < duration.length; ++i) {
-            //assign task i to start at 
+        for (int ii = 0; ii < duration.length; ++ii) {
+            //assign task i to start at
+            i = sortedIndexes[ii];
             outputStart[i] = f_prev;  // start next task
             f_prev = /*f[i] =*/ outputStart[i] + duration[i];  // its finish time
             //lateness[i] = max(0, f[i] - d[i])     // its lateness
             outputLate[i] = Math.max(0, f_prev - deadline[i]);
         }
-        return indexes;
+        return sortedIndexes;
     }
     
     /**
@@ -108,18 +116,24 @@ public class Misc {
      */
     public int[] unweightedIntervalNoConflicts(double[] s, double[] f) {
         int n = s.length;
-        s = Arrays.copyOf(s, s.length);
-        f = Arrays.copyOf(f, f.length);
         
         //sort tasks by increasing finish times .  O(N * log_2(N))
-        int[] indexes = MiscSorter.mergeBy1stArgThen2nd(f, s);
+        int[] sortedIndexes = IntStream.range(0, n).boxed()
+                .sorted((i, j) -> {
+                    int c = Double.compare(f[i], f[j]);
+                    if (c != 0) return c;
+                    return Double.compare(s[i], s[j]);
+                })
+                .mapToInt(ele -> ele)
+                .toArray();
+
         double f_prev = -1; // f is the finish time of previous task
         int i; 
         int[] scheduled = new int[n];
         int count = 0;
         for (i = 0; i < n; ++i) {
             if (s[i] > f_prev) {
-                scheduled[count++] = indexes[i];
+                scheduled[count++] = sortedIndexes[i];
                 f_prev = f[i];
             }
         }
@@ -380,15 +394,11 @@ public class Misc {
             throw new IllegalArgumentException("outLastOnTimeIdx.length must equal 1");
         }
 
-        duration = Arrays.copyOf(duration, n);
-        deadline = Arrays.copyOf(deadline, n);
-        v = Arrays.copyOf(v, n);
-
         // ascending order sort by deadline
         // runtime complexity is O(n*log_2(n))
-
-        int[] origIndexes = sort2(deadline, duration, v);
-        //System.out.printf("sorted indexes=%s\n", Arrays.toString(origIndexes));
+        int[] sortedIndexes = IntStream.range(0, n).boxed()
+                .sorted((i, j) -> Double.compare(deadline[i], deadline[j]))
+                .mapToInt(ele -> ele).toArray();
 
         // see notes on this algorithm at bottom of method
 
@@ -407,7 +417,6 @@ public class Misc {
 
         // dynamic programming using maps instead of dense matrix
 
-        int i;
         int f;
         double sumP;
         TIntSet prevFMapSet, fMapSet;
@@ -417,7 +426,8 @@ public class Misc {
 
         // init:
         // include i=0 task
-        i = 0;
+        int ii = 0;
+        int i = sortedIndexes[ii];
         fMapSet = new TIntHashSet();
         memoFPMap = new TIntDoubleHashMap();
         if (duration[i] <= deadline[i]) {
@@ -433,28 +443,31 @@ public class Misc {
         memoFPMap.put(f, sumP);
 
         // update memo and fMap
-        memo.put(i, memoFPMap);
-        fMap.put(i, fMapSet);
+        memo.put(ii, memoFPMap);
+        fMap.put(ii, fMapSet);
 
         count+=2;
 
         TIntIterator iter;
         int fPrev;
         double pPrev;
-        for (i = 1; i < n; ++i) {
+        for (ii = 1; ii < n; ++ii) {
+            i = sortedIndexes[ii];
+
             // get f's from prev index
             prevFMapSet = fMapSet;
             fMapSet = new TIntHashSet();
             memoFPMap = new TIntDoubleHashMap();//int f, double v
-            memo.put(i, memoFPMap);
-            fMap.put(i, fMapSet);
+
+            memo.put(ii, memoFPMap);
+            fMap.put(ii, fMapSet);
 
             ++count;
 
             iter = prevFMapSet.iterator();
             while (iter.hasNext()) {
                 fPrev = iter.next();
-                pPrev = memo.get(i - 1).get(fPrev);
+                pPrev = memo.get(ii - 1).get(fPrev);
                 // tentative f
                 f = fPrev + duration[i];
 
@@ -509,11 +522,12 @@ public class Misc {
         f = maxF;
         p = maxP;
         TIntList sched = new TIntArrayList();
-        for (i = n - 1; i >= 0; --i) {
+        for (ii = n - 1; ii >= 0; --ii) {
+            i = sortedIndexes[ii];
             if (p <= 0) {
                 break;
             }
-            if ((i > 0) && p == memo.get(i-1).get(f)) {
+            if ((ii-1 >= 0) && p == memo.get(ii-1).get(f)) {
                 continue;
             } else {
                 sched.add(i);
@@ -540,7 +554,7 @@ public class Misc {
 
         // transform to original indexes
         for (i = 0; i < n; ++i) {
-            outputSchedule[i] = origIndexes[sched.get(i)];
+            outputSchedule[i] = sched.get(i);
         }
 
         return maxP;
@@ -614,48 +628,43 @@ public class Misc {
     public int[] weightedGreedySingleResource(int[] deadlines, int[] penalties) {
         
         //O(N * log_2(N))
-        //System.out.println("starting greedy algorithm to find indep sets");
-        int[] indexes2 = greedy(Arrays.copyOf(deadlines, deadlines.length), 
-            Arrays.copyOf(penalties, penalties.length));
+        // schedule the largest penalties first if they fit before deadline (duration of each task is a time unit of 1).
+        // the result is a list that may be < n in length
+        int[] indexes2 = greedy(deadlines, penalties);
+
         //System.out.println("greedy algorithm resulting indexes=" + Arrays.toString(indexes2));
-        
-        // rewrite d2 and p2 to be only the greedy results.   indexes2.length is <= deadline.
-        int[] d2 = new int[indexes2.length];
-        int[] p2 = new int[indexes2.length];
-        int[] i2 = new int[indexes2.length];
+
+        //O(N * log_2(N))
+        // sort by ascending deadlines, break ties by descending penalities
+        int[] sortedIndexes2 = IntStream.range(0, indexes2.length).boxed()
+                .sorted((ii, jj) -> {
+                    int c = Double.compare(deadlines[indexes2[ii]], deadlines[indexes2[jj]]);
+                    if (c != 0) return c;
+                    return Double.compare(penalties[indexes2[jj]],  penalties[indexes2[ii]]);
+                })
+                .mapToInt(ele -> ele).toArray();
+
+        int[] scheduled2 = new int[deadlines.length];
+
+        TIntSet allI2 = new TIntHashSet();
         int i;
-        for (i = 0; i < d2.length; ++i) {
-            d2[i] = deadlines[indexes2[i]];
-            p2[i] = penalties[indexes2[i]];
-            i2[i] = indexes2[i]; // storing indexes2
-        }
-        
-        // sort by increasing deadlines. O(N2 * log_2(N2))
-        //these indexes are w.r.t. the truncated d2 and p2, that is, i2
-        indexes2 = mergesortIncreasingADecreasingB(d2, p2);
-        
-        int[] scheduled = new int[deadlines.length];
-        TIntSet allI = new TIntHashSet();
         for (i = 0; i < deadlines.length; ++i) {
-            allI.add(i);
+            allI2.add(i);
         }
-        for (i = 0; i < indexes2.length; ++i) {
+
+        for (i = 0; i < sortedIndexes2.length; ++i) {
             // transform indexes back to original array indexes
-            scheduled[i] = i2[indexes2[i]];
-            //System.out.printf("  a%d (%d, %d)\n", 
-            //    scheduled[i]+1, deadlines[scheduled[i]], penalties[scheduled[i]]);
-            allI.remove(scheduled[i]);
+            scheduled2[i] = sortedIndexes2[i];
+            allI2.remove(scheduled2[i]);
         }
         //System.out.println("appending late tasks in any order:");
-        TIntIterator iter = allI.iterator();
+        TIntIterator iter = allI2.iterator();
         while (iter.hasNext()) {
-            scheduled[i] = iter.next();
-            //System.out.printf("  a%d (%d, %d)\n", 
-            //    scheduled[i]+1, deadlines[scheduled[i]], penalties[scheduled[i]]);
+            scheduled2[i] = iter.next();
             i++;
         }
-        
-        return scheduled;
+
+        return scheduled2;
     }
   
     /**
@@ -668,14 +677,15 @@ public class Misc {
      */
     private int[] greedy(int[] deadlines, int[] penalties) {
 
-        deadlines = Arrays.copyOf(deadlines, deadlines.length);
-        penalties = Arrays.copyOf(penalties, penalties.length);
+        int n = deadlines.length;
 
         //O(N * log_2(N))
         // sort w, m into monotonically decreasing order by penalties
-        int[] origIndexes = sortDecr(penalties, deadlines);
-        int i, oIdx;
-        
+        int[] sortedIndexes = IntStream.range(0, n).boxed()
+                .sorted((i, j) -> {return penalties[j] - penalties[i];})
+                .mapToInt(ele -> ele)
+                .toArray();
+
         /*
         System.out.println("sorted by decr penalty:");
         for(i = 0; i < penalties.length; ++i) {
@@ -683,11 +693,15 @@ public class Misc {
             System.out.printf("a%d deadline=%d penalty=%d\n", oIdx+1, deadlines[i], penalties[i]);
         }
         */
+
+        //TODO: consider overloading method for durations.  then need an array b to complement a, holding integrated
+        // durations.
        
         TIntList a = new TIntArrayList();
         int prevA = -1;
-        for(i = 0; i < deadlines.length; ++i) {
-            //oIdx = origIndexes[i];
+        int i;
+        for (int ii = 0; ii < n; ++ii) {
+            i = sortedIndexes[ii];
             //System.out.printf("i=%d, oIdx=%d, a%d f_i=%d, (%d,%d): ", i, oIdx, oIdx+1, (a.size()+1), deadlines[i], penalties[i]);
             if (deadlines[i] >= (a.size()+1)) {
                 //done early
@@ -704,10 +718,9 @@ public class Misc {
                 System.out.println("  reject");
             }*/
         }
-        // rewrite indexes in context of original array indexes:
         int[] ao = new int[a.size()];
         for (i = 0; i < ao.length; ++i) {
-            ao[i] = origIndexes[a.get(i)];
+            ao[i] = a.get(i);
         }
         return ao;
     }
@@ -924,56 +937,47 @@ public class Misc {
      interval describing the time in which it needs to be processed by some machine
      (or, equivalently, scheduled on some resource).
      </pre>
-     * 
+
      @param s start times
      @param f finish times
      @return indexes of resources to schedule the requests on.
      */
-    public int[] intervalPartitionGreedy(double[] s, double[] f) {     
-        
-        double[] s2 = Arrays.copyOf(s, s.length);
-        
+    public int[] intervalPartitionGreedy2(double[] s, double[] f) {
+
         /*
         (1) sort the requests by increasing order of start times. 
         (2) assign to each request the smallest color (possibly a new color) 
             such that it conflicts with no other requests of this color class. 
         */
+
+        int n = s.length;
         
         // runtime complexity O(n*log_2(n))
         //sort requests by increasing start times
-        int[] indexes = MiscSorter.mergeSortIncreasing(s2);
-        double[] f2 = new double[s2.length];
-        int i, j;
-        for (i = 0; i < f.length; ++i) {
-            f2[i] = f[indexes[i]];
-        }
-        
-        //System.out.println("indexes sorted by start times = " + Arrays.toString(indexes));
-        
+        int[] sortedIndexes = IntStream.range(0, n).boxed()
+                .sorted((i, j) -> Double.compare(s[i], s[j]))
+                .mapToInt(ele -> ele).toArray();
+
         // a color for each request
         int[] c = new int[s.length];
         
         TIntSet excl = new TIntHashSet();
         int color;
-        for (i = 0; i < f2.length; ++i) {
+        int i, j;
+        for (int ii = 0; ii < n; ++ii) {
             excl.clear();
-            for (j = 0; j < i; ++j) {
-                //j is always smaller than i so s[j] <= s[i].  
+            i = sortedIndexes[ii];
+            for (int jj = 0; jj < ii; ++jj) {
+                //j is always smaller than i so s[j] <= s[i].
                 //  then order is (sj,fj)  (si,fi)
-                
+                j = sortedIndexes[jj];
                 //if ([s[j],f[j]] overlaps [s[i],f[i]]) 
-                if (s2[i] < f2[j]) {
+                if (s[i] < f[j]) {
                     excl.add(c[j]);
-                    /*System.out.printf("conflict for i2=%d, j2=%d (s2[%d]<f2[%d])=(%.1f, %.2f)\n",
-                        i, j, i, j, s2[i], f2[i]);
-                    System.out.printf("==> i=%d, j=%d (s2[%d]<f2[%d])=(%.1f, %.2f)\n",
-                        indexes[i], indexes[j], indexes[i], indexes[j], 
-                        s[indexes[i]], f[indexes[i]]);
-                    */
                 }
             }
             //Let c be the smallest color NOT in E
-            for (color = 0; color < f2.length; ++color) {
+            for (color = 0; color < n; ++color) {
                 if (!excl.contains(color)) {
                     break;
                 }
@@ -981,12 +985,7 @@ public class Misc {
             c[i] = color;
         }
 
-        //rewrite c in terms of original indexes of method argument's unsorted (s,f)
-        int[] c2 = new int[f2.length];
-        for (i = 0; i < f2.length; ++i) {
-            c2[i] = c[indexes[i]];
-        }
-        return c2;
+        return c;
     }
 
     /**
@@ -997,9 +996,9 @@ public class Misc {
      Let the resources be a collection R, partitioned into d disjoint subsets R_0,...R_{d-1}
      such that events of R_j are mutually non-conflicting, for each j: 0 ≤ j ≤ (d-1).
 
-     runtime complexity is O(n^2).
+     runtime complexity is O(n*log_2(n)).
 
-     The algorithm used is sometimes called "left edge".
+     The algorithm used is sometimes called EFF (early finish first) for unlimited resources.
 
      <pre>
      https://en.wikipedia.org/wiki/Interval_scheduling
@@ -1013,60 +1012,60 @@ public class Misc {
      @param f finish times
      @return indexes of resources to schedule the requests on.
      */
-    public int[] intervalPartitionGreedy2(double[] s, double[] f) {
+    public int[] intervalPartitionGreedy(double[] s, double[] f) {
         int n = s.length;
         if (f.length != n) {
             throw new IllegalArgumentException("s and f must be same length");
         }
-        double[] f2 = Arrays.copyOf(f, f.length);
 
         // runtime complexity O(n*log(n))
         //sort requests by increasing finish times
-        int[] indexes = MiscSorter.mergeSortIncreasing(f2);
-        double[] s2 = new double[n];
-        int i, j;
-        for (i = 0; i < n; ++i) {
-            s2[i] = s[indexes[i]];
-        }
+        int[] sortedIndexes = IntStream.range(0, n).boxed()
+                .sorted((i, j) -> Double.compare(f[i], f[j]))
+                .mapToInt(ele -> ele).toArray();
 
         List<List<Integer>> resources = new ArrayList<List<Integer>>();
         List<Integer> current = new ArrayList<>();
         resources.add(current);
         double fPrev = -1;
-        for (i = 0; i < n; ++i) {
-            if (s2[i] < fPrev) {
+        int i;
+        //O(n)
+        for (int ii = 0; ii < n; ++ii) {
+            i = sortedIndexes[ii];
+            if (s[i] < fPrev) {
                 current = new ArrayList<>();
                 resources.add(current);
             }
             current.add(i);
-            fPrev = f2[i];
+            fPrev = f[i];
         }
+        //O(n)
         // merge resources, bottom up
         double start, finish;
-        for (i = resources.size() - 1; i > 0; --i) {
-            current = resources.get(i);
-            start = s2[current.get(0)];
+        int jj, j;
+        for (int ii = resources.size() - 1; ii > 0; --ii) {
+            current = resources.get(ii);
+            start = s[current.get(0)];
             // search lower indexes for feasible concatenation
-            for (j = i - 1; j >= 0; --j) {
-                List<Integer> lower = resources.get(j);
-                finish = f2[lower.get(lower.size() - 1)];
+            for (jj = ii - 1; jj >= 0; --jj) {
+                List<Integer> lower = resources.get(jj);
+                finish = f[lower.get(lower.size() - 1)];
                 if (start >= finish) {
                     // append current to lower
                     lower.addAll(current);
-                    resources.remove(i);
+                    resources.remove(ii);
                     break;
                 }
             }
         }
 
-        //rewrite in terms of original indexes of method argument's unsorted (s,f)
+        //O(n)
+        //for each index, write the scheduled resource number
         int[] schedResource = new int[n];
         for (i = 0; i < resources.size(); ++i) {
             current = resources.get(i);
             for (j = 0; j < current.size(); ++j) {
-                int idx = indexes[current.get(j)];
-                schedResource[idx] = i;
-                //System.out.printf("%d) [%.3f : %.3f]  %d\n", i, s[idx], f[idx], idx);
+                schedResource[current.get(j)] = i;
             }
         }
         return schedResource;
@@ -1104,44 +1103,31 @@ public class Misc {
             throw new IllegalArgumentException("s.length must equal f.length");
         }
 
-        double[] s2;
-        double[] f2;
-        int[] indexes = null;
-        int i;
-        if (!isSortedByF) {
-            //sort by f ascending
-            f2 = Arrays.copyOf(f, n);
-            indexes = MiscSorter.mergeSortIncreasing(f2);
-
-            s2 = new double[n];
-            for (i = 0; i < f.length; ++i) {
-                s2[i] = s[indexes[i]];
+        int[] sortedIndexes = null;
+        if (isSortedByF) {
+            sortedIndexes = new int[n];
+            for (int i = 0; i < n; ++i) {
+                sortedIndexes[i] = i;
             }
         } else {
-            f2 = Arrays.copyOf(f, n);
-            s2 = Arrays.copyOf(s, n);
+            sortedIndexes = IntStream.range(0, n).boxed()
+                    .sorted((i, j) -> Double.compare(f[i], f[j]))
+                    .mapToInt(ele -> ele)
+                    .toArray();
         }
 
         TIntList a = new TIntArrayList();
-        a.add(0);
-        int j = 0;
-        for (i = 1; i < n ; ++i) {
+        a.add(sortedIndexes[0]);
+        int i, j = sortedIndexes[0];
+        for (int ii = 1; ii < n ; ++ii) {
+            i = sortedIndexes[ii];
             if (s[i] >= f[j]) {
                 a.add(i);
                 j = i;
             }
         }
 
-        if (isSortedByF) {
-            return a.toArray();
-        }
-
-        //rewrite schedule in terms of original indexes of method argument's unsorted (s,f)
-        int[] c2 = new int[a.size()];
-        for (i = 0; i < a.size(); ++i) {
-            c2[i] = indexes[a.get(i)];
-        }
-        return c2;
+        return a.toArray();
     }
 
 }

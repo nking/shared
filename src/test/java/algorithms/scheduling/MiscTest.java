@@ -3,6 +3,9 @@ package algorithms.scheduling;
 import algorithms.misc.MiscMath0;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import junit.framework.TestCase;
 
 /**
@@ -185,25 +188,18 @@ public class MiscTest extends TestCase {
         Misc misc = new Misc();
         int[] indexes = misc.weightedGreedySingleResource(d, w);
 
-        int[] expected = new int[]{1, 3, 0, 2, 6, 5, 4};
-        /*
-        System.out.println("scheduled tasks = " + Arrays.toString(indexes));
-        int t, idx, fi;
-        int sum = 0;
-        // tasks start at time=0, are 1 unit in duration, and follow one another without gaps in time.
-        for (t = 0; t < d.length; ++t) {
-            // finish time of task i
-            fi = t + 1;
-            idx = indexes[t];
-            if (d[idx] < fi) {
-                sum += w[idx];
-            }
-            System.out.printf("a%d (%d,%d)\n", idx+1, d[idx], w[idx]);
-        }
-        System.out.printf("\nsum of late tasks=%d\n", sum);
-        */
+        int[] expected = new int[]{1, 3, 0, 2};//, 6, 5, 4}; // last 3 in any order
+        Set<Integer> expectedLate = new HashSet<>();
+        expectedLate.add(6); expectedLate.add(5); expectedLate.add(4);
+        assertEquals(expected.length + expectedLate.size(), indexes.length);
 
-        assertTrue(Arrays.equals(expected, indexes));
+        for (int i = 0; i < 4; ++i) {
+            assertEquals(expected[i], indexes[i]);
+        }
+        for (int i = 4; i < indexes.length; ++i) {
+            assertTrue(expectedLate.remove(indexes[i]));
+        }
+        assertTrue(expectedLate.isEmpty());
     }
 
     public void testUnweightedIntervalNoConflicts() {
@@ -231,9 +227,9 @@ public class MiscTest extends TestCase {
         int[] resources;
         for (int method = 0; method < 2; ++method) {
             if (method == 0) {
-                resources = misc.intervalPartitionGreedy(s, f);
-            } else {
                 resources = misc.intervalPartitionGreedy2(s, f);
+            } else {
+                resources = misc.intervalPartitionGreedy(s, f);
             }
             //System.out.println("resources=" + Arrays.toString(resources));
             int cMax = MiscMath0.findMax(resources);
