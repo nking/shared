@@ -2,6 +2,7 @@ package algorithms.misc;
 
 import algorithms.SubsetChooser;
 import algorithms.matrix.MatrixUtil;
+import algorithms.search.MiscBisectingSearch;
 import algorithms.sort.CountingSort;
 import algorithms.util.PairInt;
 import algorithms.util.PairIntArray;
@@ -1269,55 +1270,51 @@ public class MiscMath0 {
         return 64 -  Long.numberOfLeadingZeros(v);
     }
 
+    /**
+     * return the msb of number v.  The returned result is in LSB-0 reference frame.
+     * e.g. 0b100 returns 2 for MSB.
+     * @param v
+     * @return
+     */
     public static int MSBWithoutBuiltIn(long v) {
         if (v == 0) return 0;
-        if (v == Long.MAX_VALUE || v == Long.MIN_VALUE) return 63;
+        // 63 bits, so subtract 1 to put MSB in LSB 0 format
+        if (v == Long.MAX_VALUE || v == Long.MIN_VALUE) return 62;
         if (v < 0) {
             v *= -1;
         }
-        // bisecting left search to find power of 2
-        int lo = 0, hi = 63;
+        // bisecting sucessor search to find power of 2
+        int lo = 0, hi = 62;
         int mid;
+        long c;
         while (lo <= hi) {
             mid = lo + (hi - lo)/2;
-            if ((1L<<mid) < v) {
+            c = (1L<< mid);
+            if (c == v) {
+                return mid - 1;
+            } else if (c < v) {
                 lo = mid + 1;
             } else {
                 hi = mid - 1;
             }
         }
-        return Math.max(lo, hi) - 1;
+        // nBits == lo
+        return lo - 1;
     }
     public static int LSB(long v) {
         if (v == 0) return 0;
         return Long.numberOfTrailingZeros(v);
     }
+
+    /**
+     * return LSB in LSB 0 format. e.g. v=0b1011000 returns lsb=3.
+     * @param v
+     * @return
+     */
     public static int LSBWithoutBuiltIn1(long v) {
         if (v == 0) return 0;
-        int power = (int)(v & -v);
+        int power = (int)(v & -v); // or v & ~(v-1)
         return (int)(Math.log(power)/Math.log(2));
-    }
-    public static int LSBWithoutBuilt1n2(long v) {
-        if (v == 0) return 0;
-        int power = (int)(v & -v);
-        // bisecting search to find power of 2
-        int lo = 0, hi = 63;
-        int mid;
-        long t;
-        // power=16 0b10000
-        // 0 63, mid=31, p>>31 = 0,
-        while (power > 0) {
-            mid = lo + (hi - lo)/2;
-            t = power >> mid;
-            if (t == 1L) {
-                return mid;
-            } else if (t > 0) {
-                lo = mid + 1;
-            } else {
-                hi = mid - 1;
-            }
-        }
-        throw new IllegalStateException("error in algorithm");
     }
 
     /**

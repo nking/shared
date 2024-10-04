@@ -393,7 +393,7 @@ public class Misc {
                     }
                 }
 
-                // === exclude task i ====
+                // === exclude task i by bringing in previous values and not adding this i to it ====
                 // by storing fPrev and pPrev after a check for existing entry in current tabProfits for i
                 if (tabProfits.get(ii).containsKey(fPrev)) {
                     if (tabProfits.get(ii).get(fPrev) < pPrev) {

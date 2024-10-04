@@ -359,24 +359,42 @@ public class MiscMath0Test extends TestCase {
         }
     }
 
+    public void testMSBRandom() {
+        long seed = System.nanoTime();
+        System.out.println("seed=" + seed);
+        Random rand = new Random(seed);
+        int nTests = 100;
+        for (int i = 0; i < nTests; ++i) {
+            long r = rand.nextLong();
+            int expAns = 63 - Long.numberOfLeadingZeros(Math.abs(r));
+            int expAns2 = MiscMath0.numberOfBits(r) - 1;
+            assert(expAns2 == expAns);
+            int ans = MiscMath0.MSBWithoutBuiltIn(r);
+            assertEquals(expAns, ans);
+        }
+    }
+
     public void testMSB_LSB() {
-        long t0 = (1L<<4)+1;
+        long t0 = (1L<<4)+1; // 17, 0b10001,  MSB=4, nBits=5
         assertEquals(4, MiscMath0.MSBWithoutBuiltIn(t0));
         assertEquals(5, MiscMath0.numberOfBits(t0));
         assertEquals(4, MiscMath0.MSBWithoutBuiltIn(-1*t0));
         assertEquals(5, MiscMath0.numberOfBits(-1*t0));
 
-        assertEquals(63, MiscMath0.MSBWithoutBuiltIn(Long.MAX_VALUE));
-        assertEquals(63, MiscMath0.MSBWithoutBuiltIn(Long.MIN_VALUE));
+        assertEquals(62, MiscMath0.MSBWithoutBuiltIn(Long.MAX_VALUE));
+        assertEquals(62, MiscMath0.MSBWithoutBuiltIn(Long.MIN_VALUE));
+
+        assertEquals(62, MiscMath0.MSBWithoutBuiltIn(Long.MAX_VALUE-1));
+        assertEquals(62, MiscMath0.MSBWithoutBuiltIn(Long.MIN_VALUE+1));
+
+        assertEquals(61, MiscMath0.MSBWithoutBuiltIn(1L<<62));
 
         long t1 = 0b10010000;
         assertEquals(4, MiscMath0.LSB(t1));
         assertEquals(4, MiscMath0.LSBWithoutBuiltIn1(t1));
-        assertEquals(4, MiscMath0.LSBWithoutBuilt1n2(t1));
 
         assertEquals(4, MiscMath0.LSB(-1*t1));
         assertEquals(4, MiscMath0.LSBWithoutBuiltIn1(-1*t1));
-        assertEquals(4, MiscMath0.LSBWithoutBuilt1n2(-1*t1));
     }
 
     public void testBitReverse() throws Exception {
