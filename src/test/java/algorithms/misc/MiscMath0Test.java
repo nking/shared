@@ -373,6 +373,25 @@ public class MiscMath0Test extends TestCase {
             assertEquals(expAns, ans);
         }
     }
+    public void testLSBRandom() {
+        long seed = System.nanoTime();
+        System.out.println("seed=" + seed);
+        Random rand = new Random(seed);
+        int nTests = 100;
+        for (int i = 0; i < nTests; ++i) {
+            long r = rand.nextLong();
+            String str = Long.toBinaryString(r);
+            int expAns = 0;
+            for (int j = str.length() - 1; j >= 0; --j) {
+                if (str.charAt(j) == '1') {
+                    break;
+                }
+                ++expAns;
+            }
+            assertEquals(expAns, MiscMath0.LSB(r));
+            assertEquals(expAns, MiscMath0.LSBWithoutBuiltIn1(r));
+        }
+    }
 
     public void testMSB_LSB() {
         long t0 = (1L<<4)+1; // 17, 0b10001,  MSB=4, nBits=5
