@@ -75,11 +75,11 @@ import java.util.concurrent.ThreadLocalRandom;
                         
 <span class="fc" id="L76">            factors2 = pollardRhoFactorization(factor, rand);</span>
 <span class="fc" id="L77">            iter = factors2.iterator();</span>
-<span class="fc bfc" id="L78" title="All 2 branches covered.">            while (iter.hasNext()) {</span>
-<span class="fc" id="L79">                factor2 = iter.next();</span>
-<span class="pc bpc" id="L80" title="1 of 2 branches missed.">                if (probablyPrime(factor2, s)) {</span>
-<span class="fc" id="L81">                    primeFactors.add(factor2);</span>
-<span class="fc" id="L82">                    continue;</span>
+<span class="pc bpc" id="L78" title="1 of 2 branches missed.">            while (iter.hasNext()) {</span>
+<span class="nc" id="L79">                factor2 = iter.next();</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">                if (probablyPrime(factor2, s)) {</span>
+<span class="nc" id="L81">                    primeFactors.add(factor2);</span>
+<span class="nc" id="L82">                    continue;</span>
                 }
 <span class="nc bnc" id="L84" title="All 2 branches missed.">                if (!factors.contains(factor2)) {</span>
 <span class="nc" id="L85">                    factorsList.add(factor2);</span>
@@ -303,7 +303,7 @@ import java.util.concurrent.ThreadLocalRandom;
 <span class="fc" id="L303">        int t = 1;</span>
         int div;
                         
-<span class="fc bfc" id="L306" title="All 2 branches covered.">        for (long i = 3; i &lt; n; i+=2) {</span>
+<span class="pc bpc" id="L306" title="1 of 2 branches missed.">        for (long i = 3; i &lt; n; i+=2) {</span>
 <span class="fc bfc" id="L307" title="All 2 branches covered.">            if (Math.floorMod(n - 1, i) == 0) {</span>
 <span class="fc" id="L308">                u = i;</span>
 <span class="fc" id="L309">                div = (int)((n-1)/u);</span>
@@ -315,9 +315,9 @@ import java.util.concurrent.ThreadLocalRandom;
             }
         }
         
-<span class="pc bpc" id="L318" title="1 of 4 branches missed.">        if (u == 1 &amp;&amp; t == 1) {</span>
+<span class="pc bpc" id="L318" title="3 of 4 branches missed.">        if (u == 1 &amp;&amp; t == 1) {</span>
             // keep u=1
-<span class="fc" id="L320">            t = (int)(Math.log(n-1)/Math.log(2));</span>
+<span class="nc" id="L320">            t = (int)(Math.log(n-1)/Math.log(2));</span>
         }
         //System.out.printf(&quot;(1&lt;&lt;t)*u=%d, (n-1)=%d, n=%d t=%d u=%d\n&quot;, (1&lt;&lt;t)*u, n-1, n, t, u);
         

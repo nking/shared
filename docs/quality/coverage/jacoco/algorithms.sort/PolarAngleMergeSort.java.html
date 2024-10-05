@@ -155,33 +155,31 @@ first implemented in project
 
 <span class="fc" id="L156">        int n1 = x1.length;</span>
         int i;
-        double theta;
-<span class="fc bfc" id="L159" title="All 2 branches covered.">        for (i = 0; i &lt; n1; i++) {</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">        for (i = 0; i &lt; n1; i++) {</span>
             // these are in radians
-<span class="fc" id="L161">            theta = Math.atan2((y1[i] - y0), (x1[i] - x0));</span>
-<span class="pc bpc" id="L162" title="1 of 2 branches missed.">            if (theta &lt; 0) {</span>
-<span class="nc" id="L163">                theta += 2. * Math.PI;</span>
+<span class="fc" id="L160">            p1[i] = Math.atan2((y1[i] - y0), (x1[i] - x0));</span>
+<span class="pc bpc" id="L161" title="1 of 2 branches missed.">            if (p1[i] &lt; 0) {</span>
+<span class="nc" id="L162">                p1[i] += 2. * Math.PI;</span>
             }
-<span class="fc" id="L165">            p1[i] = theta;</span>
             // to convert to degrees: multiply by (180/math.pi)
         }
 
-<span class="fc" id="L169">        int[] sortedIndexes1 = MiscSorter.mergeSortIncreasing(p1);</span>
-<span class="fc bfc" id="L170" title="All 2 branches covered.">        for (i = 0; i &lt; n1; ++i) {</span>
-<span class="fc" id="L171">            x[i+1] = x1[sortedIndexes1[i]];</span>
-<span class="fc" id="L172">            y[i+1] = y1[sortedIndexes1[i]];</span>
-<span class="fc" id="L173">            outPolarAngle[i+1] = p1[i];</span>
+<span class="fc" id="L167">        int[] sortedIndexes1 = MiscSorter.mergeSortIncreasing(p1);</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">        for (i = 0; i &lt; n1; ++i) {</span>
+<span class="fc" id="L169">            x[i+1] = x1[sortedIndexes1[i]];</span>
+<span class="fc" id="L170">            y[i+1] = y1[sortedIndexes1[i]];</span>
+<span class="fc" id="L171">            outPolarAngle[i+1] = p1[i];</span>
         }
 
         int nUsable;
         // need tolerance in radians.  for reference, 0.1 degrees = 0.001745 radians
-<span class="pc bpc" id="L178" title="1 of 2 branches missed.">        if (reduceToUniqueAngles) {</span>
-<span class="fc" id="L179">            nUsable = MiscSorter.reduceToUniquePolarAngles(x, y, outPolarAngle, tolerance);</span>
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">        if (reduceToUniqueAngles) {</span>
+<span class="fc" id="L177">            nUsable = MiscSorter.reduceToUniquePolarAngles(x, y, outPolarAngle, tolerance);</span>
         } else {
-<span class="nc" id="L181">            nUsable = x.length;</span>
+<span class="nc" id="L179">            nUsable = x.length;</span>
         }
 
-<span class="fc" id="L184">        return nUsable;</span>
+<span class="fc" id="L182">        return nUsable;</span>
     }
 
 
@@ -206,46 +204,46 @@ first implemented in project
     public static int sortCCWBy1stPoint(long[] x, long[] y, double[] outPolarAngle, boolean reduceToUniqueAngles,
                                         double tolerance) {
 
-<span class="pc bpc" id="L209" title="2 of 4 branches missed.">        if (x.length != outPolarAngle.length || x.length != y.length) {</span>
-<span class="nc" id="L210">            throw new IllegalArgumentException(&quot;x, y, and outPolarAngle must be same lengths&quot;);</span>
+<span class="pc bpc" id="L207" title="2 of 4 branches missed.">        if (x.length != outPolarAngle.length || x.length != y.length) {</span>
+<span class="nc" id="L208">            throw new IllegalArgumentException(&quot;x, y, and outPolarAngle must be same lengths&quot;);</span>
         }
 
-<span class="fc" id="L213">        long x0 = x[0];</span>
-<span class="fc" id="L214">        long y0 = y[0];</span>
+<span class="fc" id="L211">        long x0 = x[0];</span>
+<span class="fc" id="L212">        long y0 = y[0];</span>
 
-<span class="fc" id="L216">        long[] x1 = Arrays.copyOfRange(x, 1, x.length);</span>
-<span class="fc" id="L217">        long[] y1 = Arrays.copyOfRange(y, 1, y.length);</span>
-<span class="fc" id="L218">        double[] p1 = new double[x1.length];</span>
+<span class="fc" id="L214">        long[] x1 = Arrays.copyOfRange(x, 1, x.length);</span>
+<span class="fc" id="L215">        long[] y1 = Arrays.copyOfRange(y, 1, y.length);</span>
+<span class="fc" id="L216">        double[] p1 = new double[x1.length];</span>
 
-<span class="fc" id="L220">        int n1 = x1.length;</span>
+<span class="fc" id="L218">        int n1 = x1.length;</span>
         int i;
         double theta;
-<span class="fc bfc" id="L223" title="All 2 branches covered.">        for (i = 0; i &lt; n1; i++) {</span>
+<span class="fc bfc" id="L221" title="All 2 branches covered.">        for (i = 0; i &lt; n1; i++) {</span>
             // these are in radians
-<span class="fc" id="L225">            theta = Math.atan2((y1[i] - y0), (x1[i] - x0));</span>
-<span class="pc bpc" id="L226" title="1 of 2 branches missed.">            if (theta &lt; 0) {</span>
-<span class="nc" id="L227">                theta += 2. * Math.PI;</span>
+<span class="fc" id="L223">            theta = Math.atan2((y1[i] - y0), (x1[i] - x0));</span>
+<span class="pc bpc" id="L224" title="1 of 2 branches missed.">            if (theta &lt; 0) {</span>
+<span class="nc" id="L225">                theta += 2. * Math.PI;</span>
             }
-<span class="fc" id="L229">            p1[i] = theta;</span>
+<span class="fc" id="L227">            p1[i] = theta;</span>
             // to convert to degrees: multiply by (180/math.pi)
         }
 
-<span class="fc" id="L233">        int[] sortedIndexes1 = MiscSorter.mergeSortIncreasing(p1);</span>
-<span class="fc bfc" id="L234" title="All 2 branches covered.">        for (i = 0; i &lt; n1; ++i) {</span>
-<span class="fc" id="L235">            x[i+1] = x1[sortedIndexes1[i]];</span>
-<span class="fc" id="L236">            y[i+1] = y1[sortedIndexes1[i]];</span>
-<span class="fc" id="L237">            outPolarAngle[i+1] = p1[i];</span>
+<span class="fc" id="L231">        int[] sortedIndexes1 = MiscSorter.mergeSortIncreasing(p1);</span>
+<span class="fc bfc" id="L232" title="All 2 branches covered.">        for (i = 0; i &lt; n1; ++i) {</span>
+<span class="fc" id="L233">            x[i+1] = x1[sortedIndexes1[i]];</span>
+<span class="fc" id="L234">            y[i+1] = y1[sortedIndexes1[i]];</span>
+<span class="fc" id="L235">            outPolarAngle[i+1] = p1[i];</span>
         }
 
         int nUsable;
         // need tolerance in radians.  for reference, 0.1 degrees = 0.001745 radians
-<span class="pc bpc" id="L242" title="1 of 2 branches missed.">        if (reduceToUniqueAngles) {</span>
-<span class="fc" id="L243">            nUsable = MiscSorter.reduceToUniquePolarAngles(x, y, outPolarAngle, tolerance);</span>
+<span class="pc bpc" id="L240" title="1 of 2 branches missed.">        if (reduceToUniqueAngles) {</span>
+<span class="fc" id="L241">            nUsable = MiscSorter.reduceToUniquePolarAngles(x, y, outPolarAngle, tolerance);</span>
         } else {
-<span class="nc" id="L245">            nUsable = x.length;</span>
+<span class="nc" id="L243">            nUsable = x.length;</span>
         }
 
-<span class="fc" id="L248">        return nUsable;</span>
+<span class="fc" id="L246">        return nUsable;</span>
     }
 
 }

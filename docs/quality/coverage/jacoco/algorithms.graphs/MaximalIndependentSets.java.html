@@ -609,8 +609,8 @@ import thirdparty.HungarianAlgorithm;
         
 <span class="fc" id="L610">        int[] indexes = new int[n];</span>
         int i;
-<span class="fc bfc" id="L612" title="All 2 branches covered.">        for(i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L613">            indexes[i] = i;</span>
+<span class="pc bpc" id="L612" title="1 of 2 branches missed.">        for(i = 0; i &lt; n; ++i) {</span>
+<span class="nc" id="L613">            indexes[i] = i;</span>
         }
         
 <span class="fc" id="L616">        int[] a = Arrays.copyOf(edgeDegreesLow.toArray(), n);</span>
@@ -618,14 +618,14 @@ import thirdparty.HungarianAlgorithm;
 <span class="fc" id="L618">        MiscSorter.sortBy1stArg(a, indexes);</span>
         
 <span class="fc" id="L620">        PairInt[] s1 = new PairInt[n];</span>
-<span class="fc bfc" id="L621" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L622">            s1[i] = edgeConflicts.get(indexes[i]);</span>
+<span class="pc bpc" id="L621" title="1 of 2 branches missed.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="nc" id="L622">            s1[i] = edgeConflicts.get(indexes[i]);</span>
         }
 <span class="fc" id="L624">        edgeConflicts.clear();</span>
 <span class="fc" id="L625">        edgeDegreesLow.clear();</span>
-<span class="fc bfc" id="L626" title="All 2 branches covered.">        for (i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L627">            edgeConflicts.add(s1[i]);</span>
-<span class="fc" id="L628">            edgeDegreesLow.add(a[i]);</span>
+<span class="pc bpc" id="L626" title="1 of 2 branches missed.">        for (i = 0; i &lt; n; ++i) {</span>
+<span class="nc" id="L627">            edgeConflicts.add(s1[i]);</span>
+<span class="nc" id="L628">            edgeDegreesLow.add(a[i]);</span>
         }
         
 <span class="fc" id="L631">    }</span>
@@ -719,17 +719,17 @@ import thirdparty.HungarianAlgorithm;
 
 <span class="fc" id="L720">                nhbr = iterNhbr.next();</span>
 
-<span class="fc bfc" id="L722" title="All 2 branches covered.">                if (!s.contains(nhbr)) {</span>
+<span class="pc bpc" id="L722" title="1 of 2 branches missed.">                if (!s.contains(nhbr)) {</span>
 <span class="fc" id="L723">                    continue;</span>
                 }
 
-<span class="fc" id="L726">                dU = gP.get(nhbr).size();</span>
-<span class="fc bfc" id="L727" title="All 2 branches covered.">                if (v &lt; nhbr) {</span>
-<span class="fc" id="L728">                    edgeConflicts.add(new PairInt(v, nhbr));</span>
+<span class="nc" id="L726">                dU = gP.get(nhbr).size();</span>
+<span class="nc bnc" id="L727" title="All 2 branches missed.">                if (v &lt; nhbr) {</span>
+<span class="nc" id="L728">                    edgeConflicts.add(new PairInt(v, nhbr));</span>
                 } else {
-<span class="fc" id="L730">                    edgeConflicts.add(new PairInt(nhbr, v));</span>
+<span class="nc" id="L730">                    edgeConflicts.add(new PairInt(nhbr, v));</span>
                 }
-<span class="fc" id="L732">                edgeDegreesLow.add(Math.min(nhbrsSet.size(), dU));</span>
+<span class="nc" id="L732">                edgeDegreesLow.add(Math.min(nhbrsSet.size(), dU));</span>
             }
         }
 
@@ -738,20 +738,20 @@ import thirdparty.HungarianAlgorithm;
         int u;
         int d;
         
-<span class="fc bfc" id="L741" title="All 2 branches covered.">        for (PairInt uv : edgeConflicts) {</span>
-<span class="fc" id="L742">            u = uv.getX();</span>
-<span class="fc" id="L743">            v = uv.getY();</span>
+<span class="pc bpc" id="L741" title="1 of 2 branches missed.">        for (PairInt uv : edgeConflicts) {</span>
+<span class="nc" id="L742">            u = uv.getX();</span>
+<span class="nc" id="L743">            v = uv.getY();</span>
             //for each conflicting edge, check again for presence in S and then keep only the higher degree vertex
-<span class="pc bpc" id="L745" title="1 of 4 branches missed.">            if (s.contains(u) &amp;&amp; s.contains(v)) {</span>
-<span class="fc" id="L746">                d = gP.get(v).size();</span>
-<span class="fc" id="L747">                dU = gP.get(u).size();</span>
-<span class="pc bpc" id="L748" title="1 of 2 branches missed.">                if (dU &gt; d) {</span>
+<span class="nc bnc" id="L745" title="All 4 branches missed.">            if (s.contains(u) &amp;&amp; s.contains(v)) {</span>
+<span class="nc" id="L746">                d = gP.get(v).size();</span>
+<span class="nc" id="L747">                dU = gP.get(u).size();</span>
+<span class="nc bnc" id="L748" title="All 2 branches missed.">                if (dU &gt; d) {</span>
 <span class="nc" id="L749">                    s.remove(v);</span>
                 } else {
-<span class="fc" id="L751">                    s.remove(u);</span>
+<span class="nc" id="L751">                    s.remove(u);</span>
                 }
             }
-<span class="fc" id="L754">        }</span>
+<span class="nc" id="L754">        }</span>
                     
 <span class="fc" id="L756">    }</span>
 }

@@ -172,7 +172,7 @@ import java.util.Arrays;
                         + &quot;=&gt;[&quot; + (i-1) + &quot; &quot; + (j-1) + &quot;]&quot;
                 );*/
 <span class="fc bfc" id="L174" title="All 2 branches covered.">                if (stringEdit) {</span>
-<span class="fc" id="L175">                    d[i][j] = minimum(d[i - 1][j - 1] + c, d[i - 1][j] + cDel, d[i][j - 1] + cIns);</span>
+<span class="fc" id="L175">                    d[i][j] = Math.min(Math.min(d[i - 1][j - 1] + c, d[i - 1][j] + cDel), d[i][j - 1] + cIns);</span>
                 } else {
 <span class="fc" id="L177">                    d[i][j] = Math.max(Math.max(d[i - 1][j - 1] + c, d[i - 1][j] + cDel), d[i][j - 1] + cIns);</span>
                 }
@@ -196,9 +196,9 @@ import java.util.Arrays;
 <span class="fc bfc" id="L196" title="All 2 branches covered.">            } else if (d[i][j] == d[i][j-1] + cIns) {</span>
 <span class="fc" id="L197">                j--;</span>
             } else {
-<span class="fc" id="L199">                outIndexes.add(i-1, j-1);// subtracting 1 for 0-based indexes</span>
-<span class="fc" id="L200">                i--;</span>
-<span class="fc" id="L201">                j--;</span>
+<span class="fc" id="L199">                i--;</span>
+<span class="fc" id="L200">                j--;</span>
+<span class="fc" id="L201">                outIndexes.add(i, j);</span>
             }
         }
         //System.out.printf(&quot;m=%d, n=%d, d=\n%s\n&quot;, m, n, FormatArray.toString(d, &quot;%d&quot;));
@@ -544,16 +544,16 @@ import java.util.Arrays;
     }
     
     private int minimum(int a, int b, int c) {
-<span class="fc bfc" id="L547" title="All 2 branches covered.">        if (a &lt;= b) {</span>
-<span class="fc bfc" id="L548" title="All 2 branches covered.">            if (a &lt;= c) {</span>
-<span class="fc" id="L549">                return a;</span>
+<span class="nc bnc" id="L547" title="All 2 branches missed.">        if (a &lt;= b) {</span>
+<span class="nc bnc" id="L548" title="All 2 branches missed.">            if (a &lt;= c) {</span>
+<span class="nc" id="L549">                return a;</span>
             } else {
-<span class="fc" id="L551">                return c;</span>
+<span class="nc" id="L551">                return c;</span>
             }
         } else {
             // b &lt; a
-<span class="pc bpc" id="L555" title="1 of 2 branches missed.">            if (b &lt;= c) {</span>
-<span class="fc" id="L556">                return b;</span>
+<span class="nc bnc" id="L555" title="All 2 branches missed.">            if (b &lt;= c) {</span>
+<span class="nc" id="L556">                return b;</span>
             } else {
 <span class="nc" id="L558">                return c;</span>
             }

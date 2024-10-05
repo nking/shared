@@ -142,7 +142,7 @@ import java.util.Arrays;
 <span class="fc" id="L142">                predecessor[v] = u;</span>
 <span class="fc" id="L143">                visit(v);</span>
 <span class="fc bfc" id="L144" title="All 2 branches covered.">            } else if (predecessor[v] == -1) {</span>
-                // visited, but no predecessor yet.  this is a back edge
+                // visited v because of order invoked from walk, but predecessor of v was not visited before v
 <span class="fc" id="L146">                predecessor[v] = u;</span>
             }
 <span class="fc" id="L148">            next = next.getNext();</span>

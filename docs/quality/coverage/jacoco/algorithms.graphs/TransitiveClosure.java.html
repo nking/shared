@@ -46,14 +46,14 @@ public class TransitiveClosure {
      @return 
      */
     public boolean[][] calc(boolean[][] w) {
-                
-<span class="fc" id="L50">        int n = w.length;</span>
-        
-<span class="fc" id="L52">        boolean[][] t = new boolean[n][n];</span>
-<span class="fc bfc" id="L53" title="All 2 branches covered.">        for (int i = 0; i &lt; n; i++) {</span>
-<span class="fc" id="L54">            t[i] = Arrays.copyOf(w[i], w[i].length);</span>
+
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">        if (w.length != w[0].length) {</span>
+<span class="nc" id="L51">            throw new IllegalArgumentException(&quot;w must be a square matrix&quot;);</span>
         }
+                
+<span class="fc" id="L54">        int n = w.length;</span>
         
+<span class="fc" id="L56">        boolean[][] t = new boolean[n][n];</span>
 <span class="fc bfc" id="L57" title="All 2 branches covered.">        for (int i = 0; i &lt; n; i++) {</span>
 <span class="fc bfc" id="L58" title="All 2 branches covered.">            for (int j = 0; j &lt; n; j++) {</span>
 <span class="fc bfc" id="L59" title="All 4 branches covered.">                if (i == j || w[i][j]) {</span>

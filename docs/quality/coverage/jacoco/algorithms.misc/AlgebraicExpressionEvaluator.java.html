@@ -28,7 +28,7 @@ import java.util.*;
      * Recognized operators are +, -, *, /,  and ^ as power operator.
      * The method does not evaluate binary operators (e.g. |, &amp;&amp;, or ^ as XOR).
      * The method handles parenthesization in context of use in ordering and prioritizing operations,
-     * but not handle square brackets or other separators.
+     * but does not handle square brackets or other separators.
      * The meothd can handle spaces.
      *
      * The runtime exception IllegalArgumentException is thrown if expression isn't a valid format,
@@ -101,7 +101,7 @@ import java.util.*;
         /*
         while (i &lt;= j) {
             if c == '('
-                cStack.push(d)
+                cStack.push(c)
             else if c == ')' {
                 while (!cStack.isEmpty() &amp;&amp; cStack.peek != '(') {
                     t = new OpPair(cStack.pop())
@@ -318,7 +318,7 @@ import java.util.*;
 
     protected static class CRange {
         final int i0; // beginning index of operator or number
-        final int i1; // ending index of operator or number
+        final int i1; // ending index of operator or number, inclusive
         public CRange(int idx0, int idx1) {
             this.i0 = idx0;
             this.i1 = idx1;
