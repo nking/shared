@@ -31,6 +31,16 @@ public class Shuffle {
         
         fisherYates(a, rand);
     }
+
+    public static void fisherYates(float[] a) throws NoSuchAlgorithmException {
+
+        SecureRandom rand = SecureRandom.getInstanceStrong();
+        long seed = System.nanoTime();
+        //System.out.println("SEED=" + seed);
+        rand.setSeed(seed);
+
+        fisherYates(a, rand);
+    }
     
     /**
      * randomly shuffle the cards.
@@ -71,7 +81,21 @@ public class Shuffle {
             a[j] = swap;
         }
     }
-    
+
+    public static void fisherYates(float[] a, SecureRandom rand) {
+
+        int n = a.length;
+        int j;
+        float swap;
+        for (int i = (n-1); i > 0; i--) {
+            // 0 <= j <= i
+            j = rand.nextInt(i + 1);
+            swap = a[i];
+            a[i] = a[j];
+            a[j] = swap;
+        }
+    }
+
     /**
      * randomly shuffle the cards.
      * as the number of points drawn from random number generator bounded next int method
