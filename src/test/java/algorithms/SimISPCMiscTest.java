@@ -107,6 +107,8 @@ public class SimISPCMiscTest extends TestCase {
         int idx0 = nSegment*programIndex;
         int idx1 = nSegment*(programIndex + 1) -1;
 
+        // the span of this program is log_2(isWidth) = 3
+
         for (int prId = 2; prId <= nSegment; prId <<= 1) {
             // each prId is 1 round of computation on the vector of data between idx0 and idx1
             // we pretend the vector operations in each prId level is SPMD (single process multiple data) and is executed
@@ -115,7 +117,7 @@ public class SimISPCMiscTest extends TestCase {
             int off0 = prId - 1;
             int off1 = (prId/2) - 1;
 
-            // pretend this is SPMD, one process over the vector of data
+            // pretend this is SPMD
             for (int j = idx0; j < idx1; j+= prId) {
                 x[j + off0] *= x[j+off1];
             }
