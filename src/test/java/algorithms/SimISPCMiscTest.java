@@ -79,7 +79,6 @@ public class SimISPCMiscTest extends TestCase {
             final int programIndex = i;
             threads[i] = new Thread(() -> mult(x, programIndex, isWidth));
         }
-        Runtime.getRuntime().exec()
 
         // start a thread for each.  it helps to show that the order of execution doesn't matter.  there are no
         // dependencies between the work in each there here
