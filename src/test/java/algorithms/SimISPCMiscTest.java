@@ -100,19 +100,19 @@ public class SimISPCMiscTest extends TestCase {
         return res;
     }
 
-    protected void mult(float[] x, int programIndex, int nSegment) {
+    protected void mult(float[] x, int programIndex, int isWidth) {
         // x and results are uniform shared variables.
 
         // begin spmd replacement.  estimating the lane as offsets in the uniform shared variable x
-        int idx0 = nSegment*programIndex;
-        int idx1 = nSegment*(programIndex + 1) -1;
+        int idx0 = isWidth*programIndex;
+        int idx1 = isWidth*(programIndex + 1) -1;
 
-        // the span of this program is log_2(isWidth) = 3
+        // the span of this program is log_2(isWidth) = 3 for SPMD execution
 
-        for (int prId = 2; prId <= nSegment; prId <<= 1) {
+        for (int prId = 2; prId <= isWidth; prId <<= 1) {
             // each prId is 1 round of computation on the vector of data between idx0 and idx1
             // we pretend the vector operations in each prId level is SPMD (single process multiple data) and is executed
-            // simultaneously.
+            // simultaneously for this lane.
 
             int off0 = prId - 1;
             int off1 = (prId/2) - 1;
