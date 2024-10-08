@@ -34,7 +34,7 @@ public class SimISPCMiscTest extends TestCase {
 
     The ISPC gang uses single process multiple data (SPMD) model.
 
-    below are notes from Pharr and Mark, "ispc: A SPMD Compiler for High Performance CPU Programming:
+    below are notes from Pharr and Mark, "ispc: A SPMD Compiler for High Performance CPU Programming"
      */
     public void test0() throws Exception {
 
@@ -91,7 +91,7 @@ public class SimISPCMiscTest extends TestCase {
             thread.join();
         }
 
-        // when done with all threads, multiply results for each line
+        // when done with all threads, multiply results for each lane
         float res = 1.f;
         for (int i = isWidth-1; i < x.length; i += isWidth) {
             res *= x[i];
@@ -103,7 +103,7 @@ public class SimISPCMiscTest extends TestCase {
     protected void mult(float[] x, int programIndex, int nSegment) {
         // x and results are uniform shared variables.
 
-        // begin spmd replacement.  give it the start index for segment and the current index (which is the last in segment)
+        // begin spmd replacement.  estimating the lane as offsets in the uniform shared variable x
         int idx0 = nSegment*programIndex;
         int idx1 = nSegment*(programIndex + 1) -1;
 
