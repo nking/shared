@@ -42,6 +42,7 @@
     <property name="instr.out.dir"       value="${classes.dir}/instr-classes" />
     <property name="log.dir"             value="${basedir}/log"/>
     <property name="logfile"             value="${log.dir}/build.log"/>
+    <property name="tests.dir.c"             value="${basedir}/src/test/c"/>
 
     <!-- set compiler options -->
     <!--<property name="compile.debug"   value="false"/>-->
@@ -433,5 +434,28 @@
     </target>
 
     <target name="runCoverage" depends="clean,debug,compile,compileTests,coverage,report"/>
-    
+
+    <target name="cmakeSimISPCTest">
+        <!-- TODO: consider adding an argument for the package name -->
+        <property name="c_build_dir"         value="${classes.dir}/algorithms"/>
+        <mkdir dir="${c_build_dir}" />
+        <!--
+             cd to ${classes.dir}/algorithms which is bin
+             cmake ${tests.dir.c}/algorithms
+             cmake dash-dash build .
+             -->
+        <exec executable="cmake" dir="${c_build_dir}" failonerror="true">
+            <arg line="${tests.dir.c}/algorithms" />
+        </exec>
+        <!-- or use -S ${tests.dir.c}/algorithms and -B ${c_build_dir}-->
+        <exec executable="cmake" dir="${c_build_dir}" failonerror="true">
+            <arg line="--build ." />
+        </exec>
+    </target>
+    <target name="runSimISPCTest">
+        <property name="c_build_dir"         value="${classes.dir}/algorithms"/>
+        <exec executable="${c_build_dir}/SimISPCMiscTest" failonerror="true">
+        </exec>
+    </target>
+
 </project>

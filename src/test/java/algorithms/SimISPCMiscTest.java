@@ -65,7 +65,7 @@ public class SimISPCMiscTest extends TestCase {
 
         int programCount = x.length/isWidth;
         // emulating ISPC dividing the work among x.length/isWidth workers.
-        /* NOTE that the ISPC gang instances all run in the same hardware thread and context, not separate threads.
+        /* NOTE that the ISPC gang instances all run in the same hardware thread and context.
         there are no more than 2 program instances running in a gang - no more than twice the SIMD width of the hardware
         its running on.
             e.g. for a CPU running 4-wide SSE instruction set, there can be 4 or 8 program instances running in a gang.
@@ -79,6 +79,7 @@ public class SimISPCMiscTest extends TestCase {
             final int programIndex = i;
             threads[i] = new Thread(() -> mult(x, programIndex, isWidth));
         }
+        Runtime.getRuntime().exec()
 
         // start a thread for each.  it helps to show that the order of execution doesn't matter.  there are no
         // dependencies between the work in each there here
@@ -97,7 +98,7 @@ public class SimISPCMiscTest extends TestCase {
     }
 
     protected void mult(float[] x, int programIndex, int isWidth) {
-        // x and results are uniform shared variables.
+        // x is a uniform shared variable array.
 
         // begin spmd replacement.  estimating the lane as offsets in the uniform shared variable x
         int idx0 = isWidth*programIndex;
