@@ -53,7 +53,7 @@ public class SimISPCMiscTest extends TestCase {
         float ans = mult(x, isWidth);
         assertTrue(Math.abs((expAns/ans)-1) <1E-6);
 
-        // TODO permute x
+        //permute x to show order doesn't matter
         x =  Arrays.copyOf(origX, x.length);
         Shuffle.fisherYates(x);
         ans = mult(x, isWidth);
@@ -77,15 +77,11 @@ public class SimISPCMiscTest extends TestCase {
         Thread[] threads = new Thread[programCount];
         for (int i = 0; i < programCount; ++i) {
             final int programIndex = i;
-            threads[i] = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    mult(x, programIndex, isWidth);
-                }
-            });
+            threads[i] = new Thread(() -> mult(x, programIndex, isWidth));
         }
 
-        // start a thread for each.  it helps to show that the order of execution doesn't matter
+        // start a thread for each.  it helps to show that the order of execution doesn't matter.  there are no
+        // dependencies between the work in each there here
         for (Thread thread : threads) {
             thread.start();
             thread.join();
