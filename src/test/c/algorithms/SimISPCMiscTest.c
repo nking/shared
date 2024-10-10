@@ -41,7 +41,7 @@ https://gfxcourses.stanford.edu/cs149/fall23/lecture/
 
 struct thread_data {
    float* x; 
-   int programIndex; 
+   int instanceNumber;
    int isWidth;
 };
 
@@ -54,8 +54,8 @@ void *multInThread(void *arg) {
 
    // begin spmd replacement.  
    // emulating the vector lane as offsets in the uniform shared variable x
-   int idx0 = data->isWidth * data->programIndex;
-   int idx1 = data->isWidth * (data->programIndex + 1) -1;
+   int idx0 = data->isWidth * data->instanceNumber;
+   int idx1 = data->isWidth * (data->instanceNumber + 1) -1;
 
    // the span of this program is log_2(isWidth) = 3 for SPMD execution
 
@@ -80,7 +80,7 @@ void *multInThread(void *arg) {
 float mult(float* x, int xLen, int isWidth) {
    assert(xLen % isWidth == 0); 
 
-   int programCount = xLen/isWidth;
+   int nInstances = xLen/isWidth;
 
    /* emulating ISPC dividing the work among xLen/isWidth workers.
       NOTE that the ISPC gang instances all run in the same hardware 
@@ -97,11 +97,11 @@ float mult(float* x, int xLen, int isWidth) {
    */
 
 
-   for (int i = 0; i < programCount; ++i) {
+   for (int i = 0; i < nInstances; ++i) {
 
       struct thread_data data;
       data.x = x;
-      data.programIndex = i;
+      data.instanceNumber = i;
       data.isWidth = isWidth;
 
       pthread_t thread_id;
@@ -142,7 +142,7 @@ void test0() {
    float expAns = 1.f;
    // simply using 10:25 for values
    for (int i = 0; i < n; ++i) {
-      x[i] = (i + 10);
+      x[i] = (float)(i + 10);
       origX[i] = x[i];
       expAns *= x[i];
    }
