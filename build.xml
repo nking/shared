@@ -477,4 +477,21 @@
         </exec>
     </target>
 
+    <target name="cmakeSIMDTest">
+        <property name="c_build_dir"         value="${classes.dir}/algorithms/simd"/>
+        <mkdir dir="${c_build_dir}" />
+        <exec executable="cmake" dir="${c_build_dir}" failonerror="true">
+            <arg line="${tests.dir.c}/algorithms/simd" />
+        </exec>
+        <!-- or use -S ${tests.dir.c}/algorithms and -B ${c_build_dir}-->
+        <exec executable="cmake" dir="${c_build_dir}" failonerror="true">
+            <arg line="--build ." />
+        </exec>
+    </target>
+    <target name="runSIMDTests">
+        <property name="c_build_dir"         value="${classes.dir}/algorithms/simd"/>
+        <exec executable="${c_build_dir}/SIMDMiscTest" failonerror="true">
+        </exec>
+    </target>
+
 </project>
