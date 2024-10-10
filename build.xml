@@ -458,4 +458,23 @@
         </exec>
     </target>
 
+    <target name="cmakeISPCTest">
+        <property name="c_build_dir"         value="${classes.dir}/algorithms/ispc"/>
+        <mkdir dir="${c_build_dir}" />
+        <exec executable="cmake" dir="${c_build_dir}" failonerror="true">
+            <arg line="${tests.dir.c}/algorithms/ispc" />
+        </exec>
+        <!-- or use -S ${tests.dir.c}/algorithms and -B ${c_build_dir}-->
+        <exec executable="cmake" dir="${c_build_dir}" failonerror="true">
+            <arg line="--build ." />
+        </exec>
+    </target>
+    <target name="runISPCTests">
+        <property name="c_build_dir"         value="${classes.dir}/algorithms/ispc"/>
+        <exec executable="${c_build_dir}/ISPCMiscTest" failonerror="true">
+        </exec>
+        <exec executable="${c_build_dir}/ISPCMisc16Test" failonerror="true">
+        </exec>
+    </target>
+
 </project>
