@@ -22,6 +22,8 @@ int main() {
 
     assert(fabsf((expAns/ans) - 1) < 5E-5);
 
+    printf("Done\n");
+
     return 0;
 }
 
