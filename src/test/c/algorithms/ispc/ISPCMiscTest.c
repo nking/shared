@@ -1,28 +1,26 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>   //  fabsf
+#include <assert.h>
 
 // Include the header file that the ispc compiler generates
 #include "ispc_function.h"
 
 int main() {
-    float vin[16], vout[16];
+    float vin[16];
 
     float expAns = 1.f;
 
-    // Initialize input buffer
     for (int i = 0; i < 16; ++i) {
         vin[i] = (float)(i + 10);
         expAns *= vin[i];
     }
 
-    // Call simple() function from simple.ispc file
-    ispc_function(16, vin, vout);
+    float ans = ispc_function(16, vin);
 
-    // Print results
-    for (int i = 0; i < 16; ++i)
-        printf("%d: simple(%f) = %f\n", i, vin[i], vout[i]);
+    //printf("expAns=%f, ans=%f\n", expAns, ans);
 
-    printf("expAns=%f\n", expAns);
+    assert(fabsf((expAns/ans) - 1) < 5E-5);
 
     return 0;
 }
