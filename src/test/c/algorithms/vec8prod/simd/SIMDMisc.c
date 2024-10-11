@@ -81,7 +81,7 @@ void *multInThread(void *arg) {
       ++nIter;
    }
 
-   // store result back into x
+   // store result back into x[idx0]
    data->x[idx0] = ((float*)&avx_x)[0];//_mm_cvtss_f32(_mm256_extractf128_ps(avx_x, 0));
 
    //printf("   thread %d, result x[idx0]=%f\n", data->instanceNumber, data->x[idx0]);

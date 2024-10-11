@@ -84,7 +84,7 @@ export uniform float ispc_function(uniform int N,  float * uniform x) {
    uniform int nIter = 0;
    while (nIter < 4) {
        foreach (i=0...N) { // parallel execution
-           // each gang process span is 1
+           // each gang process span is ~ 1
            if (programCount==8) {
                vec8product(tmpX, tmpY, i, 1<<nIter);
            } else if (programCount==16 && programCount == N) {
@@ -99,6 +99,72 @@ export uniform float ispc_function(uniform int N,  float * uniform x) {
    }
    return tmpX[0];
 }
+
+// ------------ use more than one processor by launching tasks ---------
+/* --- task not avail for architecture x86_64 ---
+The workaround is to supply a software thread replacement:
+https://ispc.github.io/ispc.html#task-parallelism-runtime-requirements
+TODO: copy https://github.com/ispc/ispc/blob/main/examples/common/tasksys.cpp
+and edit compilation in CMakeLists.txt to use it.
+*/
+/*
+task void vec8prodtask(float * uniform x, uniform int N) {
+
+    // taskIndex
+    // taskCount
+    // threadIndex - hardware thread index in range [0, threadCount)
+    // threadCount. threadCount gives the total number of hardware threads that have been launched by the task system.
+    // The threadIndex can be used for accessing data that is private to the current thread and thus doesn't
+    // require synchronization to access under parallel execution.
+
+    // process data from indexes (programCount * taskIndex) to (programCount * (taskIndex + 1))
+
+    float * uniform tmpX = x;
+    float * uniform tmpY = uniform new float[N];
+
+    //print("programCount=%, N=%, expecting nInstances=%\n", programCount, N, N / programCount);
+
+    uniform int nIter = 0;
+    while (nIter < 4) {
+        // each gang process span is ~ 1, and the vector lane processed is x[taskIndex*programCount] and programCount in length
+        vec8product(tmpX, tmpY, taskIndex, 1<<nIter);
+
+        float * uniform tmp = tmpX;
+        tmpX = tmpY;
+        tmpY = tmp;
+        ++nIter;
+        //print("nIter=%\n", nIter);
+    }
+}
+
+export uniform float ispc_function_tasks(uniform int N,  float * uniform x) {
+
+   // number of cores on machine
+   int nCores = num_cores();
+   // data per vector lane:
+   //int nSegment = N / programCount;
+   //assert(nSegment > 0);
+
+   //schedule the nSegments as tasks (hardware threads)
+   uniform int nTasks = N / programCount;
+
+   for (uniform int i = 0; i < nTasks; ++i) {
+       launch vec8prodtask(x, N);
+   }
+
+   sync;
+
+   // x[0], x[1*programCount], x[2*programCount], etc hold the factors from each segment
+   uniform float res = 1.f;
+   for (uniform int i = 0; i < nTasks; ++i) {
+       res *= x[programCount * i];
+
+       print("i=%, x=%\n", i, x[programCount * i]);
+   }
+
+   return res;
+}
+*/
 
 /*
 memory allocation notes from ispc manual:

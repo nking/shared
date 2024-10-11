@@ -26,7 +26,7 @@ project(${PROJECT_NAME})
 ##   multiplication for programIndex=8.
 add_custom_command(
     OUTPUT ispc_function.o
-    COMMAND ispc -g -o ispc_function.o -h ${CMAKE_SOURCE_DIR}/ispc_function.h --addressing=32 --target=avx2-i32x8 ${CMAKE_SOURCE_DIR}/ispc_function.ispc
+    COMMAND ispc -g -o ispc_function.o --pic -h ${CMAKE_SOURCE_DIR}/ispc_function.h --addressing=32 --target=avx2-i32x8 ${CMAKE_SOURCE_DIR}/ispc_function.ispc
     DEPENDS ispc_function.ispc
 )
 
