@@ -33,16 +33,16 @@ fn test_all() {
     //   cargo test -- --nocapture
     println!("inside test_all");
 
-    // generate 128 random vector of numbers in range [1,1.65] whose porduct is <= 3.4E38
-    const N: usize = 16;//128;
+    // generate 128 random vector of numbers in range [1,1.65] whose product is <= 3.4E38
+    const N: usize = 128;
     let mut x = [0.0f32; N];
     let mut rng = rand::thread_rng();
-    //for xi in x.iter_mut() {
-    //    *xi = 0.65f32 + rng.gen::<f32>();
-    //}
-    for i in 0..N {
-        x[i] = (i + 10) as f32;
+    for xi in x.iter_mut() {
+        *xi = 0.65f32 + rng.gen::<f32>();
     }
+    //for i in 0..N {
+    //    x[i] = (i + 10) as f32;
+    //}
 
     //TODO: add timers for serial execution here:
     let mut exp_ans = 1.0f32;
