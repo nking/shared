@@ -13,25 +13,23 @@ pub fn multithread_partition_func(&N : &usize, x : &[f32]) -> f32 {
     let mut split_prev : usize = 0;
     let mut split_next : usize = split_prev + N_VEC;
 
-    thread::scope(|s| {
-        for _i in 0..n_instances {
-                        
-            let mut xp:[f32; N_VEC] = [0.0f32; N_VEC];
-            xp.copy_from_slice(&x[split_prev..split_next]);
+    for _i in 0..n_instances {
+                    
+        let mut xp:[f32; N_VEC] = [0.0f32; N_VEC];
+        xp.copy_from_slice(&x[split_prev..split_next]);
 
-            let thr = s.spawn(move || {
-                let res: f32 = multithread_partition_thread(& N_VEC, &mut xp); 
-                res 
-            });
-            // unwrap is needed to get the result
-            let res = thr.join().unwrap();
-            //println!("join res={:#?}, and xp[0]={}", res, &xp[N_VEC-1]);
-            prod_results.push(res);
+        let thr = thread::spawn(move || {
+            let res: f32 = multithread_partition_thread(& N_VEC, &mut xp); 
+            res 
+        });
+        // unwrap is needed to get the result
+        let res = thr.join().unwrap();
+        //println!("join res={:#?}, and xp[0]={}", res, &xp[N_VEC-1]);
+        prod_results.push(res);
 
-            split_prev = split_next;
-            split_next = split_prev + N_VEC;
-        }
-    });
+        split_prev = split_next;
+        split_next = split_prev + N_VEC;
+    }
 
     let mut res : f32 = 1.0f32;
     for r in &prod_results {
@@ -67,7 +65,7 @@ pub fn multithread_func(&N : &usize, x : &mut [f32]) -> f32 {
     //
     // I can modify the algorithm in 4 ways:
     // (1) copy partition the mutable array x into n_instances.
-    // let the each thread process its copied partiton and return a result.
+    // let each thread process its copied partition and return a result.
     // (2) wrap the entire data array x, unpartitioned into an Arc 
     // (e.g. Arc<Mutex<x>> and let rust
     //     perform synchronization (hopefully, only where needed, which in

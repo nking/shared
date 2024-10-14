@@ -7,6 +7,13 @@ use crate::simd_func::simd_func;
 use crate::multithread_func::multithread_func;
 #[allow(unused_imports)]
 use rand::Rng;
+#[allow(unused_imports)]
+use rand::prelude::*;
+#[allow(unused_imports)]
+use rand_chacha::ChaCha8Rng;
+#[allow(unused_imports)]
+use std::time::SystemTime;
+
 
 // to use more than one in library: use std::{cmp::Ordering, io};
 
@@ -36,7 +43,15 @@ fn test_all() {
     // generate 128 random vector of numbers in range [1,1.65] whose product is <= 3.4E38
     const N: usize = 128;
     let mut x = [0.0f32; N];
-    let mut rng = rand::thread_rng();
+
+    let seed: u64 = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH)
+    .unwrap().as_secs();
+    let mut rng = rand_chacha::ChaCha8Rng::seed_from_u64(seed);
+    //let mut seed: <ChaCha8Rng as SeedableRng>::Seed = Default::default();
+    println!("seed={:?}", seed);
+    //thread_rng().fill(&mut seed);
+    //let mut rng = ChaCha8Rng::from_seed(seed);
+    //let mut rng = rand::thread_rng();
     for xi in x.iter_mut() {
         *xi = 0.65f32 + rng.gen::<f32>();
     }
@@ -65,15 +80,8 @@ fn test_all() {
 
 fn main() {
 
-
-
     //test_all();
 
-    //let s1 = String::from("tic");
-    //let s2 = String::from("tac");
-    //let s3 = String::from("toe");
-    //let s = format!("{s1}-{s2}-{s3}");
-    //println!("s1={s1}");
 }
 
 
