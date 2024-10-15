@@ -14,27 +14,6 @@ use rand_chacha::ChaCha8Rng;
 #[allow(unused_imports)]
 use std::time::SystemTime;
 
-use std::{panic, thread};
-use std::thread::spawn;
-use std::sync::{Mutex, Arc};
-use std::cell::Cell;struct User {
-    age: Cell<usize>
-}
-#[test]
-fn test_arc() {
-    let user_original = Arc::new(User { age: Cell::new(30) });
-
-    let user = user_original.clone();
-    std::thread::spawn(move || {
-        user.age.set(2);
-    });
-
-    let user = user_original.clone();
-    std::thread::spawn(move || {
-        user.age.set(3);
-    });
-}
-
 //Packages: A Cargo feature that lets you build, test, and share crates
 //  Crates: A tree of modules that produces a library or executable
 //  Modules and use: Let you control the organization, scope, and privacy of paths

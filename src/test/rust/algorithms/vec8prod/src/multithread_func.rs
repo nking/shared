@@ -1,4 +1,4 @@
-use std::{panic, thread};
+use std::{panic, thread, thread::scope};
 
 /*
 rust is designed to prevent the unguarded concurrent access of the
@@ -33,27 +33,39 @@ pub fn multithread_partition_func(&N : &usize, x : &[f32]) -> f32 {
 
     let mut prod_results: Vec<f32> = Vec::new();
    
-    let mut split_prev : usize = 0;
-    let mut split_next : usize = split_prev + N_VEC;
+    thread::scope(|s| {
+        let mut split_prev : usize = 0;
+        let mut split_next : usize = split_prev + N_VEC;
 
-    for _i in 0..n_instances {
-                    
-        let mut xp:[f32; N_VEC] = [0.0f32; N_VEC];
-        xp.copy_from_slice(&x[split_prev..split_next]);
+        for _i in 0..n_instances {
 
-        let thr = thread::spawn(move || {
-            let res: f32 = multithread_partition_thread(& N_VEC, &mut xp); 
-            res 
-        });
-        // unwrap is used to get the result here.
-        // unwrap: Extracts the value from an Option or Result type, panicking if the value is None or Err
-        let res = thr.join().unwrap();
-        //println!("join res={:#?}, and xp[0]={}", res, &xp[N_VEC-1]);
-        prod_results.push(res);
+            //NOTE, if xp construction and copy from slice is
+            // placed here instead, there are 2 copies of N_VEC wide
+            // arrays for each _i (one outside of thread spawn and
+            // the other inside of thread spawn).
+            // Instead, placing xp consutrction and copy from slice
+            // inside of spawned thread results in only 1 copy being made.
+            // For this, also need scope to share x
+            
+            let thr = s.spawn(move || {
+                let mut xp:[f32; N_VEC] = [0.0f32; N_VEC];
+                xp.copy_from_slice(&x[split_prev..split_next]);
 
-        split_prev = split_next;
-        split_next = split_prev + N_VEC;
-    }
+                //println!("i={}, x address={:p}, xp address={:p}", &_i, &x[0], &xp[0]);
+
+                let res: f32 = multithread_partition_thread(& N_VEC, &mut xp); 
+                res 
+            });
+            // unwrap is used to get the result here.
+            // unwrap: Extracts the value from an Option or Result type, panicking if the value is None or Err
+            let res = thr.join().unwrap();
+            //println!("join res={:#?}, and xp[0]={}", res, &xp[N_VEC-1]);
+            prod_results.push(res);
+
+            split_prev = split_next;
+            split_next = split_prev + N_VEC;
+        }
+    });
 
     let mut res : f32 = 1.0f32;
     for r in &prod_results {
@@ -87,7 +99,7 @@ pub fn multithread_func(&N : &usize, x : &mut [f32]) -> f32 {
 
 #[allow(non_snake_case)]
 fn multithread_partition_thread(&N_VEC : &usize, x : &mut [f32]) -> f32 {
-    
+    //println!("   x address={:p}", &x[0]);
     let mut p_id : usize = 2;
     while p_id <= N_VEC {
         let off0: usize = p_id - 1;
