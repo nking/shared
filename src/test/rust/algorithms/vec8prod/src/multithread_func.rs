@@ -47,6 +47,7 @@ pub fn multithread_func(&N : &usize, x : &mut [f32]) -> f32 {
         panic!("N must be a multiple of 8");
     }
     
+    //println!("multithread module");
     //println!("multithread module. N={}, x[0]={}, address={:p}", &N, &x[0], &x[0]);
     // see https://doc.rust-lang.org/std/thread/index.html
 

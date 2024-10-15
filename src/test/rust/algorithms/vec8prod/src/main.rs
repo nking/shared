@@ -38,8 +38,48 @@ use std::time::SystemTime;
 fn test_all() {
     // to enable print to stdout from a test use:
     //   cargo test -- --nocapture
-    println!("inside test_all");
 
+    let mut test_type = 0;
+    while test_type < 2 {
+        if test_type == 0 {
+            test0();
+        } else {
+            test1();
+        }
+        test_type += 1;
+    }
+}
+
+fn test0() -> () {
+    // generate 128 random vector of numbers in range [1,1.65] whose product is <= 3.4E38
+    const N: usize = 16;
+    let mut x = [0.0f32; N];
+
+    for i in 0..N {
+        x[i] = (i + 10) as f32;
+    }
+
+    //TODO: add timers for serial execution here:
+    let mut exp_ans = 1.0f32;
+    for xi in x.iter_mut() {
+        exp_ans = exp_ans * *xi;
+    }
+
+    let mut x2 = x.clone();
+
+    let ans1 = multithread_func(&N, &mut x);
+
+    //println!("main.  exp_ans={}, ans1={}", exp_ans, ans1);
+    
+    let r : f32 = ((exp_ans/ans1) - 1.0).abs();
+    assert!( r < 5E-5);
+
+    let ans2 = simd_func(& N, &mut x2);
+    let r : f32 = ((exp_ans/ans2) - 1.0).abs();
+    assert!( r < 5E-5);
+}
+
+fn test1() -> () {
     // generate 128 random vector of numbers in range [1,1.65] whose product is <= 3.4E38
     const N: usize = 128;
     let mut x = [0.0f32; N];
@@ -52,12 +92,10 @@ fn test_all() {
     //thread_rng().fill(&mut seed);
     //let mut rng = ChaCha8Rng::from_seed(seed);
     //let mut rng = rand::thread_rng();
+    
     for xi in x.iter_mut() {
         *xi = 0.65f32 + rng.gen::<f32>();
     }
-    //for i in 0..N {
-    //    x[i] = (i + 10) as f32;
-    //}
 
     //TODO: add timers for serial execution here:
     let mut exp_ans = 1.0f32;
@@ -65,17 +103,18 @@ fn test_all() {
         exp_ans = exp_ans * *xi;
     }
 
-    println!("main.  x[0]={}, address={:p}", &x[0], &x[0]);
+    let mut x2 = x.clone();
 
     let ans1 = multithread_func(&N, &mut x);
 
-    println!("main.  exp_ans={}, ans1={}", exp_ans, ans1);
+    //println!("main.  exp_ans={}, ans1={}", exp_ans, ans1);
     
     let r : f32 = ((exp_ans/ans1) - 1.0).abs();
     assert!( r < 5E-5);
 
-    let _ans2 = simd_func(& N, &mut x);
-
+    let ans2 = simd_func(& N, &mut x2);
+    let r : f32 = ((exp_ans/ans2) - 1.0).abs();
+    assert!( r < 5E-5);
 }
 
 fn main() {
