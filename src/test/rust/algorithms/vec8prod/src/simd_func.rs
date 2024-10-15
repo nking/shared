@@ -63,6 +63,8 @@ pub fn simd_func(&N : &usize, x : &mut [f32]) -> f32 {
 #[allow(non_snake_case)]
 fn simd_partition_thread( x : &mut [f32]) -> f32 {
     // TODO: implement
+    // browse: https://towardsdatascience.com/nine-rules-for-simd-acceleration-of-your-rust-code-part-1-c16fe639ce21
+    // browse:  https://monadera.com/blog/faster-rust-with-simd/
     return 0.0f32;
 }
 
@@ -82,8 +84,10 @@ fn intrinsics_partition_thread( x : &mut [f32]) -> f32 {
         // TODO: there should be an efficient way to do this with intrinsics.
         //     need this offset to left by shift indexes:
         //         let mut avx_y : __m256 = avx_x.clone();
+        // TODO: consider __m256 _mm256_mask_i32gather_ps
+        //https://doc.rust-lang.org/beta/core/arch/x86_64/fn._mm256_mask_i32gather_ps.html
         //
-        // for now, will reset x and source avx_y from it with slice
+        // for now, will store to x and source avx_y from it with slice
         let _ = _mm256_storeu_ps(x.as_mut_ptr(), avx_x);
         let avx_y: __m256 = _mm256_loadu_ps(x.get_unchecked(shift));
         
