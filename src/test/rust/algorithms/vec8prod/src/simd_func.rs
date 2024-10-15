@@ -1,4 +1,4 @@
-use std::{panic, thread};
+use std::{panic, thread::scope};
 
 //#![feature(portable_simd)]
 // has ispc too:  https://crates.io/crates/packed_simd
@@ -13,7 +13,7 @@ use std::arch::x86_64::*;
 use std::arch::x86::*;
 
 #[allow(non_snake_case)]
-pub fn simd_func(&N : &usize, x : &mut [f32]) -> f32 {
+pub fn simd_func(&N : &usize, x : &[f32]) -> f32 {
     // see https://doc.rust-lang.org/std/simd/index.html
     //println!("\nsimd module");
 
@@ -29,28 +29,30 @@ pub fn simd_func(&N : &usize, x : &mut [f32]) -> f32 {
     //println!("N={}, N_VEC={}, n_instances={}", N, N_VEC, n_instances);
 
     let mut prod_results: Vec<f32> = Vec::new();
-   
-    let mut split_prev : usize = 0;
-    let mut split_next : usize = split_prev + N_VEC;
 
-    for _i in 0..n_instances {
-                    
-        let mut xp:[f32; N_VEC] = [0.0f32; N_VEC];
-        xp.copy_from_slice(&x[split_prev..split_next]);
+    scope(|s| {
+        let mut split_prev : usize = 0;
+        let mut split_next : usize = split_prev + N_VEC;
 
-        let thr = thread::spawn(move || {
-            //let res: f32 = simd_partition_thread(&mut xp); 
-            let res: f32 = intrinsics_partition_thread(& mut xp);
-            res 
-        });
-        // unwrap is needed to get the result
-        let res = thr.join().unwrap();
-        //println!("join res={:#?}, and xp[0]={}", res, &xp[0]);
-        prod_results.push(res);
+        for _i in 0..n_instances {
 
-        split_prev = split_next;
-        split_next = split_prev + N_VEC;
-    }
+            let thr = s.spawn(move || {
+                let mut xp:[f32; N_VEC] = [0.0f32; N_VEC];
+                xp.copy_from_slice(&x[split_prev..split_next]);
+
+                let res: f32 = intrinsics_partition_thread(& mut xp);
+                res 
+            });
+            // unwrap is used to get the result here.
+            // unwrap: Extracts the value from an Option or Result type, panicking if the value is None or Err
+            let res = thr.join().unwrap();
+            //println!("join res={:#?}, and xp[0]={}", res, &xp[N_VEC-1]);
+            prod_results.push(res);
+
+            split_prev = split_next;
+            split_next = split_prev + N_VEC;
+        }
+    });
 
     let mut res : f32 = 1.0f32;
     for r in &prod_results {

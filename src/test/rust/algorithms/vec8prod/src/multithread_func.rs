@@ -1,4 +1,4 @@
-use std::{panic, thread, thread::scope};
+use std::{panic, thread::scope};
 
 /*
 rust is designed to prevent the unguarded concurrent access of the
@@ -25,7 +25,8 @@ lock, then another thread can obtain the mutex lock, ...
 
 #[allow(non_snake_case)]
 pub fn multithread_partition_func(&N : &usize, x : &[f32]) -> f32 {
-    
+    //NOTE: we have errors below if parameter x is typed as x : &mut [f32]
+
     #[allow(non_snake_case)]
     const N_VEC: usize = 8;
 
@@ -33,7 +34,7 @@ pub fn multithread_partition_func(&N : &usize, x : &[f32]) -> f32 {
 
     let mut prod_results: Vec<f32> = Vec::new();
    
-    thread::scope(|s| {
+    scope(|s| {
         let mut split_prev : usize = 0;
         let mut split_next : usize = split_prev + N_VEC;
 
@@ -43,7 +44,7 @@ pub fn multithread_partition_func(&N : &usize, x : &[f32]) -> f32 {
             // placed here instead, there are 2 copies of N_VEC wide
             // arrays for each _i (one outside of thread spawn and
             // the other inside of thread spawn).
-            // Instead, placing xp consutrction and copy from slice
+            // Instead, placing xp construction and copy from slice
             // inside of spawned thread results in only 1 copy being made.
             // For this, also need scope to share x
             
