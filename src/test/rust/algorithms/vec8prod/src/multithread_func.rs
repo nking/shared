@@ -22,7 +22,8 @@ pub fn multithread_partition_func(&N : &usize, x : &[f32]) -> f32 {
             let res: f32 = multithread_partition_thread(& N_VEC, &mut xp); 
             res 
         });
-        // unwrap is needed to get the result
+        // unwrap is used to get the result here.
+        // unwrap: Extracts the value from an Option or Result type, panicking if the value is None or Err
         let res = thr.join().unwrap();
         //println!("join res={:#?}, and xp[0]={}", res, &xp[N_VEC-1]);
         prod_results.push(res);
@@ -63,14 +64,19 @@ pub fn multithread_func(&N : &usize, x : &mut [f32]) -> f32 {
     // mutable data (x), so even though I designed the algorithm to operate on 
     // independent sections of x, rust cannot let the
     // threads share the array x without guarded synchronization.
+    // in the above loop for _i in 0..n_instances,
+    // there can only be one spawned thread which has a mutable borrow
+    // of x.
     //
     // I can modify the algorithm in 4 ways:
     // (1) copy partition the mutable array x into n_instances.
     // let each thread process its copied partition and return a result.
     // (2) wrap the entire data array x, unpartitioned into an Arc 
-    // (e.g. Arc<Mutex<x>> and let rust
-    //     perform synchronization (hopefully, only where needed, which in
-    //     these independent partitions will be needed nowhere)).
+    // (e.g. Arc<Mutex<x>>. The Arc mutex is cloned (each having same 
+    // reference to the data array x), and given to each thread.
+    // A thread accesses the data array x by obtaining an exclusive
+    // lock on the data to read and or modify it, then releases the
+    // lock. 
     // (2) rayon
     // (3) crossbeam
     

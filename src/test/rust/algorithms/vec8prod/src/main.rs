@@ -35,22 +35,7 @@ use std::time::SystemTime;
 //   package directory has its own src/lib.rs
 
 #[test]
-fn test_all() {
-    // to enable print to stdout from a test use:
-    //   cargo test -- --nocapture
-
-    let mut test_type = 0;
-    while test_type < 2 {
-        if test_type == 0 {
-            test0();
-        } else {
-            test1();
-        }
-        test_type += 1;
-    }
-}
-
-fn test0() -> () {
+fn test_16() -> () {
     // generate 128 random vector of numbers in range [1,1.65] whose product is <= 3.4E38
     const N: usize = 16;
     let mut x = [0.0f32; N];
@@ -79,7 +64,8 @@ fn test0() -> () {
     assert!( r < 5E-5);
 }
 
-fn test1() -> () {
+#[test]
+fn test_rand_128() -> () {
     // generate 128 random vector of numbers in range [1,1.65] whose product is <= 3.4E38
     const N: usize = 128;
     let mut x = [0.0f32; N];
