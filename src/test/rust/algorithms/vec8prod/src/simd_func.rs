@@ -1,19 +1,41 @@
-use std::{panic, thread::scope};
 
-//#![feature(portable_simd)]
+//use std::simd::f32x8;
+//use std::simd::num::SimdFloat;
+//use std::simd::StdFloat;
+
+//use std::simd::*;
+use std::simd::prelude::*;
+
+//use std::simd::u32x8;
+//use std::simd::i32x8;
+//use std::simd::prelude::Simd;
+use std::{panic, thread::scope};
+use std::arch::x86_64::{_mm256_loadu_ps, _mm256_mul_ps, _mm256_storeu_ps, __m256};
+
+//#[cfg(target_arch = "x86_64")]
+//#[cfg(target_arch = "x86")]
+
 // has ispc too:  https://crates.io/crates/packed_simd
 // https://github.com/rust-lang/stdarch
 
-//use std::simd;
-// to compare to the c code, use the 32 bit implementations:
-//use std::{f32, mem};
-#[cfg(target_arch = "x86_64")]
-use std::arch::x86_64::*;
-#[cfg(target_arch = "x86")]
-use std::arch::x86::*;
+//use std::arch::x86_64::*;
+//use std::arch::x86_64::{__m256i};
+//use std::arch::x86::*;
+
+
+/*pub fn sum_simd_5(a: &[f32], b: &[f32]) -> f32 {
+    a.array_chunks::<8>()
+        .map(|&a| f32x8::from_array(a))
+        .zip(b.array_chunks::<8>().map(|&b| f32x8::from_array(b)))
+        .fold(f32x8::splat(0.), |acc, (a, b)| a.mul_add(b, acc))
+        .reduce_sum()
+}*/
 
 #[allow(non_snake_case)]
-pub fn simd_func(&N : &usize, x : &[f32]) -> f32 {
+pub fn simd_func(&N : &usize, x : & [f32]) -> f32 {
+    //NOTE: we have errors below in scope spawned thread copies of data
+    // if parameter x is typed as x : &mut [f32]
+
     // see https://doc.rust-lang.org/std/simd/index.html
     //println!("\nsimd module");
 
@@ -38,7 +60,7 @@ pub fn simd_func(&N : &usize, x : &[f32]) -> f32 {
 
             let thr = s.spawn(move || {
                 let mut xp:[f32; N_VEC] = [0.0f32; N_VEC];
-                xp.copy_from_slice(&x[split_prev..split_next]);
+                xp.copy_from_slice(& x[split_prev..split_next]);
 
                 let res: f32 = intrinsics_partition_thread(& mut xp);
                 res 
@@ -63,47 +85,76 @@ pub fn simd_func(&N : &usize, x : &[f32]) -> f32 {
 }
 
 #[allow(non_snake_case)]
-fn simd_partition_thread( x : &mut [f32]) -> f32 {
-    // TODO: implement
+
+//TODO: make the thread launcher accept function references to run
+pub fn simd_partition_thread_8( x : &mut [f32; 8]) -> f32 {
+    // TODO:
     // browse: https://towardsdatascience.com/nine-rules-for-simd-acceleration-of-your-rust-code-part-1-c16fe639ce21
     // browse:  https://monadera.com/blog/faster-rust-with-simd/
-    return 0.0f32;
+    
+    const N_VEC: usize = 8;
+
+    let mut a_simd: Simd<f32, N_VEC> = Simd::from_array(*x);
+
+    const SH1 : usize = 1;
+    let mut b_simd = a_simd.rotate_elements_left::<SH1>();
+    a_simd = a_simd * b_simd;
+
+    const SH2 : usize = 2;
+    b_simd = a_simd.rotate_elements_left::<SH2>();
+    a_simd = a_simd * b_simd;
+       
+    const SH4 : usize = 4;
+    b_simd = a_simd.rotate_elements_left::<SH4>();
+    a_simd = a_simd * b_simd;
+
+    //TODO: 
+    return a_simd.to_array()[0];
 }
+
+/*const unsafe fn create_shift_1() -> __m256i /*i32x8*/ {
+    unsafe { _mm256_set_epi32(1,2,3,4,5,6,7,0) } 
+}*/
+
 
 #[allow(non_snake_case)]
 fn intrinsics_partition_thread( x : &mut [f32]) -> f32 {
-    
+
     unsafe {
-    //core::arch::x86_64::
-    let mut avx_x: __m256 = _mm256_loadu_ps(x.get_unchecked(0));
-
-    let mut n_iter : usize = 0;
-    while n_iter < 3 {
-
-        let shift : usize = 1 << n_iter;
-
-        // avx_y needs to be avx_x shifted to the left by shift indices
-        // TODO: there should be an efficient way to do this with intrinsics.
-        //     need this offset to left by shift indexes:
-        //         let mut avx_y : __m256 = avx_x.clone();
-        // TODO: consider __m256 _mm256_mask_i32gather_ps
-        //https://doc.rust-lang.org/beta/core/arch/x86_64/fn._mm256_mask_i32gather_ps.html
-        //
-        // for now, will store to x and source avx_y from it with slice
-        let _ = _mm256_storeu_ps(x.as_mut_ptr(), avx_x);
-        let avx_y: __m256 = _mm256_loadu_ps(x.get_unchecked(shift));
         
-        avx_x = _mm256_mul_ps(avx_x, avx_y);
+        //core::arch::x86_64::
+        let mut avx_x: __m256 = _mm256_loadu_ps(x.get_unchecked(0));
 
-        n_iter += 1;
+        let mut n_iter : usize = 0;
+        while n_iter < 3 {
+
+            let shift : usize = 1 << n_iter;
+
+            // avx_y needs to be avx_x shifted to the left by shift indices
+            // TODO: there should be an efficient way to do this with intrinsics.
+            //     need this offset to left by shift indexes:
+            //         let mut avx_y : __m256 = avx_x.clone();
+            //            then in-place shuffle: shufps
+            //            or vpermps
+            //            no success with _mm256_permute_ps
+            // TODO: consider __m256 _mm256_mask_i32gather_ps
+            //https://doc.rust-lang.org/beta/core/arch/x86_64/fn._mm256_mask_i32gather_ps.html
+            //
+            // for now, will store to x and source avx_y from it with slice
+            let _ = _mm256_storeu_ps(x.as_mut_ptr(), avx_x);
+            let avx_y: __m256 = _mm256_loadu_ps(x.get_unchecked(shift));
+            
+            avx_x = _mm256_mul_ps(avx_x, avx_y);
+
+            n_iter += 1;
+        }
+
+        let _ = _mm256_storeu_ps(x.as_mut_ptr(), avx_x);
+        //core_arch::simd::f32x8
+        //avx_x.as_f32x8
+        // under the hood: pub struct __m256(f32, f32, f32, f32, f32, f32, f32, f32);
+        //println!("   in simd, res avx_x[0]={:#?}", x[0]);
+
+        return x[0];
     }
-
-    let _ = _mm256_storeu_ps(x.as_mut_ptr(), avx_x);
-    //core_arch::simd::f32x8
-    //avx_x.as_f32x8
-    // under the hood: pub struct __m256(f32, f32, f32, f32, f32, f32, f32, f32);
-    //println!("   in simd, res avx_x[0]={:#?}", x[0]);
-
-    return x[0];
-}
 }

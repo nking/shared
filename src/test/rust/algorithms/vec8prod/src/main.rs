@@ -1,8 +1,12 @@
+#![feature(portable_simd)]
+#![feature(array_chunks)]
+
 pub mod simd_func;
 pub mod multithread_func;
+mod misc;
 
 #[allow(unused_imports)]
-use crate::simd_func::simd_func;
+use crate::simd_func::{simd_func, simd_partition_thread_8};
 #[allow(unused_imports)]
 use crate::multithread_func::multithread_func;
 #[allow(unused_imports)]
@@ -37,8 +41,12 @@ fn test_16() -> () {
     const N: usize = 16;
     let mut x = [0.0f32; N];
 
+    let mut exp_ans3:f32 = 1.0f32;
     for i in 0..N {
         x[i] = (i + 10) as f32;
+        if i < 8 {
+            exp_ans3 = exp_ans3 * x[i];
+        }
     }
 
     //TODO: add timers for serial execution here:
@@ -48,6 +56,7 @@ fn test_16() -> () {
     }
 
     let mut x2 = x.clone();
+    let x3 = x.clone();
 
     let ans1 = multithread_func(&N, &mut x);
 
@@ -58,6 +67,12 @@ fn test_16() -> () {
 
     let ans2 = simd_func(& N, &mut x2);
     let r : f32 = ((exp_ans/ans2) - 1.0).abs();
+    assert!( r < 5E-5);
+
+    let mut x4:[f32; 8] = [0.0f32; 8];
+    x4[0 .. 8].copy_from_slice(&x3[0..8]);
+    let ans3 = simd_partition_thread_8(&mut x4);
+    let r : f32 = ((exp_ans3/ans3) - 1.0).abs();
     assert!( r < 5E-5);
 }
 

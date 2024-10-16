@@ -25,7 +25,8 @@ lock, then another thread can obtain the mutex lock, ...
 
 #[allow(non_snake_case)]
 pub fn multithread_partition_func(&N : &usize, x : &[f32]) -> f32 {
-    //NOTE: we have errors below if parameter x is typed as x : &mut [f32]
+    //NOTE: we have errors below in scope spawned thread copies of data
+    // if parameter x is typed as x : &mut [f32] even if edited to mut below too
 
     #[allow(non_snake_case)]
     const N_VEC: usize = 8;
