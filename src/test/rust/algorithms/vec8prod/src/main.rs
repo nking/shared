@@ -6,7 +6,7 @@ pub mod multithread_func;
 mod misc;
 
 #[allow(unused_imports)]
-use crate::simd_func::{simd_func, simd_partition_thread_8};
+use crate::simd_func::{simd_func};
 #[allow(unused_imports)]
 use crate::multithread_func::multithread_func;
 #[allow(unused_imports)]
@@ -56,7 +56,7 @@ fn test_16() -> () {
     }
 
     let mut x2 = x.clone();
-    let x3 = x.clone();
+    let mut x3 = x.clone();
 
     let ans1 = multithread_func(&N, &mut x);
 
@@ -65,15 +65,14 @@ fn test_16() -> () {
     let r : f32 = ((exp_ans/ans1) - 1.0).abs();
     assert!( r < 5E-5);
 
-    let ans2 = simd_func(& N, &mut x2);
+    let ans2 = simd_func::<false>(& N, &mut x2);
     let r : f32 = ((exp_ans/ans2) - 1.0).abs();
     assert!( r < 5E-5);
 
-    let mut x4:[f32; 8] = [0.0f32; 8];
-    x4[0 .. 8].copy_from_slice(&x3[0..8]);
-    let ans3 = simd_partition_thread_8(&mut x4);
-    let r : f32 = ((exp_ans3/ans3) - 1.0).abs();
+    let ans3 = simd_func::<true>(& N, &mut x2);
+    let r : f32 = ((exp_ans/ans3) - 1.0).abs();
     assert!( r < 5E-5);
+
 }
 
 #[test]
@@ -110,8 +109,12 @@ fn test_rand_128() -> () {
     let r : f32 = ((exp_ans/ans1) - 1.0).abs();
     assert!( r < 5E-5);
 
-    let ans2 = simd_func(& N, &mut x2);
+    let ans2 = simd_func::<false>(& N, &mut x2);
     let r : f32 = ((exp_ans/ans2) - 1.0).abs();
+    assert!( r < 5E-5);
+
+    let ans3 = simd_func::<true>(& N, &mut x2);
+    let r : f32 = ((exp_ans/ans3) - 1.0).abs();
     assert!( r < 5E-5);
 }
 

@@ -32,7 +32,7 @@ use std::arch::x86_64::{_mm256_loadu_ps, _mm256_mul_ps, _mm256_storeu_ps, __m256
 }*/
 
 #[allow(non_snake_case)]
-pub fn simd_func(&N : &usize, x : & [f32]) -> f32 {
+pub fn simd_func<const USE_SIMD: bool>(&N : &usize, x : & [f32]) -> f32 {
     //NOTE: we have errors below in scope spawned thread copies of data
     // if parameter x is typed as x : &mut [f32]
 
@@ -62,8 +62,13 @@ pub fn simd_func(&N : &usize, x : & [f32]) -> f32 {
                 let mut xp:[f32; N_VEC] = [0.0f32; N_VEC];
                 xp.copy_from_slice(& x[split_prev..split_next]);
 
-                let res: f32 = intrinsics_partition_thread(& mut xp);
-                res 
+                if USE_SIMD {
+                    let res: f32 = simd_partition_thread_8(& mut xp);
+                    res 
+                } else {
+                    let res: f32 = intrinsics_partition_thread(& mut xp);
+                    res 
+                }
             });
             // unwrap is used to get the result here.
             // unwrap: Extracts the value from an Option or Result type, panicking if the value is None or Err
@@ -86,8 +91,7 @@ pub fn simd_func(&N : &usize, x : & [f32]) -> f32 {
 
 #[allow(non_snake_case)]
 
-//TODO: make the thread launcher accept function references to run
-pub fn simd_partition_thread_8( x : &mut [f32; 8]) -> f32 {
+fn simd_partition_thread_8( x : &mut [f32; 8]) -> f32 {
     // TODO:
     // browse: https://towardsdatascience.com/nine-rules-for-simd-acceleration-of-your-rust-code-part-1-c16fe639ce21
     // browse:  https://monadera.com/blog/faster-rust-with-simd/
@@ -108,7 +112,7 @@ pub fn simd_partition_thread_8( x : &mut [f32; 8]) -> f32 {
     b_simd = a_simd.rotate_elements_left::<SH4>();
     a_simd = a_simd * b_simd;
 
-    //TODO: 
+    //TODO: faster way to extract only the first element?
     return a_simd.to_array()[0];
 }
 
