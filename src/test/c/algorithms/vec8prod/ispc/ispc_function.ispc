@@ -1,4 +1,8 @@
+#include "time_log_ispc.h"
+
 /*
+Implicit SPMD Program Compiler (ispc)
+
 https://ispc.github.io/ispc.html#uniform-and-varying-qualifiers
 If a variable has a uniform qualifier, then there is only a single instance of that variable shared by all program
 instances in a gang. (In other words, it necessarily has the same value across all of the program instances.)
@@ -25,13 +29,15 @@ void print_float_array(uniform float *array, uniform int i0, uniform int i1) {
 void vecprod(uniform float * uniform x, uniform float * uniform y) {
     //print("\nprogramIndex=%\n", programIndex);
 
-    //unsigned uniform int64 start, stop;
-    //start = clock();
-    //stop = clock();
-    //print("ispc thr %\n", (stop-start));
+    INIT_TIME();
+    START_THR_TIME();
 
+    START_D_TIME();
     float val1 = x[programIndex];
+    STOP_D_LOAD_TIME();
+    START_D_TIME();
     float val2 = shift(val1, 1);
+    STOP_D_LOAD_TIME();
 
     //print("val1=%\n", val1);
     //print("val2=%\n", val2);
@@ -39,50 +45,69 @@ void vecprod(uniform float * uniform x, uniform float * uniform y) {
         val1 = val1 * val2;
     }
 
+    START_D_TIME();
     val2 = shift(val1, 2);
+    STOP_D_LOAD_TIME();
     if (programIndex % 4 == 0) {
         val1 = val1 * val2;
     }
 
+    START_D_TIME();
     val2 = shift(val1, 4);
+    STOP_D_LOAD_TIME();
     if (programIndex % 8 == 0) {
         val1 = val1 * val2;
         //*result = val1;
         if (programCount == 8) {
+            START_D_TIME();
             y[programIndex] = val1;
+            STOP_D_STORE_TIME();
         }
     }
 
     if (programCount > 8) {
+        START_D_TIME();
         val2 = shift(val1, 8);
+        STOP_D_LOAD_TIME();
         if (programIndex % 16 == 0) {
             val1 = val1 * val2;
             if (programCount == 16) {
+                START_D_TIME();
                 y[programIndex] = val1;
+                STOP_D_STORE_TIME();
             }
         }
     }
 
     if (programCount > 16) {
+        START_D_TIME();
         val2 = shift(val1, 16);
+        STOP_D_LOAD_TIME();
         if (programIndex % 32 == 0) {
             val1 = val1 * val2;
             if (programCount == 32) {
+                START_D_TIME();
                 y[programIndex] = val1;
+                STOP_D_STORE_TIME();
             }
         }
     }
 
     if (programCount > 32) {
+        START_D_TIME();
         val2 = shift(val1, 32);
+        STOP_D_LOAD_TIME();
         if (programIndex % 64 == 0) {
             val1 = val1 * val2;
             if (programCount == 64) {
+                START_D_TIME();
                 y[programIndex] = val1;
+                STOP_D_STORE_TIME();
             }
         }
     }
 
+    STOP_THR_TIME();
 }
 
 /*
@@ -128,6 +153,8 @@ varying float * p4 = new varying float[10];                  // 8 * 320 = 2560 b
 */
 export uniform float ispc_function(uniform int N, uniform float * uniform x) {
 
+     INIT_TIME();
+
      uniform int n_res = N / programCount;
 
      //print("programCount=%, n_results=%\n", programCount, n_res);
@@ -150,7 +177,9 @@ export uniform float ispc_function(uniform int N, uniform float * uniform x) {
          //print("(%) programCount=%, after tmpY=\n", i_res, programCount);
          //print_float_array(tmpY, 0, programCount);
 
+         START_D_TIME();
          res[i_res] = tmpY[0];
+         STOP_D_STORE_TIME();
 
          //print("(%) res=\n", i_res);
          //print_float_array(res, 0, n_res);

@@ -1,0 +1,92 @@
+Intel(r) Implicit SPMD Program Compiler (Intel(r) ISPC), 1.19.0 (build commit  @ 20230307, LLVM 14.0.6)
+
+usage: ispc
+    [--addressing={32,64}]		Select 32- or 64-bit addressing. (Note that 32-bit
+                          		addressing calculations are done by default, even
+                          		on 64-bit target architectures.)
+    [--arch={x86-64, aarch64}]		Select target architecture
+    [--colored-output]		Always use terminal colors in error/warning messages
+    [--cpu=<type>]			An alias for [--device=<type>] switch
+    [-D<foo>]				#define given value when running preprocessor
+    [--dev-stub <filename>]		Emit device-side offload stub functions to file
+    [--device=<type>] Select target device 
+                <type>={x86-64, atom (synonyms: bonnell), core2, penryn, 
+                corei7 (synonyms: nehalem), btver2 (synonyms: ps4), corei7-avx 
+                (synonyms: sandybridge), core-avx-i (synonyms: ivybridge), 
+                core-avx2 (synonyms: haswell), broadwell, skylake, knl, skx, 
+                icelake-client (synonyms: icl), slm (synonyms: silvermont), 
+                icelake-server (synonyms: icx), tigerlake (synonyms: tgl), 
+                alderlake (synonyms: adl), sapphirerapids (synonyms: spr), 
+                znver1, znver2 (synonyms: ps5), znver3, cortex-a9, cortex-a15, 
+                cortex-a35, cortex-a53, cortex-a57, apple-a7, apple-a10, 
+                apple-a11, apple-a12, apple-a13, apple-a14} 
+                
+    [--dllexport]			Make non-static functions DLL exported.  Windows target only
+    [--dwarf-version={2,3,4}]		Generate source-level debug information with given DWARF version (triggers -g).  Ignored for Windows target
+    [-E]				Run only the preprocessor
+    [--emit-asm]			Generate assembly language file as output
+    [--emit-llvm]			Emit LLVM bitcode file as output
+    [--emit-llvm-text]			Emit LLVM bitcode file as output in textual form
+    [--emit-obj]			Generate object file file as output (default)
+    [--enable-llvm-intrinsics]		Enable experimental feature to call LLVM intrinsics from ISPC source code
+    [--error-limit=<value>]		Limit maximum number of errors emitting by ISPC to <value>
+    [--force-alignment=<value>]		Force alignment in memory allocations routine to be <value>
+    [-g]				Generate source-level debug information
+    [--help]				Print help
+    [--help-dev]			Print help for developer options
+    [--host-stub <filename>]		Emit host-side offload stub functions to file
+    [-h <name>/--header-outfile=<name>]	Output filename for header
+    [-I <path>]				Add <path> to #include file search path
+    [--ignore-preprocessor-errors]	Suppress errors from the preprocessor
+    [--instrument]			Emit instrumentation to gather performance data
+    [--math-lib=<option>]		Select math library
+        default				Use ispc's built-in math functions
+        fast				Use high-performance but lower-accuracy math functions
+        svml				Use the Intel(r) SVML math libraries
+        system				Use the system's math library (*may be quite slow*)
+    [-MMM <filename>]			Write #include dependencies to given file.
+    [-M]				Output a rule suitable for `make' describing the dependencies of the main source file to stdout.
+    [-MF <filename>]			When used with `-M', specifies a file to write the dependencies to.
+    [-MT <filename>]			When used with `-M', changes the target of the rule emitted by dependency generation.
+    [--no-omit-frame-pointer]		Disable frame pointer omission. It may be useful for profiling
+    [--nostdlib]			Don't make the ispc standard library available
+    [--no-pragma-once]			Don't use #pragma once in created headers
+    [--nocpp]				Don't run the C preprocessor
+    [-o <name>/--outfile=<name>]	Output filename (may be "-" for standard output)
+    [-O0/-O(1/2/3)]			Set optimization level. Default behavior is to optimize for speed.
+        -O0				Optimizations disabled.
+        -O1				Optimization for size.
+        -O2/O3				Optimization for speed.
+    [--opt=<option>]			Set optimization option
+        disable-assertions		Remove assertion statements from final code.
+        disable-fma			Disable 'fused multiply-add' instructions (on targets that support them)
+        disable-loop-unroll		Disable loop unrolling.
+        disable-zmm		Disable using zmm registers for avx512 targets in favour of ymm. This also affects ABI.
+        fast-masked-vload		Faster masked vector loads on SSE (may go past end of array)
+        fast-math			Perform non-IEEE-compliant optimizations of numeric expressions
+        force-aligned-memory		Always issue "aligned" vector load and store instructions
+        reset-ftz-daz			Reset FTZ/DAZ flags on ISPC extern function entrance / restore on return
+    [--pic]				Generate position-independent code.  Ignored for Windows target
+    [--quiet]				Suppress all output
+    [--support-matrix]			Print full matrix of supported targets, architectures and OSes
+    [--target=<t>] Select target ISA and width. 
+                        <t>={sse2-i32x4, sse2-i32x8, sse4-i8x16, sse4-i16x8, 
+                        sse4-i32x4, sse4-i32x8, avx1-i32x4, avx1-i32x8, 
+                        avx1-i32x16, avx1-i64x4, avx2-i8x32, avx2-i16x16, 
+                        avx2-i32x4, avx2-i32x8, avx2-i32x16, avx2-i64x4, 
+                        avx512knl-x16, avx512skx-x4, avx512skx-x8, 
+                        avx512skx-x16, avx512skx-x32, avx512skx-x64, 
+                        neon-i32x4, neon-i32x8} 
+    [--target-os=<os>] Select target OS. <os>={macos} 
+    [--time-trace]			Turn on time profiler. Generates JSON file based on output filename.
+    [--time-trace-granularity=<value>]	Minimum time granularity (in microseconds) traced by time profiler.
+    [--vectorcall/--no-vectorcall]	Enable/disable vectorcall calling convention on Windows (x64 only). Disabled by default
+    [--version]				Print ispc version
+    [--werror]				Treat warnings as errors
+    [--woff]				Disable warnings
+    [--wno-perf]			Don't issue warnings related to performance-related issues
+    [--x86-asm-syntax=<option>]		Select style of code if generating assembly
+        intel				Emit Intel-style assembly
+        att				Emit AT&T-style assembly
+    [@<filename>]			Read additional arguments from the given file
+    <file to compile or "-" for stdin>

@@ -21,7 +21,7 @@ void * test(float* vin, int vLen) {
 
     START_TOT_TIME();
     float ans = ispc_function(vLen, vin);
-    STOP_TOT_TIME(simd);
+    STOP_TOT_TIME(ispc);
 
     //printf("expAns=%f, ans=%f\n", expAns, ans);
 
