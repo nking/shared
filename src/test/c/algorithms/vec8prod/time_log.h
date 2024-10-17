@@ -36,12 +36,12 @@
     #define START_D_TIME()
     #define STOP_D_TIME(s)
     #define START_THR_TIME() start = clock();
-    #define STOP_THR_TIME(s) {stop = clock(); printf("%s data %ld\n", #s, (stop-start));}
+    #define STOP_THR_TIME(s) {stop = clock(); printf("%s thr %ld\n", #s, (stop-start));}
 #elif defined(TIME_TOT)
     #define INIT_TIME_TITLE(s) printf("TITLE %s\n", #s);
     #define INIT_TIME() clock_t start, stop;
     #define START_TOT_TIME() start = clock();
-    #define STOP_TOT_TIME(s) {stop = clock(); printf("%s data %ld\n", #s, (stop-start));}
+    #define STOP_TOT_TIME(s) {stop = clock(); printf("%s tot %ld\n", #s, (stop-start));}
     #define START_D_TIME()
     #define STOP_D_TIME(s)
     #define START_THR_TIME()

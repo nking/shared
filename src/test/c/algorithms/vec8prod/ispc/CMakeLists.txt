@@ -20,7 +20,7 @@ elseif(TIME_THR)
 elseif (TIME_TOT)
     set(macro_time '-DTIME_TOT=1')
    add_compile_definitions(-DTIME_TOT=1)
-else
+else()
    set(macro_time '')
 endif()
 
@@ -54,5 +54,5 @@ add_executable(ISPCMisc16Test ISPCMiscTest.c ispc_function16.o)
 
 #target_link_libraries(ISPCMiscTest ispc_function.o)
 
-target_include_directories(ISPCMiscTest INTERFACE ${CMAKE_SOURCE_DIR}/ispc_function.h)
+target_include_directories(ISPCMiscTest INTERFACE ${CMAKE_SOURCE_DIR}/ispc_function.h ${CMAKE_SOURCE_DIR}/../time_log.h)
 

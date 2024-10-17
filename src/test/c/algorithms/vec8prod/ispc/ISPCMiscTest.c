@@ -2,37 +2,70 @@
 #include <stdlib.h>
 #include <math.h>   //  fabsf
 #include <assert.h>
+#include "../time_log.h"
 
 // Include the header file that the ispc compiler generates
 #include "ispc_function.h"
 
-int main() {
+void * test(float* vin, int vLen) {
 
-    // TODO: consider making a test with very large number of numbers and compare the
-    // runtime executions
+    INIT_TIME();
+    START_TOT_TIME();
+
+    float expAns = 1.f;
+    for (int i = 0; i < vLen; ++i) {
+        expAns *= vin[i];
+    }
+
+    STOP_TOT_TIME(serial);
+
+    START_TOT_TIME();
+    float ans = ispc_function(vLen, vin);
+    STOP_TOT_TIME(simd);
+
+    //printf("expAns=%f, ans=%f\n", expAns, ans);
+
+    assert(fabsf((expAns/ans) - 1) < 5E-5);
+
+    return NULL;
+}
+
+void * test16() {
+    INIT_TIME_TITLE(ispctest16);
 
     float vin[16];
     for (int i = 0; i < 16; ++i) {
         vin[i] = (float)(i + 10);
     }
 
-    float expAns = 1.f;
-    for (int i = 0; i < 16; ++i) {
-        expAns *= vin[i];
+    test(vin, 16);
+
+    return NULL;
+}
+
+void * testRand() {
+    // generate 128 random vector of numbers in range [1,1.65] whose product is <= 3.4E38
+
+    // using seconds of time of day:
+    unsigned int seed = 1729184686;//time(0);
+    printf("seed=%d\n", seed);
+    srand(seed);
+
+    float vin[128];
+    for (int i = 0; i < 128; ++i) {
+        vin[i] = 0.65f + ((float)rand() / (float)RAND_MAX);
     }
 
-    float ansISPC = ispc_function(16, vin);
+    INIT_TIME_TITLE(ispctestrand);
 
-    // not avail for architecture x86_64
-    //float ansISPCTask = ispc_function_tasks(16, vin);
+    test(vin, 128);
 
-    //printf("expAns=%f, ans=%f\n", expAns, ans);
+    return NULL;
+}
 
-    assert(fabsf((expAns/ansISPC) - 1) < 5E-5);
-    //assert(fabsf((expAns/ansISPCTask) - 1) < 5E-5);
-
-    printf("Done\n");
-
+int main() {
+    test16();
+    testRand();
     return 0;
 }
 

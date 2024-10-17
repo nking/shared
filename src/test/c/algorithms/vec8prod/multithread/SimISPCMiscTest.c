@@ -71,5 +71,6 @@ void * testRand() {
 
 int main() {
    test16();
+   testRand();
    return 0;
 }
