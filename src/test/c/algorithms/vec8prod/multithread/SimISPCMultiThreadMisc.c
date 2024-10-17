@@ -1,4 +1,5 @@
 #include "SimISPCMultiThreadMisc.h"
+#include <pthread.h>
 
 /*
 emmulating the ISPC example from stanford lecture 4 CS149 parallel computing
@@ -41,6 +42,8 @@ struct thread_data {
 
 
 void *multInThread(void *arg) {
+   INIT_TIME();
+   START_THR_TIME();
 
    // x is a uniform shared variable array.
 
@@ -68,6 +71,7 @@ void *multInThread(void *arg) {
          data->x[j + off0] *= data->x[j+off1];
       }
    }
+   STOP_THR_TIME();
    return NULL;
 }
 

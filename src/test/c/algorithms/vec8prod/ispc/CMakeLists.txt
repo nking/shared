@@ -11,6 +11,19 @@ project(${PROJECT_NAME})
 #set(ISPC_SOURCES ispc_function.ispc)
 #ispc_compile(ispc_function ${ISPC_SOURCES})
 
+if (TIME_D)
+    set(macro_time '-DTIME_D=1')
+    add_compile_definitions(-DTIME_D=1)
+elseif(TIME_THR)
+    set(macro_time '-DTIME_THR=1')
+    add_compile_definitions(-DTIME_THR=1)
+elseif (TIME_TOT)
+    set(macro_time '-DTIME_TOT=1')
+   add_compile_definitions(-DTIME_TOT=1)
+else
+   set(macro_time '')
+endif()
+
 ## need 32-bit addressing and 8-wide instruction set.
 ## can find target choices for the individual platform using
 ## ispc --target --help
@@ -26,13 +39,13 @@ project(${PROJECT_NAME})
 ##   multiplication for programIndex=8.
 add_custom_command(
     OUTPUT ispc_function.o
-    COMMAND ispc -g -o ispc_function.o --pic -h ${CMAKE_SOURCE_DIR}/ispc_function.h --addressing=32 --target=avx2-i32x8 ${CMAKE_SOURCE_DIR}/ispc_function.ispc
+    COMMAND ispc -g ${macro_time} -o ispc_function.o --pic -h ${CMAKE_SOURCE_DIR}/ispc_function.h --addressing=32 --target=avx2-i32x8 ${CMAKE_SOURCE_DIR}/ispc_function.ispc
     DEPENDS ispc_function.ispc
 )
 
 add_custom_command(
     OUTPUT ispc_function16.o
-    COMMAND ispc -g -o ispc_function16.o -h ${CMAKE_SOURCE_DIR}/ispc_function.h --addressing=32 --target=avx2-i32x16 ${CMAKE_SOURCE_DIR}/ispc_function.ispc
+    COMMAND ispc -g ${macro_time} -o ispc_function16.o -h ${CMAKE_SOURCE_DIR}/ispc_function.h --addressing=32 --target=avx2-i32x16 ${CMAKE_SOURCE_DIR}/ispc_function.ispc
     DEPENDS ispc_function.ispc
 )
 
@@ -41,5 +54,5 @@ add_executable(ISPCMisc16Test ISPCMiscTest.c ispc_function16.o)
 
 #target_link_libraries(ISPCMiscTest ispc_function.o)
 
-target_include_directories(ISPCMiscTest INTERFACE ${CMAKE_SOURCE_DIR}/ispc_function.h>)
+target_include_directories(ISPCMiscTest INTERFACE ${CMAKE_SOURCE_DIR}/ispc_function.h)
 
