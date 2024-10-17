@@ -1,6 +1,5 @@
 #include "SIMDMisc.h"
-
-//TODO: add timing with RDTSC clock
+#include <pthread.h>
 
 struct thread_data {
    float* x;
@@ -51,6 +50,8 @@ void printVec(__m256 vec) {
 }
 
 void *multInThread(void *arg) {
+   INIT_TIME();
+   START_THR_TIME();
 
    struct thread_data *data = (struct thread_data *)arg;
 
@@ -63,14 +64,18 @@ void *multInThread(void *arg) {
    //ps - vectors contain floats (ps stands for packed single-precision)
 
    //256-bit vector containing 8 floats
+   START_D_TIME();
    __m256 avx_x = _mm256_loadu_ps(&(data->x[idx0]));
+   STOP_D_TIME(load);
 
    int nIter = 0;
    while (nIter < 3) {
 
       int shift = 1 << nIter;
 
+      START_D_TIME();
       __m256 avx_y = _mm256_loadu_ps(&( ((float*)&avx_x)[shift] ));
+      STOP_D_TIME(load);
 
       //printf("   thread %d, nIter=%d, shift=%d, avx_x, avx_y:\n", data->instanceNumber, nIter, shift);
       //printVec(avx_x);
@@ -82,9 +87,13 @@ void *multInThread(void *arg) {
    }
 
    // store result back into x[idx0]
+   START_D_TIME();
    data->x[idx0] = ((float*)&avx_x)[0];//_mm_cvtss_f32(_mm256_extractf128_ps(avx_x, 0));
+   STOP_D_TIME(store);
 
    //printf("   thread %d, result x[idx0]=%f\n", data->instanceNumber, data->x[idx0]);
+   
+   STOP_THR_TIME(thr);
 
    return NULL;
 }
