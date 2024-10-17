@@ -19,6 +19,15 @@ void test0() {
    int isWidth = 8; // instruction set width
    float x[n]; // loading the data "coherently"
    float origX[n]; // loading the data "coherently"
+   // simply using 10:25 for values
+   for (int i = 0; i < n; ++i) {
+      x[i] = (float)(i + 10);
+      origX[i] = x[i];
+   }
+
+   #ifdef DLOG_TIMES
+   #endif
+   
    float expAns = 1.f;
    // simply using 10:25 for values
    for (int i = 0; i < n; ++i) {
@@ -26,6 +35,8 @@ void test0() {
       origX[i] = x[i];
       expAns *= x[i];
    }
+   #ifdef DLOG_TIMES
+   #endif
 
    float ans = multithread_function(x, n, isWidth);
    assert(fabsf((expAns/ans)-1) < 5E-5);

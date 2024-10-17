@@ -20,6 +20,7 @@
 // TIME_THR logs the individual thread methods
 // TIME_TOT logs the entire method
 #if defined(TIME_D)
+    #define INIT_TIME_TITLE(s) printf("TITLE %s\n", #s);
     #define INIT_TIME() clock_t start, stop;
     #define START_TOT_TIME()
     #define STOP_TOT_TIME(s)
@@ -28,6 +29,7 @@
     #define START_THR_TIME()
     #define STOP_THR_TIME(s)
 #elif defined(TIME_THR)
+    #define INIT_TIME_TITLE(s) printf("TITLE %s\n", #s);
     #define INIT_TIME() clock_t start, stop;
     #define START_TOT_TIME()
     #define STOP_TOT_TIME(s)
@@ -36,6 +38,7 @@
     #define START_THR_TIME() start = clock();
     #define STOP_THR_TIME(s) {stop = clock(); printf("%s data %ld\n", #s, (stop-start));}
 #elif defined(TIME_TOT)
+    #define INIT_TIME_TITLE(s) printf("TITLE %s\n", #s);
     #define INIT_TIME() clock_t start, stop;
     #define START_TOT_TIME() start = clock();
     #define STOP_TOT_TIME(s) {stop = clock(); printf("%s data %ld\n", #s, (stop-start));}
@@ -44,6 +47,7 @@
     #define START_THR_TIME()
     #define STOP_THR_TIME(s)
 #else
+   #define INIT_TIME_TITLE(s)
    #define INIT_TIME()
    #define START_TOT_TIME()
    #define STOP_TOT_TIME(s)
