@@ -65,7 +65,7 @@ void vecprod(uniform float * uniform x, uniform float * uniform y) {
 
     if (programCount > 16) {
         val2 = shift(val1, 16);
-        if (programIndex % 16 == 0) {
+        if (programIndex % 32 == 0) {
             val1 = val1 * val2;
             if (programCount == 32) {
                 y[programIndex] = val1;
@@ -75,7 +75,7 @@ void vecprod(uniform float * uniform x, uniform float * uniform y) {
 
     if (programCount > 32) {
         val2 = shift(val1, 32);
-        if (programIndex % 16 == 0) {
+        if (programIndex % 64 == 0) {
             val1 = val1 * val2;
             if (programCount == 64) {
                 y[programIndex] = val1;
