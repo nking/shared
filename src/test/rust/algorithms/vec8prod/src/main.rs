@@ -6,7 +6,7 @@ pub mod multithread_func;
 mod misc;
 
 #[allow(unused_imports)]
-use crate::simd_func::{simd_func};
+use crate::simd_func::simd_func;
 #[allow(unused_imports)]
 use crate::multithread_func::multithread_func;
 #[allow(unused_imports)]
@@ -35,13 +35,13 @@ use std::time::SystemTime;
 //   can contain 1 or more binary crates, but only 1 library crate.
 //   package directory has its own src/lib.rs
 
-fn test<const N : usize>( x : &mut [f32]) -> () {
+fn test<const N : usize>( x : & [f32]) -> () {
     
     //INIT_TIME();
     //START_TOT_TIME();
 
     let mut exp_ans = 1.0f32;
-    for xi in x.iter_mut() {
+    for xi in x.iter() {
         exp_ans = exp_ans * *xi;
     }
 
@@ -59,11 +59,11 @@ fn test<const N : usize>( x : &mut [f32]) -> () {
     let mut r : f32 = ((exp_ans/ans1) - 1.0).abs();
     assert!( r < 5E-5);
 
-    let ans2 = simd_func::<false>(& N, &mut x2);
+    let ans2 = simd_func::<false>(& N, & x2);
     r  = ((exp_ans/ans2) - 1.0).abs();
     assert!( r < 5E-5);
 
-    let ans3 = simd_func::<true>(& N, &mut x2);
+    let ans3 = simd_func::<true>(& N, & x2);
     r = ((exp_ans/ans3) - 1.0).abs();
     assert!( r < 5E-5);
 
@@ -81,7 +81,7 @@ fn test_16() -> () {
         x[i] = (i + 10) as f32;
     }
     
-    test::<N>(&mut x);
+    test::<N>(&x);
 }
 
 #[test]
@@ -102,7 +102,7 @@ fn test_rand_128() -> () {
         *xi = 0.65f32 + rng.gen::<f32>();
     }
 
-    test::<N>(&mut x);
+    test::<N>(&x);
      
 }
 

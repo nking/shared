@@ -79,7 +79,7 @@ pub fn multithread_partition_func(&N : &usize, x : &[f32]) -> f32 {
 }
 
 #[allow(non_snake_case)]
-pub fn multithread_func(&N : &usize, x : &mut [f32]) -> f32 {
+pub fn multithread_func(&N : &usize, x : & [f32]) -> f32 {
     
     if (N % 8) != 0 {
         panic!("N must be a multiple of 8");

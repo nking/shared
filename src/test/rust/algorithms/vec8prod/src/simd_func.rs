@@ -91,7 +91,7 @@ pub fn simd_func<const USE_SIMD: bool>(&N : &usize, x : & [f32]) -> f32 {
 
 #[allow(non_snake_case)]
 
-fn simd_partition_thread_8( x : &mut [f32; 8]) -> f32 {
+fn simd_partition_thread_8( x : & mut [f32; 8]) -> f32 {
     // TODO:
     // browse: https://doc.rust-lang.org/std/simd/prelude/trait.SimdFloat.html#tymethod.reduce_product
     
@@ -121,7 +121,7 @@ fn simd_partition_thread_8( x : &mut [f32; 8]) -> f32 {
 
 
 #[allow(non_snake_case)]
-fn intrinsics_partition_thread( x : &mut [f32]) -> f32 {
+fn intrinsics_partition_thread( x : & mut [f32]) -> f32 {
 
     unsafe {
         
