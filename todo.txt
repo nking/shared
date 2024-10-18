@@ -1,3 +1,6 @@
+-- add roofline notes to vec8prod
+    https://docs.nersc.gov/tools/performance/roofline/
+
 -- guava has consistent hash!  (...load balancing w/ caveat)
    https://github.com/google/guava/blob/master/guava/src/com/google/common/hash/Hashing.java
 
