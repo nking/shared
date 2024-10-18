@@ -436,6 +436,40 @@
 
     <target name="runCoverage" depends="clean,debug,compile,compileTests,coverage,report"/>
 
+    <target name="cmakeSimISPCClangTidy">
+        <property name="c_src_dir"    value="${tests.dir.c}/algorithms/vec8prod/multithread"/>
+        <property name="c_build_dir"  value="${tests.out.dir.c}/algorithms/vec8prod/multithread"/>
+        <mkdir dir="${c_build_dir}" />
+        <exec executable="cmake" dir="${c_src_dir}" failonerror="true">
+            <arg line="-S ${c_src_dir} -B ${c_build_dir}" />
+            <arg line="-DENABLE_CLANG_TIDY=1"/>
+            <arg line="--fresh"/>
+        </exec>
+        <!-- or use -S ${tests.dir.c}/algorithms and -B ${c_build_dir}-->
+        <exec executable="cmake" dir="${c_build_dir}" failonerror="true">
+            <arg line="--build ." />
+        </exec>
+        <exec executable="${c_build_dir}/SimISPCMiscTest" failonerror="true">
+        </exec>
+    </target>
+
+    <target name="cmakeSIMDClangTidy">
+        <property name="c_src_dir"    value="${tests.dir.c}/algorithms/vec8prod/simd"/>
+        <property name="c_build_dir"  value="${tests.out.dir.c}/algorithms/vec8prod/simd"/>
+        <mkdir dir="${c_build_dir}" />
+        <exec executable="cmake" dir="${c_src_dir}" failonerror="true">
+            <arg line="-S ${c_src_dir} -B ${c_build_dir}" />
+            <arg line="-DENABLE_CLANG_TIDY=1"/>
+            <arg line="--fresh"/>
+        </exec>
+        <!-- or use -S ${tests.dir.c}/algorithms and -B ${c_build_dir}-->
+        <exec executable="cmake" dir="${c_build_dir}" failonerror="true">
+            <arg line="--build ." />
+        </exec>
+        <exec executable="${c_build_dir}/SIMDMiscTest" failonerror="true">
+        </exec>
+    </target>
+
     <target name="cmakeSimISPCTest">
         <property name="c_src_dir"    value="${tests.dir.c}/algorithms/vec8prod/multithread"/>
         <property name="c_build_dir"  value="${tests.out.dir.c}/algorithms/vec8prod/multithread"/>
@@ -454,6 +488,7 @@
             <arg line="--build ." />
         </exec>
     </target>
+
     <target name="runSimISPCTest">
         <property name="c_build_dir"  value="${tests.out.dir.c}/algorithms/vec8prod/multithread"/>
         <exec executable="${c_build_dir}/SimISPCMiscTest" failonerror="true">
