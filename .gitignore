@@ -31,3 +31,4 @@ tests/A0*
 tests/A?Test*
 tests/A??Test*
 tests/ATest*
+target/
