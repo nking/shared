@@ -26,10 +26,23 @@ elseif (TIME_TOT)
 endif()
 
 add_executable(SIMDMiscTest SIMDMiscTest.c)
+
 target_compile_options(SIMDMiscTest PRIVATE -mavx2)
 
 target_link_libraries(SIMDMiscTest SIMDMisc.o ${stdio_LIBRARY} ${immintrin_LIBRARY} ${math__LIBRARY} ${pthread__LIBRARY} ${assert__LIBRARY})
 
 target_include_directories(SIMDMiscTest INTERFACE ${CMAKE_SOURCE_DIR}/SIMDMisc.h ${CMAKE_SOURCE_DIR}/../time_log.h)
 
+if (ENABLE_CLANG_TIDY)
+    find_program(CLANG_TIDY_EXE NAMES clang-tidy clang-tidy-mp-11)
+    if(CLANG_TIDY_EXE)
+        message("found clang-tidy")
+        set(CLANG_TIDY_COMMAND "${CLANG_TIDY_EXE}" "-checks=-*,modernize-*")
+        set(CMAKE_CXX_CLANG_TIDY
+          clang-tidy;
+          -header-filter="\\.{0,1}.*\\.h$";
+          -checks=*;)
+        set_target_properties(SIMDMiscTest PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY_COMMAND}")
+    endif()
+endif()
 

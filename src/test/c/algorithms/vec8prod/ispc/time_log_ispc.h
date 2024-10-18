@@ -23,7 +23,7 @@
     #define STOP_D_LOAD_TIME() {stop = clock(); print("load data %\n", (stop-start));}
     #define STOP_D_STORE_TIME() {stop = clock(); print("store data %\n", (stop-start));}
     #define START_THR_TIME()
-    #define STOP_THR_TIME(s)
+    #define STOP_THR_TIME()
 #elif defined(TIME_THR)
     #define INIT_TIME_TITLE(s) print("TITLE %\n", #s);
     #define INIT_TIME() unsigned uniform int64 start, stop;
@@ -31,6 +31,8 @@
     #define STOP_TOT_TIME(s)
     #define START_D_TIME()
     #define STOP_D_TIME(s)
+    #define STOP_D_LOAD_TIME()
+    #define STOP_D_STORE_TIME()
     #define START_THR_TIME() start = clock();
     #define STOP_THR_TIME() {stop = clock(); print("thr thr %\n", #s, (stop-start));}
 #elif defined(TIME_TOT)
@@ -40,8 +42,10 @@
     #define STOP_TOT_TIME(s) {stop = clock(); print("% tot %\n", #s, (stop-start));}
     #define START_D_TIME()
     #define STOP_D_TIME(s)
+    #define STOP_D_LOAD_TIME()
+    #define STOP_D_STORE_TIME()
     #define START_THR_TIME()
-    #define STOP_THR_TIME(s)
+    #define STOP_THR_TIME()
 #else
    #define INIT_TIME_TITLE(s)
    #define INIT_TIME()
@@ -49,8 +53,10 @@
    #define STOP_TOT_TIME(s)
    #define START_D_TIME()
    #define STOP_D_TIME(s)
+   #define STOP_D_LOAD_TIME()
+   #define STOP_D_STORE_TIME()
    #define START_THR_TIME()
-   #define STOP_THR_TIME(s)
+   #define STOP_THR_TIME()
 #endif
 
 //LOG(format, ...) fprintf(stdout, format, ##__VA_ARGS__)
