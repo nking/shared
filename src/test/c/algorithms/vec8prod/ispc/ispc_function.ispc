@@ -160,6 +160,7 @@ export uniform float ispc_function(uniform int N, uniform float * uniform x) {
      //print("programCount=%, n_results=%\n", programCount, n_res);
 
      uniform float * uniform tmpX = x;
+     uniform float * uniform tmpY = uniform new float[programCount];
      uniform float * uniform res = uniform new float[n_res];
 
      uniform int i0 = 0;
@@ -170,7 +171,6 @@ export uniform float ispc_function(uniform int N, uniform float * uniform x) {
          if (i_res > 0) {
              tmpX += programCount;
          }
-         uniform float * uniform tmpY = uniform new float[programCount];
 
          vecprod(tmpX, tmpY);
 
@@ -191,6 +191,8 @@ export uniform float ispc_function(uniform int N, uniform float * uniform x) {
          #pragma ignore warning(perf)
          prod *= res[i];
      }
+     delete res;
+     delete tmpY;
      return prod;
 }
 
