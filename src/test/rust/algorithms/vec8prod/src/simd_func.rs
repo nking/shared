@@ -93,8 +93,7 @@ pub fn simd_func<const USE_SIMD: bool>(&N : &usize, x : & [f32]) -> f32 {
 
 fn simd_partition_thread_8( x : &mut [f32; 8]) -> f32 {
     // TODO:
-    // browse: https://towardsdatascience.com/nine-rules-for-simd-acceleration-of-your-rust-code-part-1-c16fe639ce21
-    // browse:  https://monadera.com/blog/faster-rust-with-simd/
+    // browse: https://doc.rust-lang.org/std/simd/prelude/trait.SimdFloat.html#tymethod.reduce_product
     
     const N_VEC: usize = 8;
 
