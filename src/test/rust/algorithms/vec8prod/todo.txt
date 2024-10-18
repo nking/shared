@@ -20,6 +20,8 @@ execution of methods etc:
    execution time (takes a clock cycle) unlike the
    ability in c to make macros that are empty lines in the source.
    
+coverage:
+   https://doc.rust-lang.org/rustc/instrument-coverage.html
 
 when ready to build an ant target:
    the exec is
