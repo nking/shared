@@ -47,7 +47,7 @@ void * testRand() {
     // generate 128 random vector of numbers in range [1,1.65] whose product is <= 3.4E38
 
     // using seconds of time of day:
-    unsigned int seed = 1729184686;//time(0);
+    unsigned int seed = time(0);
     printf("seed=%d\n", seed);
     srand(seed);
 

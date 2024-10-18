@@ -164,10 +164,10 @@ export uniform float ispc_function(uniform int N, uniform float * uniform x) {
 
      uniform int i0 = 0;
      uniform int i_res = 0;
-     for (uniform int i = 0; i < N; i += programCount) {
-
+     //for (uniform int i = 0; i < N; i += programCount) {
+     foreach (i = 0 ... N) { // parallel execution
          // increment pointer for tmpX
-         if (i > 0) {
+         if (i_res > 0) {
              tmpX += programCount;
          }
          uniform float * uniform tmpY = uniform new float[programCount];
