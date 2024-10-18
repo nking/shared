@@ -51,6 +51,17 @@ To run a specific test:
 
 To generate coverage reports:
   ant runCoverage
+
+-----------
+The project also includes in various directories, python, rust and c
+code.
+   The build.xml has targets for the c code.
+      (The target for ISPC depends upon a few APIs that I haven't 
+       written up here yet.)
+
+   The python and rust code do not have targets in build.xml,
+   but can be built from their source code directories.
+    I'll add notes to building and running them here at some point.
   
 ------------
 Dependencies
