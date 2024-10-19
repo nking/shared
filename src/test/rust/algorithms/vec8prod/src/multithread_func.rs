@@ -25,7 +25,7 @@ lock, then another thread can obtain the mutex lock, ...
 
 #[allow(non_snake_case)]
 pub fn multithread_partition_func(&N : &usize, x : &[f32]) -> f32 {
-    //NOTE: we have errors below in scope spawned thread copies of data
+    //NOTE: we will have errors below in scope spawned thread copies of data
     // if parameter x is typed as x : &mut [f32] even if edited to mut below too
 
     #[allow(non_snake_case)]
@@ -47,7 +47,7 @@ pub fn multithread_partition_func(&N : &usize, x : &[f32]) -> f32 {
             // the other inside of thread spawn).
             // Instead, placing xp construction and copy from slice
             // inside of spawned thread results in only 1 copy being made.
-            // For this, also need scope to share x
+            // For this, also need thread::scope in order to share x
             
             let thr = s.spawn(move || {
                 let mut xp:[f32; N_VEC] = [0.0f32; N_VEC];
@@ -102,6 +102,10 @@ pub fn multithread_func(&N : &usize, x : & [f32]) -> f32 {
 #[allow(non_snake_case)]
 fn multithread_partition_thread(&N_VEC : &usize, x : &mut [f32]) -> f32 {
     //println!("   x address={:p}", &x[0]);
+    
+    #[cfg(feature = "TIME_THR")]
+    let start = std::time::SystemTime::now();
+
     let mut p_id : usize = 2;
     while p_id <= N_VEC {
         let off0: usize = p_id - 1;
@@ -117,6 +121,9 @@ fn multithread_partition_thread(&N_VEC : &usize, x : &mut [f32]) -> f32 {
         
         p_id = p_id << 1;
     }
+
+    #[cfg(feature = "TIME_THR")]
+    match start.elapsed() {Ok(dur) => {tracing::info!("thr {:?}", dur.as_nanos())},Err(_) => {},}
 
     return x[N_VEC - 1];
 }

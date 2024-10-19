@@ -8,7 +8,7 @@ use std::simd::prelude::*;
 //use std::simd::u32x8;
 //use std::simd::i32x8;
 //use std::simd::prelude::Simd;
-use std::{panic, thread::scope, time::*, format};
+use std::{panic, thread::scope};
 use std::arch::x86_64::{_mm256_loadu_ps, _mm256_mul_ps, _mm256_storeu_ps, __m256};
 
 //#[cfg(target_arch = "x86_64")]
@@ -30,12 +30,10 @@ use std::arch::x86_64::{_mm256_loadu_ps, _mm256_mul_ps, _mm256_storeu_ps, __m256
         .reduce_sum()
 }*/
 
-use tracing::info;
-
 #[allow(non_snake_case)]
 pub fn simd_func<const USE_SIMD: bool>(&N : &usize, x : & [f32]) -> f32 {
-    //NOTE: we have errors below in scope spawned thread copies of data
-    // if parameter x is typed as x : &mut [f32]
+    //NOTE: we will have errors below in scope spawned thread copies of data
+    // if parameter x is typed as x : &mut [f32] even if edited to mut below too
 
     // see https://doc.rust-lang.org/std/simd/index.html
     //println!("\nsimd module");
@@ -97,11 +95,17 @@ fn simd_partition_thread_8( x : & mut [f32; 8]) -> f32 {
     // browse: https://doc.rust-lang.org/std/simd/prelude/trait.SimdFloat.html#tymethod.reduce_product
     
     #[cfg(feature = "TIME_THR")]
-    //let start = SystemTime::now(); need equiv of getClock from c
+    let start = std::time::SystemTime::now();
 
     const N_VEC: usize = 8;
 
+    #[cfg(feature = "TIME_D")]
+    let start = std::time::SystemTime::now();
+
     let mut a_simd: Simd<f32, N_VEC> = Simd::from_array(*x);
+
+    #[cfg(feature = "TIME_D")]
+    match start.elapsed() {Ok(dur) => {tracing::info!("D LOAD {:?}", dur.as_nanos())},Err(_) => {},}
 
     const SH1 : usize = 1;
     let mut b_simd = a_simd.rotate_elements_left::<SH1>();
@@ -115,14 +119,21 @@ fn simd_partition_thread_8( x : & mut [f32; 8]) -> f32 {
     b_simd = a_simd.rotate_elements_left::<SH4>();
     a_simd = a_simd * b_simd;
 
+    #[cfg(feature = "TIME_D")]
+    let start = std::time::SystemTime::now();
+
+    //TODO: is there a faster way to extract only the first element?
+    let r = a_simd.to_array()[0];
+
+    #[cfg(feature = "TIME_D")]
+    match start.elapsed() {Ok(dur) => {tracing::info!("D LOAD {:?}", dur.as_nanos())},Err(_) => {},}
 
     //conditionally present 
     // e.g. cargo test --features TIME_THR -- --nocapture
     #[cfg(feature = "TIME_THR")]
-    info!("cycle ");
+    match start.elapsed() {Ok(dur) => {tracing::info!("thr {:?}", dur.as_nanos())},Err(_) => {},}
 
-    //TODO: faster way to extract only the first element?
-    return a_simd.to_array()[0];
+    return r;
 }
 
 /*const unsafe fn create_shift_1() -> __m256i /*i32x8*/ {
@@ -132,11 +143,20 @@ fn simd_partition_thread_8( x : & mut [f32; 8]) -> f32 {
 
 #[allow(non_snake_case)]
 fn intrinsics_partition_thread( x : & mut [f32]) -> f32 {
-
+    
     unsafe {
         
+        #[cfg(feature = "TIME_THR")]
+        let start = std::time::SystemTime::now();
+
+        #[cfg(feature = "TIME_D")]
+        let start = std::time::SystemTime::now();
+
         //core::arch::x86_64::
         let mut avx_x: __m256 = _mm256_loadu_ps(x.get_unchecked(0));
+
+        #[cfg(feature = "TIME_D")]
+        match start.elapsed() {Ok(dur) => {tracing::info!("load {:?}", dur.as_nanos())},Err(_) => {},}
 
         let mut n_iter : usize = 0;
         while n_iter < 3 {
@@ -154,20 +174,45 @@ fn intrinsics_partition_thread( x : & mut [f32]) -> f32 {
             //https://doc.rust-lang.org/beta/core/arch/x86_64/fn._mm256_mask_i32gather_ps.html
             //
             // for now, will store to x and source avx_y from it with slice
+            
+            #[cfg(feature = "TIME_D")]
+            let start = std::time::SystemTime::now();
+
             let _ = _mm256_storeu_ps(x.as_mut_ptr(), avx_x);
+            
+            #[cfg(feature = "TIME_D")]
+            match start.elapsed() {Ok(dur) => {tracing::info!("store {:?}", dur.as_nanos())},Err(_) => {},}
+
+            #[cfg(feature = "TIME_D")]
+            let start = std::time::SystemTime::now();
+
             let avx_y: __m256 = _mm256_loadu_ps(x.get_unchecked(shift));
             
+            #[cfg(feature = "TIME_D")]
+            match start.elapsed() {Ok(dur) => {tracing::info!("load {:?}", dur.as_nanos())},Err(_) => {},}
+
             avx_x = _mm256_mul_ps(avx_x, avx_y);
 
             n_iter += 1;
         }
 
+        #[cfg(feature = "TIME_D")]
+        let start = std::time::SystemTime::now();
+
         let _ = _mm256_storeu_ps(x.as_mut_ptr(), avx_x);
+
+        #[cfg(feature = "TIME_D")]
+        match start.elapsed() {Ok(dur) => {tracing::info!("load {:?}", dur.as_nanos())},Err(_) => {},}
+
         //core_arch::simd::f32x8
         //avx_x.as_f32x8
         // under the hood: pub struct __m256(f32, f32, f32, f32, f32, f32, f32, f32);
         //println!("   in simd, res avx_x[0]={:#?}", x[0]);
 
+        #[cfg(feature = "TIME_THR")]
+        match start.elapsed() {Ok(dur) => {tracing::info!("thr {:?}", dur.as_nanos())},Err(_) => {},}
+
         return x[0];
     }
+    
 }

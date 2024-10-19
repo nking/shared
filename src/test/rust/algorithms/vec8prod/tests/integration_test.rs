@@ -3,52 +3,89 @@ use vec8prod::simd_func::simd_func;
 use vec8prod::multithread_func::multithread_func;
 use rand::Rng;
 use rand::prelude::*;
-use std::time::SystemTime;
+use std::{time::SystemTime};
 
 #[test]
 fn run_all_tests() {
 
+    #[cfg(all(feature = "TIME_TOT", feature = "TIME_THR"))]
+    panic!("Cannot have more than 1 of the logging features set (TIME_TOT, TIME_THR, TIME_D).");
+    #[cfg(all(feature = "TIME_TOT", feature = "TIME_D"))]
+    panic!("Cannot have more than 1 of the logging features set (TIME_TOT, TIME_THR, TIME_D).");
+    #[cfg(all(feature = "TIME_D", feature = "TIME_THR"))]
+    panic!("Cannot have more than 1 of the logging features set (TIME_TOT, TIME_THR, TIME_D).");
+    
     tracing_subscriber::fmt()
         .with_max_level(tracing::Level::DEBUG)
         // enable thread id to be emitted
         .with_thread_ids(true)
         // enabled thread name to be emitted
         .with_thread_names(true)
+        .with_ansi(false)
         .init();
+    // .with_ansi(false) avoids escape characters in output
+
+    #[cfg(any(feature = "TIME_TOT", feature = "TIME_THR", feature = "TIME_D"))]
+    tracing::info!("test16");
 
     test_16();
+
+    #[cfg(any(feature = "TIME_TOT", feature = "TIME_THR", feature = "TIME_D"))]
+    tracing::info!("test128");
+
     test_rand_128();
 }
 
 fn test<const N : usize>( x : & [f32]) -> () {
     
-    //INIT_TIME();
-    //START_TOT_TIME();
+    #[cfg(feature = "TIME_TOT")]
+    let start = std::time::SystemTime::now();
 
     let mut exp_ans = 1.0f32;
     for xi in x.iter() {
         exp_ans = exp_ans * *xi;
     }
 
-    //STOP_TOT_TIME(serial);
+    #[cfg(feature = "TIME_TOT")]
+    match start.elapsed() {Ok(dur) => {tracing::info!("serial {:?}", dur.as_nanos())},Err(_) => {},}
 
     let mut x2 : [f32; N] = [0.0f32; N];
     let mut x3: [f32; N] = [0.0f32; N];
     x2.copy_from_slice(& x[0..N]);
     x3.copy_from_slice(& x[0..N]);
 
+    #[cfg(feature = "TIME_TOT")]
+    let start = std::time::SystemTime::now();
+
     let ans1 = multithread_func(&N, x);
+
+    #[cfg(feature = "TIME_TOT")]
+    match start.elapsed() {Ok(dur) => {tracing::info!("multithread {:?}", dur.as_nanos())},Err(_) => {},}
 
     //println!("main.  exp_ans={}, ans1={}", exp_ans, ans1);
     
     let mut r : f32 = ((exp_ans/ans1) - 1.0).abs();
     assert!( r < 5E-5);
 
+    #[cfg(feature = "TIME_TOT")]
+    let start = std::time::SystemTime::now();
+
     let ans2 = simd_func::<false>(& N, & x2);
+    
+    #[cfg(feature = "TIME_TOT")]
+    match start.elapsed() {Ok(dur) => {tracing::info!("intrinsics {:?}", dur.as_nanos())},Err(_) => {},}
+
     r  = ((exp_ans/ans2) - 1.0).abs();
     assert!( r < 5E-5);
 
+    #[cfg(feature = "TIME_TOT")]
+    let start = std::time::SystemTime::now();
+
     let ans3 = simd_func::<true>(& N, & x2);
+
+    #[cfg(feature = "TIME_TOT")]
+    match start.elapsed() {Ok(dur) => {tracing::info!("simd {:?}", dur.as_nanos())},Err(_) => {},}
+
     r = ((exp_ans/ans3) - 1.0).abs();
     assert!( r < 5E-5);
 
