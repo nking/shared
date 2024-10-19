@@ -1,27 +1,8 @@
-measuring times for load, store, threads, total runtime
-execution of methods etc:
-
-   for the c code version of the project, I used compile options
-   and macros in a header file to create methods that
-   measure the different timings and print them to stdout
-   which is then written to files named for the options.
-
-   In hindsight, I should have explored AOP options
-   to keep the source code cleaner, but did not think of it 
-   before was able to implement the header macros easily.
-
-   For rust, I don't see an AOP library, but there are
-   tracing crates.
-
-   To keep the timing logs source code pattern in rust 
-   similar to the c code
-   I'll use compile configurations and macros in rust too.
-   The one drawback is that an empty macro still affects
-   execution time (takes a clock cycle) unlike the
-   ability in c to make macros that are empty lines in the source.
-   
 coverage:
    https://doc.rust-lang.org/rustc/instrument-coverage.html
+
+rooftop analysis:
+   https://docs.nersc.gov/tools/performance/roofline/ 
 
 when ready to build an ant target:
    the exec is

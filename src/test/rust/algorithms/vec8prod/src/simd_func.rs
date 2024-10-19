@@ -1,4 +1,3 @@
-
 //use std::simd::f32x8;
 //use std::simd::num::SimdFloat;
 //use std::simd::StdFloat;
@@ -9,7 +8,7 @@ use std::simd::prelude::*;
 //use std::simd::u32x8;
 //use std::simd::i32x8;
 //use std::simd::prelude::Simd;
-use std::{panic, thread::scope};
+use std::{panic, thread::scope, time::*, format};
 use std::arch::x86_64::{_mm256_loadu_ps, _mm256_mul_ps, _mm256_storeu_ps, __m256};
 
 //#[cfg(target_arch = "x86_64")]
@@ -30,6 +29,8 @@ use std::arch::x86_64::{_mm256_loadu_ps, _mm256_mul_ps, _mm256_storeu_ps, __m256
         .fold(f32x8::splat(0.), |acc, (a, b)| a.mul_add(b, acc))
         .reduce_sum()
 }*/
+
+use tracing::info;
 
 #[allow(non_snake_case)]
 pub fn simd_func<const USE_SIMD: bool>(&N : &usize, x : & [f32]) -> f32 {
@@ -57,7 +58,7 @@ pub fn simd_func<const USE_SIMD: bool>(&N : &usize, x : & [f32]) -> f32 {
         let mut split_next : usize = split_prev + N_VEC;
 
         for _i in 0..n_instances {
-
+            
             let thr = s.spawn(move || {
                 let mut xp:[f32; N_VEC] = [0.0f32; N_VEC];
                 xp.copy_from_slice(& x[split_prev..split_next]);
@@ -95,6 +96,9 @@ fn simd_partition_thread_8( x : & mut [f32; 8]) -> f32 {
     // TODO:
     // browse: https://doc.rust-lang.org/std/simd/prelude/trait.SimdFloat.html#tymethod.reduce_product
     
+    #[cfg(feature = "TIME_THR")]
+    //let start = SystemTime::now(); need equiv of getClock from c
+
     const N_VEC: usize = 8;
 
     let mut a_simd: Simd<f32, N_VEC> = Simd::from_array(*x);
@@ -110,6 +114,12 @@ fn simd_partition_thread_8( x : & mut [f32; 8]) -> f32 {
     const SH4 : usize = 4;
     b_simd = a_simd.rotate_elements_left::<SH4>();
     a_simd = a_simd * b_simd;
+
+
+    //conditionally present 
+    // e.g. cargo test --features TIME_THR -- --nocapture
+    #[cfg(feature = "TIME_THR")]
+    info!("cycle ");
 
     //TODO: faster way to extract only the first element?
     return a_simd.to_array()[0];

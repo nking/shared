@@ -2,7 +2,18 @@
 name = "vec8prod"
 version = "0.1.0"
 edition = "2021"
+authors = ["nichole"]
 
 [dependencies]
 rand = "0.8.5"
 rand_chacha = "0.3.1"
+tracing = "0.1.40"
+tracing-subscriber = "0.3.18"
+
+[features]
+# used for timing logs as conditional use of instrumentation.
+# not needed for cargo build, just for cargo test:
+# cargo test --features TIME_THR -- --nocapture
+TIME_THR = []
+TIME_TOT = []
+TIME_D = []
