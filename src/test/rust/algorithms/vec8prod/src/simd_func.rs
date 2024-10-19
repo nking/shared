@@ -9,18 +9,14 @@ use std::simd::prelude::*;
 //use std::simd::i32x8;
 //use std::simd::prelude::Simd;
 use std::{panic, thread::scope};
-use std::arch::x86_64::{_mm256_loadu_ps, _mm256_mul_ps, _mm256_storeu_ps, __m256};
+use std::arch::x86_64::{__m256, _mm256_mul_ps, _mm256_storeu_ps};
+use core::arch::x86_64::{_mm256_loadu_ps, _mm256_permutevar8x32_ps, _mm256_set_epi32};
 
 //#[cfg(target_arch = "x86_64")]
 //#[cfg(target_arch = "x86")]
 
 // has ispc too:  https://crates.io/crates/packed_simd
 // https://github.com/rust-lang/stdarch
-
-//use std::arch::x86_64::*;
-//use std::arch::x86_64::{__m256i};
-//use std::arch::x86::*;
-
 
 /*pub fn sum_simd_5(a: &[f32], b: &[f32]) -> f32 {
     a.array_chunks::<8>()
@@ -136,13 +132,11 @@ fn simd_partition_thread_8( x : & mut [f32; 8]) -> f32 {
     return r;
 }
 
-/*const unsafe fn create_shift_1() -> __m256i /*i32x8*/ {
-    unsafe { _mm256_set_epi32(1,2,3,4,5,6,7,0) } 
-}*/
-
-
-#[allow(non_snake_case)]
 fn intrinsics_partition_thread( x : & mut [f32]) -> f32 {
+    
+    if !is_x86_feature_detected!("avx2") {
+        panic!("this method currently only supports avx2 and arch x86_64");
+    }
     
     unsafe {
         
@@ -152,49 +146,47 @@ fn intrinsics_partition_thread( x : & mut [f32]) -> f32 {
         #[cfg(feature = "TIME_D")]
         let start = std::time::SystemTime::now();
 
-        //core::arch::x86_64::
         let mut avx_x: __m256 = _mm256_loadu_ps(x.get_unchecked(0));
 
         #[cfg(feature = "TIME_D")]
-        match start.elapsed() {Ok(dur) => {tracing::info!("load {:?}", dur.as_nanos())},Err(_) => {},}
+        let start = std::time::SystemTime::now();
 
-        let mut n_iter : usize = 0;
-        while n_iter < 3 {
+        // shift right by 1
+        let avx_y:__m256 = _mm256_permutevar8x32_ps(avx_x, 
+            _mm256_set_epi32(0,7,6,5,4,3,2,1));
+        
+        #[cfg(feature = "TIME_D")]
+        match start.elapsed() {Ok(dur) => {tracing::info!("load+shift {:?}", dur.as_nanos())},Err(_) => {},}
 
-            let shift : usize = 1 << n_iter;
+        avx_x = _mm256_mul_ps(avx_x, avx_y);
+        
+        #[cfg(feature = "TIME_D")]
+        let start = std::time::SystemTime::now();
 
-            // avx_y needs to be avx_x shifted to the left by shift indices
-            // TODO: there should be an efficient way to do this with intrinsics.
-            //     need this offset to left by shift indexes:
-            //         let mut avx_y : __m256 = avx_x.clone();
-            //            then in-place shuffle: shufps
-            //            or vpermps
-            //            no success with _mm256_permute_ps
-            // TODO: consider __m256 _mm256_mask_i32gather_ps
-            //https://doc.rust-lang.org/beta/core/arch/x86_64/fn._mm256_mask_i32gather_ps.html
-            //
-            // for now, will store to x and source avx_y from it with slice
+        // shift by 2
+        let avx_y:__m256 = _mm256_permutevar8x32_ps(avx_x, 
+            _mm256_set_epi32(0,0, 7,6,5,4,3,2));
+        
+        #[cfg(feature = "TIME_D")]
+        match start.elapsed() {Ok(dur) => {tracing::info!("load+shift {:?}", dur.as_nanos())},Err(_) => {},}
+  
+        avx_x = _mm256_mul_ps(avx_x, avx_y);
+
+        #[cfg(feature = "TIME_D")]
+        let start = std::time::SystemTime::now();
+
+        // shift by 4
+        let avx_y:__m256 = _mm256_permutevar8x32_ps(avx_x, 
+            _mm256_set_epi32(0,0, 0, 0, 7,6,5,4));
             
-            #[cfg(feature = "TIME_D")]
-            let start = std::time::SystemTime::now();
+        #[cfg(feature = "TIME_D")]
+        match start.elapsed() {Ok(dur) => {tracing::info!("load+shift {:?}", dur.as_nanos())},Err(_) => {},}
 
-            let _ = _mm256_storeu_ps(x.as_mut_ptr(), avx_x);
-            
-            #[cfg(feature = "TIME_D")]
-            match start.elapsed() {Ok(dur) => {tracing::info!("store {:?}", dur.as_nanos())},Err(_) => {},}
+        avx_x = _mm256_mul_ps(avx_x, avx_y);
 
-            #[cfg(feature = "TIME_D")]
-            let start = std::time::SystemTime::now();
-
-            let avx_y: __m256 = _mm256_loadu_ps(x.get_unchecked(shift));
-            
-            #[cfg(feature = "TIME_D")]
-            match start.elapsed() {Ok(dur) => {tracing::info!("load {:?}", dur.as_nanos())},Err(_) => {},}
-
-            avx_x = _mm256_mul_ps(avx_x, avx_y);
-
-            n_iter += 1;
-        }
+        //extract first value
+        // TODO: is there a faster way than storing register to memory and then
+        // getting first element?
 
         #[cfg(feature = "TIME_D")]
         let start = std::time::SystemTime::now();
@@ -202,12 +194,7 @@ fn intrinsics_partition_thread( x : & mut [f32]) -> f32 {
         let _ = _mm256_storeu_ps(x.as_mut_ptr(), avx_x);
 
         #[cfg(feature = "TIME_D")]
-        match start.elapsed() {Ok(dur) => {tracing::info!("load {:?}", dur.as_nanos())},Err(_) => {},}
-
-        //core_arch::simd::f32x8
-        //avx_x.as_f32x8
-        // under the hood: pub struct __m256(f32, f32, f32, f32, f32, f32, f32, f32);
-        //println!("   in simd, res avx_x[0]={:#?}", x[0]);
+        match start.elapsed() {Ok(dur) => {tracing::info!("store {:?}", dur.as_nanos())},Err(_) => {},}
 
         #[cfg(feature = "TIME_THR")]
         match start.elapsed() {Ok(dur) => {tracing::info!("thr {:?}", dur.as_nanos())},Err(_) => {},}
