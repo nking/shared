@@ -7,4 +7,4 @@
 extern float simd_function(int N,  float *x);
 
 //private:
-void *multInThread(void *arg);
+void *intrinsicsThread(void *arg);

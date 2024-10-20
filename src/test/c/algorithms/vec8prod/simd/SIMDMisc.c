@@ -24,7 +24,7 @@ float simd_function(int N,  float * x) {
 
       pthread_t thread_id;
 
-      pthread_create(&thread_id, NULL, multInThread, &data);
+      pthread_create(&thread_id, NULL, intrinsicsThread, &data);
       pthread_join(thread_id, NULL);
    }
 
@@ -49,7 +49,7 @@ void printVec(__m256 vec) {
     printf("\n");
 }
 
-void *multInThread(void *arg) {
+void *intrinsicsThread(void *arg) {
    INIT_TIME();
    START_THR_TIME();
 
@@ -68,23 +68,26 @@ void *multInThread(void *arg) {
    __m256 avx_x = _mm256_loadu_ps(&(data->x[idx0]));
    STOP_D_TIME(load);
 
-   int nIter = 0;
-   while (nIter < 3) {
+   // shift right by 1
+   START_D_TIME();
+   __m256 avx_y = _mm256_permutevar8x32_ps(avx_x, _mm256_set_epi32(0,7,6,5,4,3,2,1));
+   STOP_D_TIME(load);
 
-      int shift = 1 << nIter;
+   avx_x = _mm256_mul_ps(avx_x, avx_y);
 
-      START_D_TIME();
-      __m256 avx_y = _mm256_loadu_ps(&( ((float*)&avx_x)[shift] ));
-      STOP_D_TIME(load);
+   // shift right by 2
+   START_D_TIME();
+   avx_y = _mm256_permutevar8x32_ps(avx_x, _mm256_set_epi32(0,0, 7,6,5,4,3,2));
+   STOP_D_TIME(load);
 
-      //printf("   thread %d, nIter=%d, shift=%d, avx_x, avx_y:\n", data->instanceNumber, nIter, shift);
-      //printVec(avx_x);
-      //printVec(avx_y);
+   avx_x = _mm256_mul_ps(avx_x, avx_y);
 
-      avx_x = _mm256_mul_ps(avx_x, avx_y);
+   // shift right by 4
+   START_D_TIME();
+   avx_y = _mm256_permutevar8x32_ps(avx_x, _mm256_set_epi32(0,0,0,0, 7,6,5,4));
+   STOP_D_TIME(load);
 
-      ++nIter;
-   }
+   avx_x = _mm256_mul_ps(avx_x, avx_y);
 
    // store result back into x[idx0]
    START_D_TIME();
