@@ -119,6 +119,7 @@ fn simd_partition_thread_8( x : & mut [f32; 8]) -> f32 {
     let start = std::time::SystemTime::now();
 
     //TODO: is there a faster way to extract only the first element?
+    // ? something like _mm_cvtss_f32(_mm256_extractf128_ps(avx_x, 0))
     let r = a_simd.to_array()[0];
 
     #[cfg(feature = "TIME_D")]
