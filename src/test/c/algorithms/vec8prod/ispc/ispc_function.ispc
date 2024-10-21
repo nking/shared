@@ -18,12 +18,31 @@ to compile:
    see CMakeLists.txt
 */
 
-void print_float_array(uniform float *array, uniform int i0, uniform int i1) {
+void print_float_array(uniform float * uniform array, uniform int i0, uniform int i1) {
     for (uniform int i = i0; i < i1; ++i) {
         #pragma ignore warning(perf)
         print("   %,\n", array[i]);
     }
     print("\n");
+}
+
+void vecprod_1(uniform float * uniform x, uniform int ishift) {
+    INIT_TIME();
+    START_THR_TIME();
+
+    START_D_TIME();
+    float val1 = x[programIndex];
+    START_D_TIME();
+
+    START_D_TIME();
+    float val2 = shift(val1, ishift);
+    START_D_TIME();
+
+    //print("val1=        %\n", val1);
+    //print("shift=% val2=%\n", ishift, val2);
+    x[programIndex] = val1 * val2;
+
+    STOP_THR_TIME();
 }
 
 void vecprod(uniform float * uniform x, uniform float * uniform y) {
@@ -153,8 +172,6 @@ varying float * p4 = new varying float[10];                  // 8 * 320 = 2560 b
 */
 export uniform float ispc_function(uniform int N, uniform float * uniform x) {
 
-     INIT_TIME();
-
      uniform int n_res = N / programCount;
 
      //print("programCount=%, n_results=%\n", programCount, n_res);
@@ -191,8 +208,76 @@ export uniform float ispc_function(uniform int N, uniform float * uniform x) {
          #pragma ignore warning(perf)
          prod *= res[i];
      }
-     delete res;
-     delete tmpY;
+     delete[] res;
+     delete[] tmpY;
+     return prod;
+}
+
+/**
+used to compare to ispc_function(...).
+also useful to look at effect of programIndex filtering on what vecprod_1 sees.
+*/
+export uniform float ispc_function2(uniform int N, uniform float * uniform x) {
+
+     uniform int n_res = N / programCount;
+
+     //print("programCount=%, n_results=%\n", programCount, n_res);
+
+     uniform float * uniform tmpX = x;
+     uniform float * uniform res = uniform new float[n_res];
+
+     uniform int i0 = 0;
+     uniform int i_res = 0;
+     
+     foreach (i = 0 ... N) { // parallel execution
+         // increment pointer for tmpX
+         if (i_res > 0) {
+             tmpX += programCount;
+         }
+
+         uniform int nIter = 0;
+         uniform int nIterMax = 3; // for programCount==8
+         if (programCount == 32) {
+            nIterMax = 5;
+         } else if (programCount == 16) {
+            nIterMax = 4;
+         }
+         
+         while (nIter < nIterMax) {
+            uniform int ishift = (uniform int)1 << nIter;
+            
+            //if (programIndex % ishift == 0) { // Modulus operator with varying types is very inefficient.
+            if ((nIter==0 && programIndex % 1 == 0) || 
+            (nIter == 1 && programIndex % 2 == 0) ||
+            (nIter == 2 && programIndex % 4 == 0) ||
+            (nIter == 3 && programIndex % 8 == 0) ||
+            (nIter == 4 && programIndex % 16 == 0)
+            ) {
+                //print("nIter=%, ishift=%\n", nIter, ishift);
+                //print("(%)  before: ", nIter);
+                //print_float_array(tmpX, 0, programCount);
+                
+                vecprod_1(tmpX, ishift);
+                
+                //print("(%)  after: ", nIter);
+                //print_float_array(tmpX, 0, programCount);
+            }
+            ++nIter;
+         }
+
+         res[i_res] = tmpX[0];
+
+         //print("(%) res=\n", i_res);
+         //print_float_array(res, 0, n_res);
+
+         i_res += 1;
+     }
+     uniform float prod = 1.f;
+     for (uniform int i = 0; i < n_res; ++i) {
+         #pragma ignore warning(perf)
+         prod *= res[i];
+     }
+     delete[] res;
      return prod;
 }
 

@@ -561,7 +561,7 @@
         </exec>
     </target>
 
-    <target name="cmakeISPCTimeLogs">
+    <target name="cmakeISPCTimeLogs" depends="cmakeISPCTest">
         <property name="c_src_dir"    value="${tests.dir.c}/algorithms/vec8prod/ispc"/>
         <property name="c_build_dir"  value="${tests.out.dir.c}/algorithms/vec8prod/ispc"/>
         <mkdir dir="${c_build_dir}" />
@@ -569,7 +569,7 @@
         <!-- 3 different compiles and builds to make 3 logs needed for stats -->
         <!-- data load store times -->
         <exec executable="cmake" dir="${c_src_dir}" failonerror="true">
-            <arg line="-DTIME_D=1 --fresh"/>
+            <arg line="--fresh -DTIME_D=1"/>
             <arg line="-S ${c_src_dir} -B ${c_build_dir}" />
         </exec>
         <exec executable="cmake" dir="${c_build_dir}" failonerror="true">

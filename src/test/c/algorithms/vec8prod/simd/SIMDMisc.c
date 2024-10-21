@@ -68,21 +68,21 @@ void *intrinsicsThread(void *arg) {
    __m256 avx_x = _mm256_loadu_ps(&(data->x[idx0]));
    STOP_D_TIME(load);
 
-   // shift right by 1
+   // shift right by 1 (intel little endian)
    START_D_TIME();
    __m256 avx_y = _mm256_permutevar8x32_ps(avx_x, _mm256_set_epi32(0,7,6,5,4,3,2,1));
    STOP_D_TIME(load);
 
    avx_x = _mm256_mul_ps(avx_x, avx_y);
 
-   // shift right by 2
+   // shift right by 2 (intel little endian)
    START_D_TIME();
    avx_y = _mm256_permutevar8x32_ps(avx_x, _mm256_set_epi32(0,0, 7,6,5,4,3,2));
    STOP_D_TIME(load);
 
    avx_x = _mm256_mul_ps(avx_x, avx_y);
 
-   // shift right by 4
+   // shift right by 4 (intel little endian)
    START_D_TIME();
    avx_y = _mm256_permutevar8x32_ps(avx_x, _mm256_set_epi32(0,0,0,0, 7,6,5,4));
    STOP_D_TIME(load);
