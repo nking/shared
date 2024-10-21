@@ -5,6 +5,7 @@
 *.swn
 *.swo
 .idea
+.vscode
 .ipynb_*
 venv
 _*
