@@ -1,0 +1,7 @@
+for the vec8prod task;
+    ispc can perform better (faster runtime exec) than serial execution.
+    6 times better for test data of length 1<<16.
+
+    the simd and multithread versions do not use
+    thread pools. the execution runtimes are dominated by context switches.
+

@@ -3,7 +3,7 @@
 
 /*
 emmulating the ISPC example from stanford lecture 4 CS149 parallel computing
-with software threads.
+with software threads, but no thread pooling.
 doing so just to look at the divide and conquer math and vector elements.
 https://gfxcourses.stanford.edu/cs149/fall23/lecture/
 

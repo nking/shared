@@ -12,6 +12,7 @@ float simd_function(int N,  float * x) {
    // use 8-wide vec avx256
    int isWidth = 8;
 
+   //NOTE: no thread pooling is used
    int nThreads = (int)ceil( (float) N / isWidth);
 
    for (int i = 0; i < nThreads; ++i) {

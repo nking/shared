@@ -1,6 +1,15 @@
 #include "SIMDMisc.h"
 #include <assert.h>
 
+/* 
+context switching is expensive here and in multithread without SIMD.
+
+The algorithmic intensity for this SIMD method is
+   time for 3 calcs / time for (4 efficient loads from memory + 3 gather loads from memory)
+
+The better algorithmic intensity for SIMD method compared to multithread is not
+easily seen among the much larger times needed for the context switching.
+ */
 void * test(float* vin, int vLen) {
     
     INIT_TIME();
@@ -38,21 +47,24 @@ void * test16() {
 }
 
 void * testRand() {
-    // generate 128 random vector of numbers in range [1,1.65] whose product is <= 3.4E38
-    
+    // generate  random vector of numbers whose product is <= 3.4E38
+    int n = 1<<16;
+
     // using seconds of time of day:
     unsigned int seed = time(0);
     printf("seed=%d\n", seed);
     srand(seed);
 
-    float vin[128];
-    for (int i = 0; i < 128; ++i) {
-        vin[i] = 0.65f + ((float)rand() / (float)RAND_MAX);
+    float factor = 1.0f  - pow(MAXFLOAT, (1.f/(float)n));
+
+    float vin[n];
+    for (int i = 0; i < n; ++i) {
+        vin[i] = 1.0f + factor * ((float)rand() / (float)RAND_MAX);
     }
 
     INIT_TIME_TITLE(simdtestrand);
 
-    test(vin, 128);
+    test(vin, n);
 
     return NULL;
 }
