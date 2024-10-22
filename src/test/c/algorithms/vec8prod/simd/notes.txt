@@ -38,3 +38,11 @@ parallel threaded simd.
     to multiply 8 numbers using serial ~ 8 * (324/65536) ~ 0.03955 cycles
     to multiply 8 numbers using simd ~ 8 * (27000/65536) ~ 3.3 cycles
 
+* SIMD not the best tool for the current implementation of vec8prod.
+we can expect that to improve the algorithmic intensity we would need to
+increase the number of math ops per method and/or decrease the
+data access times per method.
+   -> using a longer vector than 8-wide should help increase algorithmic intensity
+      for the method's use of SIMD.
+
+
