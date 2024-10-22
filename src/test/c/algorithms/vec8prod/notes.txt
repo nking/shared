@@ -3,5 +3,7 @@ for the vec8prod task;
     6 times better for test data of length 1<<16.
 
     the simd and multithread versions do not use
-    thread pools. the execution runtimes are dominated by context switches.
-
+    thread pools. the execution runtimes are dominated by context switches,
+    and so are not better than a serial, element by element execution of
+    the vector product.
+    

@@ -1,0 +1,40 @@
+measurements taken using computer w/
+1.3GHz processor CPU, cache sizes by level 32k, 256k, 3M, 
+with max memory bandwidth: 25.6 GB/s
+
+using averages from timing logs:
+
+each simd intrinsics 8-wide method invocation:
+      1 load
+      3 loadpermute : tot=[1:5]
+      1 store
+      3 mult
+         avg load/store = 1.4
+         thr = 5*1.4 + 3*mult
+      measured avg within a thread = 3.3
+         intrinsics mult ops = (thread avg- 5*1.4)/(3. mult ops) = (3.3 - 5*1.4)/3.
+           ~ 0
+
+the serial mode for calculating the product of vector:
+   = 324 cycles total
+     so has rate 65536/324. = 325 floating point ops / sec
+the simd method for vector product:
+   = 392043 total
+   N_threads = 65536/8 = 8192 (no thread pooling was used)
+
+expect that the total 392043 = N_threads * (context switch + thread avg)
+      context switch = (392043 / 8192.) - 3.3
+                     ~ 44
+           which agrees w/ expected write to memory from cache being
+           ~ 100 times a cache write ~ 100 ns on a COT computer
+           (order of magnitude rough estimates)
+
+we can expect that if we were to use simd serially the number
+of cycles should be greater than serial and far less than
+parallel threaded simd.
+    we would expect serial simd to be ~ 27_000 cycles due to
+    the load/store to cache via instrinsics.
+
+    to multiply 8 numbers using serial ~ 8 * (324/65536) ~ 0.03955 cycles
+    to multiply 8 numbers using simd ~ 8 * (27000/65536) ~ 3.3 cycles
+
