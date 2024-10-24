@@ -42,7 +42,5 @@ parallel threaded simd.
 we can expect that to improve the algorithmic intensity we would need to
 increase the number of math ops per method and/or decrease the
 data access times per method.
-   -> using a longer vector than 8-wide should help increase algorithmic intensity
-      for the method's use of SIMD.
 
 
