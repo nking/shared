@@ -144,7 +144,9 @@ public class MedianOfMedians {
         //double x = select(a, idxLo + 2*g, idxLo + 3*g - 1, nextI);
         double x = select(aux, 0, nAux - 1, nAux/2);
 
-        //TODO: if nAux == even number, we should consider both central numbers
+        //TODO: if nAux == even number, we should consider both central numbers.  the other is (nAux/2) - 1.
+        // or consider whether there is a way to append another number (making the array odd in length)
+        // in a manner that finds the true ith rank number.
 
         System.out.printf("aux pivot=%.0f\n",x);
         System.out.printf("i=%d, idxLo=%d, idxHi=%d\n    a=%s\n", i, idxLo, idxHi,
