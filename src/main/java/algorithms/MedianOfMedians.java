@@ -1,5 +1,6 @@
 package algorithms;
 
+import java.util.Arrays;
 import algorithms.util.FormatArray;
 
 public class MedianOfMedians {
@@ -65,6 +66,7 @@ public class MedianOfMedians {
         final int _idxLo = idxLo;
         int _idxHi = idxHi;
         final int _i = i;
+        /*
         while ((idxHi - idxLo + 1) %5 != 0) {
             for (int j = idxLo + 1; j <= idxHi; ++j) {
                 if (a[idxLo] > a[j] && idxLo != j) {
@@ -79,22 +81,20 @@ public class MedianOfMedians {
             }
             ++idxLo;
             --i;
-        }
-        int g = (idxHi - idxLo + 1)/5;
+        }*/
+        int n = (idxHi - idxLo + 1);
+        int g = n/5;
+        int nRem = n - g*5;
 
-        System.out.printf(" => idxLo=%d, idxHi=%d, i=%d, g=%d\n", idxLo, idxHi, i, g);
+        System.out.printf(" => idxLo=%d, idxHi=%d, i=%d, g=%d, nRem=%d\n", idxLo, idxHi, i, g, nRem);
 
         if (idxHi < idxLo) {
             // idxHi + i or idxLo - 1 + i?
             System.out.printf("   ERROR idxHi<idxLo a=%s\n", FormatArray.toString(a, "%.0f"));
             //return a[idxLo + i];
         }
-        if (g==0) {
-            System.out.printf("   ** a=%s\n", FormatArray.toString(a, "%.0f"));
-            //return a[idxLo + i];
-        }
 
-        assert(idxLo + 5*g - 1 == idxHi);
+        //assert(idxLo + 5*g - 1 == idxHi);
         for (int j = idxLo; j <= (idxLo + g - 1); ++j) {
             quickSort5(a, j, j + g*4, g);
             // sort each group (A[j], A[j+g], A[j+2g], A[j+3g, A[j+4g] in place
@@ -114,12 +114,40 @@ public class MedianOfMedians {
         System.out.printf("a=%s\n", FormatArray.toString(a, "%.0f"));
 
         // all group medians now lie in the middle fifth of A[idxLo:idcHi]
-        // find the pivot x recursively as the median iof the group medians.
+        // find the pivot x recursively as the median of the group medians.
         // this range holds the medians:
         // but if idxLo was offset above, this possibly needs to be lowered up to 2 "rows"
 
-        int nextI = (int)Math.ceil(g/2);//((idxHi - idxLo) + 4) / 5;
-        double x = select(a, idxLo + 2*g, idxLo + 3*g - 1, nextI);
+        // take median of x and the remainder.
+        //how to include xRem into calcs for x without creating auxiliary arrays?
+        // will use auxilliary array method first then when method is correct, can improve it
+
+        int nAux = (idxLo + 3*g - 1) - (idxLo + 2*g) + 1;
+        double[] aux;
+        if (nRem == 0) {
+            aux = new double[nAux];
+        } else {
+            Arrays.sort(a, idxHi - nRem + 1, idxHi + 1);
+            ++nAux;
+            aux = new double[nAux];
+            aux[nAux - 1] = a[ (idxHi-nRem+1) + (nRem/2)];
+        }
+        int _ii = 0;
+        for (int ii = idxLo + 2*g; ii <= idxLo + 3*g - 1; ++ii) {
+            aux[_ii++] = a[ii];
+        }
+
+        System.out.printf("check aux=%s\n", FormatArray.toString(aux, "%.0f"));
+
+        //int nextI = (int)Math.ceil(g/2);//((idxHi - idxLo) + 4) / 5;
+        //double x = select(a, idxLo + 2*g, idxLo + 3*g - 1, nextI);
+        double x = select(aux, 0, nAux - 1, nAux/2);
+
+        //TODO: if nAux == even number, we should consider both central numbers
+
+        System.out.printf("aux pivot=%.0f\n",x);
+        System.out.printf("i=%d, idxLo=%d, idxHi=%d\n    a=%s\n", i, idxLo, idxHi,
+                FormatArray.toString(a, "%.0f"));
 
         // q is index of pivot x, 0-based
         int q = partitionAround(a, idxLo, idxHi, x);
