@@ -148,11 +148,12 @@ public class MedianOfMedians {
         for (int i = idxLo; i <= idxHi; i += g) {
             for (int j = 0; j < g; ++j) {
                 System.out.printf("%6.1f ", a[idx++]);
+                if (idxHi == idx) break;
             }
             System.out.println();
-            if (g == 0) break;
+            if (g == 0 || idxHi == idx) break;
         }
-        System.out.flush();;
+        System.out.flush();
     }
 
     protected  static void quickSort5(double[] a, int idxLo, int idxHi, int delta) {
