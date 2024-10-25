@@ -150,6 +150,7 @@ public class MedianOfMedians {
                 System.out.printf("%6.1f ", a[idx++]);
             }
             System.out.println();
+            if (g == 0) break;
         }
         System.out.flush();;
     }
