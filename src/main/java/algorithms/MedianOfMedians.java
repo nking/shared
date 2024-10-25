@@ -46,7 +46,7 @@ public class MedianOfMedians {
         if (i < 0 || i > idxHi) {
             throw new IllegalArgumentException("i is out of bounds");
         }
-        
+
         int n = (idxHi - idxLo + 1);
         if (n <= 5) {
             Arrays.sort(a, idxLo, idxHi + 1);
@@ -122,7 +122,9 @@ public class MedianOfMedians {
 
         //Blum et al. 1973 1.b, pick recursively if n/5 > 1
         if (g < 2 && (idxHi - idxLo) < 5) {
-            System.out.printf("   **** i=%d, idxLo=%d, idxHi=%d\n    a=%s\n", i, idxLo, idxHi, FormatArray.toString(a, "%.0f"));
+            System.out.printf("   **** i=%d; idxLo=%d; idxHi=%d; g=%d, nRem=%d\n    a=%s\n",
+                    i, idxLo, idxHi, g, nRem,
+                    FormatArray.toString(a, "%.0f"));
             return a[idxLo + i];
         }
 
@@ -135,11 +137,11 @@ public class MedianOfMedians {
         // but if idxLo was offset above, this possibly needs to be lowered up to 2 "rows"
 
         // take median of x and the remainder.
-        //how to include xRem into calcs for x without creating auxiliary arrays?
+        // how to include xRem into calcs for x without creating auxiliary arrays?
         // will use auxilliary array method first then when method is correct, can improve it
         // considering just passing in an an empty auxiliary array large enough to be reused for max g possible + nRem
 
-        int nAux = (idxLo + 3*g - 1) - (idxLo + 2*g) + 1;
+        int nAux = g;
         double[] aux;
         if (nRem == 0) {
             aux = new double[nAux];
@@ -170,7 +172,7 @@ public class MedianOfMedians {
         // in a manner that finds the true ith rank number.
 
         System.out.printf("aux pivot=%.0f\n",x);
-        System.out.printf("i=%d; idxLo=%d; idxHi=%d\n    a=%s\n", i, idxLo, idxHi,
+        System.out.printf("i=%d; idxLo=%d; idxHi=%d; g=%d; nRem=%d\n    a=%s\n", i, idxLo, idxHi, g, nRem,
                 FormatArray.toString(a, "%.0f"));
 
         // q is index of pivot x, 0-based
