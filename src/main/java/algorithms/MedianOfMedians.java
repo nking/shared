@@ -130,7 +130,7 @@ public class MedianOfMedians {
 
         double x = select(a, startRow, stopRow, nextI);
 
-        // a is index of pivot x
+        // q is index of pivot x, 0-based
         int q = partitionAround(a, idxLo, idxHi, x);
 
         int k = q - idxLo + 1;
@@ -138,16 +138,17 @@ public class MedianOfMedians {
         System.out.printf("pivotIdx=q=%d, pivot=%.0f, k=%d\n", q, x, k);
         System.out.printf("a=%s\n", FormatArray.toString(a, "%.0f"));
 
-        if (i == k) {
+        if (q==i-1) {
             System.out.printf("NEXT select 2\n");
             return a[q];
-        } else if (i < k) {
+        } else if (q>i-1) {
             System.out.printf("NEXT select 3\n");
             return select(a, idxLo, q - 1, i);
         } else {
             System.out.printf("NEXT select 4\n");
             //return select(a, q + 1, idxHi, i-k);
-            return select(a, q, idxHi-1, i-k+1);
+            return select(a, q + 1, idxHi, i);
+            //return select(a, q, idxHi-1, i-k+1);
         }
     }
 
