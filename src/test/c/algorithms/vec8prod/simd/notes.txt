@@ -76,10 +76,15 @@ an element-wise serial approach.
 * This implementation of vec8prod does independent work and so is
   highly parallelizable.
 
-It is a good algorithm to use when the work cannot be completed on 1 computer
-as per element serial code.
+If the data is too large to load into memory in 1 pass, we consider
+parallel options.
 
-  However, a combiner is needed to multiply the results of the independent
+But, the per element serial option on each partition is still faster
+than the SIMD implementations for my implementation of this algorithm.
+
+Continuing the line of thought in using the SIMD vec8prod in parallel:
+
+  A combiner is needed to multiply the results of the independent
   workers.
 
   ** If the architecture is using shared memory, each worker can share a
