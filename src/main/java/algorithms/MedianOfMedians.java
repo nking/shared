@@ -37,11 +37,26 @@ public class MedianOfMedians {
      * @return the median
      */
     static double selectCLRS(double[] a, int idxLo, int idxHi, int i) {
+        if (idxLo < 0 || idxLo >= a.length) {
+            throw new IllegalArgumentException("idxLo is out of bounds");
+        }
+        if (idxHi < 0 || idxHi >= a.length) {
+            throw new IllegalArgumentException("idxHi is out of bounds");
+        }
+        if (i < 0 || i > idxHi) {
+            throw new IllegalArgumentException("i is out of bounds");
+        }
+        
+        int n = (idxHi - idxLo + 1);
+        if (n <= 5) {
+            Arrays.sort(a, idxLo, idxHi + 1);
+            return a[idxLo + i];
+        }
         double result = select(a, idxLo, idxHi, i);
         // by this time, the array is largely sorted.
         System.out.printf("Do these agree? %f, and a[i]=%f?\n", result, a[i]);
-        return result;
-        //return a[i];
+        //return result;
+        return a[i];
     }
 
     /**
@@ -61,11 +76,12 @@ public class MedianOfMedians {
      */
     private static double select(double[] a, int idxLo, int idxHi, int i) {
 
-        System.out.printf("*select idxLo=%d, idxHi=%d, i=%d\n", idxLo, idxHi, i);
+        int n = (idxHi - idxLo + 1);
 
         final int _idxLo = idxLo;
         int _idxHi = idxHi;
         final int _i = i;
+
         /*
         while ((idxHi - idxLo + 1) %5 != 0) {
             for (int j = idxLo + 1; j <= idxHi; ++j) {
@@ -82,11 +98,11 @@ public class MedianOfMedians {
             ++idxLo;
             --i;
         }*/
-        int n = (idxHi - idxLo + 1);
+
         int g = n/5;
         int nRem = n - g*5;
 
-        System.out.printf(" => idxLo=%d, idxHi=%d, i=%d, g=%d, nRem=%d\n", idxLo, idxHi, i, g, nRem);
+        System.out.printf("* select idxLo=%d; idxHi=%d; i=%d; g=%d; nRem=%d\n", idxLo, idxHi, i, g, nRem);
 
         if (idxHi < idxLo) {
             // idxHi + i or idxLo - 1 + i?
@@ -142,35 +158,70 @@ public class MedianOfMedians {
 
         //int nextI = (int)Math.ceil(g/2);//((idxHi - idxLo) + 4) / 5;
         //double x = select(a, idxLo + 2*g, idxLo + 3*g - 1, nextI);
-        double x = select(aux, 0, nAux - 1, nAux/2);
+        double x;
+        if (nAux == 1) {
+            x = aux[0];
+        } else {
+            x = select(aux, 0, nAux - 1, nAux/2);
+        }
 
         //TODO: if nAux == even number, we should consider both central numbers.  the other is (nAux/2) - 1.
         // or consider whether there is a way to append another number (making the array odd in length)
         // in a manner that finds the true ith rank number.
 
         System.out.printf("aux pivot=%.0f\n",x);
-        System.out.printf("i=%d, idxLo=%d, idxHi=%d\n    a=%s\n", i, idxLo, idxHi,
+        System.out.printf("i=%d; idxLo=%d; idxHi=%d\n    a=%s\n", i, idxLo, idxHi,
                 FormatArray.toString(a, "%.0f"));
 
         // q is index of pivot x, 0-based
         int q = partitionAround(a, idxLo, idxHi, x);
 
         int k = q - idxLo + 1;
-
-        System.out.printf("pivotIdx=q=%d, pivot=%.0f, k=%d\n", q, x, k);
+        System.out.printf("pivotIdx = q = %d; pivot = %.0f; k = %d\n", q, x, k);
         System.out.printf("a=%s\n", FormatArray.toString(a, "%.0f"));
 
+        double result;
         if (k==i) {
-            System.out.printf("NEXT select 2\n");
-            return a[q];
+            System.out.printf("NEXT select 2 (==q)\n");
+            result = a[q];
         } else if (k>i) {
-            System.out.printf("NEXT select 3\n");
-            return select(a, idxLo, q - 1, i);
+            System.out.printf("NEXT select 3 (lower)\n");
+            result = select(a, idxLo, q - 1, i);
         } else {
-            System.out.printf("NEXT select 4\n");
+            System.out.printf("NEXT select 4 (higher)\n");
             //return select(a, q + 1, idxHi, i-k);
-            return select(a, q + 1, idxHi, i-k);
+            result = select(a, q + 1, idxHi, i-k);
         }
+
+        if ((nAux & 1) == 0 && nAux > 1) {
+            //Looks like this result is correct in context of my pivot algorithm
+
+            System.out.printf("trying the other median of the even-sized aux array\n");
+            double x2 = aux[(nAux/2) - 1];
+            int q2 = partitionAround(a, idxLo, idxHi, x2);
+
+            int k2 = q2 - idxLo + 1;
+
+            System.out.printf("pivotIdx2 = q2 = %d; pivot2=%.0f; k2=\n", q2, x2, k2);
+            System.out.printf("a=%s\n", FormatArray.toString(a, "%.0f"));
+
+            double result2;
+            if (k2==i) {
+                System.out.printf("*NEXT select 2 (==q2)\n");
+                result2 = a[q2];
+            } else if (k2>i) {
+                System.out.printf("*NEXT select 3 (lower)\n");
+                result2 = select(a, idxLo, q2 - 1, i);
+            } else {
+                System.out.printf("*NEXT select 4 (higher)\n");
+                //return select(a, q + 1, idxHi, i-k);
+                result2 = select(a, q2 + 1, idxHi, i - k2);
+            }
+            System.out.printf("COMPARE result=%.0f; result2=%.0f\n", result, result2);
+            result = result2;
+        }
+
+        return result;
     }
 
     private static void debugPrint(double[] a, int idxLo, int idxHi, int g) {
