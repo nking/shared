@@ -121,6 +121,7 @@ public class MedianOfMedians {
         // take median of x and the remainder.
         //how to include xRem into calcs for x without creating auxiliary arrays?
         // will use auxilliary array method first then when method is correct, can improve it
+        // considering just passing in an an empty auxiliary array large enough to be reused for max g possible + nRem
 
         int nAux = (idxLo + 3*g - 1) - (idxLo + 2*g) + 1;
         double[] aux;
