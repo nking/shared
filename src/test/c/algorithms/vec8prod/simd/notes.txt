@@ -63,6 +63,11 @@ data load/store operation time (cycles), The number of operations of
 the same AlgInt (=3ops/5loads) is reduced, so the total execution runtime 
 is reduced.
 
+Because the work is independent, no overlap of data between workers, 
+we don't consider improvements that reuse cached contents 
+(e.g. fusing loop iterations or tiling)
+except that a SIMD vector width must fit within the cache.
+
 * If the amount of data to process can fit into memory of 1 computer,
 this SIMD implementation of vec8prod is not as fast or efficient as
 an element-wise serial approach.
