@@ -97,3 +97,5 @@ Continuing the line of thought in using the SIMD vec8prod in parallel:
   The combiner can use a serial product algorithm if all fits in memory
   or can parallelize the results vector and collect the result, etc.
   
+* NOTE: the ISPC version of vec8prod can outperform the per element serial
+  calculation.  see the ISPC directory.
