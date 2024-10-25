@@ -16,4 +16,6 @@ The vec8prod algorithm is highly parallelizable, so one can
    machine network bandwidth
    for the parallel model.
 
-     
+* the vec8prod could be used in convolution.
+  (multiplication w/ a kernel then sum) using
+  vec8prod then the scan algorithm.
