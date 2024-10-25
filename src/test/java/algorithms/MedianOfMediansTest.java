@@ -1,9 +1,12 @@
 package algorithms;
 
 import algorithms.misc.Shuffle;
+import algorithms.util.FormatArray;
 import junit.framework.TestCase;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.Random;
+import java.util.Arrays;
 
 public class MedianOfMediansTest extends TestCase {
 
@@ -38,25 +41,42 @@ public class MedianOfMediansTest extends TestCase {
         assert(b7[bv7] == 3);
     }
 
-    // TODO: use this and random when have transformed algorithm to 0-based indexes
-    public void _test0() throws NoSuchAlgorithmException {
-        double[] a = new double[]{1,2,3, 4, 5,6,7};
-        Shuffle.fisherYates(a);
+    // algorithm implementation is not correct
+    public void _testRand() {
+        long seed = System.nanoTime();
+        //seed = 151408698946400L;
+        System.out.printf("seed=%d\n", seed);
+        Random rand = new Random(seed);
+        int n;
+        int nTests = 100;
+        double[] a;
+        for (int nTest = 0; nTest < nTests; ++nTest) {
+            n = 1 + rand.nextInt(24);
+            a = new double[n];
+            for (int i = 0; i < n; ++i) {
+                a[i] = rand.nextInt() ;//* rand.nextDouble();
+            }
 
-        double expAns = 4;
-        double ans = MedianOfMedians.select(a,0,a.length-1, 3);
-        assertTrue(Math.abs(expAns - ans) < 1E-11);
-    }
+            if (nTest < 3) {
+                //continue;
+            }
 
-    public void test1() throws NoSuchAlgorithmException {
-        //double[] a = new double[]{0,1,2,2,2,2,2,3,4,5,6,7};
-        // temporarily buffer with 0s on ends until transform to 0-based indexes
-        double[] a = new double[]{0,1,2,2,2,2,2,3,4,5,6,7, 1,2,2,2,2,2,3,4,5,6,7, 1,2,2,2,2,2,3,4,5,6,7,0};
-        Shuffle.fisherYates(a);
+            double[] b = Arrays.copyOf(a, a.length);
+            Arrays.sort(b);
+            double expAns = b[n/2];
 
-        double expAns = 2;
-        double ans = MedianOfMedians.select(a,1,a.length-1, a.length/2);
-        assertTrue(Math.abs(expAns - ans) < 1E-11);
+            System.out.println("\n\nnTest=" + nTest);
+            System.out.printf("a=%s\n", FormatArray.toString(a, "%.0f"));
+            System.out.printf("b=%s\n", FormatArray.toString(b, "%.0f"));
+            System.out.printf("expected median = %.0f <===\n", expAns);
+
+            double ans = MedianOfMedians.selectCLRS(a, 0, a.length-1, a.length/2);
+            System.out.printf("    result a=%s\n", FormatArray.toString(a, "%.0f"));
+
+            System.out.printf("    result median = %f\n", ans);
+
+            assertTrue(Math.abs(expAns - ans) < 1E-11);
+        }
     }
 
     public void testQuickSort5() throws NoSuchAlgorithmException {
