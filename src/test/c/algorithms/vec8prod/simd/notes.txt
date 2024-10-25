@@ -44,22 +44,46 @@ is if we have 65536 float elements and 8-wide simd vectors,
 
     ==> serial per element < serial SIMD < multithread SIMD in cycles needed
 
-* SIMD not the best tool for my implementation of vec8prod.
+* Consider how to improve an aspects of the SIMD version of vec8prod:
+
     Arithmetic (algorithmic) Intensity is the ratio of 
     total floating-point operations to total data movement (bytes)
+
 To improve the arithmetic intensity of the SIMD vec8prod algorithm, we consider 
 increasing the number of math ops per method or decreasing the denominator.
       3 ops / 5 loads.  
-   if we assume that reading sequentially into the SIMD vector for a larger
-   vector is roughly the same amount of time for load operations,
-   we don't change the Arithmetic Intensity, but we see that we can 
-   reduce the execution runtime.
 
-   the number of operations of same AlgInt (=3ops/5loads) is reduced 
-   so the total execution runtime is reduced.
+If we assume that reading sequentially into the SIMD vector for a larger
+vector is roughly the same amount of time for load operations,
+we don't change the Arithmetic Intensity, but we see that we can 
+reduce the execution runtime.
+
+If we increase the SIMD vector width without comparable increase in the
+data load/store operation time (cycles), The number of operations of 
+the same AlgInt (=3ops/5loads) is reduced, so the total execution runtime 
+is reduced.
+
+* If the amount of data to process can fit into memory of 1 computer,
+this SIMD implementation of vec8prod is not as fast or efficient as
+an element-wise serial approach.
+
 
 * This implementation of vec8prod does independent work and so is
-highly parallelizable.
-It is a good algorithm to use when the when cannot be completed on 1 computer
+  highly parallelizable.
+
+It is a good algorithm to use when the work cannot be completed on 1 computer
 as per element serial code.
 
+  However, a combiner is needed to multiply the results of the independent
+  workers.
+
+  ** If the architecture is using shared memory, each worker can share a
+  results array and place their results into it at their thread index defined
+  index.
+
+  ** If the architecture is not using shared memory, the results need to
+  be communicated in some manner to a combiner.
+  
+  The combiner can use a serial product algorithm if all fits in memory
+  or can parallelize the results vector and collect the result, etc.
+  
