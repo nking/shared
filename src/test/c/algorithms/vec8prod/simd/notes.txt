@@ -6,41 +6,55 @@ using averages from timing logs:
 
 each simd intrinsics 8-wide method invocation:
       1 load
-      3 loadpermute : tot=[1:5]
+      3 loadpermute 
       1 store
       3 mult
-         avg load/store = 1.4
-         thr = 5*1.4 + 3*mult
-      measured avg within a thread = 3.3
-         intrinsics mult ops = (thread avg- 5*1.4)/(3. mult ops) = (3.3 - 5*1.4)/3.
-           ~ 0
+    ==>  avg measured load/store = 1.4 cycles
+    ==>  avg measured 1 thread work = 3.3 cycles
+         expect 1 thread work total = 5*1.4 + 3*mult
+         estimate instrinsics mult tops =
+              = (thread avg- 5*1.4)/(3. mult ops) = (3.3 - 5*1.4)/3.
+    ==>       ~ 0
 
 the serial mode for calculating the product of vector:
    = 324 cycles total
-     so has rate 65536/324. = 325 floating point ops / sec
+     so has rate 65536 float items/324 cycles = 325 floating point ops / cycle
 the simd method for vector product:
-   = 392043 total
-   N_threads = 65536/8 = 8192 (no thread pooling was used)
+   = 392043 cycles total
+   N_threads used in that simd method  = 65536 float items/8-wide vectore 
+      = 8192 (no thread pooling was used)
 
-expect that the total 392043 = N_threads * (context switch + thread avg)
-      context switch = (392043 / 8192.) - 3.3
-                     ~ 44
+expect that the total 392043 cycles was composed of:  
+      N_threads * (context switch + thread avg)
+   calc context switch = (392043 / 8192.) - 3.3
+                     ~ 44 cycles
            which agrees w/ expected write to memory from cache being
            ~ 100 times a cache write ~ 100 ns on a COT computer
            (order of magnitude rough estimates)
 
-we can expect that if we were to use simd serially the number
-of cycles should be greater than serial and far less than
-parallel threaded simd.
-    we would expect serial simd to be ~ 27_000 cycles due to
-    the load/store to cache via instrinsics.
+we can expect that if we were to use simd serially, that
+is if we have 65536 float elements and 8-wide simd vectors,
+    we serially loop 8192 times 
+      5 simd loads = 5*1.4
+      3 simd mult ops ~ 0
+    expect total time ~ 57344 cycles
+     
+    compare to serial w/o SIMD:  324 cycles
+               multithread SIMD: 392043 cycles 
 
-    to multiply 8 numbers using serial ~ 8 * (324/65536) ~ 0.03955 cycles
-    to multiply 8 numbers using simd ~ 8 * (27000/65536) ~ 3.3 cycles
+    ==> serial per element < serial SIMD < multithread SIMD in cycles needed
 
-* SIMD not the best tool for the current implementation of vec8prod.
-we can expect that to improve the algorithmic intensity we would need to
-increase the number of math ops per method and/or decrease the
-data access times per method.
+* SIMD not the best tool for my implementation of vec8prod.
+    Arithmetic (algorithmic) Intensity is the ratio of 
+    total floating-point operations to total data movement (bytes)
+To improve the arithmetic intensity of the SIMD vec8prod algorithm, we consider 
+increasing the number of math ops per method or decreasing the denominator.
+      3 ops / 5 loads.  
+   if we assume that reading sequentially into the SIMD vector for a larger
+   vector is roughly the same amount of time for load operations,
+   we don't change the Arithmetic Intensity, but we see that we can 
+   reduce the execution runtime.
 
+   the number of operations of same AlgInt (=3ops/5loads) is reduced 
+   so the total execution runtime is reduced.
 
