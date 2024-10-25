@@ -6,4 +6,14 @@ for the vec8prod task;
     thread pools. the execution runtimes are dominated by context switches,
     and so are not better than a serial, element by element execution of
     the vector product.
-    
+    the serial SIMD w/o threads is also not faster than the serial execution.
+
+The vec8prod algorithm is highly parallelizable, so one can 
+   calc the speedup as time 1 processor / time p processors 
+   and estimate communication costs as latency 
+   including context switching if threads are used 
+   and amount of memory needed and memory bandwidth and
+   machine network bandwidth
+   for the parallel model.
+
+     
