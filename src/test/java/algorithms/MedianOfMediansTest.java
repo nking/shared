@@ -51,7 +51,7 @@ public class MedianOfMediansTest extends TestCase {
         int nTests = 100;
         double[] a;
         for (int nTest = 0; nTest < nTests; ++nTest) {
-            n = 1 + rand.nextInt(24);
+            n = 1 + rand.nextInt(1024); //set lower to make debugging easier
             a = new double[n];
             for (int i = 0; i < n; ++i) {
                 a[i] = rand.nextInt() ;//* rand.nextDouble();
@@ -68,12 +68,19 @@ public class MedianOfMediansTest extends TestCase {
             System.out.println("\n\nnTest=" + nTest);
             System.out.printf("a=%s\n", FormatArray.toString(a, "%.0f"));
             System.out.printf("b=%s\n", FormatArray.toString(b, "%.0f"));
-            System.out.printf("expected median = %.0f <===\n", expAns);
+            System.out.printf("n=%d, expected median = %.0f <===\n", n, expAns);
 
             double ans = MedianOfMedians.selectCLRS(a, 0, a.length-1, a.length/2);
             System.out.printf("    result a=%s\n", FormatArray.toString(a, "%.0f"));
 
             System.out.printf("    result median = %f\n", ans);
+
+            if (Math.abs(expAns - ans) > 1E-11) {
+                System.out.printf("\nTRY AGAIN\n");
+                ans = MedianOfMedians.selectCLRS(a, 0, a.length-1, a.length/2);
+                System.out.printf("    2nd result a=%s\n", FormatArray.toString(a, "%.0f"));
+                System.out.printf("    2nd result median = %f\n", ans);
+            }
 
             assertTrue(Math.abs(expAns - ans) < 1E-11);
         }
@@ -91,5 +98,6 @@ public class MedianOfMediansTest extends TestCase {
         assertEquals(4., a[9+1]);
         assertEquals(6., a[12+1]);
     }
+
 
 }

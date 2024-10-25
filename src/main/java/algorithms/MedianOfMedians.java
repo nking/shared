@@ -6,9 +6,16 @@ import algorithms.util.FormatArray;
 public class MedianOfMedians {
 
     /**
-     * NOTE: this implementation is not correct.
-
      find the median of array a with runtime complexity O(n) where n = a.length.
+
+     <pre>
+     NOTE: this is not correct yet.
+     I think handling the remainder of numbers not part of the grouping by 5,
+     requires alot of conditional logic and it's not all present here.
+     There is extra conditional logic for handling the median of those remainders when the number of them is 'even' in size,
+     but more might be necessary.
+     </pre>
+
      <pre>
      references :
      CLRS Select, section 9.3
@@ -17,14 +24,21 @@ public class MedianOfMedians {
      * @param a
      * @return the median of array a
      */
-    public static double medianOfMediansCLRS(double[] a) {
+    static double medianOfMediansCLRS(double[] a) {
         return selectCLRS(a, 0, a.length-1, a.length/2);
     }
 
     /**
-     NOTE: this implementation is not correct.
-
      find the median of array a with runtime complexity O(n) where n = a.length.
+
+     <pre>
+     NOTE: this is not correct yet.
+     I think handling the remainder of numbers not part of the grouping by 5,
+     requires alot of conditional logic and it's not all present here.
+     There is extra conditional logic for handling the median of those remainders when the number of them is 'even' in size,
+     but more might be necessary.
+     </pre>
+
      <pre>
      references :
      CLRS Select, section 9.3
@@ -60,9 +74,16 @@ public class MedianOfMedians {
     }
 
     /**
-     NOTE: this one is not correct.
-
      find the median of array a with runtime complexity O(n) where n = a.length.
+
+     <pre>
+     NOTE: this is not correct yet.
+     I think handling the remainder of numbers not part of the grouping by 5,
+     requires alot of conditional logic and it's not all present here.
+     There is extra conditional logic for handling the median of those remainders when the number of them is 'even' in size,
+     but more might be necessary.
+     </pre>
+
      <pre>
      references :
      CLRS Select, section 9.3
@@ -121,7 +142,7 @@ public class MedianOfMedians {
         debugPrint(a, idxLo, idxHi, g);
 
         //Blum et al. 1973 1.b, pick recursively if n/5 > 1
-        if (g < 2 && (idxHi - idxLo) < 5) {
+        if (nRem==0 && g < 2 && (idxHi - idxLo) < 5) {
             System.out.printf("   **** i=%d; idxLo=%d; idxHi=%d; g=%d, nRem=%d\n    a=%s\n",
                     i, idxLo, idxHi, g, nRem,
                     FormatArray.toString(a, "%.0f"));
@@ -164,11 +185,12 @@ public class MedianOfMedians {
         if (nAux == 1) {
             x = aux[0];
         } else {
+            //Blum et al. 1973 1.b, pick recursively if n/5 > 1
             x = select(aux, 0, nAux - 1, nAux/2);
         }
 
         //TODO: if nAux == even number, we should consider both central numbers.  the other is (nAux/2) - 1.
-        // or consider whether there is a way to append another number (making the array odd in length)
+        // or consider whether there is a way to append another number (making the array 'odd' in length)
         // in a manner that finds the true ith rank number.
 
         System.out.printf("aux pivot=%.0f\n",x);
@@ -196,8 +218,7 @@ public class MedianOfMedians {
         }
 
         if ((nAux & 1) == 0 && nAux > 1) {
-            //Looks like this result is correct in context of my pivot algorithm
-
+            // for even sized aux arrays, try the other central value as the median
             System.out.printf("trying the other median of the even-sized aux array\n");
             double x2 = aux[(nAux/2) - 1];
             int q2 = partitionAround(a, idxLo, idxHi, x2);
