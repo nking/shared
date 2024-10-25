@@ -117,18 +117,9 @@ public class MedianOfMedians {
         // find the pivot x recursively as the median iof the group medians.
         // this range holds the medians:
         // but if idxLo was offset above, this possibly needs to be lowered up to 2 "rows"
-        int startRow = idxLo;// + 2*g;
-        int stopRow = idxLo + 3*g - 1;//startRow + g - 1; // or strictly idxLo + 3*g - 1
-        int nDiff = (idxLo - _idxLo)/g;
-        if (nDiff > 0) {
-            System.out.printf("nDiff=%d\n", nDiff);
-            startRow += nDiff*g;
-            stopRow += nDiff*g;
-        }
-        //int nextI = (int)Math.ceil(g/2.);
-        int nextI = stopRow - startRow;// expect it to be last position in last included row
 
-        double x = select(a, startRow, stopRow, nextI);
+        int nextI = (int)Math.ceil(g/2);//((idxHi - idxLo) + 4) / 5;
+        double x = select(a, idxLo + 2*g, idxLo + 3*g - 1, nextI);
 
         // q is index of pivot x, 0-based
         int q = partitionAround(a, idxLo, idxHi, x);
@@ -138,17 +129,16 @@ public class MedianOfMedians {
         System.out.printf("pivotIdx=q=%d, pivot=%.0f, k=%d\n", q, x, k);
         System.out.printf("a=%s\n", FormatArray.toString(a, "%.0f"));
 
-        if (q==i-1) {
+        if (k==i) {
             System.out.printf("NEXT select 2\n");
             return a[q];
-        } else if (q>i-1) {
+        } else if (k>i) {
             System.out.printf("NEXT select 3\n");
             return select(a, idxLo, q - 1, i);
         } else {
             System.out.printf("NEXT select 4\n");
             //return select(a, q + 1, idxHi, i-k);
-            return select(a, q + 1, idxHi, i);
-            //return select(a, q, idxHi-1, i-k+1);
+            return select(a, q + 1, idxHi, i-k);
         }
     }
 
