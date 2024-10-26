@@ -1,4 +1,11 @@
-there are ant targets to run the code, and I haven't documented them
+The vec8prod algorithm refers to the ISPC algorithm from
+Stanford CS 149, Parallel Programming
+(look for current year's ISPC lecture on their website:
+https://gfxcourses.stanford.edu/cs149)
+The product goal is rewritten for different tools here 
+to explore changes in use of memory and flops.
+
+there are ant targets to run the codes, and I haven't documented them
 yet.
 
 to analyze the data logs after cleaning for titles etc,
@@ -6,13 +13,14 @@ can use
 spreadsheet apps (Excel, Numbers, etc.)
 or posix command-line system programs or write code.
 
-tinkering with awk is fast an easy, and gemini can tell you how to
+tinkering with awk is fast an easy, and Gemini can tell you how to
 perform something with awk or posix command line etc.
 though it gets messy past simple goals and python or rust etc
 might be better for not repeating the work later...
 
 I don't know the comparable to awk for windows operating systems shells
-(and use of Microsoft copilot to explore asking questions) currently...
+(and use of Microsoft copilot to explore asking questions) currently
+<add info here>...
 
    e.g. to group the data load/store times and count them:
      from a file made from running explore_cache_timing() in the simd tests:

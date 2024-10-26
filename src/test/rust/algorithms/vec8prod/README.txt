@@ -1,3 +1,11 @@
+The vec8prod algorithm refers to the ISPC algorithm from
+Stanford CS 149, Parallel Programming
+(look for current year's ISPC lecture on their website:
+https://gfxcourses.stanford.edu/cs149)
+The product goal is rewritten for different tools here 
+to explore changes in use of memory and flops.
+haven't started much of the analysis here...
+
 CLI:
     to build:
         cargo build
