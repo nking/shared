@@ -83,10 +83,6 @@ public class MedianOfMediansSelect {
      */
     private static double select(double[] a, int idxLo, int idxHi, int i) {
 
-        final int _idxLo = idxLo;
-        int _idxHi = idxHi;
-        final int _i = i;
-
         //System.out.printf("* selectLessEfficient idxLo=%d; idxHi=%d; i=%d\n", idxLo, idxHi, i);
 
         while ((idxHi - idxLo + 1) %5 != 0) {
@@ -97,7 +93,7 @@ public class MedianOfMediansSelect {
                     a[j] = tmp;
                 }
             }
-            if (i == 0 && (idxHi - idxLo) < 5) {
+            if (i == 0) {
                 return a[idxLo];
             }
             ++idxLo;
@@ -107,7 +103,7 @@ public class MedianOfMediansSelect {
         int n = (idxHi - idxLo + 1);
 
         int g = n/5;
-        int nRem = n - g*5;
+        //int nRem = n - g*5;
 
         //System.out.printf("idxLo=%d; idxHi=%d; i=%d; g=%d; nRem=%d\n", idxLo, idxHi, i, g, nRem);
 
@@ -125,7 +121,7 @@ public class MedianOfMediansSelect {
         //debugPrint(a, idxLo, idxHi, g);
 
         //Blum et al. 1973 1.b, pick recursively if n/5 > 1
-        if (nRem==0 && g < 2 && (idxHi - idxLo) < 5) {
+        if (g < 2 && (idxHi - idxLo) < 5) {
             //System.out.printf("   **** i=%d; idxLo=%d; idxHi=%d; g=%d, nRem=%d\n    a=%s\n",
             //        i, idxLo, idxHi, g, nRem,
             //        FormatArray.toString(a, "%.0f"));
@@ -134,7 +130,7 @@ public class MedianOfMediansSelect {
 
         // all group medians now lie in the middle fifth of A[idxLo:idcHi]
 
-        int nextI = g - 1;//(int)Math.ceil(g/2);//((idxHi - idxLo) + 4) / 5;
+        int nextI = g - 1;//(int)Math.ceil(g/2);
         double x = select(a, idxLo + 2*g, idxLo + 3*g - 1, nextI);
 
         int q = partitionAround(a, idxLo, idxHi, x);
@@ -154,6 +150,15 @@ public class MedianOfMediansSelect {
         return result;
     }
 
+    /**
+     * a less efficient version of select.  keeping it to look at why solving for 2nd median
+     * in odd sized nRem.
+     * @param a
+     * @param idxLo
+     * @param idxHi
+     * @param i
+     * @return
+     */
     private static double selectLessEfficient(double[] a, int idxLo, int idxHi, int i) {
 
         int n = (idxHi - idxLo + 1);
@@ -195,9 +200,7 @@ public class MedianOfMediansSelect {
 
         // handle the remaining numbers that were not part of the g groups of size 5:
         // calc the median of the remaining numbers as xRem.
-        // TODO: this could be improved by passing the method an auxilliary array and only using as much of it as needed
 
-        // create the auxilliary array to hold the medians of the groups just sorted, and the median of the remaining numbers
         int nAux = g;
         double[] aux;
         if (nRem == 0) {
