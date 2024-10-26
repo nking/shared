@@ -44,7 +44,7 @@ public class MedianOfMediansTest extends TestCase {
     // algorithm implementation is not correct
     public void testRand() {
         long seed = System.nanoTime();
-        //seed = 151408698946400L;
+        //seed = 201396339917283L;
         System.out.printf("seed=%d\n", seed);
         Random rand = new Random(seed);
         int n;
@@ -61,15 +61,15 @@ public class MedianOfMediansTest extends TestCase {
             Arrays.sort(b);
             double expAns = b[n/2];
 
-            System.out.println("\n\nnTest=" + nTest);
-            System.out.printf("a=%s\n", FormatArray.toString(a, "%.0f"));
-            System.out.printf("b=%s\n", FormatArray.toString(b, "%.0f"));
-            System.out.printf("n=%d, expected median = %.0f <===\n", n, expAns);
+            //System.out.println("\n\nnTest=" + nTest);
+            //System.out.printf("a=%s\n", FormatArray.toString(a, "%.0f"));
+            //System.out.printf("b=%s\n", FormatArray.toString(b, "%.0f"));
+            //System.out.printf("n=%d, expected median = %.0f <===\n", n, expAns);
 
             double ans = MedianOfMedians.selectCLRS(a, 0, a.length-1, a.length/2);
-            System.out.printf("    result a=%s\n", FormatArray.toString(a, "%.0f"));
+            //System.out.printf("    result a=%s\n", FormatArray.toString(a, "%.0f"));
 
-            System.out.printf("    result median = %f\n", ans);
+            //System.out.printf("    result median = %f\n", ans);
 
             assertTrue(Math.abs(expAns - ans) < 1E-11);
         }
