@@ -232,16 +232,16 @@ adapted from http://algs4.cs.princeton.edu/92search/
 <span class="nc" id="L232">            return x;</span>
         }
 <span class="pc bpc" id="L234" title="1 of 2 branches missed.">        if (StdRandom.bernoulli(1.0 / (size(x) + 1.0))) {</span>
-<span class="nc" id="L235">            return putRoot(x, key, val, replaced);</span>
+<span class="fc" id="L235">            return putRoot(x, key, val, replaced);</span>
         }
-<span class="pc bpc" id="L237" title="1 of 2 branches missed.">        if (cmp &lt; 0) {</span>
-<span class="fc" id="L238">            x.left  = put(x.left,  key, val, replaced);</span>
+<span class="nc bnc" id="L237" title="All 2 branches missed.">        if (cmp &lt; 0) {</span>
+<span class="nc" id="L238">            x.left  = put(x.left,  key, val, replaced);</span>
         } else {
 <span class="nc" id="L240">            x.right = put(x.right, key, val, replaced);</span>
         } 
         // (x.N)++;
-<span class="fc" id="L243">        fix(x);</span>
-<span class="fc" id="L244">        return x;</span>
+<span class="nc" id="L243">        fix(x);</span>
+<span class="nc" id="L244">        return x;</span>
     }
 
     private &lt;Value2 extends Comparable&lt;Value&gt;&gt; 
@@ -290,20 +290,20 @@ adapted from http://algs4.cs.princeton.edu/92search/
         RangeSearchNode&lt;Key, Value&gt; x, Key key, Value val,
         Object[] replaced) {
         
-<span class="nc bnc" id="L293" title="All 2 branches missed.">        if (x == null) return new RangeSearchNode&lt;Key, Value&gt;(key, val);</span>
-<span class="nc" id="L294">        int cmp = key.compareTo(x.key);</span>
-<span class="nc bnc" id="L295" title="All 2 branches missed.">        if (cmp == 0) {</span>
+<span class="fc bfc" id="L293" title="All 2 branches covered.">        if (x == null) return new RangeSearchNode&lt;Key, Value&gt;(key, val);</span>
+<span class="fc" id="L294">        int cmp = key.compareTo(x.key);</span>
+<span class="pc bpc" id="L295" title="1 of 2 branches missed.">        if (cmp == 0) {</span>
 <span class="nc" id="L296">            replaced[0] = x.val;</span>
 <span class="nc" id="L297">            x.val = val;</span>
 <span class="nc" id="L298">            return x; </span>
-<span class="nc bnc" id="L299" title="All 2 branches missed.">        } else if (cmp  &lt; 0) { </span>
-<span class="nc" id="L300">            x.left  = putRoot(x.left,  key, val, replaced); </span>
-<span class="nc" id="L301">            x = rotR(x); </span>
+<span class="pc bpc" id="L299" title="1 of 2 branches missed.">        } else if (cmp  &lt; 0) { </span>
+<span class="fc" id="L300">            x.left  = putRoot(x.left,  key, val, replaced); </span>
+<span class="fc" id="L301">            x = rotR(x); </span>
         } else { 
 <span class="nc" id="L303">            x.right = putRoot(x.right, key, val, replaced); </span>
 <span class="nc" id="L304">            x = rotL(x); </span>
         }
-<span class="nc" id="L306">        return x;</span>
+<span class="fc" id="L306">        return x;</span>
     }
 
    /***************************************************************************
@@ -489,12 +489,12 @@ adapted from http://algs4.cs.princeton.edu/92search/
      @return 
      */
     private RangeSearchNode&lt;Key, Value&gt; rotR(RangeSearchNode&lt;Key, Value&gt; h) {
-<span class="nc" id="L492">        RangeSearchNode&lt;Key, Value&gt; x = h.left;</span>
-<span class="nc" id="L493">        h.left = x.right;</span>
-<span class="nc" id="L494">        x.right = h;</span>
-<span class="nc" id="L495">        fix(h);</span>
-<span class="nc" id="L496">        fix(x);</span>
-<span class="nc" id="L497">        return x;</span>
+<span class="fc" id="L492">        RangeSearchNode&lt;Key, Value&gt; x = h.left;</span>
+<span class="fc" id="L493">        h.left = x.right;</span>
+<span class="fc" id="L494">        x.right = h;</span>
+<span class="fc" id="L495">        fix(h);</span>
+<span class="fc" id="L496">        fix(x);</span>
+<span class="fc" id="L497">        return x;</span>
         /*      X                       H
                 0                      10
              1     2               11     12

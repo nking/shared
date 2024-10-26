@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RandomizedSelect.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms</a> &gt; <span class="el_source">RandomizedSelect.java</span></div><h1>RandomizedSelect.java</h1><pre class="source lang-java linenums">package algorithms;
+
+import algorithms.util.FormatArray;
+
+import java.util.Arrays;
+import java.util.Random;
+
+<span class="nc" id="L8">public class RandomizedSelect {</span>
+
+    /**
+     *  find the value with rank i in array a with average runtime complexity O(n) where n = a.length
+     *  and i as a rank is 0-based.
+     * The worst case runtime complexity is O(n^2).
+     *
+     &lt;pre&gt;
+     references :
+     Randomized Select, Section 9.2
+     &quot;Introduction to Algorithms&quot; by
+     Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, and Clifford Stein
+     &lt;/pre&gt;
+     * @param a an unsorted array
+     * @param idxLo smallest index to of range
+     * @param idxHi largest index of range, inclusive
+     * @param i the rank of the item to select in 0-based numbering.
+     * @return the value of a's rank i item where i is 0-based
+     */
+    static double select(double[] a, int idxLo, int idxHi, int i, Random rand) {
+<span class="pc bpc" id="L28" title="2 of 4 branches missed.">        if (idxLo &lt; 0 || idxLo &gt;= a.length) {</span>
+<span class="nc" id="L29">            throw new IllegalArgumentException(&quot;idxLo is out of bounds&quot;);</span>
+        }
+<span class="pc bpc" id="L31" title="2 of 4 branches missed.">        if (idxHi &lt; 0 || idxHi &gt;= a.length) {</span>
+<span class="nc" id="L32">            throw new IllegalArgumentException(&quot;idxHi is out of bounds&quot;);</span>
+        }
+<span class="pc bpc" id="L34" title="2 of 4 branches missed.">        if (i &lt; 0 || i &gt; idxHi) {</span>
+<span class="nc" id="L35">            throw new IllegalArgumentException(&quot;i is out of bounds&quot;);</span>
+        }
+<span class="pc bpc" id="L37" title="1 of 2 branches missed.">        if (idxHi &lt; idxLo) {</span>
+<span class="nc" id="L38">            throw new IllegalArgumentException(&quot;idxHi &lt; idxLo&quot;);</span>
+        }
+
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        if (idxLo == idxHi) {</span>
+<span class="fc" id="L42">            return a[idxLo];</span>
+        }
+
+<span class="fc" id="L45">        int q = RandomizedQuickSort.partition(a, idxLo, idxHi, rand);</span>
+        // q is pivotIndex w.r.t 0
+        // k is its rank
+<span class="fc" id="L48">        int k = q - idxLo;</span>
+
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        if (i == k) {</span>
+<span class="fc" id="L51">            return a[q];</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        } else if (i &lt; k) {</span>
+<span class="fc" id="L53">            return select(a, idxLo, q-1, i, rand);</span>
+        } else {
+<span class="fc" id="L55">            return select(a, q+1, idxHi, i - k - 1, rand);</span>
+        }
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
