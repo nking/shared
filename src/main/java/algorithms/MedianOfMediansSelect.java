@@ -140,14 +140,12 @@ public class MedianOfMediansSelect {
 
         double result;
         if (k==i) {
-            result = a[q];
+            return a[q];
         } else if (k>i) {
-            result = select(a, idxLo, q - 1, i);
+            return select(a, idxLo, q - 1, i);
         } else {
-            result = select(a, q + 1, idxHi, i - k - 1);
+            return select(a, q + 1, idxHi, i - k - 1);
         }
-
-        return result;
     }
 
     /**
