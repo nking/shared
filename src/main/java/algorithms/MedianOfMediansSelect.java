@@ -83,16 +83,34 @@ public class MedianOfMediansSelect {
      */
     private static double select(double[] a, int idxLo, int idxHi, int i) {
 
-        int n = (idxHi - idxLo + 1);
-
         final int _idxLo = idxLo;
         int _idxHi = idxHi;
         final int _i = i;
 
+        //System.out.printf("* select idxLo=%d; idxHi=%d; i=%d\n", idxLo, idxHi, i);
+
+        while ((idxHi - idxLo + 1) %5 != 0) {
+            for (int j = idxLo + 1; j <= idxHi; ++j) {
+                if (a[idxLo] > a[j] && idxLo != j) {
+                    double tmp = a[idxLo];
+                    a[idxLo] = a[j];
+                    a[j] = tmp;
+                }
+            }
+            if (i == 0 && (idxHi - idxLo) < 5) {
+                //System.out.printf("return 0\n");
+                return a[idxLo];
+            }
+            ++idxLo;
+            --i;
+        }
+
+        int n = (idxHi - idxLo + 1);
+
         int g = n/5;
         int nRem = n - g*5;
 
-        //System.out.printf("* select idxLo=%d; idxHi=%d; i=%d; g=%d; nRem=%d\n", idxLo, idxHi, i, g, nRem);
+        //System.out.printf("idxLo=%d; idxHi=%d; i=%d; g=%d; nRem=%d\n", idxLo, idxHi, i, g, nRem);
 
         if (idxHi < idxLo) {
             throw new IllegalArgumentException("   ERROR idxHi<idxLo\n");
@@ -120,37 +138,8 @@ public class MedianOfMediansSelect {
 
         // all group medians now lie in the middle fifth of A[idxLo:idcHi]
 
-        // handle the remaining numbers that were not part of the g groups of size 5:
-        // calc the median of the remaining numbers as xRem.
-        // TODO: this could be improved by passing the method an auxilliary array and only using as much of it as needed
-
-        // create the auxilliary array to hold the medians of the groups just sorted, and the median of the remaining numbers
-        int nAux = g;
-        double[] aux;
-        if (nRem == 0) {
-            aux = new double[nAux];
-        } else {
-            Arrays.sort(a, idxHi - nRem + 1, idxHi + 1);
-            ++nAux;
-            aux = new double[nAux];
-            aux[nAux - 1] = a[ (idxHi-nRem+1) + (nRem/2)];
-        }
-        int _ii = 0;
-        for (int ii = idxLo + 2*g; ii <= idxLo + 3*g - 1; ++ii) {
-            aux[_ii++] = a[ii];
-        }
-
-        //System.out.printf("check aux=%s\n", FormatArray.toString(aux, "%.0f"));
-
-        //int nextI = (int)Math.ceil(g/2);//((idxHi - idxLo) + 4) / 5;
-        //double x = select(a, idxLo + 2*g, idxLo + 3*g - 1, nextI);
-        double x;
-        if (nAux == 1) {
-            x = aux[0];
-        } else {
-            //Blum et al. 1973 1.b, pick recursively if n/5 > 1
-            x = select(aux, 0, nAux - 1, nAux/2);
-        }
+        int nextI = g - 1;//(int)Math.ceil(g/2);//((idxHi - idxLo) + 4) / 5;
+        double x = select(a, idxLo + 2*g, idxLo + 3*g - 1, nextI);
 
         //if nAux == even number, we should consider both central numbers.  the other is at index (nAux/2) - 1.
         // or consider whether there is a way to append another number to aux (making the array 'odd' in length)
@@ -179,33 +168,6 @@ public class MedianOfMediansSelect {
             //System.out.printf("NEXT select 4 (higher)\n");
             //return select(a, q + 1, idxHi, i-k);
             result = select(a, q + 1, idxHi, i - k - 1);
-        }
-
-        if ((nAux & 1) == 0 && nAux > 1) {
-            // for even sized aux arrays, try the other central value as the median
-            //System.out.printf("trying the other median of the even-sized aux array\n");
-            double x2 = aux[(nAux/2) - 1];
-            int q2 = partitionAround(a, idxLo, idxHi, x2);
-
-            int k2 = q2 - idxLo;
-
-            //System.out.printf("pivotIdx2 = q2 = %d; pivot2=%.0f; k2=\n", q2, x2, k2);
-            //System.out.printf("a=%s\n", FormatArray.toString(a, "%.0f"));
-
-            double result2;
-            if (k2==i) {
-                //System.out.printf("*NEXT select 2 (==q2)\n");
-                result2 = a[q2];
-            } else if (k2>i) {
-                //System.out.printf("*NEXT select 3 (lower)\n");
-                result2 = select(a, idxLo, q2 - 1, i);
-            } else {
-                //System.out.printf("*NEXT select 4 (higher)\n");
-                //return select(a, q + 1, idxHi, i-k);
-                result2 = select(a, q2 + 1, idxHi, i - k2 - 1);
-            }
-            //System.out.printf("COMPARE result=%.0f; result2=%.0f\n", result, result2);
-            result = result2;
         }
 
         return result;

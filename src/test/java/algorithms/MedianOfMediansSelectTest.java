@@ -5,6 +5,7 @@ import junit.framework.TestCase;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 import java.util.Arrays;
+import algorithms.util.FormatArray;
 
 public class MedianOfMediansSelectTest extends TestCase {
 
@@ -61,14 +62,15 @@ public class MedianOfMediansSelectTest extends TestCase {
             Arrays.sort(b);
             double expAns = b[n/2];
 
-            //System.out.println("\n\nnTest=" + nTest);
-            //System.out.printf("a=%s\n", FormatArray.toString(a, "%.0f"));
-            //System.out.printf("b=%s\n", FormatArray.toString(b, "%.0f"));
-            //System.out.printf("n=%d, expected median = %.0f <===\n", n, expAns);
+            /*System.out.println("\n\nnTest=" + nTest);
+            System.out.printf("a=%s\n", FormatArray.toString(a, "%.0f"));
+            System.out.printf("b=%s\n", FormatArray.toString(b, "%.0f"));
+            System.out.printf("n=%d, expected median = %.0f <===\n", n, expAns);
+            */
 
             double ans = MedianOfMediansSelect.selectCLRS(a, 0, a.length-1, a.length/2);
-            //System.out.printf("    result a=%s\n", FormatArray.toString(a, "%.0f"));
 
+            //System.out.printf("    result a=%s\n", FormatArray.toString(a, "%.0f"));
             //System.out.printf("    result median = %f\n", ans);
 
             assertTrue(Math.abs(expAns - ans) < 1E-11);
