@@ -14,6 +14,15 @@ public class RandomizedQuickSort {
         return partition(a, idxLo, idxHi);
     }
 
+    /**
+     * sort the numbers using a randomized version of pivot choice.  the runtime complexity is expected to be
+     * O(n*log_2(n)) where n = a.length.
+     * 
+     * @param a
+     * @param idxLo
+     * @param idxHi
+     * @param rand
+     */
     public static void sort(double[] a, int idxLo, int idxHi, Random rand) {
         if (idxLo < idxHi) {
             int idxMid = partition(a, idxLo, idxHi, rand);
