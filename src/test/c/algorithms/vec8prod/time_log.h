@@ -26,6 +26,7 @@
     #define STOP_TOT_TIME(s)
     #define START_D_TIME() start = clock();
     #define STOP_D_TIME(s) {stop = clock(); printf("%s data %ld\n", #s, (stop-start));}
+    #define STOP_D_TIME2(i) {stop = clock(); printf("%d data %ld\n", i, (stop-start));}
     #define START_THR_TIME()
     #define STOP_THR_TIME(s)
 #elif defined(TIME_THR)
@@ -35,6 +36,7 @@
     #define STOP_TOT_TIME(s)
     #define START_D_TIME()
     #define STOP_D_TIME(s)
+    #define STOP_D_TIME2(i)
     #define START_THR_TIME() start = clock();
     #define STOP_THR_TIME(s) {stop = clock(); printf("%s thr %ld\n", #s, (stop-start));}
 #elif defined(TIME_TOT)
@@ -44,6 +46,7 @@
     #define STOP_TOT_TIME(s) {stop = clock(); printf("%s tot %ld\n", #s, (stop-start));}
     #define START_D_TIME()
     #define STOP_D_TIME(s)
+    #define STOP_D_TIME2(i)
     #define START_THR_TIME()
     #define STOP_THR_TIME(s)
 #else
@@ -53,6 +56,7 @@
    #define STOP_TOT_TIME(s)
    #define START_D_TIME()
    #define STOP_D_TIME(s)
+   #define STOP_D_TIME2(i)
    #define START_THR_TIME()
    #define STOP_THR_TIME(s)
 #endif

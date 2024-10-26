@@ -1,8 +1,16 @@
 measurements taken using computer w/
-1.3GHz processor CPU, cache sizes by level 32k, 256k, 3M, 
-with max memory bandwidth: 25.6 GB/s
+    level 3 Cache: 3 MB shared (not used here)
+    Cache Level 1:  32k for each core
+    Cache Level 2:  256k for each core
+    max memory bus: 26 GB/sec
+    processor : 1.6 GHz
 
-using averages from timing logs:
+    at each cycle, memory can transfer at most:
+        max memory bus (26 GB/sec) * (sec/1.6G cycles) = 16 Bytes / cycle
+          = 128 bits / cycle
+        and max memory bus rate is possibly not the mean rate.
+
+using timing logs from the ant target cmakeSIMDTimeLogs:
 
 each simd intrinsics 8-wide method invocation:
       1 load
@@ -44,6 +52,9 @@ is if we have 65536 float elements and 8-wide simd vectors,
 
     ==> serial per element < serial SIMD < multithread SIMD in cycles needed
 
+the serial SIMD algorithm on this computer is memory bandwidth bound.
+(need to transfer >= 128 bits per cycle for SIMD)
+
 * Consider how to improve an aspects of the SIMD version of vec8prod:
 
     Arithmetic (algorithmic) Intensity is the ratio of 
@@ -56,7 +67,10 @@ increasing the number of math ops per method or decreasing the denominator.
 If we assume that reading sequentially into the SIMD vector for a larger
 vector is roughly the same amount of time for load operations,
 we don't change the Arithmetic Intensity, but we see that we can 
-reduce the execution runtime.
+reduce the execution runtime, 
+** but only if the computer's memory throughput can handle the 
+data rate (otherwise, we are still memory bound and the Arith intensity 
+estimate has to include the larger data load times and hence arith inten is reduced). **
 
 If we increase the SIMD vector width without comparable increase in the
 data load/store operation time (cycles), The number of operations of 
@@ -70,17 +84,18 @@ except that a SIMD vector width must fit within the cache.
 
 * If the amount of data to process can fit into memory of 1 computer,
 this SIMD implementation of vec8prod is not as fast or efficient as
-an element-wise serial approach.
+an element-wise serial approach when the computer is memory bound.
 
 
 * This implementation of vec8prod does independent work and so is
   highly parallelizable.
 
-If the data is too large to load into memory in 1 pass, we consider
-parallel options.
+If the total data is too large to load into an array to give to 
+vec8prod, we consider parallel options.
 
 But, the per element serial option on each partition is still faster
-than the SIMD implementations for my implementation of this algorithm.
+than the SIMD implementations for my implementation of this algorithm
+with memory bound bottleneck. 
 
 Continuing the line of thought in using the SIMD vec8prod in parallel:
 

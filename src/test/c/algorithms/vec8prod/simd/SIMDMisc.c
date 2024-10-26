@@ -8,6 +8,67 @@ struct thread_data {
    int isWidth;
 };
 
+/*timing tests to explore when cache is filled
+ cache_explore_function8()
+ cache_explore_function4()
+
+    level 3 Cache: 3 MB shared (not used here)
+    Cache Level 1:  32k for each core
+    Cache Level 2:  256k for each core
+    max memory bus: 26 GB/sec
+    processor : 1.6 GHz
+
+    at each cycle memory transfer at most:
+        max memory bus (26 GB/sec) * (sec/1.6G cycles) = 16 Bytes / cycle
+          = 128 bits / cycle
+
+    this algorithm on this computer is memory bandwidth bound.
+
+    looking at the peaks in data load times:  cache evictions?
+
+    8-wide vec of 4 bytes = 32 bytes = 256 bits
+
+    measured avg load is 1 cycle
+
+    measured diff in i = ~1500 to ~7000 for loads that are > 10 stdev above avg.
+    (32 * 3000)/(1024) ~ 100 kB. 
+
+    need the miss rate and delays to explore further
+*/
+void cache_explore_function8() {
+    INIT_TIME();
+    START_THR_TIME();
+
+    float x[8]; 
+    for (int i = 0; i < 125000; ++i) {
+       for (int j = 0; j < 8; ++j) {
+           x[j] = i + j;
+       }
+       START_D_TIME();
+       //__m256 avx_x = _mm256_loadu_ps(&x[0]);
+       __m256 avx_x = _mm256_loadu_ps(&x[0]);
+       STOP_D_TIME2(i);
+    }
+    STOP_THR_TIME(loopnotthr);
+}
+
+void cache_explore_function4() {
+    INIT_TIME();
+    START_THR_TIME();
+
+    float x[4]; 
+    for (int i = 0; i < 250000; ++i) {
+       for (int j = 0; j < 4; ++j) {
+           x[j] = i + j;
+       }
+       START_D_TIME();
+       //__m128 avx_x = _mm_loadu_ps(&x[0]);
+       __m128 avx_x = _mm_load_ps(&x[0]);
+       STOP_D_TIME2(i);
+    }
+    STOP_THR_TIME(loopnotthr);
+}
+
 float simd_function(int N,  float * x) {
    // use 8-wide vec avx256
    int isWidth = 8;

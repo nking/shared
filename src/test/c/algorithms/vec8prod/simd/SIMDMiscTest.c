@@ -72,5 +72,7 @@ void * testRand() {
 int main() {
     test16();
     testRand();
+    //cache_explore_function8();
+    //cache_explore_function4();
     return 0;
 }

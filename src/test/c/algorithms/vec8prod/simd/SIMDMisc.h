@@ -6,5 +6,8 @@
 //public:
 extern float simd_function(int N,  float *x);
 
+extern void cache_explore_function8();
+extern void cache_explore_function4();
+
 //private:
 void *intrinsicsThread(void *arg);
