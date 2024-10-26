@@ -60,7 +60,7 @@ public class RandomizedSelectTest extends TestCase {
         //  2        2        1        4          6
         //double[] a = new double[]{};
         double[] a = new double[]{0, 2, 0,0, 2, 0,0, 1, 0,0, 4, 0,0, 6, 0, 0};
-        MedianOfMedians.quickSort5(a, 1, 13, 3);
+        MedianOfMediansSelect.quickSort5(a, 1, 13, 3);
         assertEquals(1., a[0+1]);
         assertEquals(2., a[3+1]);
         assertEquals(2., a[6+1]);

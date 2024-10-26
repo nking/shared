@@ -8,9 +8,15 @@ import java.util.Random;
 public class RandomizedSelect {
 
     /**
+     *  find the value with rank i in array a with average runtime complexity O(n) where n = a.length
+     *  and i as a rank is 0-based.
+     * The worst case runtime complexity is O(n^2).
+     *
      <pre>
      references :
-     CLRS Randomized Select, Section 9.2
+     Randomized Select, Section 9.2
+     "Introduction to Algorithms" by
+     Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, and Clifford Stein
      </pre>
      * @param a an unsorted array
      * @param idxLo smallest index to of range

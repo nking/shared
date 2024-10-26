@@ -1,17 +1,19 @@
 package algorithms;
 
 import java.util.Arrays;
-import java.util.Random;
-import algorithms.util.FormatArray;
 
-public class MedianOfMedians {
+public class MedianOfMediansSelect {
 
     /**
      find the median of array a with runtime complexity O(n) where n = a.length.
+     The worst case runtime complexity is O(n).
 
      <pre>
      references :
-     CLRS Select algorithm, section 9.3
+     Select algorithm, section 9.3
+     "Introduction to Algorithms" by
+     Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, and Clifford Stein
+
      Blum et al. 1983, "Time Bounds for Selection", STAN-CS-73-349
      </pre>
      * @param a and unsorted array
@@ -22,11 +24,15 @@ public class MedianOfMedians {
     }
 
     /**
-     find the median of array a with runtime complexity O(n) where n = a.length.
+     find the value with rank i in array a with runtime complexity O(n) where n = a.length where i as a rank is 0-based.
+     The worst case runtime complexity is O(n).
 
      <pre>
      references :
-     CLRS Select, section 9.3
+     Select, section 9.3
+     "Introduction to Algorithms" by
+     Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, and Clifford Stein
+
      Blum et al. 1983, "Time Bounds for Selection", STAN-CS-73-349
      </pre>
      * @param a
@@ -58,11 +64,15 @@ public class MedianOfMedians {
     }
 
     /**
-     find the median of array a with runtime complexity O(n) where n = a.length.
+     find the value with rank i in array a with runtime complexity O(n) where n = a.length where i as a rank is 0-based.
+     The worst case runtime complexity is O(n).
 
      <pre>
      references :
-     CLRS Select, section 9.3
+     Select, section 9.3
+     "Introduction to Algorithms" by
+     Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, and Clifford Stein
+
      Blum et al. 1983, "Time Bounds for Selection", STAN-CS-73-349
      </pre>
      * @param a
@@ -88,7 +98,6 @@ public class MedianOfMedians {
             throw new IllegalArgumentException("   ERROR idxHi<idxLo\n");
         }
 
-        //assert(idxLo + 5*g - 1 == idxHi);
         for (int j = idxLo; j <= (idxLo + g - 1); ++j) {
             quickSort5(a, j, j + g*4, g);
             // sort each group (A[j], A[j+g], A[j+2g], A[j+3g, A[j+4g] in place
@@ -143,15 +152,14 @@ public class MedianOfMedians {
             x = select(aux, 0, nAux - 1, nAux/2);
         }
 
-        //if nAux == even number, we should consider both central numbers.  the other is (nAux/2) - 1.
-        // or consider whether there is a way to append another number (making the array 'odd' in length)
+        //if nAux == even number, we should consider both central numbers.  the other is at index (nAux/2) - 1.
+        // or consider whether there is a way to append another number to aux (making the array 'odd' in length)
         // in a manner that finds the true ith rank number.
 
         //System.out.printf("aux pivot=%.0f\n",x);
         //System.out.printf("i=%d; idxLo=%d; idxHi=%d; g=%d; nRem=%d\n    a=%s\n", i, idxLo, idxHi, g, nRem,
         //        FormatArray.toString(a, "%.0f"));
 
-        // q is index of pivot x, 0-based
         int q = partitionAround(a, idxLo, idxHi, x);
         // q is pivotIndex w.r.t 0
         // k is its rank
