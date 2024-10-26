@@ -1,27 +1,22 @@
 package algorithms;
 
 import java.util.Arrays;
+import java.util.Random;
 import algorithms.util.FormatArray;
 
 public class MedianOfMedians {
+
+    //TODO: clean up the code
 
     /**
      find the median of array a with runtime complexity O(n) where n = a.length.
 
      <pre>
-     NOTE: this is not correct yet.
-     I think handling the remainder of numbers not part of the grouping by 5,
-     requires alot of conditional logic and it's not all present here.
-     There is extra conditional logic for handling the median of those remainders when the number of them is 'even' in size,
-     but more might be necessary.
-     </pre>
-
-     <pre>
      references :
-     CLRS Select, section 9.3
+     CLRS Select algorithm, section 9.3
      Blum et al. 1983, "Time Bounds for Selection", STAN-CS-73-349
      </pre>
-     * @param a
+     * @param a and unsorted array
      * @return the median of array a
      */
     static double medianOfMediansCLRS(double[] a) {
@@ -32,14 +27,6 @@ public class MedianOfMedians {
      find the median of array a with runtime complexity O(n) where n = a.length.
 
      <pre>
-     NOTE: this is not correct yet.
-     I think handling the remainder of numbers not part of the grouping by 5,
-     requires alot of conditional logic and it's not all present here.
-     There is extra conditional logic for handling the median of those remainders when the number of them is 'even' in size,
-     but more might be necessary.
-     </pre>
-
-     <pre>
      references :
      CLRS Select, section 9.3
      Blum et al. 1983, "Time Bounds for Selection", STAN-CS-73-349
@@ -48,7 +35,7 @@ public class MedianOfMedians {
      * @param idxLo smallest index to of range
      * @param idxHi largest index of range, inclusive
      * @param i the rank of the item to select in 0-based numbering.
-     * @return the median
+     * @return the value of a's rank i item where i is 0-based
      */
     static double selectCLRS(double[] a, int idxLo, int idxHi, int i) {
         if (idxLo < 0 || idxLo >= a.length) {
@@ -75,14 +62,6 @@ public class MedianOfMedians {
 
     /**
      find the median of array a with runtime complexity O(n) where n = a.length.
-
-     <pre>
-     NOTE: this is not correct yet.
-     I think handling the remainder of numbers not part of the grouping by 5,
-     requires alot of conditional logic and it's not all present here.
-     There is extra conditional logic for handling the median of those remainders when the number of them is 'even' in size,
-     but more might be necessary.
-     </pre>
 
      <pre>
      references :
@@ -199,8 +178,10 @@ public class MedianOfMedians {
 
         // q is index of pivot x, 0-based
         int q = partitionAround(a, idxLo, idxHi, x);
-
-        int k = q - idxLo + 1;
+        // q is pivotIndex w.r.t 0
+        // k is its rank
+        int k = q - idxLo;
+        //TODO: finish the 0-index changes below:
         System.out.printf("pivotIdx = q = %d; pivot = %.0f; k = %d\n", q, x, k);
         System.out.printf("a=%s\n", FormatArray.toString(a, "%.0f"));
 
@@ -214,7 +195,7 @@ public class MedianOfMedians {
         } else {
             System.out.printf("NEXT select 4 (higher)\n");
             //return select(a, q + 1, idxHi, i-k);
-            result = select(a, q + 1, idxHi, i-k);
+            result = select(a, q + 1, idxHi, i - k - 1);
         }
 
         if ((nAux & 1) == 0 && nAux > 1) {
