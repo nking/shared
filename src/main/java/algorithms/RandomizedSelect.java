@@ -7,6 +7,9 @@ import java.util.Random;
 
 public class RandomizedSelect {
 
+     //TODO: consider improving this with the Chapter notes for chapter 9 which
+     // uses Floyd & Rivest 1975, "Expected Time Bounds for Selection: improvements
+     // see MedianOfMediansSelect for the changes to 0-based indexing
     /**
      *  find the value with rank i in array a with average runtime complexity O(n) where n = a.length
      *  and i as a rank is 0-based.
