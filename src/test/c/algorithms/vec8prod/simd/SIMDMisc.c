@@ -33,7 +33,7 @@ struct thread_data {
     measured diff in i = ~1500 to ~7000 for loads that are > 10 stdev above avg.
     (32 * 3000)/(1024) ~ 100 kB. 
 
-    need the miss rate and delays to explore further
+    can use tools like Intel® VTune™ Profiler to explore further.
 */
 void cache_explore_function8() {
     INIT_TIME();
