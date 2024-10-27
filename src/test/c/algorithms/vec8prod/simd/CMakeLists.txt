@@ -11,7 +11,7 @@ include_directories(${stdio_INCLUDE_DIRS} ${math_INCLUDE_DIRS} ${pthread_INCLUDE
 
 #-march=native
 add_library(SIMDMisc.o SHARED SIMDMisc.c)
-target_compile_options(SIMDMisc.o PRIVATE -mavx2)
+target_compile_options(SIMDMisc.o PRIVATE -mavx2 -mfma)
 
 #message("CMAKE_BINARY_DIR=${CMAKE_BINARY_DIR}")
 #message("CMAKE_CURRENT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}")
@@ -27,7 +27,7 @@ endif()
 
 add_executable(SIMDMiscTest SIMDMiscTest.c)
 
-target_compile_options(SIMDMiscTest PRIVATE -mavx2)
+target_compile_options(SIMDMiscTest PRIVATE -mavx2 -mfma)
 
 target_link_libraries(SIMDMiscTest SIMDMisc.o ${stdio_LIBRARY} ${immintrin_LIBRARY} ${math__LIBRARY} ${pthread__LIBRARY} ${assert__LIBRARY})
 

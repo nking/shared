@@ -168,4 +168,141 @@ void *intrinsicsThread(void *arg) {
    return NULL;
 }
 
+float * generate_float_array(int n, float min, float max) {
+   unsigned int seed = time(0);
+   seed = 1234567;
+   printf("seed=%d\n", seed);
+   srand(seed);
 
+   float x[n];
+   
+   float factor = max - min;
+   for (int i = 0; i < n; ++i) {
+      x[i] = min + factor * ((float)rand() / (float)RAND_MAX);
+   }
+
+   float *ptr;
+   ptr = &x[0];
+   return ptr;
+}
+
+void cache_explore_simd_more_math() {
+   int n = 250000;
+   float * x = generate_float_array(n, 1.0f, 10.f);
+   _cache_explore_simd_more_math(x, n);
+}
+void cache_explore_serial_more_math() {
+   int n = 250000;
+   float * x = generate_float_array(n, 1.0f, 10.f);
+   _cache_explore_serial_more_math(x, n);
+}
+
+void _cache_explore_simd_more_math(float *x, const int n) {
+   // goal is to compare serial function to serial simd-ized function
+   // for an algorithm that simply performs alot of math on data,
+   // independently.
+   
+   // intrinsics multiplication is by vectors.
+   // e.g. unary operations: reciprocal, sqrt
+   
+   // will use 4-wide vectors of 32-bit floats to stay within this platforms' memory bandwidth.
+
+   float factors[4] = {3.f, 3.f, 3.f, 3.f};
+   __m128 avx_f = _mm_loadu_ps(&factors[0]);
+   float s[4] = {1.5f, 1.5f, 1.5f, 1.5f};
+   __m128 avx_s = _mm_loadu_ps(&s[0]);
+
+   INIT_TIME();
+   START_THR_TIME();
+   for (int i = 0; i < n; i += 4) {
+      START_D_TIME();
+      __m128 avx_x = _mm_load_ps(&x[i]);
+      STOP_D_TIME2(i);
+
+      for (int j = 0; j < 4; ++j) {
+         avx_x = _mm_fmaddsub_ps(avx_x, avx_f, avx_s);
+         avx_x = _mm_rcp_ps(avx_x);
+         avx_x = _mm_sqrt_ps(avx_x);
+      }
+
+      START_D_TIME();
+      _mm_store_ps(&x[i], avx_x);
+      STOP_D_TIME(store);
+   }
+   STOP_THR_TIME(simdmoremath);
+}
+
+void _cache_explore_serial_more_math(float *x, const int n) {
+   
+   float factors[4] = {3.f, 3.f, 3.f, 3.f};
+   float s[4] = {+1.5f, -1.5f, +1.5f, -1.5f};
+
+   INIT_TIME();
+   START_THR_TIME();
+   for (int i = 0; i < n; i += 1) {
+      for (int j = 0; j < 4; ++j) {
+         x[i] = (x[i] * factors[0]) + s[i%2];
+         x[i] = 1./x[i];
+         x[i] = sqrtf(x[i]);
+      }
+   }
+   STOP_THR_TIME(serialmoremath);
+}
+
+void cache_explore_serial_sterling_gamma() {
+
+   unsigned int seed = time(0);
+   //seed = 1234567;
+   printf("seed=%d\n", seed);
+   srand(seed);
+
+   // notes here are included to explore how to use intrinsics for 
+   // sterling gamma function
+
+   const float SQRT2PI    = 2.50662827463100024157f;
+   const float SC[] = {1.f, 0.08333333333333333f, 0.003472222222222222f
+       -0.0026813271604938273f, -0.00022947209362139917f};
+   float tmp[5] = {1.f, 0.f, 0.f, 0.f};
+
+   int n = 1 << 16;
+   float x[n];
+   float factor = 20.f;
+
+   for (int i = 0; i < n; ++i) {
+      x[i] = 0.00001f + factor * ((float)rand() / (float)RAND_MAX);
+   }
+   
+   for (int i = 0; i < n; ++i) {
+
+        // to SIMD-ize, need to use bit masks for branchless programming
+        if (x[i] < 0) {
+           x[i] = FP_NAN;
+           return;
+        } else if (x[i] == 0) {
+           x[i] = 1;
+           return;
+        }
+
+        // simd rcp_ps
+        tmp[1] = 1./x[i]; // r1
+        tmp[2] = tmp[0]*tmp[0]; //r2
+        tmp[4] = tmp[1]*tmp[1]; //r4
+        tmp[3] = tmp[1] * tmp[4];
+ 
+        // simd dp_ps dot product
+        float f2 = 0;
+        for (int j = 0; j < 4; ++j) {
+             f2 += tmp[j] * SC[j];
+        }
+
+        //SIMD sqrt
+        float f1 = sqrtf(x[i]);
+
+        //SIMD pow_ps
+        float f3 = powf(x[i]/M_E, x[i]);
+        
+        //SIMD _mul_ps, with these factors placed in a vector... a gather not aligned load unfortunately.
+        // and making the factors requires scatter and gather ops
+        x[i] = SQRT2PI * f1 * f2 * f3;
+    }
+}        

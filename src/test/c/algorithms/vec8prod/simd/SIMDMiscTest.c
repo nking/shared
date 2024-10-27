@@ -70,9 +70,11 @@ void * testRand() {
 }
 
 int main() {
-    test16();
-    testRand();
+    //test16();
+    //testRand();
     //cache_explore_function8();
     //cache_explore_function4();
+    cache_explore_simd_more_math();
+    //cache_explore_serial_more_math();
     return 0;
 }
