@@ -12,6 +12,9 @@ measurements taken using computer w/
 
 using timing logs from the ant target cmakeSIMDTimeLogs:
 
+---------------------------------------------------
+for vec8prod:
+
 each simd intrinsics 8-wide method invocation:
       1 load
       3 loadpermute 
@@ -114,3 +117,20 @@ Continuing the line of thought in using the SIMD vec8prod in parallel:
   
 * NOTE: the ISPC version of vec8prod can outperform the per element serial
   calculation.  see the ISPC directory.
+
+---------------------------------------------------
+wrote a quick algorithm to look at the improvements
+in execution runtime using simd intrintrinsic
+by increasing the arithmetic intensity.
+
+for cache_explore_serial_more_math()
+   and cache_explore_simd_more_math()
+
+there are 
+   20 math ops
+   the input is a float array of 250000 elements.
+  
+serial per element completes its work in ~ 20,000 cycles
+serial simd 4-wide vector completes its work in ~ 4200 cycles
+   
+serial simd is a factor of 5 improvement over serial per element.
