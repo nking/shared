@@ -28,4 +28,3 @@ fn _not_for_use_prod16(a: &[f32; 16]) -> f32 {
     
     return prod[0] * prod[8];
 }
-

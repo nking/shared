@@ -8,9 +8,12 @@ use std::simd::prelude::*;
 //use std::simd::u32x8;
 //use std::simd::i32x8;
 //use std::simd::prelude::Simd;
-use std::{panic, thread::scope};
-use std::arch::x86_64::{__m256, _mm256_mul_ps, _mm256_storeu_ps};
-use core::arch::x86_64::{_mm256_loadu_ps, _mm256_permutevar8x32_ps, _mm256_set_epi32};
+use std::{panic, thread::scope, time::SystemTime};
+use core::arch::x86_64::{__m256, _mm256_mul_ps, _mm256_storeu_ps, __m128, _mm_storeu_ps};
+use core::arch::x86_64::{_mm256_loadu_ps, _mm_loadu_ps,  _mm256_permutevar8x32_ps, _mm256_set_epi32, _mm_fmaddsub_ps, _mm_rcp_ps, _mm_sqrt_ps};
+
+use rand::Rng;
+use rand::prelude::*;
 
 //#[cfg(target_arch = "x86_64")]
 //#[cfg(target_arch = "x86")]
@@ -204,3 +207,133 @@ fn intrinsics_partition_thread( x : & mut [f32]) -> f32 {
     }
     
 }
+
+//============ triplets of methods to compare execution runtimes ======
+
+fn _gen_random_float_array<const N : usize>() -> [f32; N] {
+    
+    let mut x = [0.0f32; N];
+
+    let seed: u64 = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH)
+    .unwrap().as_secs();
+    let mut rng = rand_chacha::ChaCha8Rng::seed_from_u64(seed);
+    println!("seed={:?}", seed);
+    
+    for xi in x.iter_mut() {
+        *xi = 0.0001f32 + rng.gen::<f32>();
+    }
+
+    return x;
+}
+
+pub fn serial_per_element_high_arith_int<const N : usize>() -> () {
+    
+    let mut x: [f32; N] = _gen_random_float_array::<N>();
+
+    _serial_per_element_high_arith_int::<N>(& mut x);
+}
+
+fn _serial_per_element_high_arith_int<const N : usize>( x : & mut [f32; N]) -> () {
+    
+    let factors : [f32; 4] = [3.0f32, 3.0f32, 3.0f32, 3.0f32];
+    let s : [f32; 4] = [1.5f32, -1.5f32, 1.5f32, -1.5f32];
+
+    #[cfg(feature = "TIME_THR")]
+    let start = std::time::SystemTime::now();
+    
+    // specific to rust: can mutate a value while using the iterator to access it:
+    //for xi in x.iter() {
+    for j in 0..x.len() {
+        for i in 0..4 {
+            x[j] = ((x[j]) * factors[0]) + s[i%2];
+            x[j] = 1./(x[j]);
+            x[j] = (x[j]).sqrt();
+        }
+    }
+
+    #[cfg(feature = "TIME_THR")]
+    match start.elapsed() {Ok(dur) => {tracing::info!("thr {:?}", dur.as_nanos())},Err(_) => {},}
+}
+
+pub fn serial_intrinsics_high_arith_int<const N : usize>() -> () {
+    let mut x: [f32; N] = _gen_random_float_array::<N>();
+    _serial_intrinsics_high_arith_int::<N>(& mut x);
+}
+
+fn _serial_intrinsics_high_arith_int<const N : usize>( x : & mut [f32; N]) -> () {
+    
+    let factors : [f32; 4] = [3.0f32, 3.0f32, 3.0f32, 3.0f32];
+    let s : [f32; 4] = [1.5f32, -1.5f32, 1.5f32, -1.5f32];
+
+    unsafe {
+        let avx_f: __m128 = _mm_loadu_ps(&factors[0]);
+        let avx_s: __m128 = _mm_loadu_ps(&s[0]);
+
+        #[cfg(feature = "TIME_THR")]
+        let start = std::time::SystemTime::now();
+
+        for _i in (0..N).step_by(4) {
+                        
+            #[cfg(feature = "TIME_D")]
+            let start = std::time::SystemTime::now();
+
+            //let mut avx_x: __m128 = _mm_loadu_ps(x.get_unchecked(_i));
+            let mut avx_x: __m128 = _mm_loadu_ps(& mut x[_i]);
+                
+            #[cfg(feature = "TIME_D")]
+            match start.elapsed() {Ok(dur) => {tracing::info!("load {:?}", dur.as_nanos())},Err(_) => {},}
+        
+            for _j in 0..4 {
+                avx_x = _mm_fmaddsub_ps(avx_x, avx_f, avx_s);
+                avx_x = _mm_rcp_ps(avx_x);
+                avx_x = _mm_sqrt_ps(avx_x);
+            }
+
+            #[cfg(feature = "TIME_D")]
+            let start = std::time::SystemTime::now();
+
+            //* mut f32
+            _mm_storeu_ps(& mut x[_i], avx_x);
+
+            #[cfg(feature = "TIME_D")]
+            match start.elapsed() {Ok(dur) => {tracing::info!("load+store {:?}", dur.as_nanos())},Err(_) => {},}
+        }
+
+        #[cfg(feature = "TIME_THR")]
+        match start.elapsed() {Ok(dur) => {tracing::info!("thr {:?}", dur.as_nanos())},Err(_) => {},}
+    }
+}
+
+/* 
+fn serial_simd_high_arith_int<const N : usize>( x : & [f32]) -> () {
+    let mut x: [f32; N] = _gen_random_float_array::<N>();
+    _serial_simd_high_arith_int::<N>(&x);
+}
+
+fn _serial_simd_high_arith_int<const N : usize>( x : & mut [f32; N]) -> () {
+    
+    // for SIMD, need to copy x into n_VEC size arrays
+
+    const N_VEC : usize = 4;
+    let factors : [f32; 4] = [3.0f32, 3.0f32, 3.0f32, 3.0f32];
+    let s : [f32; 4] = [1.5f32, -1.5f32, 1.5f32, -1.5f32];
+
+    let mut split_prev : usize = 0;
+    let mut split_next : usize = split_prev + N_VEC;
+                            
+    for _i in (0..N).step_by(N_VEC) {
+
+        let mut xi:[f32; N_VEC] = [0.0f32; N_VEC];
+        xi.copy_from_slice(& x[split_prev..split_next]);
+
+        let mut a_simd: Simd<f32, N_VEC> = Simd::from_array(xi);
+
+        no fmaddsub ...
+
+
+        split_prev = split_next;
+        split_next = split_prev + N_VEC;
+    }
+
+}
+*/

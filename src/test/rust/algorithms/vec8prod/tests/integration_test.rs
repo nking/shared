@@ -1,12 +1,64 @@
 
 use vec8prod::simd_func::simd_func;
+use vec8prod::simd_func::serial_intrinsics_high_arith_int;
+use vec8prod::simd_func::serial_per_element_high_arith_int;
 use vec8prod::multithread_func::multithread_func;
 use rand::Rng;
 use rand::prelude::*;
 use std::{time::SystemTime};
 
 #[test]
-fn run_all_tests() {
+fn run_serial_intrinsics_high_arith_int() {
+    #[cfg(all(feature = "TIME_TOT", feature = "TIME_THR"))]
+    panic!("Cannot have more than 1 of the logging features set (TIME_TOT, TIME_THR, TIME_D).");
+    #[cfg(all(feature = "TIME_TOT", feature = "TIME_D"))]
+    panic!("Cannot have more than 1 of the logging features set (TIME_TOT, TIME_THR, TIME_D).");
+    #[cfg(all(feature = "TIME_D", feature = "TIME_THR"))]
+    panic!("Cannot have more than 1 of the logging features set (TIME_TOT, TIME_THR, TIME_D).");
+    
+    tracing_subscriber::fmt()
+        .with_max_level(tracing::Level::DEBUG)
+        // enable thread id to be emitted
+        .with_thread_ids(true)
+        // enabled thread name to be emitted
+        .with_thread_names(true)
+        .with_ansi(false)
+        .init();
+    // .with_ansi(false) avoids escape characters in output
+
+    #[cfg(any(feature = "TIME_TOT", feature = "TIME_THR", feature = "TIME_D"))]
+    tracing::info!("serial_intrinsics");
+
+    serial_intrinsics_high_arith_int::<250000>();
+}
+
+#[test]
+fn run_serial_per_element_high_arith_int() {
+    #[cfg(all(feature = "TIME_TOT", feature = "TIME_THR"))]
+    panic!("Cannot have more than 1 of the logging features set (TIME_TOT, TIME_THR, TIME_D).");
+    #[cfg(all(feature = "TIME_TOT", feature = "TIME_D"))]
+    panic!("Cannot have more than 1 of the logging features set (TIME_TOT, TIME_THR, TIME_D).");
+    #[cfg(all(feature = "TIME_D", feature = "TIME_THR"))]
+    panic!("Cannot have more than 1 of the logging features set (TIME_TOT, TIME_THR, TIME_D).");
+    
+    tracing_subscriber::fmt()
+        .with_max_level(tracing::Level::DEBUG)
+        // enable thread id to be emitted
+        .with_thread_ids(true)
+        // enabled thread name to be emitted
+        .with_thread_names(true)
+        .with_ansi(false)
+        .init();
+    // .with_ansi(false) avoids escape characters in output
+
+    #[cfg(any(feature = "TIME_TOT", feature = "TIME_THR", feature = "TIME_D"))]
+    tracing::info!("serial_per_element");
+
+    serial_per_element_high_arith_int::<250000>();
+}
+
+#[test]
+pub fn run_all_vec8prod_tests() {
 
     #[cfg(all(feature = "TIME_TOT", feature = "TIME_THR"))]
     panic!("Cannot have more than 1 of the logging features set (TIME_TOT, TIME_THR, TIME_D).");
@@ -124,7 +176,4 @@ fn test_rand_128() -> () {
     }
 
     test::<N>(&x);
-    
 }
-
-
