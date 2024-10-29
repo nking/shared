@@ -1,0 +1,75 @@
+after running in the base directory
+   ant cmakeISPCTimeLogs
+the logfile are in bin/test-classes-c/algorithms/vec8prod/
+
+
+The unit test for N = 1<<16 = 65536 length input array produced
+the following results when run on a computer with these characteristics:
+
+Summary:  ispc method performed better than a serial per element product calculation
+in terms of completing a correct answer 5-5 times faster.
+
+measurements taken using computer w/
+    level 3 Cache: 3 MB shared (not used here)
+    Cache Level 1:  32k for each core
+    Cache Level 2:  256k for each core
+    max memory bus: 26 GB/sec
+    processor : 1.6 GHz
+
+    at each cycle, memory can transfer at most:
+        max memory bus (26 GB/sec) * (sec/1.6G cycles) = 16 Bytes / cycle
+          = 128 bits / cycle
+        and max memory bus rate is possibly not the mean rate.
+
+    TODO: gather details from Intel if they exist for roofline analysis
+       for this architecture
+       https://docs.nersc.gov/tools/performance/roofline/
+
+
+ISPC stats: 1<<16 elements
+   serial per element method total runtime: 339 cycles
+
+   8-wide vec measurements in cycles:
+      ispc_function
+         total runtime:  79 cycles
+
+      data load/store in vecprod
+         median: 18
+         avg: 26 += 216
+
+      an outline of the method ispc_function 
+          N = 1<<16 = 65536
+
+          8192 foreach i=0...N  parallel invocations
+          1024 foreach i=0...N
+          128  foreach i=0...N
+          16   foreach i=0...N
+          2    foreach i=0...N
+
+
+          loops 5 times:
+             allocates a new array N/8 size for results
+             enters foreach i=0...N parallel invocation
+                vecprod is invoked in parallel
+             exits foreach // all gangs completed their work
+             N /= 8
+          serial multiplication of < 8 items in result array
+
+          vecprod:
+              # of 8-wide vec accesses: 2 + 1 + 1 + 1 = 5
+              # of 8-wide vec multiplications: 4 + 2 + 1 = 7
+
+           arithmetic intensity = flops / data load/stores in bytes
+
+           we know from separate measurements that a data load/store ~ 18 clock cycles.
+           the method ispc_function total time ~ 80 cycles.
+           and the time for multiplication is nearly negligible in comparison.
+           so the algorithm, running on the above CPU is memory bound.
+           
+
+NOTE that using a 16-wide vector did not improve the total runtime, presumably
+because loading the vector is memory bound for the computer used for measurements.
+    max memory bus (26 GB/sec) * (sec/1.6G cycles) = 16 Bytes / cycle
+       = 128 bits / cycle
+    and a 16-wide 32-bit vector is 512 bits.
+
