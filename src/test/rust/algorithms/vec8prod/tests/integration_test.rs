@@ -29,7 +29,10 @@ fn run_serial_intrinsics_high_arith_int() {
     #[cfg(any(feature = "TIME_TOT", feature = "TIME_THR", feature = "TIME_D"))]
     tracing::info!("serial_intrinsics");
 
-    serial_intrinsics_high_arith_int::<250000>();
+    let n_tests = 100;
+    for _ in 0..n_tests {
+        serial_intrinsics_high_arith_int::<250000>();
+    }
 }
 
 #[test]
@@ -54,7 +57,10 @@ fn run_serial_per_element_high_arith_int() {
     #[cfg(any(feature = "TIME_TOT", feature = "TIME_THR", feature = "TIME_D"))]
     tracing::info!("serial_per_element");
 
-    serial_per_element_high_arith_int::<250000>();
+    let n_tests = 100;
+    for _ in 0..n_tests {
+        serial_per_element_high_arith_int::<250000>();
+    }   
 }
 
 #[test]

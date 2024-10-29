@@ -144,6 +144,7 @@ fn intrinsics_partition_thread( x : & mut [f32]) -> f32 {
     
     unsafe {
         
+        #[warn(unused_variables)]
         #[cfg(feature = "TIME_THR")]
         let start = std::time::SystemTime::now();
 
@@ -289,14 +290,14 @@ fn _serial_intrinsics_high_arith_int<const N : usize>( x : & mut [f32; N]) -> ()
                 avx_x = _mm_sqrt_ps(avx_x);
             }
 
-            #[cfg(feature = "TIME_D")]
-            let start = std::time::SystemTime::now();
+            //#[cfg(feature = "TIME_D")]
+            //let start = std::time::SystemTime::now();
 
             //* mut f32
             _mm_storeu_ps(& mut x[_i], avx_x);
 
-            #[cfg(feature = "TIME_D")]
-            match start.elapsed() {Ok(dur) => {tracing::info!("load+store {:?}", dur.as_nanos())},Err(_) => {},}
+            //#[cfg(feature = "TIME_D")]
+            //match start.elapsed() {Ok(dur) => {tracing::info!("load+store {:?}", dur.as_nanos())},Err(_) => {},}
         }
 
         #[cfg(feature = "TIME_THR")]
