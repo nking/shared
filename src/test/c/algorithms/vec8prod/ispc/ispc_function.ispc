@@ -172,6 +172,89 @@ varying float * p4 = new varying float[10];                  // 8 * 320 = 2560 b
 */
 export uniform float ispc_function(uniform int N, uniform float * uniform x) {
 
+    INIT_TIME();
+
+    uniform int n_res = N / programCount;
+
+    //print("programCount=%, n_results=%\n", programCount, n_res);
+
+    uniform float * uniform tmpX = x;
+    //if N=65536, and use tmpX = copy x here instead of reference to x, runtime
+    //      execution increases from 80 cycles to 270 cycles.
+    //uniform float * uniform tmpX = uniform new float[N];
+    //memcpy(tmpX, x, N*4);
+    uniform float * uniform tmpY = uniform new float[programCount];
+    uniform float * uniform res = uniform new float[n_res];
+
+    int nIter = 0;
+    uniform float * uniform prev0 = NULL;
+    uniform float * uniform prev1 = NULL;
+
+    //uniform float logN = log((uniform float)N)/log((uniform float)2);
+    //int nIter = (int)(floor((logN - 8)/3));
+    // print("logN=%, nIter=%\n", logN, nnIter);
+
+    uniform int i_res = 0;
+
+    while (true) {
+       foreach (i = 0 ... N) { // parallel execution
+          // increment pointer for tmpX
+          if (i_res > 0) {
+              tmpX += programCount;
+          }
+
+          vecprod(tmpX, tmpY);
+
+          //print("(%) programCount=%, after tmpY=\n", i_res, programCount);
+          //print_float_array(tmpY, 0, programCount);
+
+          START_D_TIME();
+          res[i_res] = tmpY[0];
+          STOP_D_STORE_TIME();
+
+          //print("(%) res=\n", i_res);
+          //print_float_array(res, 0, n_res);
+
+          i_res += 1;
+      }
+      if (n_res <= programCount) {
+          break;
+      }
+      N = n_res;
+      i_res = 0;
+      n_res = N / programCount; 
+    
+      if (prev0 == NULL) {
+          prev0 = res;
+      } else if (prev1 == NULL) {
+          prev1 = res;
+      } else {
+          delete[] prev0;
+          prev0 = prev1;
+          prev1 = res;    
+      }
+      tmpX = res;
+      res = uniform new float[n_res]; 
+      nIter += 1;
+    }
+
+    uniform float prod = 1.f;
+    for (uniform int i = 0; i < n_res; ++i) {
+        #pragma ignore warning(perf)
+        prod *= res[i];
+    }
+    delete[] res;
+    delete[] tmpY;
+    if (prev0 != NULL && prev1 != NULL) {
+        delete[] prev0;
+    }
+    return prod;
+}
+
+uniform float ispc_function1(uniform int N, uniform float * uniform x) {
+
+     INIT_TIME();
+
      uniform int n_res = N / programCount;
 
      //print("programCount=%, n_results=%\n", programCount, n_res);
@@ -203,6 +286,60 @@ export uniform float ispc_function(uniform int N, uniform float * uniform x) {
 
          i_res += 1;
      }
+
+     uniform float prod = 1.f;
+
+     // trying a recursive approach increased the runtime execution
+     if (n_res > 8) {
+         prod = ispc_function1(n_res, res);
+     } else {
+         for (uniform int i = 0; i < n_res; ++i) {
+             #pragma ignore warning(perf)
+             prod *= res[i];
+         }
+     }
+     delete[] res;
+     delete[] tmpY;
+     return prod;
+}
+
+uniform float _ispc_function(uniform int N, uniform float * uniform x) {
+
+     INIT_TIME();
+
+     uniform int n_res = N / programCount;
+
+     //print("programCount=%, n_results=%\n", programCount, n_res);
+
+     uniform float * uniform tmpX = x;
+     uniform float * uniform tmpY = uniform new float[programCount];
+     uniform float * uniform res = uniform new float[n_res];
+
+     uniform int i0 = 0;
+     uniform int i_res = 0;
+     //for (uniform int i = 0; i < N; i += programCount) {
+     foreach (i = 0 ... N) { // parallel execution
+         // increment pointer for tmpX
+         if (i_res > 0) {
+             tmpX += programCount;
+         }
+
+         vecprod(tmpX, tmpY);
+
+         //print("(%) programCount=%, after tmpY=\n", i_res, programCount);
+         //print_float_array(tmpY, 0, programCount);
+
+         START_D_TIME();
+         res[i_res] = tmpY[0];
+         STOP_D_STORE_TIME();
+
+         //print("(%) res=\n", i_res);
+         //print_float_array(res, 0, n_res);
+
+         i_res += 1;
+     }
+     //TODO: res array could now be tmpX with N/=8 and repeating
+     // above loop until N==8.
      uniform float prod = 1.f;
      for (uniform int i = 0; i < n_res; ++i) {
          #pragma ignore warning(perf)
@@ -217,7 +354,7 @@ export uniform float ispc_function(uniform int N, uniform float * uniform x) {
 used to compare to ispc_function(...).
 also useful to look at effect of programIndex filtering on what vecprod_1 sees.
 */
-export uniform float ispc_function2(uniform int N, uniform float * uniform x) {
+export uniform float ispc_function10(uniform int N, uniform float * uniform x) {
 
      uniform int n_res = N / programCount;
 
