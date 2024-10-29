@@ -495,52 +495,6 @@
         </exec>
     </target>
 
-    <target name="cmakeSimSIMDTimeLogs">
-        <property name="c_src_dir"    value="${tests.dir.c}/algorithms/vec8prod/multithread"/>
-        <property name="c_build_dir"  value="${tests.out.dir.c}/algorithms/vec8prod/multithread"/>
-        <mkdir dir="${c_build_dir}" />
-
-        <!-- 3 different compiles and builds to make 3 logs needed for stats -->
-        <!-- data load store times -->
-        <exec executable="cmake" dir="${c_src_dir}" failonerror="true">
-            <arg line="-DTIME_D=1 --fresh"/>
-            <arg line="-S ${c_src_dir} -B ${c_build_dir}" />
-        </exec>
-        <exec executable="cmake" dir="${c_build_dir}" failonerror="true">
-            <arg line="--build ." />
-        </exec>
-        <exec executable="${c_build_dir}/SimISPCMiscTest" failonerror="true">
-            <arg line="-DTIME_D=1"/>
-            <redirector output="${c_build_dir}/simispc_d_logs.txt" alwayslog="true"/>
-        </exec>
-
-        <!-- per thread method times -->
-        <exec executable="cmake" dir="${c_src_dir}" failonerror="true">
-            <arg line="-DTIME_THR=1 --fresh"/>
-            <arg line="-S ${c_src_dir} -B ${c_build_dir}" />
-        </exec>
-        <exec executable="cmake" dir="${c_build_dir}" failonerror="true">
-            <arg line="--build ." />
-        </exec>
-        <exec executable="${c_build_dir}/SimISPCMiscTest" failonerror="true">
-            <arg line="-DTIME_THR=1"/>
-            <redirector output="${c_build_dir}/simispc_thr_logs.txt" alwayslog="true"/>
-        </exec>
-
-        <!-- total times -->
-        <exec executable="cmake" dir="${c_src_dir}" failonerror="true">
-            <arg line="-DTIME_TOT=1 --fresh"/>
-            <arg line="-S ${c_src_dir} -B ${c_build_dir}" />
-        </exec>
-        <exec executable="cmake" dir="${c_build_dir}" failonerror="true">
-            <arg line="--build ." />
-        </exec>
-        <exec executable="${c_build_dir}/SimISPCMiscTest" failonerror="true">
-            <arg line="-DTIME_TOT=1"/>
-            <redirector output="${c_build_dir}/simispc_tot_logs.txt" alwayslog="true"/>
-        </exec>
-    </target>
-
     <target name="cmakeISPCTest">
         <property name="c_src_dir"    value="${tests.dir.c}/algorithms/vec8prod/ispc"/>
         <property name="c_build_dir"  value="${tests.out.dir.c}/algorithms/vec8prod/ispc"/>
@@ -561,10 +515,13 @@
         </exec>
     </target>
 
-    <target name="cmakeISPCTimeLogs" depends="cmakeISPCTest">
+    <target name="cmakeISPCTimeLogs">
         <property name="c_src_dir"    value="${tests.dir.c}/algorithms/vec8prod/ispc"/>
         <property name="c_build_dir"  value="${tests.out.dir.c}/algorithms/vec8prod/ispc"/>
         <mkdir dir="${c_build_dir}" />
+        <delete includeemptydirs="true">
+            <fileset dir="${c_build_dir}" includes="**/*" />
+        </delete>
 
         <!-- 3 different compiles and builds to make 3 logs needed for stats -->
         <!-- data load store times -->
@@ -577,12 +534,17 @@
         </exec>
         <exec executable="${c_build_dir}/ISPCMiscTest" failonerror="true">
             <arg line="-DTIME_D=1"/>
-            <redirector output="${c_build_dir}/ispc8_d_logs.txt" alwayslog="true"/>
+            <redirector output="${c_build_dir}/../ispc8_d_logs.txt" alwayslog="true"/>
         </exec>
         <exec executable="${c_build_dir}/ISPCMisc16Test" failonerror="true">
             <arg line="-DTIME_D=1"/>
-            <redirector output="${c_build_dir}/ispc16_d_logs.txt" alwayslog="true"/>
+            <redirector output="${c_build_dir}/../ispc16_d_logs.txt" alwayslog="true"/>
         </exec>
+
+        <!-- TODO: find a better way to rebuild for new TIME_ argument -->
+        <delete includeemptydirs="true">
+           <fileset dir="${c_build_dir}" includes="**/*" />
+        </delete>
 
         <!-- per thread method times -->
         <exec executable="cmake" dir="${c_src_dir}" failonerror="true">
@@ -594,14 +556,20 @@
         </exec>
         <exec executable="${c_build_dir}/ISPCMiscTest" failonerror="true">
             <arg line="-DTIME_THR=1"/>
-            <redirector output="${c_build_dir}/ispc8_thr_logs.txt" alwayslog="true"/>
+            <redirector output="${c_build_dir}/../ispc8_thr_logs.txt" alwayslog="true"/>
         </exec>
         <exec executable="${c_build_dir}/ISPCMisc16Test" failonerror="true">
             <arg line="-DTIME_THR=1"/>
-            <redirector output="${c_build_dir}/ispc16_thr_logs.txt" alwayslog="true"/>
+            <redirector output="${c_build_dir}/../ispc16_thr_logs.txt" alwayslog="true"/>
         </exec>
 
+        <!-- TODO: find a better way to rebuild for new TIME_ argument -->
+        <delete includeemptydirs="true">
+            <fileset dir="${c_build_dir}" includes="**/*" />
+        </delete>
+
         <!-- total times -->
+
         <exec executable="cmake" dir="${c_src_dir}" failonerror="true">
             <arg line="-DTIME_TOT=1 --fresh"/>
             <arg line="-S ${c_src_dir} -B ${c_build_dir}" />
@@ -611,11 +579,11 @@
         </exec>
         <exec executable="${c_build_dir}/ISPCMiscTest" failonerror="true">
             <arg line="-DTIME_TOT=1"/>
-            <redirector output="${c_build_dir}/ispc8_tot_logs.txt" alwayslog="true"/>
+            <redirector output="${c_build_dir}/../ispc8_tot_logs.txt" alwayslog="true"/>
         </exec>
         <exec executable="${c_build_dir}/ISPCMisc16Test" failonerror="true">
             <arg line="-DTIME_TOT=1"/>
-            <redirector output="${c_build_dir}/ispc16_tot_logs.txt" alwayslog="true"/>
+            <redirector output="${c_build_dir}/../ispc16_tot_logs.txt" alwayslog="true"/>
         </exec>
     </target>
 

@@ -1,3 +1,24 @@
+measurements taken using computer w/
+    level 3 Cache: 3 MB shared (not used here)
+    Cache Level 1:  32k for each core
+    Cache Level 2:  256k for each core
+    max memory bus: 26 GB/sec
+    processor : 1.6 GHz
+
+    at each cycle, memory can transfer at most:
+        max memory bus (26 GB/sec) * (sec/1.6G cycles) = 16 Bytes / cycle
+          = 128 bits / cycle
+        and max memory bus rate is possibly not the mean rate.
+
+    TODO: gather details from Intel if they exist for roofline analysis
+       https://docs.nersc.gov/tools/performance/roofline/
+
+
+summary timing stats:
+    1<<16 elements:
+        ISPC time: 80 cycles
+        serial per element total time: 340 cycles.
+
 for the vec8prod task;
     ispc can perform better (faster runtime exec) than serial execution.
     6 times better for test data of length 1<<16.

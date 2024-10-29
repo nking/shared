@@ -50,6 +50,8 @@ add_custom_command(
     DEPENDS ispc_function.ispc
 )
 
+#message("macro_time=${macro_time}")
+
 add_executable(ISPCMiscTest ISPCMiscTest.c ispc_function.o)
 add_executable(ISPCMisc16Test ISPCMiscTest.c ispc_function16.o)
 

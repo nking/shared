@@ -24,6 +24,7 @@
     #define STOP_D_STORE_TIME() {stop = clock(); print("store data %\n", (stop-start));}
     #define START_THR_TIME()
     #define STOP_THR_TIME()
+    #define DEBUG_MACRO() {print("CONFIG D");}
 #elif defined(TIME_THR)
     #define INIT_TIME_TITLE(s) print("TITLE %\n", #s);
     #define INIT_TIME() unsigned uniform int64 start, stop;
@@ -34,7 +35,8 @@
     #define STOP_D_LOAD_TIME()
     #define STOP_D_STORE_TIME()
     #define START_THR_TIME() start = clock();
-    #define STOP_THR_TIME() {stop = clock(); print("thr thr %\n", #s, (stop-start));}
+    #define STOP_THR_TIME() {stop = clock(); print("thr thr %\n", (stop-start));}
+    #define DEBUG_MACRO() {print("CONFIG THR");}
 #elif defined(TIME_TOT)
     #define INIT_TIME_TITLE(s) print("TITLE %\n", #s);
     #define INIT_TIME() unsigned uniform int64 start, stop;
@@ -46,6 +48,7 @@
     #define STOP_D_STORE_TIME()
     #define START_THR_TIME()
     #define STOP_THR_TIME()
+    #define DEBUG_MACRO() {print("CONFIG TOT");}
 #else
    #define INIT_TIME_TITLE(s)
    #define INIT_TIME()
@@ -57,6 +60,7 @@
    #define STOP_D_STORE_TIME()
    #define START_THR_TIME()
    #define STOP_THR_TIME()
+   #define DEBUG_MACRO() {print("CONFIG _none_");}
 #endif
 
 //LOG(format, ...) fprintf(stdout, format, ##__VA_ARGS__)
