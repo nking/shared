@@ -187,6 +187,7 @@ export uniform float ispc_function(uniform int N, uniform float * uniform x) {
     uniform float * uniform res = uniform new float[n_res];
 
     int nIter = 0;
+    // handles to res new arrays that are deleted after no longer used.
     uniform float * uniform prev0 = NULL;
     uniform float * uniform prev1 = NULL;
 
@@ -212,7 +213,7 @@ export uniform float ispc_function(uniform int N, uniform float * uniform x) {
           res[i_res] = tmpY[0];
           STOP_D_STORE_TIME();
 
-          //print("(%) res=\n", i_res);
+          //print("i_res=%, programCount=%\n", i_res, programCount);
           //print_float_array(res, 0, n_res);
 
           i_res += 1;
@@ -237,6 +238,7 @@ export uniform float ispc_function(uniform int N, uniform float * uniform x) {
       res = uniform new float[n_res]; 
       nIter += 1;
     }
+    //print(" nIter=%\n", nIter);
 
     uniform float prod = 1.f;
     for (uniform int i = 0; i < n_res; ++i) {

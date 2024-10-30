@@ -1,5 +1,10 @@
 ispc ispc_function.ispc -o ispc_function.o
 
-as the parallelism increases (i.e. the size of input vector),
-vec8prod becomes more efficient than serial calculation.
+the timing logs can be run from the base of the shared
+project using 
+   ant cmakeISPCTimeLogs
+
+which writes the files to bin/test-classes-c/algorithms/vec8prod/
+
+see notes.txt for brief analysis
 
