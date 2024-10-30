@@ -1,3 +1,41 @@
-consider GPU programming for the vec8prod method
-   - opencl has alot of configuration overhead
-   - consider nvidia cuda on aws
+regarding vec8prod on GPUs:
+
+CUDA NVIDIA GPU:   
+
+the algorithm vec8prod  has control flow branching, but the else
+branch is actually terminal, so there essentially isn't control flow
+divergence, that is, the “divergent” paths have 0 instructions.
+(vec8prod can be refactored so that the ‘else’ branches are terminal or that
+the ‘if’ branches are increasingly nested, etc).
+
+The conditions in vec8prod stop executions for the “else” branch and so 4 of
+8 threads continue with instructions then 2 of those 4 continue with
+instructions then 1 of those 2.
+
+Regarding control flow divergence, the GPU warp makes a different pass for
+each branch.
+
+More about control flow on gpu:
+https://youtu.be/HdxxEjia7Rw?si=8noKpmI3rjIOkUS4
+
+On NVIDIA GPU, all threads in the same warp execute the same instruction
+simultaneously because they share a single program counter.
+
+Vec8prod has to be changed to vecNprod where N is the number of threads in
+the warp (and is a power of 2) which means additional code needs to be added
+for max  expected N.
+
+==> VecNprod should perform well with CUDA on an NVIDA GPU.
+
+
+The multiple instruction algorithm written to explore SIMD would perform well
+in CUDA GPU also.
+
+----
+
+OPENCL borrows alot from specification of CuDA but can be run on CPUs, GPUs,
+FPGAs, DSPs
+  Complex configuration and code. Although designed to follow CUDA
+is purported to be more difficult to code for because of the ability
+to run on multiple platforms. 
+
