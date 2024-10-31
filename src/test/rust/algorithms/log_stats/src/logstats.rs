@@ -5,52 +5,47 @@ use super::stats_holder::*;
 use regex::Regex;
 
 pub fn simple(file_path : String) {
-    let mut thr_stats = build_stats_holder(String::from("thr"));
-    let mut d_stats = build_stats_holder(String::from("d"));
-    let mut tot_stats = build_stats_holder(String::from("tot"));
-
-    let thr_type = String::from("thr");
-    let tot_type = String::from("tot");
-    let d_type = String::from("load");
+    let mut thr_stats: StatsHolderMed = build_stats_holder_med(String::from("thr"));
+    let mut d_stats: StatsHolderMed = build_stats_holder_med(String::from("d"));
+    let mut tot_stats: StatsHolderMed = build_stats_holder_med(String::from("tot"));
 
     let re: Regex = Regex::new(r".+?\s(thr|tot|load)\s(\d+)$").unwrap();        
 
-    let mut count = 0;
-
     if let Ok(lines) = read_lines(file_path) {
         // Consumes the iterator, returns an (Optional) String
-        
         for line in lines.flatten() {
-            //TODO: is there a more efficient way?
             
             if let Some(caps) = re.captures(&line) {
-                let log_type = caps.get(1).unwrap().as_str();
+    
                 let t = caps.get(2).unwrap().as_str().parse::<u64>().unwrap();
-                if log_type.eq(&thr_type) {
-                    thr_stats.accumulate(t);
-                    count += 1;
-                } else if log_type.eq(&tot_type) {
-                    tot_stats.accumulate(t);
-                    count += 1;
-                } else if log_type.eq(&d_type) {
-                    d_stats.accumulate(t);
-                    count += 1;
-                }
+                match caps.get(1).unwrap().as_str() {
+                    "thr" => {
+                        thr_stats.accumulate(t);
+                    },
+                    "load" => {
+                        d_stats.accumulate(t);
+                    },
+                    "tot" => {
+                        tot_stats.accumulate(t);
+                    },
+                    _ => {}
+                };
             } 
             //println!("{}", line);
         }
-        print!("count={:?}", count);
         if !thr_stats.is_empty() {
-            let (mn, stdev) = thr_stats.calc_mean_stdev();
-            print!("\nthr mean={:?}, stdev={:?}\n", mn, stdev);
+            //let (mn, stdev) = thr_stats.calc_mean_stdev();
+            //print!("\nthr mean={:?}, stdev={:?}\n", mn, stdev);
+            let med = thr_stats.calc_median();
+            print!("\nthr median={:?}\n", med);
         }
         if !d_stats.is_empty() {
-            let (mn, stdev) = d_stats.calc_mean_stdev();
-            print!("\nd mean={:?}, stdev={:?}\n", mn, stdev);
+            let med = d_stats.calc_median();
+            print!("\nd median={:?}\n", med);
         }
         if !tot_stats.is_empty() {
-            let (mn, stdev) = tot_stats.calc_mean_stdev();
-            print!("\ntot mean={:?}, stdev={:?}\n", mn, stdev);
+            let med = tot_stats.calc_median();
+            print!("\ntot median={:?}\n", med);
         }
     }
 }
