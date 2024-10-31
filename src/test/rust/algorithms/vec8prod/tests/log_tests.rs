@@ -9,10 +9,13 @@ mod log_tests {
     use vec8prod::simd_func::serial_per_element_high_arith_int;
     #[allow(unused_imports)]
     use vec8prod::multithread_func::multithread_func;
+    #[allow(unused_imports)]
+    use vec8prod::simd_func::threads2_intrinsics_high_arith_int;
     
     use rand::Rng;
     use rand::prelude::*;
-    use std::{time::SystemTime};
+    #[allow(unused_imports)]
+    use std::time::SystemTime;
     
     #[test]
     fn log_serial_intrinsics_high_arith_int() {
@@ -36,6 +39,8 @@ mod log_tests {
         #[cfg(any(feature = "TIME_TOT", feature = "TIME_THR", feature = "TIME_D"))]
         tracing::info!("serial_intrinsics");
     
+        const N : usize = 250000;
+
         let n_tests = 3;
         for _ in 0..n_tests {
 
@@ -43,13 +48,54 @@ mod log_tests {
             #[cfg(any(feature = "TIME_TOT", feature = "TIME_THR", feature = "TIME_D"))]
             let start = std::time::SystemTime::now();
     
-            serial_intrinsics_high_arith_int::<250000>();
+            let mut x = generate_rand_x::<N>();
+            serial_intrinsics_high_arith_int::<N>(& mut x);
 
             #[cfg(feature = "TIME_TOT")]
             match start.elapsed() {Ok(dur) => {tracing::info!("tot {:?}", dur.as_nanos())},Err(_) => {},}
         }
     }
     
+    #[test]
+    fn log_threads2_intrinsics_high_arith_int() {
+        #[cfg(all(feature = "TIME_TOT", feature = "TIME_THR"))]
+        panic!("Cannot have more than 1 of the logging features set (TIME_TOT, TIME_THR, TIME_D).");
+        #[cfg(all(feature = "TIME_TOT", feature = "TIME_D"))]
+        panic!("Cannot have more than 1 of the logging features set (TIME_TOT, TIME_THR, TIME_D).");
+        #[cfg(all(feature = "TIME_D", feature = "TIME_THR"))]
+        panic!("Cannot have more than 1 of the logging features set (TIME_TOT, TIME_THR, TIME_D).");
+        
+        tracing_subscriber::fmt()
+            .with_max_level(tracing::Level::DEBUG)
+            // enable thread id to be emitted
+            .with_thread_ids(true)
+            // enabled thread name to be emitted
+            .with_thread_names(true)
+            .with_ansi(false)
+            .init();
+        // .with_ansi(false) avoids escape characters in output
+    
+        #[cfg(any(feature = "TIME_TOT", feature = "TIME_THR", feature = "TIME_D"))]
+        tracing::info!("2thread_intrinsics");
+    
+        const N : usize = 250000;
+        const N2 : usize = 250000/2;
+        
+        let n_tests = 3;
+        for _ in 0..n_tests {
+
+            #[allow(unused_variables)]
+            #[cfg(any(feature = "TIME_TOT", feature = "TIME_THR", feature = "TIME_D"))]
+            let start = std::time::SystemTime::now();
+    
+            let x = generate_rand_x::<N>();
+            threads2_intrinsics_high_arith_int::<N, N2>(& x);
+
+            #[cfg(feature = "TIME_TOT")]
+            match start.elapsed() {Ok(dur) => {tracing::info!("tot {:?}", dur.as_nanos())},Err(_) => {},}
+        }
+    }
+
     // only TIME_TOT feature is logged in this method
     #[test]
     fn log_rand65536_serial() {
@@ -181,13 +227,16 @@ mod log_tests {
         #[cfg(any(feature = "TIME_TOT", feature = "TIME_THR", feature = "TIME_D"))]
         tracing::info!("serial_per_element");
     
+        const N : usize = 250000;
+
         let n_tests = 3;
         for _ in 0..n_tests {
             #[allow(unused_variables)]
             #[cfg(any(feature = "TIME_TOT", feature = "TIME_THR", feature = "TIME_D"))]
             let start = std::time::SystemTime::now();
     
-            serial_per_element_high_arith_int::<250000>();
+            let mut x = generate_rand_x::<N>();
+            serial_per_element_high_arith_int::<N>(& mut x);
 
             #[cfg(feature = "TIME_TOT")]
             match start.elapsed() {Ok(dur) => {tracing::info!("tot {:?}", dur.as_nanos())},Err(_) => {},}

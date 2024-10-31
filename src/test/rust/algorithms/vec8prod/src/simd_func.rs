@@ -8,11 +8,14 @@ use std::simd::prelude::*;
 //use std::simd::u32x8;
 //use std::simd::i32x8;
 //use std::simd::prelude::Simd;
+#[allow(unused_imports)]
 use std::{panic, thread::scope, time::SystemTime};
 use core::arch::x86_64::{__m256, _mm256_mul_ps, _mm256_storeu_ps, __m128, _mm_storeu_ps};
 use core::arch::x86_64::{_mm256_loadu_ps, _mm_loadu_ps,  _mm256_permutevar8x32_ps, _mm256_set_epi32, _mm_fmaddsub_ps, _mm_rcp_ps, _mm_sqrt_ps};
 
+#[allow(unused_imports)]
 use rand::Rng;
+#[allow(unused_imports)]
 use rand::prelude::*;
 
 //#[cfg(target_arch = "x86_64")]
@@ -194,31 +197,8 @@ fn intrinsics_partition_thread( x : & mut [f32]) -> f32 {
 
 //============ triplets of methods to compare execution runtimes ======
 
-fn _gen_random_float_array<const N : usize>() -> [f32; N] {
-    
-    let mut x = [0.0f32; N];
-
-    let seed: u64 = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH)
-    .unwrap().as_secs();
-    let mut rng = rand_chacha::ChaCha8Rng::seed_from_u64(seed);
-    println!("seed={:?}", seed);
-    
-    for xi in x.iter_mut() {
-        *xi = 0.0001f32 + rng.gen::<f32>();
-    }
-
-    return x;
-}
-
-pub fn serial_per_element_high_arith_int<const N : usize>() -> () {
-    
-    let mut x: [f32; N] = _gen_random_float_array::<N>();
-
-    _serial_per_element_high_arith_int::<N>(& mut x);
-}
-
-fn _serial_per_element_high_arith_int<const N : usize>( x : & mut [f32; N]) -> () {
-    
+pub fn serial_per_element_high_arith_int<const N : usize>(x : & mut [f32; N]) -> () {
+      
     let factors : [f32; 4] = [3.0f32, 3.0f32, 3.0f32, 3.0f32];
     let s : [f32; 4] = [1.5f32, -1.5f32, 1.5f32, -1.5f32];
 
@@ -239,12 +219,35 @@ fn _serial_per_element_high_arith_int<const N : usize>( x : & mut [f32; N]) -> (
     match start.elapsed() {Ok(dur) => {tracing::info!("thr {:?}", dur.as_nanos())},Err(_) => {},}
 }
 
-pub fn serial_intrinsics_high_arith_int<const N : usize>() -> () {
-    let mut x: [f32; N] = _gen_random_float_array::<N>();
-    _serial_intrinsics_high_arith_int::<N>(& mut x);
+pub fn threads2_intrinsics_high_arith_int<const N : usize, const N2: usize>(x : &[f32]) -> () {
+    
+    if (N % 8) != 0 {
+        panic!("N must be a multiple of 8");
+    }
+
+    // partition into 2 and run in threads
+    scope(|s| {
+        let mut split_prev : usize = 0;
+        let mut split_next : usize = split_prev + N2;
+        for _i in 0..2 {
+            let thr = s.spawn(move || {
+                let mut xp:[f32; N2] = [0.0f32; N2];
+                xp.copy_from_slice(&x[split_prev..split_next]);
+
+                //println!("i={}, x address={:p}, xp address={:p}", &_i, &x[0], &xp[0]);
+
+                serial_intrinsics_high_arith_int::<N2>(&mut xp); 
+                0
+            });
+            let _res = thr.join().unwrap();
+            split_prev = split_next;
+            split_next = split_prev + N2;
+        }
+    });
+    // _serial_intrinsics_high_arith_int
 }
 
-fn _serial_intrinsics_high_arith_int<const N : usize>( x : & mut [f32; N]) -> () {
+pub fn serial_intrinsics_high_arith_int<const N : usize>( x : & mut [f32; N]) -> () {
     
     let factors : [f32; 4] = [3.0f32, 3.0f32, 3.0f32, 3.0f32];
     let s : [f32; 4] = [1.5f32, -1.5f32, 1.5f32, -1.5f32];
