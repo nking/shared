@@ -9,15 +9,11 @@ pub fn simple(file_path : String) {
     let mut d_stats = build_stats_holder(String::from("d"));
     let mut tot_stats = build_stats_holder(String::from("tot"));
 
-    revise logs to use:
-          thr: thr thr 15280000
-          tot: MISSING  should be t
-          d: 
     let thr_type = String::from("thr");
     let tot_type = String::from("tot");
     let d_type = String::from("load");
 
-    let re: Regex = Regex::new(r".+?\s(thr|tot|d|load)\s(\d+)$").unwrap();        
+    let re: Regex = Regex::new(r".+?\s(thr|tot|load)\s(\d+)$").unwrap();        
 
     let mut count = 0;
 
