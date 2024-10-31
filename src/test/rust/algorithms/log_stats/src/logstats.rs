@@ -5,15 +5,21 @@ use super::stats_holder::*;
 use regex::Regex;
 
 pub fn simple(file_path : String) {
-    let mut thr_stats = build_StatsHolder(String::from("thr"));
-    let mut d_stats = build_StatsHolder(String::from("d"));
-    let mut tot_stats = build_StatsHolder(String::from("tot"));
+    let mut thr_stats = build_stats_holder(String::from("thr"));
+    let mut d_stats = build_stats_holder(String::from("d"));
+    let mut tot_stats = build_stats_holder(String::from("tot"));
 
-    let thrType = String::from("thr");
-    let totType = String::from("tot");
-    let dType = String::from("d");
+    revise logs to use:
+          thr: thr thr 15280000
+          tot: MISSING  should be t
+          d: 
+    let thr_type = String::from("thr");
+    let tot_type = String::from("tot");
+    let d_type = String::from("load");
 
-    let re: Regex = Regex::new(r".+?\s(thr|tot|d)\s(\d+)$").unwrap();        
+    let re: Regex = Regex::new(r".+?\s(thr|tot|d|load)\s(\d+)$").unwrap();        
+
+    let mut count = 0;
 
     if let Ok(lines) = read_lines(file_path) {
         // Consumes the iterator, returns an (Optional) String
@@ -24,25 +30,29 @@ pub fn simple(file_path : String) {
             if let Some(caps) = re.captures(&line) {
                 let log_type = caps.get(1).unwrap().as_str();
                 let t = caps.get(2).unwrap().as_str().parse::<u64>().unwrap();
-                if log_type.eq(&thrType) {
+                if log_type.eq(&thr_type) {
                     thr_stats.accumulate(t);
-                } else if log_type.eq(&totType) {
+                    count += 1;
+                } else if log_type.eq(&tot_type) {
                     tot_stats.accumulate(t);
-                } else if log_type.eq(&dType) {
+                    count += 1;
+                } else if log_type.eq(&d_type) {
                     d_stats.accumulate(t);
+                    count += 1;
                 }
             } 
             //println!("{}", line);
         }
-        if !thr_stats.isEmpty() {
+        print!("count={:?}", count);
+        if !thr_stats.is_empty() {
             let (mn, stdev) = thr_stats.calc_mean_stdev();
             print!("\nthr mean={:?}, stdev={:?}\n", mn, stdev);
         }
-        if !d_stats.isEmpty() {
+        if !d_stats.is_empty() {
             let (mn, stdev) = d_stats.calc_mean_stdev();
             print!("\nd mean={:?}, stdev={:?}\n", mn, stdev);
         }
-        if !tot_stats.isEmpty() {
+        if !tot_stats.is_empty() {
             let (mn, stdev) = tot_stats.calc_mean_stdev();
             print!("\ntot mean={:?}, stdev={:?}\n", mn, stdev);
         }

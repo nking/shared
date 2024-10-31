@@ -1,10 +1,6 @@
 use std::env;
 
-use logstats::simple;
-pub mod logstats;
-pub mod stats_holder;
-
-use regex::Regex;
+use log_stats::logstats::simple;
 
 fn main() {
     

@@ -1,11 +1,11 @@
 use std::f64;
+// cannot declare struct fields modifiable,
+// but can modify them with extended function mutable self ref
 pub struct StatsHolder {
-    // cannot declare struct fields modifiable,
-    // but can modify them with extended function mutable self ref
     x_sum: u64,
     x_sum_sq: u64,
     n : u32,
-    description: String,
+    _description: String,
 }
 
 // implement the behavior
@@ -25,14 +25,14 @@ impl StatsHolder {
         (m, stdev)
     }
 
-    pub fn isEmpty(& self) -> bool {
-        return (self.n == 0);
+    pub fn is_empty(& self) -> bool {
+        return self.n == 0;
     }
 }
 
-pub fn build_StatsHolder(description: String) -> StatsHolder {
+pub fn build_stats_holder(description: String) -> StatsHolder {
     StatsHolder {
-        description: description,
+        _description: description,
         x_sum: 0,
         x_sum_sq: 0,
         n: 0,
