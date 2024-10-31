@@ -14,18 +14,30 @@ CLI:
     to run tests and get stdout:
         cargo test -- --nocapture
 
-    to create timing logs for analysis:
-        cargo test run_all_vec8prod_tests --features TIME_TOT -- --nocapture >& tot_logs.txt
-        cargo test run_all_vec8prod_tests --features TIME_THR -- --nocapture >& thr_logs.txt
-        cargo test run_all_vec8prod_tests --features TIME_D -- --nocapture >& d_logs.txt
+to create timing logs for analysis:
            the time units are nano-seconds, so need to consider the best
            resolution of time for the hardware that the code is running 
            on (a clock cycle) when interpreting results.
            note that the c code logs for vec8prod use units clock cycles instead.
 
+for vec8prod:
+
+cargo test log_rand65536_serial --features TIME_TOT -- --nocapture >& tot_vecprod_serial_logs.txt
+cargo test log_rand65536_vec8prod_intrinsics --features TIME_TOT -- --nocapture >& tot_vecprod_intr_logs.txt
+cargo test log_rand65536_vec8prod_intrinsics --features TIME_THR -- --nocapture >& thr_vecprod_intr_logs.txt
+cargo test log_rand65536_vec8prod_intrinsics --features TIME_D -- --nocapture >& d_vecprod_intr_logs.txt
+cargo test log_rand65536_vec8prod_simd --features TIME_TOT -- --nocapture >& tot_vecprod_simd_logs.txt
+cargo test log_rand65536_vec8prod_simd --features TIME_THR -- --nocapture >& thr_vecprod_simd_logs.txt
+cargo test log_rand65536_vec8prod_simd --features TIME_D -- --nocapture >& d_vecprod_simd_logs.txt
+cargo test log_rand65536_vec8prod_no_vectorization --features TIME_TOT -- --nocapture >& tot_vecprod_novec_logs.txt
+cargo test log_rand65536_vec8prod_no_vectorization --features TIME_THR -- --nocapture >& thr_vecprod_novec_logs.txt
+
 for the higher arithmetic intensity methods:
-cargo test run_serial_per_element_high_arith_int --features TIME_THR -- --nocapture >& thr_per_logs.txt
-cargo test run_serial_per_element_high_arith_int --features TIME_D -- --nocapture >& d_per_logs.txt
-cargo test run_serial_intrinsics_high_arith_int --features TIME_THR -- --nocapture >& thr_intr_logs.txt
-cargo test run_serial_intrinsics_high_arith_int --features TIME_D -- --nocapture >& d_intr_logs.txt
+
+cargo test log_serial_per_element_high_arith_int --features TIME_THR -- --nocapture >& thr_per_logs.txt
+cargo test log_serial_per_element_high_arith_int --features TIME_D -- --nocapture >& d_per_logs.txt
+cargo test log_serial_per_element_high_arith_int --features TIME_TOT -- --nocapture >& tot_per_logs.txt
+cargo test log_serial_intrinsics_high_arith_int --features TIME_THR -- --nocapture >& thr_intr_logs.txt
+cargo test log_serial_intrinsics_high_arith_int --features TIME_D -- --nocapture >& d_intr_logs.txt
+cargo test log_serial_intrinsics_high_arith_int --features TIME_TOT -- --nocapture >& tot_intr_logs.txt
 

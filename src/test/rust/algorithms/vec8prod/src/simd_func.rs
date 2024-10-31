@@ -104,7 +104,7 @@ fn simd_partition_thread_8( x : & mut [f32; 8]) -> f32 {
     let mut a_simd: Simd<f32, N_VEC> = Simd::from_array(*x);
 
     #[cfg(feature = "TIME_D")]
-    match start.elapsed() {Ok(dur) => {tracing::info!("D LOAD {:?}", dur.as_nanos())},Err(_) => {},}
+    match start.elapsed() {Ok(dur) => {tracing::info!("d load {:?}", dur.as_nanos())},Err(_) => {},}
 
     const SH1 : usize = 1;
     let mut b_simd = a_simd.rotate_elements_left::<SH1>();
@@ -126,7 +126,7 @@ fn simd_partition_thread_8( x : & mut [f32; 8]) -> f32 {
     let r = a_simd.to_array()[0];
 
     #[cfg(feature = "TIME_D")]
-    match start.elapsed() {Ok(dur) => {tracing::info!("D LOAD {:?}", dur.as_nanos())},Err(_) => {},}
+    match start.elapsed() {Ok(dur) => {tracing::info!("d load {:?}", dur.as_nanos())},Err(_) => {},}
 
     //conditionally present 
     // e.g. cargo test --features TIME_THR -- --nocapture
@@ -161,45 +161,27 @@ fn intrinsics_partition_thread( x : & mut [f32]) -> f32 {
             _mm256_set_epi32(0,7,6,5,4,3,2,1));
         
         #[cfg(feature = "TIME_D")]
-        match start.elapsed() {Ok(dur) => {tracing::info!("load+shift {:?}", dur.as_nanos())},Err(_) => {},}
+        match start.elapsed() {Ok(dur) => {tracing::info!("shift load {:?}", dur.as_nanos())},Err(_) => {},}
 
         avx_x = _mm256_mul_ps(avx_x, avx_y);
         
-        #[cfg(feature = "TIME_D")]
-        let start = std::time::SystemTime::now();
-
         // shift by 2
         let avx_y:__m256 = _mm256_permutevar8x32_ps(avx_x, 
             _mm256_set_epi32(0,0, 7,6,5,4,3,2));
         
-        #[cfg(feature = "TIME_D")]
-        match start.elapsed() {Ok(dur) => {tracing::info!("load+shift {:?}", dur.as_nanos())},Err(_) => {},}
-  
         avx_x = _mm256_mul_ps(avx_x, avx_y);
-
-        #[cfg(feature = "TIME_D")]
-        let start = std::time::SystemTime::now();
 
         // shift by 4
         let avx_y:__m256 = _mm256_permutevar8x32_ps(avx_x, 
             _mm256_set_epi32(0,0, 0, 0, 7,6,5,4));
             
-        #[cfg(feature = "TIME_D")]
-        match start.elapsed() {Ok(dur) => {tracing::info!("load+shift {:?}", dur.as_nanos())},Err(_) => {},}
-
         avx_x = _mm256_mul_ps(avx_x, avx_y);
 
         //extract first value
         // TODO: is there a faster way than storing register to memory and then
         // getting first element?
 
-        #[cfg(feature = "TIME_D")]
-        let start = std::time::SystemTime::now();
-
         let _ = _mm256_storeu_ps(x.as_mut_ptr(), avx_x);
-
-        #[cfg(feature = "TIME_D")]
-        match start.elapsed() {Ok(dur) => {tracing::info!("store {:?}", dur.as_nanos())},Err(_) => {},}
 
         #[cfg(feature = "TIME_THR")]
         match start.elapsed() {Ok(dur) => {tracing::info!("thr {:?}", dur.as_nanos())},Err(_) => {},}
@@ -297,7 +279,7 @@ fn _serial_intrinsics_high_arith_int<const N : usize>( x : & mut [f32; N]) -> ()
             _mm_storeu_ps(& mut x[_i], avx_x);
 
             //#[cfg(feature = "TIME_D")]
-            //match start.elapsed() {Ok(dur) => {tracing::info!("load+store {:?}", dur.as_nanos())},Err(_) => {},}
+            //match start.elapsed() {Ok(dur) => {tracing::info!("store {:?}", dur.as_nanos())},Err(_) => {},}
         }
 
         #[cfg(feature = "TIME_THR")]
