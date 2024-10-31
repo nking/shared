@@ -22,15 +22,21 @@ to create timing logs for analysis:
 
 for vec8prod:
 
-cargo test log_rand65536_serial --features TIME_TOT -- --nocapture >& tot_vecprod_serial_logs.txt
-cargo test log_rand65536_vec8prod_intrinsics --features TIME_TOT -- --nocapture >& tot_vecprod_intr_logs.txt
-cargo test log_rand65536_vec8prod_intrinsics --features TIME_THR -- --nocapture >& thr_vecprod_intr_logs.txt
-cargo test log_rand65536_vec8prod_intrinsics --features TIME_D -- --nocapture >& d_vecprod_intr_logs.txt
-cargo test log_rand65536_vec8prod_simd --features TIME_TOT -- --nocapture >& tot_vecprod_simd_logs.txt
-cargo test log_rand65536_vec8prod_simd --features TIME_THR -- --nocapture >& thr_vecprod_simd_logs.txt
-cargo test log_rand65536_vec8prod_simd --features TIME_D -- --nocapture >& d_vecprod_simd_logs.txt
-cargo test log_rand65536_vec8prod_no_vectorization --features TIME_TOT -- --nocapture >& tot_vecprod_novec_logs.txt
-cargo test log_rand65536_vec8prod_no_vectorization --features TIME_THR -- --nocapture >& thr_vecprod_novec_logs.txt
+you can edit create_logfiles.sh and use it as a shell script 
+
+sh < create_logfiles.sh
+
+it has these statements:
+
+cargo test log_rand65536_serial --features TIME_TOT -- --test-threads 1 --nocapture >& $LOGS_DIR/tot_vecprod_serial_logs.txt
+cargo test log_rand65536_vec8prod_intrinsics --features TIME_TOT -- --test-threads 1 --nocapture >& $LOGS_DIR/tot_vecprod_intr_logs.txt
+cargo test log_rand65536_vec8prod_intrinsics --features TIME_THR -- --test-threads 1 --nocapture >& $LOGS_DIR/thr_vecprod_intr_logs.txt
+cargo test log_rand65536_vec8prod_intrinsics --features TIME_D -- --test-threads 1 --nocapture >& $LOGS_DIR/d_vecprod_intr_logs.txt
+cargo test log_rand65536_vec8prod_simd --features TIME_TOT -- --test-threads 1 --nocapture >& $LOGS_DIR/tot_vecprod_simd_logs.txt
+cargo test log_rand65536_vec8prod_simd --features TIME_THR -- --test-threads 1 --nocapture >& $LOGS_DIR/thr_vecprod_simd_logs.txt
+cargo test log_rand65536_vec8prod_simd --features TIME_D -- --test-threads 1 --nocapture >& $LOGS_DIR/d_vecprod_simd_logs.txt
+cargo test log_rand65536_vec8prod_no_vectorization --features TIME_TOT -- --test-threads 1 --nocapture >& $LOGS_DIR/tot_vecprod_novec_logs.txt
+cargo test log_rand65536_vec8prod_no_vectorization --features TIME_THR -- --test-threads 1 --nocapture >& $LOGS_DIR/thr_vecprod_novec_logs.txt
 
 for the higher arithmetic intensity methods:
 

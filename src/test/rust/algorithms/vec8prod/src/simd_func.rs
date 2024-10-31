@@ -148,6 +148,7 @@ fn intrinsics_partition_thread( x : & mut [f32]) -> f32 {
         #[cfg(feature = "TIME_THR")]
         let start = std::time::SystemTime::now();
 
+        #[allow(unused_variables)]
         #[cfg(feature = "TIME_D")]
         let start = std::time::SystemTime::now();
 

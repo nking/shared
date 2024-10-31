@@ -1,0 +1,52 @@
+to debug a library, need to access the code via tests.
+
+e.g. in vec8prod, run the test target for desired method
+and read the output for the binary that needs debugging:
+
+Here is the relevant output from running cargo test in vec8prod
+
+   Running tests/integration_tests.rs (target/debug/deps/integration_tests-1b81f953a8f7eaf4)
+
+
+rust-lldb 
+
+load file to debug:
+(lldb) file target/debug/deps/integration_tests-1b81f953a8f7eaf4
+
+or attach to a running process:
+(lldb) process attach --pid 123
+
+or start lldb with file in statement:
+rust-lldb target/debug/deps/integration_tests-1b81f953a8f7eaf4
+
+r	Run (or restart) the program
+bt	See the call stack (backtrace)
+
+br set -r 'method_name_regex'	e.g. 'precise_time' picks up
+              time::precise_time_ns::h21114d10b3e2c8e8
+              see
+              https://stackoverflow.com/a/27334189/6112633
+
+b func_name	Set a breakpoint at all functions named func_name
+b file.rs:15	Set a breakpoint in file file.rs at line 15
+
+fr v	Show all variables and function arguments in the current frame	
+p name	Show the value of variable name in the current stack frame
+
+linux:
+   break set -E c++	Break on all exceptions 
+macos:
+   break set -n __cxa_throw  Break on all exceptions
+
+breakpoint list 	List all breakpoints
+breakpoint delete 2 	Delete breakpoint #2 from the list
+
+s 	step over next expression
+n	step into next expression
+finish 	continue execution until end of current call frame
+c	continue execution until next breakpoint or assertion
+
+f 3	change current stack frame to the 3rd w.r.t. top of stack.
+
+list above adapted from 
+https://www.cs.williams.edu/~morgan/cs136-f15/lldb.html
