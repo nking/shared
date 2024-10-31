@@ -38,7 +38,15 @@ mod log_tests {
     
         let n_tests = 3;
         for _ in 0..n_tests {
+
+            #[allow(unused_variables)]
+            #[cfg(any(feature = "TIME_TOT", feature = "TIME_THR", feature = "TIME_D"))]
+            let start = std::time::SystemTime::now();
+    
             serial_intrinsics_high_arith_int::<250000>();
+
+            #[cfg(feature = "TIME_TOT")]
+            match start.elapsed() {Ok(dur) => {tracing::info!("tot {:?}", dur.as_nanos())},Err(_) => {},}
         }
     }
     
@@ -175,7 +183,14 @@ mod log_tests {
     
         let n_tests = 3;
         for _ in 0..n_tests {
+            #[allow(unused_variables)]
+            #[cfg(any(feature = "TIME_TOT", feature = "TIME_THR", feature = "TIME_D"))]
+            let start = std::time::SystemTime::now();
+    
             serial_per_element_high_arith_int::<250000>();
+
+            #[cfg(feature = "TIME_TOT")]
+            match start.elapsed() {Ok(dur) => {tracing::info!("tot {:?}", dur.as_nanos())},Err(_) => {},}
         }   
     }
     
