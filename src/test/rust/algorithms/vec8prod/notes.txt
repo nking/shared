@@ -1,0 +1,32 @@
+measurements taken using computer w/
+    level 3 Cache: 3 MB shared (not used here)
+    Cache Level 1:  32k for each core
+    Cache Level 2:  256k for each core
+    max memory bus: 26 GB/sec
+    processor : 1.6 GHz
+
+    at each cycle, memory can transfer at most:
+        max memory bus (26 GB/sec) * (sec/1.6G cycles) = 16 Bytes / cycle
+          = 128 bits / cycle
+        and max memory bus rate is possibly not the mean rate.
+
+using timing logs created with the shell scripts.
+
+NOTE: the times are using rust's std::time modules
+SystemTime and Duration, to get the elapsed time dur.as_nanos()
+but the numbers look like they must be microseconds
+not nanoseconds.
+
+   The times, if microseconds, are almost a factor of ~ 7 larger than the
+comparaible code run in c programs in
+src/test/c/algorithms/vec8prod when cycles are converted to nanosec
+then microsec using the processor speed.
+The factor ~ 7 might be in part due to the reduced memory available
+due to my inclusion of the tracing and tracing subscriber apis.
+
+TODO: make a serial method with timing print statements that do not use
+the trace APIs... might put this in another crate to reduce memory use.
+
+
+
+
