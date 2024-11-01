@@ -13,14 +13,18 @@ measurements taken using computer w/
 using timing logs created with the shell scripts.
 
 NOTE: the times are using rust's std::time modules
-SystemTime and Duration, to get the elapsed time dur.as_nanos()
-but the numbers look like they must be microseconds
-not nanoseconds.
+SystemTime and Duration, to get the elapsed time dur.as_nanos().
+
+Also so note that none of the measurements were taken without
+a display system in operation, in other words, I didn't run
+them from a windowless shell to minimize the running OS processes.
+The number of instructions in 1 sec is lower than
+the CPU processor speed.
 
 vec8prod algorithm w/ 65536 elements in input array:
 
     serial per element:
-        tot: 847500
+        tot: 847500 
 
     intrinsics:
         tot: 629612500
@@ -42,11 +46,11 @@ stats for the higher arith intensity method,
 with 250000 elements in input array:
 
     serial per element:
-      tot: 113899500  
+      tot: 115595500
 
    serial intrinsics:
-      tot:  92640500
-      thr:  15176000
+      tot: 108314000
+      thr:  15438500
       d: 0
 
    2thread instrinsics:
@@ -54,26 +58,71 @@ with 250000 elements in input array:
       thr:  9995000
       d: 0
 
------------
+----------------------------------------------------
+
+arithmetic intensity is a measure of compute / memory
+   = flops / Bytes or equiv
 
 analysis vec8prod methods:
+    3 flops
+    5 load/stores
+
+    arith inten ~ 3/5 so the algorithm is memory bound
+
+    The algorithms is highly parallelizable as the work it does in
+    partitions is independent.  Also the span of a worker is just
+    3 flops (log(N) where N is the vector width).
+
+    The results from the c code version src/test/c/algorithms/vec8prod/*
+    show that a framework like ISPC can be used with a vec8prod
+    algorithm to decrease the runtime by a factor of 5.
+    ISPC is a single process multiple data framework that must have
+    efficient use of vector loads and cache locality.
+    
+    The results from the c code also showed that the high cost of
+    context switches for use of threads in the simplest of ways,
+    increase the runtime to far greater than a serial per element 
+    algorithm.
+
+    in terms of runtimes:
+        ISPC < serial per element < serial SIMD < multithread SIMD 
+
+------
 
 analysis higher arith intensity methods:
+   20 math ops
+   the input is a float array of 250000 elements.
+
+   Arith intensity of serial per element:
+      (20 flops / 4 Bytes)  over 250,000 loops
+
+   Arith intensity of serial intrinsics (4-wide 32 bit vectors):
+      (20 flops / 16 Bytes)  over 6250 loops
+
+   the serial per element and serial intrinsics have roughly
+   equivalent runtimes.
+
+   for the c code results in 
+   src/test/c/algorithms/vec8prod/simd
+   the serial intrinsics completes 5 times faster than the serial per element.
+
+   the algorithms is computation bound.
+
+--------
 
 comparisons of rust, c, java runtimes
 (not comparing the intrinsics implementations):
 
-    numbers for running a serial per element method within an already
-    executing code, and an assumption that the rust duration.as_nanos()
-    is actually microseconds instead of nanoseconds:
+    numbers for running a serial per element method within already
+    executing code
 
        product of 65536 random floating point numbers in arrays: 
-          c: ~ 320 cycles  = 200 ns
-          rust: ~ 850000/1000 = 850 ns
-          java: ~ 
+          c: ~ 320 cycles = 320000 ns
+          rust:           ~ 850000 ns
+          java:           ~ 223545 ns
 
-       12 flops on array of length 250000 random floating point numbers: 
-          c: ~ 
-          rust: ~ 114000000/1000 = 114000 ns
-          java: ~ 
+       20 flops on array of length 250000 random floating point numbers: 
+          c: ~  1800 cycles ~   1800000 ns
+          rust: ~              15438500 ns
+          java: ~               7005726 ns 
 

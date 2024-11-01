@@ -10,7 +10,7 @@ measurements taken using computer w/
           = 128 bits / cycle
         and max memory bus rate is possibly not the mean rate.
 
-    for the time.h library, 1 clock ~ 0.001000 ns
+    for the time.h library, to convert to ns, multiply clocks by 1E3
 
 using timing logs from the ant target cmakeSIMDTimeLogs:
 
