@@ -69,27 +69,28 @@ analysis vec8prod methods:
 
     arith inten ~ 3/5 so the algorithm is memory bound
 
-    The algorithms is highly parallelizable as the work it does in
+    The algorithm is highly parallelizable as the work it does in
     partitions is independent.  Also the span of a worker is just
     3 flops (log(N) where N is the vector width).
 
     The results from the c code version src/test/c/algorithms/vec8prod/*
     show that a framework like ISPC can be used with a vec8prod
-    algorithm to decrease the runtime by a factor of 5.
+    algorithm to decrease the runtime by a factor of 5 compared to
+    the product calculated w/ a serial per element approach.
     ISPC is a single process multiple data framework that must have
-    efficient use of vector loads and cache locality.
+    efficient use of vector loads and cache locality (speculative).
     
     The results from the c code also showed that the high cost of
     context switches for use of threads in the simplest of ways,
     increase the runtime to far greater than a serial per element 
     algorithm.
 
-    in terms of runtimes:
+    in terms of runtimes for vec8prod:
         ISPC < serial per element < serial SIMD < multithread SIMD 
 
 ------
 
-analysis higher arith intensity methods:
+analysis of a higher arith intensity method:
    20 math ops
    the input is a float array of 250000 elements.
 
