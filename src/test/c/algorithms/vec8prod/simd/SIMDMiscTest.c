@@ -1,5 +1,6 @@
 #include "SIMDMisc.h"
 #include <assert.h>
+#include <stdlib.h>
 
 /* 
 context switching is expensive here and in multithread without SIMD.
@@ -69,12 +70,66 @@ void * testRand() {
     return NULL;
 }
 
+int compare(const void *a, const void *b) {
+    return (*(double *)a - *(double *)b);
+}
+
+void * estimateCPUStats() {
+    int nTests = 10;
+    int n = 1000000;
+    clock_t start;
+    struct timespec tw1, tw2;
+    double times[nTests];
+    double timesW[nTests];
+    double timesWNS[nTests];
+    for (int i = 0; i < nTests; ++i) {
+	clock_gettime(CLOCK_MONOTONIC, &tw1);
+        start = clock();
+        for (int j = 0; j < n; ++j) {
+            sqrtf((float)j);
+        }
+        times[i] = (double)(clock() - start);
+	clock_gettime(CLOCK_MONOTONIC, &tw2);
+	timesW[i] = (1.0 * tw2.tv_sec + 1E-9 * tw2.tv_nsec)
+		  - (1.0 * tw1.tv_sec + 1E-9 * tw1.tv_nsec);
+	timesWNS[i] = tw2.tv_nsec - tw1.tv_nsec;
+    }
+
+    qsort(times, nTests, sizeof(double), compare);
+    qsort(timesW, nTests, sizeof(double), compare);
+    qsort(timesWNS, nTests, sizeof(double), compare);
+    //for (int i = 0; i < nTests; ++i) {
+    //    printf("timeW=%f\n", timesW[i]);
+    //}
+
+    // number of clocks for n instructions
+    double med = times[nTests/2];
+    double instrPerClock = (double)n/med;
+
+    printf("number of clocks measured for n=%d instructions=%f\n", n, med);
+    printf("1 clock = %f instructions\n", instrPerClock);
+    printf("CLOCKS_PER_SEC = %d\n", CLOCKS_PER_SEC);
+
+    // using wall clock time, have instructions time in ns
+    double medW = (timesW[nTests/2]); 
+    printf("Wall: time for n=%d instructions in sec = %f\n", n, medW);
+    printf("Wall: time for n=%d instructions in nsec = %f\n", n, (medW/1E-9));
+    printf("Wall: time for n=%d instructions in nsec = %f\n", n, timesWNS[nTests/2]);
+     
+    double estClockPerSec = ((double)n/medW)*(1./instrPerClock); 
+    printf("estimated CLOCKS_PER_SEC = %f\n", estClockPerSec);
+      
+    return NULL;
+}
+
 int main() {
+    // uncomment as needed.  no coding at this time for runtime flags to choose tests.
     //test16();
-    //testRand();
+    testRand();
+    //estimateCPUStats();
     //cache_explore_function8();
     //cache_explore_function4();
-    cache_explore_simd_more_math();
+    //cache_explore_simd_more_math();
     //cache_explore_serial_more_math();
     return 0;
 }
