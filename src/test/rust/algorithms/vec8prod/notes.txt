@@ -17,13 +17,6 @@ SystemTime and Duration, to get the elapsed time dur.as_nanos()
 but the numbers look like they must be microseconds
 not nanoseconds.
 
-The times, if microseconds, are a factor of ~ 7 larger than the
-comparable code run in c programs in
-src/test/c/algorithms/vec8prod when cycles are converted to nanosec
-then microsec using the processor speed.
-
-TODO: add arith intensity notes
-
 vec8prod algorithm w/ 65536 elements in input array:
 
     serial per element:
@@ -60,3 +53,27 @@ with 250000 elements in input array:
       tot:  95751500
       thr:  9995000
       d: 0
+
+-----------
+
+analysis vec8prod methods:
+
+analysis higher arith intensity methods:
+
+comparisons of rust, c, java runtimes
+(not comparing the intrinsics implementations):
+
+    numbers for running a serial per element method within an already
+    executing code, and an assumption that the rust duration.as_nanos()
+    is actually microseconds instead of nanoseconds:
+
+       product of 65536 random floating point numbers in arrays: 
+          c: ~ 320 cycles  = 200 ns
+          rust: ~ 850000/1000 = 850 ns
+          java: ~ 
+
+       12 flops on array of length 250000 random floating point numbers: 
+          c: ~ 
+          rust: ~ 114000000/1000 = 114000 ns
+          java: ~ 
+
