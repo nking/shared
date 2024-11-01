@@ -30,7 +30,8 @@ for the vec8prod task;
     the vector product.
     the serial SIMD w/o threads is also not faster than the serial execution.
 
-    TODO: implement methods to use a threadpool of size 2 
+    TODO: implement methods to use a threadpool of size 2.
+    size 2 because my SoC has (sysctl -n hw.ncpu = 4)/(sysctl -n hw.physicalcpu=2) = 2.
 
 The vec8prod algorithm is highly parallelizable, so one can 
    calc the speedup as time 1 processor / time p processors 
