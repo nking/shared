@@ -193,8 +193,14 @@ void cache_explore_simd_more_math() {
 }
 void cache_explore_serial_more_math() {
    int n = 250000;
-   float * x = generate_float_array(n, 1.0f, 10.f);
-   _cache_explore_serial_more_math(x, n);
+   int nTests = 10;
+   INIT_TIME();
+   for (int i = 0; i < nTests; ++i) {
+       float * x = generate_float_array(n, 1.0f, 10.f);
+       START_THR_TIME();
+       _cache_explore_serial_more_math(x, n);
+       STOP_THR_TIME(serialmoremath);
+   }
 }
 
 void _cache_explore_simd_more_math(float *x, const int n) {
@@ -233,12 +239,10 @@ void _cache_explore_simd_more_math(float *x, const int n) {
 }
 
 void _cache_explore_serial_more_math(float *x, const int n) {
-   
+
    float factors[4] = {3.f, 3.f, 3.f, 3.f};
    float s[4] = {+1.5f, -1.5f, +1.5f, -1.5f};
 
-   INIT_TIME();
-   START_THR_TIME();
    for (int i = 0; i < n; i += 1) {
       for (int j = 0; j < 4; ++j) {
          x[i] = (x[i] * factors[0]) + s[i%2];
@@ -246,7 +250,6 @@ void _cache_explore_serial_more_math(float *x, const int n) {
          x[i] = sqrtf(x[i]);
       }
    }
-   STOP_THR_TIME(serialmoremath);
 }
 
 void cache_explore_serial_sterling_gamma() {
