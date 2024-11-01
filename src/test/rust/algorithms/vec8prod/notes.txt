@@ -17,16 +17,46 @@ SystemTime and Duration, to get the elapsed time dur.as_nanos()
 but the numbers look like they must be microseconds
 not nanoseconds.
 
-   The times, if microseconds, are almost a factor of ~ 7 larger than the
-comparaible code run in c programs in
+The times, if microseconds, are a factor of ~ 7 larger than the
+comparable code run in c programs in
 src/test/c/algorithms/vec8prod when cycles are converted to nanosec
 then microsec using the processor speed.
-The factor ~ 7 might be in part due to the reduced memory available
-due to my inclusion of the tracing and tracing subscriber apis.
 
-TODO: make a serial method with timing print statements that do not use
-the trace APIs... might put this in another crate to reduce memory use.
+TODO: add arith intensity notes
 
+vec8prod algorithm w/ 65536 elements in input array:
 
+    serial per element:
+        tot: 847500
 
+    intrinsics:
+        tot: 629612500
+        thr: 1000
+        d load: 1000
 
+    simd:
+        tot: 546857500
+        thr: 0
+        d load: 0
+
+    no vectorization, but multithreaded:
+        tot: 532245500
+        thr: 0
+
+----- 
+
+stats for the higher arith intensity method,
+with 250000 elements in input array:
+
+    serial per element:
+      tot: 113899500  
+
+   serial intrinsics:
+      tot:  92640500
+      thr:  15176000
+      d: 0
+
+   2thread instrinsics:
+      tot:  95751500
+      thr:  9995000
+      d: 0
