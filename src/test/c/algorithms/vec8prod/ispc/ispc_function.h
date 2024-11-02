@@ -34,6 +34,7 @@ extern "C" {
 #endif // __cplusplus
     extern float ispc_function(int32_t N, float * x);
     extern float ispc_function10(int32_t N, float * x);
+    extern float ispc_higher_arith_func(int32_t N, float * x);
 #if defined(__cplusplus) && (! defined(__ISPC_NO_EXTERN_C) || !__ISPC_NO_EXTERN_C )
 } /* end extern C */
 #endif // __cplusplus

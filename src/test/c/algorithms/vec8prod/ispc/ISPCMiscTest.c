@@ -68,9 +68,44 @@ void * testRandLarge() {
     return NULL;
 }
 
+void * _test(float* vin, int vLen) {
+    ispc_higher_arith_func(vLen, vin);
+    return NULL;
+}
+void * testHigherArithInt() {
+    int n = 262144;
+    // generate random vector of numbers whose product is <= 3.4E38
+
+    // using seconds of time of day:
+    unsigned int seed = time(0);
+    printf("seed=%d\n", seed);
+    srand(seed);
+
+    float factor = 1.0f  - pow(MAXFLOAT, (1.f/(float)n));
+    float vin[n];
+    for (int i = 0; i < n; ++i) {
+        vin[i] = 1.0f + factor * ((float)rand() / (float)RAND_MAX);
+    }
+
+    int nTests = 10;
+
+    INIT_TIME_TITLE(ispc262144HigherArithInt);
+    INIT_TIME();
+
+    for (int i = 0; i < nTests; ++i) {
+        START_TOT_TIME();
+        _test(vin, n);
+        STOP_TOT_TIME(ispc);
+    }    
+
+    return NULL;
+}
+
+
 int main() {
-    test16();
+    //test16();
     testRandLarge();
+    //testHigherArithInt();
     return 0;
 }
 

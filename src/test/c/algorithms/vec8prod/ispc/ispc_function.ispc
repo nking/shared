@@ -45,6 +45,28 @@ void vecprod_1(uniform float * uniform x, uniform int ishift) {
     STOP_THR_TIME();
 }
 
+void higher_arith_intensity(uniform float * uniform x) {
+    
+    INIT_TIME();
+    START_THR_TIME();
+
+    float val1 = x[programIndex];
+
+    for (int i = 0; i < 4; ++i) {
+        val1 *= 4;
+        if (programIndex % 2 == 0) {
+            val1 += 1.5;
+        } else {
+            val1 -= 1.5;
+        }
+        val1 = 1./val1;
+        val1 = sqrt(val1);
+    }
+
+    x[programIndex] = val1;
+
+    STOP_THR_TIME();
+}
 void vecprod(uniform float * uniform x, uniform float * uniform y) {
     //print("\nprogramIndex=%\n", programIndex);
 
@@ -253,6 +275,29 @@ export uniform float ispc_function(uniform int N, uniform float * uniform x) {
     return prod;
 }
 
+export uniform float ispc_higher_arith_func(uniform int N, uniform float * uniform x) {
+
+    INIT_TIME();
+
+    uniform float * uniform tmpX = x;
+       
+    uniform int i_res = 0;
+
+    foreach (i = 0 ... N) { // parallel execution
+        // increment pointer for tmpX
+        if (i_res > 0) {
+            tmpX += programCount;
+        }
+
+        higher_arith_intensity(tmpX);
+
+        i_res += 1;
+    }
+    
+    uniform float ret = 0;
+    return ret;
+}
+
 uniform float ispc_function1(uniform int N, uniform float * uniform x) {
 
      INIT_TIME();
@@ -340,7 +385,7 @@ uniform float _ispc_function(uniform int N, uniform float * uniform x) {
 
          i_res += 1;
      }
-     //TODO: res array could now be tmpX with N/=8 and repeating
+     //res array could now be tmpX with N/=8 and repeating
      // above loop until N==8.
      uniform float prod = 1.f;
      for (uniform int i = 0; i < n_res; ++i) {

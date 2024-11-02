@@ -146,8 +146,10 @@ there are
 
 serial per element completes its work in ~ 20,000 cycles
 serial simd 4-wide vector completes its work in ~ 4200 cycles
+NOTE: ispc 8-wide vector completes its work in ~2000 cycles
    
 serial simd is a factor of 5 improvement over serial per element.
+ispc 8-wide is a factor of 10 improvement over serial per element.
 
 The better throughput (faster finish time) of the serial SIMD
 suggests that serial per element alg is
