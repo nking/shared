@@ -33,9 +33,16 @@ in CUDA GPU also.
 
 ----
 
-OPENCL borrows alot from specification of CuDA but can be run on CPUs, GPUs,
+OpenCL borrows alot from specification of CuDA but can be run on CPUs, GPUs,
 FPGAs, DSPs
   Complex configuration and code. Although designed to follow CUDA
 is purported to be more difficult to code for because of the ability
 to run on multiple platforms. 
+
+for my current platform:
+https://www.intel.com/content/www/us/en/developer/articles/training/getting-the-most-from-opencl-12-how-to-increase-performance-by-minimizing-buffer-copies-on-intel-processor-graphics.html?wapkw=OpenCL%201%202
+
+https://www.intel.com/content/dam/develop/external/us/en/documents/compute-architecture-of-intel-processor-graphics-gen7dot5-aug2014-531564.pdf
+
+https://www.khronos.org/registry/cl/specs/opencl-1.2.pdf
 
