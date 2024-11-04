@@ -1,0 +1,59 @@
+parallel computing architecture:
+    Single instruction, multiple data (SIMD):
+       data level parallel, but not concurrent in definition.
+       use of "intrinsics" to amoritize the instruction stream
+       on a vector of data over many ALUs.
+    Single instruction, multiple threads (SIMT):
+       e.g. CUDA running on GPU (GPU runs groups of warps, and
+       each warp has a fixed number of threads and they
+       execute the same instruction simultaneously because
+       they share a single program counter)
+    Multiple instructions, multiple data (MIMD):
+       multiple processor cores acting independently and asynchronously.
+       there are different models such as globally shared memory models,
+       or distributed memory (e.g. MPP, COW, NUMA).
+
+ISPC uses  Single Program, Multiple Data (SPMD) programming model
+where a single program is mapped to multiple SIMD lanes,
+and multiple instances of the program execute in parallel.
+
+----------
+Topics in Improvements with Parallel programming:
+
+  decreasing latency
+  increasing throughput (via parallelism, speed, bandwidth, hardware tradeoffs
+      such as those between ASICs vs FPGAs)
+  reducing energy consumption
+
+  rapid development
+  lower engineering costs
+  increasing portability
+  ease of updates and bug patches
+
+  tradeoffs between performance and resource allocation in terms of cache
+  locality
+
+hardware acceleration:
+
+   https://en.m.wikipedia.org/wiki/Hardware_acceleration#Applications
+
+software acceleration:
+
+   languages and frameworks such as Spatial, Hallide, Verilog/VHDL, 
+   TensorFlow, PyTorch
+
+   ML/AI accelerator:
+      GPU, TPU enabled via pipelines such as TensorFlow, Pytorch, JAX.
+      OpenCL integrations too.
+
+      flash attention:
+          https://huggingface.co/docs/text-generation-inference/en/conceptual/flash_attention
+          also see Stanford CS129 lectures
+ 
+          address the memory bandwidth bottleneck by improving use of 
+          data already in memory (including cache) for a set of keys, queries and values
+          by fusing all of the operations (all attention steps) and writes back the
+          results instead of performing one attention step for each set all keys, queries, valuesm
+          then the next attention step etc.
+
+

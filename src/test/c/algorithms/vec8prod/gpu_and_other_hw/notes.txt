@@ -31,7 +31,7 @@ for max  expected N.
 The multiple instruction algorithm written to explore SIMD would perform well
 in CUDA GPU also.
 
-----
+---------------------
 
 OpenCL borrows alot from specification of CuDA but can be run on CPUs, GPUs,
 FPGAs, DSPs
@@ -46,3 +46,4 @@ https://www.intel.com/content/dam/develop/external/us/en/documents/compute-archi
 
 https://www.khronos.org/registry/cl/specs/opencl-1.2.pdf
 
+----------------------

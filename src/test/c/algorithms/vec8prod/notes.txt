@@ -1,5 +1,6 @@
 measurements taken using computer w/
-    level 3 Cache: 3 MB shared (not used here)
+    dual core processor using CISC instructions.
+    level 3 Cache: 3 MB shared 
     Cache Level 1:  32k for each core
     Cache Level 2:  256k for each core
     max memory bus: 26 GB/sec

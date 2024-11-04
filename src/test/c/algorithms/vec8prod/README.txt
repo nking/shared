@@ -15,9 +15,12 @@ it into its own project for clarity).
 The vec8prod algorithm is a divide and conquer design that the Stanford
 CS149 authors wrote for ISPC.
 
+see notes.txt here and in sub-directories for analysis.
+
+
 vec8prod and serial per element product, and serial per intrinsics vector product,
 and parallel intrinsics vector product
-have compile-time configurable time estimates that are printed to logs.
+have compile-time configurable time logging.
 
    to build and run, cd to the base directory of shared.
      for the ispc divide and conquer code (vec8prod):
