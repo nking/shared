@@ -4,8 +4,14 @@
 # cmake cmake --build .
 cmake_minimum_required(VERSION 3.15)
 
+# for tasksys.cpp, need:
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 set(PROJECT_NAME ISPCMiscTest)
 project(${PROJECT_NAME})
+
+add_library(tasksys.o tasksys.cpp)
 
 #find_package(ISPC REQUIRED)
 #set(ISPC_SOURCES ispc_function.ispc)
@@ -52,8 +58,8 @@ add_custom_command(
 
 #message("macro_time=${macro_time}")
 
-add_executable(ISPCMiscTest ISPCMiscTest.c ispc_function.o)
-add_executable(ISPCMisc16Test ISPCMiscTest.c ispc_function16.o)
+add_executable(ISPCMiscTest ISPCMiscTest.c ispc_function.o tasksys.cpp)
+add_executable(ISPCMisc16Test ISPCMiscTest.c ispc_function16.o tasksys.cpp)
 
 #target_link_libraries(ISPCMiscTest ispc_function.o)
 

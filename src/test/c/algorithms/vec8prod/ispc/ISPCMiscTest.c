@@ -7,7 +7,7 @@
 // Include the header file that the ispc compiler generates
 #include "ispc_function.h"
 
-void * test(float* vin, int vLen) {
+void * test(float* vin, int vLen, float tol) {
 
     INIT_TIME();
     START_TOT_TIME();
@@ -20,14 +20,16 @@ void * test(float* vin, int vLen) {
 
     STOP_TOT_TIME(serial);
 
-    START_TOT_TIME();
-    float ans = ispc_function(vLen, vin);
-    //float ans = ispc_function2(vLen, vin);
-    STOP_TOT_TIME(ispc);
-
-    //printf("expAns=%f, ans=%f\n", expAns, ans);
-
-    assert(fabsf((expAns/ans) - 1) < 5E-5);
+    int nTests = 10;
+    for (int i = 0; i < nTests; ++i) {
+        START_TOT_TIME();
+        //float ans = ispc_function_tasks(vLen, vin);//can have larger running time than ispc_function
+        float ans = ispc_function(vLen, vin);
+        //float ans = ispc_function2(vLen, vin);
+        STOP_TOT_TIME(ispc);
+        //printf("expAns=%f, ans=%f\n", expAns, ans);
+        assert(fabsf((expAns/ans) - 1) < tol);
+    }
 
     return NULL;
 }
@@ -40,7 +42,7 @@ void * test16() {
         vin[i] = (float)(i + 10);
     }
 
-    test(vin, 16);
+    test(vin, 16, 0.00005f);
 
     return NULL;
 }
@@ -51,19 +53,21 @@ void * testRandLarge() {
 
     // using seconds of time of day:
     unsigned int seed = time(0);
+    //seed = 1730760287;
     printf("seed=%d\n", seed);
     srand(seed);
 
-    float factor = 1.0f  - pow(MAXFLOAT, (1.f/(float)n));
+    float factor = powf(MAXFLOAT, (1.f/(float)n)) - 1.0f;
 
     float vin[n];
     for (int i = 0; i < n; ++i) {
         vin[i] = 1.0f + factor * ((float)rand() / (float)RAND_MAX);
     }
+    //printf("\n");
 
     INIT_TIME_TITLE(ispctestrandLarge);
 
-    test(vin, n);
+    test(vin, n, 0.0001f);
 
     return NULL;
 }
@@ -81,7 +85,7 @@ void * testHigherArithInt() {
     printf("seed=%d\n", seed);
     srand(seed);
 
-    float factor = 1.0f  - pow(MAXFLOAT, (1.f/(float)n));
+    float factor = 1.0f  - powf(MAXFLOAT, (1.f/(float)n));
     float vin[n];
     for (int i = 0; i < n; ++i) {
         vin[i] = 1.0f + factor * ((float)rand() / (float)RAND_MAX);

@@ -17,24 +17,25 @@ measurements taken using computer w/
 
 
 summary timing stats:
-    1<<16 elements:
-        ISPC time: 80 cycles
+    1<<16 elements in array and vec8prod algorithm:
         serial per element total time: 340 cycles.
+        ISPC time: 40 cycles
+        ISPC as tasks: 80 cycles
+        ISPC gang data load/store: 24 cycles 
 
-for the vec8prod task;
-    ispc can perform better (faster runtime exec) than serial execution.
-    6 times better for test data of length 1<<16.
+    ispc execution was 8 times faster than serial per element.
 
     the simd and multithread versions do not use
     thread pools. the execution runtimes are dominated by context switches,
-    and so are not better than a serial, element by element execution of
+    and so are not better than a serial per element execution of
     the vector product.
     the serial SIMD w/o threads is also not faster than the serial execution.
 
     Note: if it were beneficial for the algorithm, and you had a multi-core 
     system with multi-thread cores and the cores were superscalar,
     you could run more than 1 instruction simultanesouly at each clock cycle
-    (instruction level parallelism).
+    (instruction level parallelism, though might have restrictions on number 
+    of vector ops and scalar ops running simultaneously).
     The computer used for these measurements in these notes was an Integrated
     Circuit (IC) managed system and did not have superscalar cores.
 

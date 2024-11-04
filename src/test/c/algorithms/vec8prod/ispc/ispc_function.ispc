@@ -21,9 +21,9 @@ to compile:
 void print_float_array(uniform float * uniform array, uniform int i0, uniform int i1) {
     for (uniform int i = i0; i < i1; ++i) {
         #pragma ignore warning(perf)
-        print("   %,\n", array[i]);
+        print("%,\n",  array[i]);
     }
-    print("\n");
+    //print("\n");
 }
 
 void vecprod_1(uniform float * uniform x, uniform int ishift) {
@@ -260,8 +260,7 @@ export uniform float ispc_function(uniform int N, uniform float * uniform x) {
       res = uniform new float[n_res]; 
       nIter += 1;
     }
-    //print(" nIter=%\n", nIter);
-
+   
     uniform float prod = 1.f;
     for (uniform int i = 0; i < n_res; ++i) {
         #pragma ignore warning(perf)
@@ -463,6 +462,107 @@ export uniform float ispc_function10(uniform int N, uniform float * uniform x) {
      }
      delete[] res;
      return prod;
+}
+
+
+task void ispc_function_task(uniform int32 N, uniform float * uniform x, 
+uniform int32 idx, uniform float * uniform prod_res) {
+
+    INIT_TIME();
+
+    uniform int n_res = N / programCount;
+
+    //print("ispc_function_task: idx=%, programCount=%, n_results=%\n", idx, programCount, n_res);
+
+    uniform float * uniform tmpX = x;
+    //if N=65536, and use tmpX = copy x here instead of reference to x, runtime
+    //      execution increases from 80 cycles to 270 cycles.
+    //uniform float * uniform tmpX = uniform new float[N];
+    //memcpy(tmpX, x, N*4);
+    uniform float * uniform tmpY = uniform new float[programCount];
+    uniform float * uniform res = uniform new float[n_res];
+
+    int nIter = 0;
+    // handles to res new arrays that are deleted after no longer used.
+    uniform float * uniform prev0 = NULL;
+    uniform float * uniform prev1 = NULL;
+
+    //uniform float logN = log((uniform float)N)/log((uniform float)2);
+    //int nIter = (int)(floor((logN - 8)/3));
+    // print("logN=%, nIter=%\n", logN, nnIter);
+
+    uniform int i_res = 0;
+
+    while (true) {
+       foreach (i = 0 ... N) { // parallel execution
+          // increment pointer for tmpX
+          if (i_res > 0) {
+              tmpX += programCount;
+          }
+
+          vecprod(tmpX, tmpY);
+
+          START_D_TIME();
+          res[i_res] = tmpY[0];
+          STOP_D_STORE_TIME();
+
+          i_res += 1;
+      }
+      if (n_res <= programCount) {
+          break;
+      }
+      N = n_res;
+      i_res = 0;
+      n_res = N / programCount; 
+    
+      if (prev0 == NULL) {
+          prev0 = res;
+      } else if (prev1 == NULL) {
+          prev1 = res;
+      } else {
+          delete[] prev0;
+          prev0 = prev1;
+          prev1 = res;    
+      }
+      tmpX = res;
+      res = uniform new float[n_res]; 
+      nIter += 1;
+    }
+
+    #pragma ignore warning(perf)
+    prod_res[idx] = res[0];
+    for (uniform int i = 1; i < n_res; ++i) {
+         #pragma ignore warning(perf)
+         prod_res[idx] *= res[i];
+    }
+
+    delete[] res;
+    delete[] tmpY;
+    if (prev0 != NULL && prev1 != NULL) {
+        delete[] prev0;
+    }
+}
+
+export uniform float ispc_function_tasks(uniform int N, uniform float * uniform x) {
+    
+    uniform int N2 = N / 2;
+    uniform int idx0 = 0;
+    uniform int idx1 = 1;
+    uniform float * uniform tmpX0 = x;
+    uniform float * uniform tmpX1 = x += N2;
+
+    uniform float * uniform prod_results = uniform new float[2];
+    
+    launch ispc_function_task(N2, tmpX0, idx0, prod_results);
+    launch ispc_function_task(N2, tmpX1, idx1, prod_results);
+    sync;
+
+    //print("return from sync\n");
+
+    uniform float prod = 1.f;
+    prod = prod_results[0] * prod_results[1];
+    delete[] prod_results;
+    return prod;
 }
 
 /*

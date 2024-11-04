@@ -56,4 +56,5 @@ software acceleration:
           results instead of performing one attention step for each set all keys, queries, valuesm
           then the next attention step etc.
 
+          https://github.com/Dao-AILab/flash-attention/blob/main/usage.md
 
