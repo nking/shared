@@ -145,8 +145,9 @@ public class Misc {
      * The objective is to compute any maximum sized subset of non-overlapping intervals that produce the highest
      * sum of values (profits).
 
-     * The algorithm uses dynamic programming and has runtime complexity O(n^2).
-     * 
+     <pre>
+     The algorithm uses dynamic programming and has runtime complexity between O(n*log(n)) and O(n^2).
+     </pre>
      * The problem is adapted from the lecture notes of David Mount for CMSC 451
      * Design and Analysis of Computer Algorithms (with some corrections for pseudocode indexes).
      * https://www.cs.umd.edu/class/fall2017/cmsc451-0101/Lects/lect10-dp-intv-sched.pdf
@@ -228,7 +229,7 @@ public class Misc {
         double max;
         int jjMax;
 
-        // runtime complexity is O(n^2)
+        // r.t.c is < O(n^2) now, but also > O(n(log(n))
         for (int ii = n - 1; ii >= 0; --ii) {
             i = sortedIdxs[ii];
             tabIndices.putIfAbsent(ii, new HashSet<>());
@@ -237,9 +238,28 @@ public class Misc {
 
             max = Double.NEGATIVE_INFINITY;
             jjMax = -1;
-            for (int jj = n-1; jj > ii; --jj) { // tabProfits[jj] will already exist and hold best max sum for its part of the schedule to end
+            //improved by finding the first jj that satifies the conditional clause by using bisecting search here.
+            // [ii] > [jj]
+            // bisecting floor search
+            boolean found = false;
+            int lo = ii + 1;
+            int hi = n - 1;
+            while (lo < hi) {
+                int midJJ = lo + (hi - lo)/2;
+                if (f[i] == s[sortedIdxs[midJJ]]) {
+                    found = true;
+                    hi = midJJ - 1;
+                } else if (f[i] < s[sortedIdxs[midJJ]]) {
+                    lo = midJJ + 1;
+                } else {
+                    hi = midJJ - 1;
+                }
+            }
+            int jj0 = found ? lo : Math.min(lo, hi);
+            for (int jj = jj0; jj < n; ++jj) { // tabProfits[jj] will already exist and hold best max sum for its part of the schedule to end
                 j = sortedIdxs[jj];
-                if (s[j] >= f[i]) { // task j can be appended after task i
+                if (i != j && s[j] >= f[i]) { // task j can be appended after task i
+                    //System.out.printf("ii=%d, jj=%d\n", ii, jj);
                     if (tabProfits[jj] > max) {
                         jjMax = jj;
                         max = tabProfits[jj];
@@ -473,6 +493,7 @@ public class Misc {
         int[] p = new int[f.length+1];
         for (int ii = s.length - 1; ii > -1; ii--) {
             i = sortedIndexes[ii];
+            //could imporve with a bisecting search here to constrain the range of jj
             for (int jj = ii - 1; jj > -1; jj--) {
                 j = sortedIndexes[jj];
                 //System.out.printf("calcP: %d,%d) f[%d]=%.2f s[%d]=%.2f\n", i,j, j, f[j], i, s[i]);
@@ -686,6 +707,7 @@ public class Misc {
         for (int ii = 0; ii < n; ++ii) {
             excl.clear();
             i = sortedIndexes[ii];
+            //TODO: can further constrain the range of jj with a bisecting search
             for (int jj = 0; jj < ii; ++jj) {
                 //j is always smaller than i so s[j] <= s[i].
                 //  then order is (sj,fj)  (si,fi)

@@ -27,8 +27,7 @@ public class HopcroftKarp {
     private Logger log = Logger.getLogger(this.getClass().getName());
 
     /*
-    G is a directed bipartite graph (V, E) where V is composed
-    of left L and right R.
+    G is a directed bipartite graph (V, E) where V is composed of left L and right R.
     
     A path is a sequence of edges.
     An augmenting path in the matching M starts at an unmatched L and ends at 
@@ -63,15 +62,15 @@ public class HopcroftKarp {
     */
     
     /**
-     * implementing the version of Hopcroft-Karp that uses a
-     * single round of BFS followed by DFS to find the 
-     * shortest augmenting paths, all within a pattern
-     * of augmenting the matching M until no new augmenting
-     * paths can be found.  the matching M is returned.
-     * The code below follows:
+     * find a maximal matching between V_L and V_R in unweighted, undirected, bipartite graph
+     * G = ((V_L, V_R), E) where the matching is unique for a vertex.
+     * r.t.c. is O(sqrt(V)* E).  s.c. is O(E + V) using the Hopcroft-Karp algorithm.
+     <pre>
+     The code below follows:
       http://github.com/indy256/codelibrary/blob/master/java/src/MaxMatchingHopcroftKarp.java     @param g
       which uses the unlicense:
       http://github.com/indy256/codelibrary/blob/master/UNLICENSE
+     </pre>
      @param g     
      @return matching from perspective int[uIndex] = vIndex
      */
@@ -90,7 +89,7 @@ public class HopcroftKarp {
         Arrays.fill(match12, -1);
         
         for (int res = 0; ; ) {
-			
+			//modifies dist
             bfs(g, match12, match21, dist);
 			
             boolean[] vis = new boolean[n1];
@@ -98,7 +97,8 @@ public class HopcroftKarp {
             int f = 0;
 			
             for (int u = 0; u < n1; ++u) {
-                if ((match12[u] == -1) && 
+                // modifies vis, match12, and match21
+                if ((match12[u] == -1) &&
                     dfs(g, vis, match12, match21, dist, u)) {
                     ++f;
                 }
