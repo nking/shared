@@ -53,6 +53,9 @@ public class HungarianTest extends TestCase {
 
             assertEquals(expM.length, m.length);
 
+            assertTrue(Math.abs(expSum - s) < 1E-11);
+
+            //TODO: fix getExpectedMGraph0 to return all maximal matchings
             for (int i = 0; i < m.length; ++i) {
                 assertEquals(expM[i][0], m[i][0]);
                 assertEquals(expM[i][1], m[i][1]);
