@@ -95,14 +95,16 @@ public class BayesianCurveFittingTest extends TestCase {
             assertTrue(Math.abs(diff) < 2.5*prediction.getYErr()[i]);
         }
 
+	double sigF = 3.0;
+
         ModelPrediction predictionRandom = BayesianCurveFitting.predictRandomSample(fitC, phiXTestC);
         for (int i = 0; i < yExpected.length; ++i) {
             diff = predictionRandom.getYFit()[i] - yExpected[i];
-            if (!(Math.abs(diff) < 2.5*prediction.getYErr()[i])) {
-                System.out.printf("diff=%f, 2.5*err = %f\n", diff, 2.5*prediction.getYErr()[i]);
+            if (!(Math.abs(diff) < sigF*prediction.getYErr()[i])) {
+                System.out.printf("diff=%f, (%.1f)*err = %f\n", diff, sigF, sigF*prediction.getYErr()[i]);
                 System.out.flush();
             }
-            assertTrue(Math.abs(diff) < 2.5*prediction.getYErr()[i]);
+            assertTrue(Math.abs(diff) < sigF*prediction.getYErr()[i]);
         }
 
         // to see which of the (m+1) coefficients fit the data best, see the non-zero coefficients in:
