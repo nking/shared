@@ -12,10 +12,11 @@ import java.util.stream.IntStream;
  * indexes of the weight matrix.
  *
  * The current implementation runtime complexity (r.t.c.)
- * is O(n^4) where |V| = n/2 and |E| = n^2.
- * It can be modified to make the r.t.c O(n^3) (currently in progress).
+ * is O(n^4) where |V| = n/2 and |E| = n^2., though
+ * it has modified to a r.t.c. of O(n^3) as following Cormen, Leiserson, Rivest and Stein,
+ * but the r.t.c. still looks like it could be O(n^4) at worse.
  *
- * Note that maximizing the weigth of a matching is the dual of
+ * Note that maximizing the weight of a matching is the dual of
  * minimizing the sum of feasible vertex labels.
  *
  */
@@ -315,8 +316,8 @@ public class Hungarian {
         // E_M,h is: edges in adjL that are not in matchL
         //           edges in matchR
         // only need to recalc G_M,h for rows in rSigmaMinR
-        for (int vR = 0; vR < nR; ++vR) {
-        //for (int vR : rSigmaMinR) {
+        //TODO: follow up on reducing rSigmaMin to make this O(n) r.t.c.
+        for (int vR : rSigmaMinR) {
             for (int vL = 0; vL < this.nL; ++vL) {
                 if (matchL.containsKey(vL) && matchL.get(vL) == vR) {
                     continue;
@@ -325,17 +326,13 @@ public class Hungarian {
                     // it is not a matched pair which was flagged above.
                     adjL.putIfAbsent(vL, new HashSet<Integer>());
                     adjL.get(vL).add(vR);
-                    //adjR.putIfAbsent(vR, new HashSet<Integer>());
-                    //adjR.get(vR).add(vL);
                 } else {
                     if (adjL.containsKey(vL) && adjL.get(vL).contains(vR)) {
                         adjL.get(vL).remove(vR);
-                        //adjR.get(vR).remove(vL);
                     }
                 }
             }
         } // end loop over rSigmaMinR
-
     }
 
     private void debugFeasibility() {

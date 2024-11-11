@@ -2,8 +2,6 @@ package algorithms.bipartite;
 
 import algorithms.matrix.MatrixUtil;
 import junit.framework.TestCase;
-import no.uib.cipr.matrix.Matrix;
-
 import java.util.Arrays;
 import java.util.Random;
 

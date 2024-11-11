@@ -258,3 +258,8 @@
 -- low priority:
    implement the TODO in ConnectedValuesGroupFinder2
    regarding removal of merging, and adding BFS over nodes to aggregate
+
+   - consider boundary chain codes (BCC) and differential chain codes (DCC) descriptors
+   - consider Chroma subsampling
+   - browse https://en.m.wikipedia.org/wiki/Fractal_compression
+
