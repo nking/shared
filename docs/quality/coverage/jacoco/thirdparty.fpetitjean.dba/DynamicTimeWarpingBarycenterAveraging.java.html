@@ -132,7 +132,7 @@ import java.util.Collections;
 <span class="fc" id="L132">            double[] possibleMedoid = sequences[medianCandidateIndex];</span>
             // NLK: runtime complexity is sequence.length * sequence.length * sequences[i].length
 <span class="fc" id="L134">            double tmpSoS = sumOfSquares(possibleMedoid, sequences, mat);</span>
-<span class="pc bpc" id="L135" title="1 of 2 branches missed.">            if (tmpSoS &lt; lowestSoS) {</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">            if (tmpSoS &lt; lowestSoS) {</span>
 <span class="fc" id="L136">                indexMedoid = medianCandidateIndex;</span>
 <span class="fc" id="L137">                lowestSoS = tmpSoS;</span>
             }

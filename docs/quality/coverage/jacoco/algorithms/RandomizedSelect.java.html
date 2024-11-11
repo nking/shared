@@ -7,6 +7,9 @@ import java.util.Random;
 
 <span class="nc" id="L8">public class RandomizedSelect {</span>
 
+     //TODO: consider improving this with the Chapter notes for chapter 9 which
+     // uses Floyd &amp; Rivest 1975, &quot;Expected Time Bounds for Selection: improvements
+     // see MedianOfMediansSelect for the changes to 0-based indexing
     /**
      *  find the value with rank i in array a with average runtime complexity O(n) where n = a.length
      *  and i as a rank is 0-based.
@@ -25,34 +28,34 @@ import java.util.Random;
      * @return the value of a's rank i item where i is 0-based
      */
     static double select(double[] a, int idxLo, int idxHi, int i, Random rand) {
-<span class="pc bpc" id="L28" title="2 of 4 branches missed.">        if (idxLo &lt; 0 || idxLo &gt;= a.length) {</span>
-<span class="nc" id="L29">            throw new IllegalArgumentException(&quot;idxLo is out of bounds&quot;);</span>
+<span class="pc bpc" id="L31" title="2 of 4 branches missed.">        if (idxLo &lt; 0 || idxLo &gt;= a.length) {</span>
+<span class="nc" id="L32">            throw new IllegalArgumentException(&quot;idxLo is out of bounds&quot;);</span>
         }
-<span class="pc bpc" id="L31" title="2 of 4 branches missed.">        if (idxHi &lt; 0 || idxHi &gt;= a.length) {</span>
-<span class="nc" id="L32">            throw new IllegalArgumentException(&quot;idxHi is out of bounds&quot;);</span>
+<span class="pc bpc" id="L34" title="2 of 4 branches missed.">        if (idxHi &lt; 0 || idxHi &gt;= a.length) {</span>
+<span class="nc" id="L35">            throw new IllegalArgumentException(&quot;idxHi is out of bounds&quot;);</span>
         }
-<span class="pc bpc" id="L34" title="2 of 4 branches missed.">        if (i &lt; 0 || i &gt; idxHi) {</span>
-<span class="nc" id="L35">            throw new IllegalArgumentException(&quot;i is out of bounds&quot;);</span>
+<span class="pc bpc" id="L37" title="2 of 4 branches missed.">        if (i &lt; 0 || i &gt; idxHi) {</span>
+<span class="nc" id="L38">            throw new IllegalArgumentException(&quot;i is out of bounds&quot;);</span>
         }
-<span class="pc bpc" id="L37" title="1 of 2 branches missed.">        if (idxHi &lt; idxLo) {</span>
-<span class="nc" id="L38">            throw new IllegalArgumentException(&quot;idxHi &lt; idxLo&quot;);</span>
-        }
-
-<span class="fc bfc" id="L41" title="All 2 branches covered.">        if (idxLo == idxHi) {</span>
-<span class="fc" id="L42">            return a[idxLo];</span>
+<span class="pc bpc" id="L40" title="1 of 2 branches missed.">        if (idxHi &lt; idxLo) {</span>
+<span class="nc" id="L41">            throw new IllegalArgumentException(&quot;idxHi &lt; idxLo&quot;);</span>
         }
 
-<span class="fc" id="L45">        int q = RandomizedQuickSort.partition(a, idxLo, idxHi, rand);</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        if (idxLo == idxHi) {</span>
+<span class="fc" id="L45">            return a[idxLo];</span>
+        }
+
+<span class="fc" id="L48">        int q = RandomizedQuickSort.partition(a, idxLo, idxHi, rand);</span>
         // q is pivotIndex w.r.t 0
         // k is its rank
-<span class="fc" id="L48">        int k = q - idxLo;</span>
+<span class="fc" id="L51">        int k = q - idxLo;</span>
 
-<span class="fc bfc" id="L50" title="All 2 branches covered.">        if (i == k) {</span>
-<span class="fc" id="L51">            return a[q];</span>
-<span class="fc bfc" id="L52" title="All 2 branches covered.">        } else if (i &lt; k) {</span>
-<span class="fc" id="L53">            return select(a, idxLo, q-1, i, rand);</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">        if (i == k) {</span>
+<span class="fc" id="L54">            return a[q];</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">        } else if (i &lt; k) {</span>
+<span class="fc" id="L56">            return select(a, idxLo, q-1, i, rand);</span>
         } else {
-<span class="fc" id="L55">            return select(a, q+1, idxHi, i - k - 1, rand);</span>
+<span class="fc" id="L58">            return select(a, q+1, idxHi, i - k - 1, rand);</span>
         }
     }
 

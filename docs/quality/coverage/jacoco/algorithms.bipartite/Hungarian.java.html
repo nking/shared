@@ -1,0 +1,516 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Hungarian.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.bipartite</a> &gt; <span class="el_source">Hungarian.java</span></div><h1>Hungarian.java</h1><pre class="source lang-java linenums">package algorithms.bipartite;
+
+import algorithms.matrix.MatrixUtil;
+import algorithms.util.FormatArray;
+
+import java.util.*;
+import java.util.stream.IntStream;
+
+/**
+ * find the max value weighted match between vertexes A and vetexes B
+ * where A are the row indexes of the weight matrix and B are the column
+ * indexes of the weight matrix.
+ *
+ * The current implementation runtime complexity (r.t.c.)
+ * is O(n^4) where |V| = n/2 and |E| = n^2., though
+ * it has modified to a r.t.c. of O(n^3) as following Cormen, Leiserson, Rivest and Stein,
+ * but the r.t.c. still looks like it could be O(n^4) at worse.
+ *
+ * Note that maximizing the weight of a matching is the dual of
+ * minimizing the sum of feasible vertex labels.
+ *
+ */
+<span class="fc" id="L23">public class Hungarian {</span>
+
+    final protected int nL;
+    final protected int nR;
+<span class="fc" id="L27">    final protected Map&lt;Integer, Integer&gt; matchL = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L28">    final protected Map&lt;Integer, Integer&gt; matchR = new HashMap&lt;&gt;();</span>
+    final protected Set&lt;Integer&gt; unmatchedL;
+    final protected Set&lt;Integer&gt; unmatchedR;
+    final protected double[] labelsL;
+    final protected double[] labelsR;
+    // note: edges in matchedL are not in adjL
+    final protected Map&lt;Integer, Set&lt;Integer&gt;&gt; adjL;
+    final protected double[][] weights;
+    final protected boolean transposed;
+
+    // for BFS search
+    final protected Set&lt;Integer&gt; fL;
+    final protected Set&lt;Integer&gt; fR;
+    final protected Set&lt;Integer&gt; rSigmaMinR;
+
+<span class="fc" id="L43">    final protected double tol = 1E-10;</span>
+    /*
+    E_h is adjL and adjR as undirected edges
+
+    E_M,h is:
+       edges in adjL that are not in matchL
+           edges in matchR
+    */
+
+    /**
+     *
+     * @param weights [n X m] matrix of weights between vertices of row indices and
+     *                vertices of column indices.  use 0. if there is no association.
+     */
+<span class="fc" id="L57">    public Hungarian(double[][] weights) {</span>
+
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">        if (weights.length &lt; weights[0].length) {</span>
+<span class="nc" id="L60">            transposed = true;</span>
+<span class="nc" id="L61">            this.weights = MatrixUtil.transpose(weights);</span>
+        } else {
+<span class="fc" id="L63">            this.weights = weights;</span>
+<span class="fc" id="L64">            transposed = false;</span>
+        }
+
+<span class="fc" id="L67">        this.nL = weights.length;</span>
+<span class="fc" id="L68">        this.nR = weights[0].length;</span>
+<span class="fc" id="L69">        unmatchedL = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L70">        unmatchedR = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L71">        labelsL = new double[nL];</span>
+<span class="fc" id="L72">        labelsR = new double[nR];</span>
+<span class="fc" id="L73">        adjL = new HashMap&lt;&gt;();</span>
+
+<span class="fc" id="L75">        this.fL = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L76">        this.fR = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L77">        this.rSigmaMinR = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L78">    }</span>
+
+    protected void init() {
+        // init labels
+<span class="fc bfc" id="L82" title="All 2 branches covered.">        for (int vL = 0; vL &lt; this.nL; ++vL) {</span>
+<span class="fc" id="L83">            this.labelsL[vL] = Arrays.stream(weights[vL]).max().getAsDouble();</span>
+        }
+        // labelsR is already 0
+
+<span class="fc" id="L87">        IntStream.range(0, nL).forEach(unmatchedL::add);</span>
+<span class="fc" id="L88">        IntStream.range(0, nR).forEach(unmatchedR::add);</span>
+
+        // init E_h with the equality subgraph for the L to R edges
+        //l.h+r.h=w(l,r)}
+        double labelL, labelR;
+<span class="fc bfc" id="L93" title="All 2 branches covered.">        for (int vL = 0; vL &lt; this.nL; ++vL) {</span>
+<span class="fc" id="L94">            labelL = labelsL[vL];</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">            for (int vR = 0; vR &lt; this.nR; ++vR) {</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">                if (weights[vL][vR] == 0.) {</span>
+<span class="fc" id="L97">                    continue;</span>
+                }
+<span class="fc" id="L99">                labelR = labelsR[vR];</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">                if (Math.abs(weights[vL][vR] - (labelL + labelR)) &lt; tol) {</span>
+<span class="fc" id="L101">                    adjL.putIfAbsent(vL, new HashSet&lt;Integer&gt;());</span>
+<span class="fc" id="L102">                    adjL.get(vL).add(vR);</span>
+                }
+            }
+        }
+
+        // init G_M,h with greedy bi-partite matching
+<span class="fc" id="L108">        greedyBiPartiteMatching();</span>
+<span class="pc bnc" id="L109" title="All 2 branches missed.">        assert(!matchL.isEmpty());</span>
+<span class="pc bnc" id="L110" title="All 2 branches missed.">        assert(!matchR.isEmpty());</span>
+        /*
+        E_M,h is:
+           edges in adjL that are not in matchL
+           edges in matchR
+        */
+<span class="fc" id="L116">    }</span>
+
+    protected int[][] solve() {
+<span class="pc bpc" id="L119" title="2 of 4 branches missed.">        if (!matchL.isEmpty() || !matchR.isEmpty()) {</span>
+<span class="nc" id="L120">            throw new IllegalArgumentException(&quot;already solved&quot;);</span>
+        }
+
+<span class="fc" id="L123">        init();</span>
+
+        //printDebug(&quot;init&quot;);
+
+        // perfect matching is that all of L or all of R are matched.
+        // not (x==m || y==n)
+        // x!=m &amp;&amp; y!=n
+<span class="pc bpc" id="L130" title="1 of 4 branches missed.">        while ((matchL.size() != this.nL) &amp;&amp; (matchR.size() != this.nR)) {</span>
+
+<span class="fc" id="L132">            int[] revP = findAugmentingPath();</span>
+<span class="pc bnc" id="L133" title="All 2 branches missed.">            assert(revP != null);</span>
+<span class="pc bnc" id="L134" title="All 2 branches missed.">            assert(revP.length &gt;= 2);</span>
+
+            /*M = M (+) P symmetric difference
+                = elements that belong to M or P but not to both.
+                no edges in BFS forest fL,fR leave G_M,h.
+                no edges in M (matchedL, matchedR) leave G_M,h.
+                the path may add new edges and unset matches.
+            line 10: update G_h and G_M,h
+             */
+
+<span class="fc" id="L144">            int left = 0;</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">            for (int i = 0; i &lt; revP.length-1; i+=2) {</span>
+<span class="fc" id="L146">                int v = revP[i];</span>
+<span class="fc" id="L147">                int u = revP[i+1];</span>
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">                if (left == 0) {// v is Right, u is Left</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">                    if (matchL.containsKey(u)) {</span>
+                        // remove current match for u, but store it in adjL to keep it in G_M,h
+<span class="fc" id="L151">                        int tmpR = matchL.get(u);</span>
+<span class="fc" id="L152">                        adjL.putIfAbsent(u, new HashSet&lt;Integer&gt;());</span>
+<span class="fc" id="L153">                        adjL.get(u).add(tmpR);</span>
+<span class="fc" id="L154">                        matchR.remove(tmpR);</span>
+<span class="fc" id="L155">                        unmatchedR.add(tmpR);</span>
+                    }
+<span class="fc" id="L157">                    matchL.put(u, v);</span>
+<span class="fc" id="L158">                    matchR.put(v, u);// this adds a right link in G_M,h</span>
+<span class="fc" id="L159">                    unmatchedR.remove(v);</span>
+<span class="fc" id="L160">                    unmatchedL.remove(u);</span>
+<span class="pc bpc" id="L161" title="1 of 2 branches missed.">                    if (adjL.containsKey(u)) {</span>
+                        // remove from adjL so it won't be searched in BFS
+<span class="fc" id="L163">                        adjL.get(u).remove(v);</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">                        if (adjL.get(u).isEmpty()) {</span>
+<span class="fc" id="L165">                            adjL.remove(u);</span>
+                        }
+                    }
+                } /*else { // v is Left, u is Right
+                    // edge already exists
+                    assert(adjL.containsKey(v) &amp;&amp; adjL.get(v).contains(u));
+                }
+                left ^= 1;*/
+            }
+
+            //printDebug(&quot;after update G_M,h for aug path&quot;);
+<span class="fc" id="L176">        }</span>
+
+<span class="fc" id="L178">        int nRes = Math.min(this.nL, this.nR);</span>
+<span class="pc bnc" id="L179" title="All 2 branches missed.">        assert(matchL.size() == nRes);</span>
+<span class="pc bnc" id="L180" title="All 2 branches missed.">        assert(matchR.size() == nRes);</span>
+<span class="fc" id="L181">        int[][] matched = new int[nRes][];</span>
+<span class="fc" id="L182">        int i = 0;</span>
+<span class="pc bpc" id="L183" title="1 of 2 branches missed.">        if (transposed) {</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">            for (int vL : matchL.keySet()) {</span>
+<span class="nc" id="L185">                matched[i++] = new int[]{matchL.get(vL), vL};</span>
+<span class="nc" id="L186">            }</span>
+        } else {
+<span class="fc bfc" id="L188" title="All 2 branches covered.">            for (int vL : matchL.keySet()) {</span>
+<span class="fc" id="L189">                matched[i++] = new int[]{vL, matchL.get(vL)};</span>
+<span class="fc" id="L190">            }</span>
+        }
+<span class="fc" id="L192">        return matched;</span>
+    }
+
+    protected int[] findAugmentingPath() {
+        // forest of nodes.  used to mark &quot;visited&quot; also.
+<span class="fc" id="L197">        fL.clear();</span>
+<span class="fc" id="L198">        fR.clear();</span>
+
+<span class="fc" id="L200">        Queue&lt;Integer&gt; q = new ArrayDeque&lt;&gt;();</span>
+        // 1 if is Left, else 0 if is Right
+<span class="fc" id="L202">        Queue&lt;Integer&gt; qL = new ArrayDeque&lt;&gt;();</span>
+
+<span class="fc" id="L204">        Map&lt;Integer, Integer&gt; prevL = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L205">        Map&lt;Integer, Integer&gt; prevR = new HashMap&lt;&gt;();</span>
+
+        // init queue:
+<span class="fc bfc" id="L208" title="All 2 branches covered.">        for (int vL : unmatchedL) {</span>
+<span class="fc" id="L209">            q.add(vL);</span>
+<span class="fc" id="L210">            qL.add(1);</span>
+<span class="fc" id="L211">            fL.add(vL);</span>
+<span class="fc" id="L212">        }</span>
+
+<span class="fc" id="L214">        int nIter = 0;</span>
+
+<span class="fc" id="L216">        int augR = -1;</span>
+        // repeat until an augmenting path is found. aug path is when reach an unmatched right vertex
+<span class="pc bpc" id="L218" title="1 of 4 branches missed.">        while (fL.size() &lt; nL || fR.size() &lt; nR) {</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">            if (q.isEmpty()) {</span>
+
+<span class="fc" id="L221">                augmentLabelsAndGMh();</span>
+
+<span class="fc" id="L223">                fL.clear();</span>
+<span class="fc" id="L224">                fR.clear();</span>
+<span class="fc bfc" id="L225" title="All 2 branches covered.">                for (int vL : unmatchedL) {</span>
+<span class="fc" id="L226">                    q.add(vL);</span>
+<span class="fc" id="L227">                    qL.add(1);</span>
+<span class="fc" id="L228">                    fL.add(vL);</span>
+<span class="fc" id="L229">                }</span>
+<span class="fc" id="L230">                ++nIter;</span>
+            } // end if empty queue
+
+<span class="fc" id="L233">            augR = bfs(q, qL, prevL, prevR);</span>
+
+<span class="fc bfc" id="L235" title="All 2 branches covered.">            if (augR &gt; -1) {</span>
+<span class="fc" id="L236">                break;</span>
+            }
+        }
+<span class="pc bpc" id="L239" title="1 of 2 branches missed.">        if (augR == -1) {</span>
+<span class="nc" id="L240">            throw new IllegalArgumentException(&quot;error in algorithm impl or perfect match given the weights is not feasible&quot;);</span>
+        }
+
+        // construct the augmenting path to return
+<span class="fc" id="L244">        int v = augR;</span>
+<span class="fc" id="L245">        int left = 0;</span>
+<span class="fc" id="L246">        int[] path = new int[2*Math.min(nL,nR)];</span>
+<span class="fc" id="L247">        int i = 0;</span>
+<span class="fc" id="L248">        path[i] = v;</span>
+        int u;
+        Map&lt;Integer, Integer&gt; prev;
+        while (true) {
+<span class="fc bfc" id="L252" title="All 2 branches covered.">            prev = (left == 0) ? prevR : prevL;</span>
+<span class="fc bfc" id="L253" title="All 2 branches covered.">            if (!prev.containsKey(v)) {</span>
+<span class="fc" id="L254">                break;</span>
+            }
+<span class="fc" id="L256">            u = prev.get(v);</span>
+<span class="fc" id="L257">            left ^= 1;</span>
+<span class="fc" id="L258">            path[++i] = u;</span>
+<span class="fc" id="L259">            v = u;</span>
+        }
+
+<span class="fc" id="L262">        return Arrays.copyOf(path, i+1);</span>
+    }
+
+    protected int bfs(Queue&lt;Integer&gt; q, Queue&lt;Integer&gt; qL, Map&lt;Integer, Integer&gt; prevL, Map&lt;Integer, Integer&gt; prevR) {
+        //BFS search
+<span class="fc" id="L267">        int u = q.poll();</span>
+<span class="fc bfc" id="L268" title="All 2 branches covered.">        boolean isL = (qL.poll() == 1);</span>
+
+<span class="fc" id="L270">        int augR = -1;</span>
+
+<span class="fc" id="L272">        Set&lt;Integer&gt; adj = getAdj(u, isL);</span>
+<span class="fc bfc" id="L273" title="All 2 branches covered.">        if (adj == null) {</span>
+<span class="fc" id="L274">            return augR;</span>
+        }
+<span class="fc bfc" id="L276" title="All 2 branches covered.">        for (int nei : adj) {</span>
+<span class="fc bfc" id="L277" title="All 2 branches covered.">            if (!isL) { // nei is in Left</span>
+<span class="pc bpc" id="L278" title="1 of 2 branches missed.">                if (fL.contains(nei)) {</span>
+<span class="nc" id="L279">                    continue;</span>
+                }
+<span class="fc" id="L281">                prevL.put(nei, u);</span>
+<span class="fc" id="L282">                fL.add(nei);</span>
+<span class="fc" id="L283">                q.add(nei);</span>
+<span class="fc" id="L284">                qL.add(1);</span>
+            } else { // nei is in Right
+<span class="fc bfc" id="L286" title="All 2 branches covered.">                if (fR.contains(nei)) {</span>
+<span class="fc" id="L287">                    continue;</span>
+                }
+<span class="fc" id="L289">                prevR.put(nei, u);</span>
+<span class="fc" id="L290">                fR.add(nei);</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">                if (unmatchedR.contains(nei)) {//found an unmatched R</span>
+<span class="fc" id="L292">                    augR = nei;</span>
+<span class="fc" id="L293">                    break;</span>
+                }
+<span class="fc" id="L295">                q.add(nei);</span>
+<span class="fc" id="L296">                qL.add(0);</span>
+            }
+<span class="fc" id="L298">        } // end loop over neighbors</span>
+<span class="fc" id="L299">        return augR;</span>
+    }
+
+    protected void augmentLabelsAndGMh() {
+<span class="fc" id="L303">        double delta = calcDelta(rSigmaMinR);</span>
+<span class="pc bnc" id="L304" title="All 2 branches missed.">        assert(delta &gt; 0.);</span>
+
+<span class="fc bfc" id="L306" title="All 2 branches covered.">        for (int vL : fL) {</span>
+<span class="fc" id="L307">            labelsL[vL] -= delta;</span>
+<span class="fc" id="L308">        }</span>
+<span class="fc bfc" id="L309" title="All 2 branches covered.">        for (int vR : fR) {</span>
+<span class="fc" id="L310">            labelsR[vR] += delta;</span>
+<span class="fc" id="L311">        }</span>
+
+        //debugFeasibility();
+
+        // line 15: update G_M,h
+        // E_M,h is: edges in adjL that are not in matchL
+        //           edges in matchR
+        // only need to recalc G_M,h for rows in rSigmaMinR
+        //TODO: follow up on reducing rSigmaMin to make this O(n) r.t.c.
+<span class="fc bfc" id="L320" title="All 2 branches covered.">        for (int vR : rSigmaMinR) {</span>
+<span class="fc bfc" id="L321" title="All 2 branches covered.">            for (int vL = 0; vL &lt; this.nL; ++vL) {</span>
+<span class="fc bfc" id="L322" title="All 4 branches covered.">                if (matchL.containsKey(vL) &amp;&amp; matchL.get(vL) == vR) {</span>
+<span class="fc" id="L323">                    continue;</span>
+                }
+<span class="fc bfc" id="L325" title="All 2 branches covered.">                if (Math.abs((labelsL[vL] + labelsR[vR]) - weights[vL][vR]) &lt; tol) {</span>
+                    // it is not a matched pair which was flagged above.
+<span class="fc" id="L327">                    adjL.putIfAbsent(vL, new HashSet&lt;Integer&gt;());</span>
+<span class="fc" id="L328">                    adjL.get(vL).add(vR);</span>
+                } else {
+<span class="fc bfc" id="L330" title="All 4 branches covered.">                    if (adjL.containsKey(vL) &amp;&amp; adjL.get(vL).contains(vR)) {</span>
+<span class="fc" id="L331">                        adjL.get(vL).remove(vR);</span>
+                    }
+                }
+            }
+<span class="fc" id="L335">        } // end loop over rSigmaMinR</span>
+<span class="fc" id="L336">    }</span>
+
+    private void debugFeasibility() {
+        //check that l.h + r.h &gt;= w[l][r]
+<span class="nc bnc" id="L340" title="All 2 branches missed.">        for (int vL = 0; vL &lt; nL; ++vL) {</span>
+<span class="nc bnc" id="L341" title="All 2 branches missed.">            for (int vR = 0; vR &lt; nR; ++vR) {</span>
+<span class="nc bnc" id="L342" title="All 2 branches missed.">                if ((labelsL[vL] + labelsR[vR]) &lt; (weights[vL][vR] - tol)) {</span>
+<span class="nc" id="L343">                    printDebug(&quot;ERROR&quot;);</span>
+<span class="nc" id="L344">                    throw new IllegalArgumentException(&quot;labels are not feasible for vL=&quot; + vL + &quot;, vR=&quot; + vR);</span>
+                }
+            }
+        }
+<span class="nc" id="L348">    }</span>
+
+    private void printDebug(String label) {
+<span class="nc" id="L351">        System.out.printf(&quot;\n%s\n&quot;, label);</span>
+
+<span class="nc" id="L353">        System.out.printf(&quot;W=\n%s\n&quot;, FormatArray.toString(weights, &quot;%.4f&quot;));</span>
+
+<span class="nc" id="L355">        System.out.printf(&quot;L labels = %s\n&quot;, FormatArray.toString(labelsL, &quot;%.5f&quot;));</span>
+<span class="nc" id="L356">        System.out.printf(&quot;R labels = %s\n&quot;, FormatArray.toString(labelsR, &quot;%.5f&quot;));</span>
+
+<span class="nc" id="L358">        System.out.printf(&quot;matched L: &quot;);</span>
+<span class="nc bnc" id="L359" title="All 2 branches missed.">        for (int vL : matchL.keySet()) {</span>
+<span class="nc" id="L360">            System.out.printf(&quot;%d:%d, &quot;, vL, matchL.get(vL));</span>
+<span class="nc" id="L361">        }</span>
+<span class="nc" id="L362">        System.out.println();</span>
+
+<span class="nc" id="L364">        System.out.printf(&quot;matched R: &quot;);</span>
+<span class="nc bnc" id="L365" title="All 2 branches missed.">        for (int vR : matchR.keySet()) {</span>
+<span class="nc" id="L366">            System.out.printf(&quot;%d:%d, &quot;, vR, matchR.get(vR));</span>
+<span class="nc" id="L367">        }</span>
+<span class="nc" id="L368">        System.out.println();</span>
+
+<span class="nc" id="L370">        System.out.printf(&quot;f_L: &quot;);</span>
+<span class="nc bnc" id="L371" title="All 2 branches missed.">        for (int vL : fL) {</span>
+<span class="nc" id="L372">            System.out.printf(&quot;%d, &quot;, vL);</span>
+<span class="nc" id="L373">        }</span>
+<span class="nc" id="L374">        System.out.println();</span>
+
+<span class="nc" id="L376">        System.out.printf(&quot;f_R: &quot;);</span>
+<span class="nc bnc" id="L377" title="All 2 branches missed.">        for (int vR : fR) {</span>
+<span class="nc" id="L378">            System.out.printf(&quot;%d, &quot;, vR);</span>
+<span class="nc" id="L379">        }</span>
+<span class="nc" id="L380">        System.out.println();</span>
+
+<span class="nc" id="L382">        System.out.printf(&quot;rSigmaMinR: &quot;);</span>
+<span class="nc bnc" id="L383" title="All 2 branches missed.">        for (int vR : rSigmaMinR) {</span>
+<span class="nc" id="L384">            System.out.printf(&quot;%d, &quot;, vR);</span>
+<span class="nc" id="L385">        }</span>
+<span class="nc" id="L386">        System.out.println();</span>
+
+<span class="nc" id="L388">        System.out.printf(&quot;adjL:\n&quot;);</span>
+<span class="nc bnc" id="L389" title="All 2 branches missed.">        for (int vL : adjL.keySet()) {</span>
+<span class="nc" id="L390">            System.out.printf(&quot;%d: &quot;, vL);</span>
+<span class="nc bnc" id="L391" title="All 2 branches missed.">            for (int vR : adjL.get(vL)) {</span>
+<span class="nc" id="L392">                System.out.printf(&quot;%d, &quot;, vR);</span>
+<span class="nc" id="L393">            }</span>
+<span class="nc" id="L394">            System.out.println();</span>
+<span class="nc" id="L395">        }</span>
+
+        /*System.out.printf(&quot;adjR:\n&quot;);
+        for (int vR : adjR.keySet()) {
+            System.out.printf(&quot;%d: &quot;, vR);
+            for (int vL : adjR.get(vR)) {
+                System.out.printf(&quot;%d, &quot;, vL);
+            }
+            System.out.println();
+        }*/
+
+<span class="nc" id="L406">        System.out.printf(&quot;unmatched R: &quot;);</span>
+<span class="nc bnc" id="L407" title="All 2 branches missed.">        for (int vR : unmatchedR) {</span>
+<span class="nc" id="L408">            System.out.printf(&quot;%d, &quot;, vR);</span>
+<span class="nc" id="L409">        }</span>
+<span class="nc" id="L410">        System.out.println();</span>
+
+<span class="nc" id="L412">        System.out.printf(&quot;unmatched L: &quot;);</span>
+<span class="nc bnc" id="L413" title="All 2 branches missed.">        for (int vL : unmatchedL) {</span>
+<span class="nc" id="L414">            System.out.printf(&quot;%d, &quot;, vL);</span>
+<span class="nc" id="L415">        }</span>
+<span class="nc" id="L416">        System.out.println();</span>
+<span class="nc" id="L417">    }</span>
+
+    /**
+     * calculate delta and store the rows with rSigma == delta when nIterBFSAug&gt;0
+     * else stores rows with rSigma &lt;= delta.
+     * @param rSigmaMinR
+     * @param nIterBFSAug
+     * @return
+     */
+    protected double calcDelta(Set&lt;Integer&gt; rSigmaMinR) {
+
+        /*
+        we calc min(delta) from the set R-fR and fL.
+
+        if rSigmaMinR is empty, we add to rSigmaMinR all R with delta &lt;= min
+        else we add to rSigmaMinR all (R-fR) with delta == min,
+        */
+
+<span class="fc" id="L435">        double min = Double.POSITIVE_INFINITY;</span>
+        // calculate min for {set R - set fR}
+<span class="fc bfc" id="L437" title="All 2 branches covered.">        for (int vR = 0; vR &lt; nR; ++vR) {</span>
+<span class="fc bfc" id="L438" title="All 2 branches covered.">            if (fR.contains(vR)) continue;</span>
+<span class="fc bfc" id="L439" title="All 2 branches covered.">            for (int vL : fL) {</span>
+<span class="fc" id="L440">                min = Math.min(min, labelsL[vL] + labelsR[vR] - weights[vL][vR]);</span>
+<span class="fc" id="L441">            }</span>
+        }
+
+<span class="fc" id="L444">        int sigmaMinIdx = -1;</span>
+<span class="fc bfc" id="L445" title="All 2 branches covered.">        if (rSigmaMinR.isEmpty()) {</span>
+<span class="fc bfc" id="L446" title="All 2 branches covered.">            for (int vR = 0; vR &lt; nR; ++vR) {</span>
+<span class="fc" id="L447">                double m = Double.POSITIVE_INFINITY;</span>
+<span class="fc bfc" id="L448" title="All 2 branches covered.">                for (int vL : fL) {</span>
+<span class="fc" id="L449">                    m = Math.min(m, labelsL[vL] + labelsR[vR] - weights[vL][vR]);</span>
+<span class="fc" id="L450">                }</span>
+<span class="fc bfc" id="L451" title="All 2 branches covered.">                if (m &lt;= min) {</span>
+<span class="fc" id="L452">                    rSigmaMinR.add(vR);</span>
+<span class="fc" id="L453">                    sigmaMinIdx = vR;</span>
+                }
+            }
+        } else {
+<span class="fc bfc" id="L457" title="All 2 branches covered.">            for (int vR = 0; vR &lt; nR; ++vR) {</span>
+<span class="fc bfc" id="L458" title="All 2 branches covered.">                if (fR.contains(vR)) continue;</span>
+<span class="fc" id="L459">                double m = Double.POSITIVE_INFINITY;</span>
+<span class="fc bfc" id="L460" title="All 2 branches covered.">                for (int vL : fL) {</span>
+<span class="fc" id="L461">                    m = Math.min(m, labelsL[vL] + labelsR[vR] - weights[vL][vR]);</span>
+<span class="fc" id="L462">                }</span>
+<span class="fc bfc" id="L463" title="All 2 branches covered.">                if (m &lt;= min) {</span>
+<span class="fc" id="L464">                    rSigmaMinR.add(vR);</span>
+<span class="fc" id="L465">                    sigmaMinIdx = vR;</span>
+                }
+            }
+        }
+
+        //System.out.printf(&quot;R sigmaMin=%d, delta=%f\n&quot;, sigmaMinIdx, min);
+
+<span class="fc" id="L472">        return min;</span>
+    }
+
+    // get the neighbors of u
+    protected Set&lt;Integer&gt; getAdj(int u, boolean isL) {
+        // E_M,h is: edges in adjL that are not in matchL
+        //           edges in matchR
+<span class="fc bfc" id="L479" title="All 2 branches covered.">        if (isL) {</span>
+<span class="fc" id="L480">            return adjL.get(u);</span>
+        } else {
+            //TODO: this could be improved at invocation to avoid creating another hashset
+<span class="pc bpc" id="L483" title="1 of 2 branches missed.">            if (matchR.containsKey(u)) {</span>
+<span class="fc" id="L484">                Set&lt;Integer&gt; adj = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L485">                adj.add(matchR.get(u));</span>
+<span class="fc" id="L486">                return adj;</span>
+            }
+<span class="nc" id="L488">            return null;</span>
+        }
+    }
+
+    protected void greedyBiPartiteMatching() {
+<span class="fc bfc" id="L493" title="All 2 branches covered.">        for (int vL = 0; vL &lt; this.nL; ++vL) {</span>
+<span class="pc bpc" id="L494" title="1 of 2 branches missed.">            if (!adjL.containsKey(vL)) {</span>
+<span class="nc" id="L495">                continue;</span>
+            }
+<span class="fc" id="L497">            Set&lt;Integer&gt; rm = new HashSet&lt;&gt;();</span>
+<span class="fc bfc" id="L498" title="All 2 branches covered.">            for (int vR : adjL.get(vL)) {</span>
+<span class="fc bfc" id="L499" title="All 2 branches covered.">                if (unmatchedR.contains(vR)) {</span>
+<span class="fc" id="L500">                    unmatchedR.remove(vR);</span>
+<span class="fc" id="L501">                    matchL.put(vL, vR);</span>
+<span class="fc" id="L502">                    matchR.put(vR, vL);</span>
+<span class="fc" id="L503">                    unmatchedL.remove(vL);</span>
+
+                    // remove matchL from adjL to make ir usable as part of G_M,h
+<span class="fc" id="L506">                    rm.add(vR);</span>
+                }
+<span class="fc" id="L508">            }</span>
+<span class="fc" id="L509">            adjL.get(vL).removeAll(rm);</span>
+<span class="fc bfc" id="L510" title="All 2 branches covered.">            if (adjL.get(vL).isEmpty()) {</span>
+<span class="fc" id="L511">                adjL.remove(vL);</span>
+            }
+        }
+<span class="fc" id="L514">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

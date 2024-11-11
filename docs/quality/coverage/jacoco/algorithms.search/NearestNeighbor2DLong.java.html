@@ -361,7 +361,7 @@ public class NearestNeighbor2DLong {
 <span class="fc" id="L361">                closestDist = dMin;</span>
 <span class="fc" id="L362">                closestDistPlusTol = closestDist + tolerance;</span>
             }
-<span class="fc bfc" id="L364" title="All 4 branches covered.">            if ((predecessor != -1) &amp;&amp; </span>
+<span class="pc bpc" id="L364" title="1 of 4 branches missed.">            if ((predecessor != -1) &amp;&amp; </span>
                 (dp2 &lt;= closestDistPlusTol)) {
 <span class="fc" id="L366">                closestIndexes.add(predecessor);</span>
             }
@@ -387,8 +387,8 @@ public class NearestNeighbor2DLong {
 <span class="fc" id="L387">        int yLow = estimateLowBound(y, goal);</span>
        
         int yCurrent;
-<span class="fc bfc" id="L390" title="All 2 branches covered.">        if (predecessor == -1) {</span>
-<span class="fc" id="L391">            yCurrent = Integer.MIN_VALUE;</span>
+<span class="pc bpc" id="L390" title="1 of 2 branches missed.">        if (predecessor == -1) {</span>
+<span class="nc" id="L391">            yCurrent = Integer.MIN_VALUE;</span>
         } else {
 <span class="fc" id="L393">            int pRow = getRow(predecessor);</span>
 <span class="fc bfc" id="L394" title="All 2 branches covered.">            if (pRow &lt; y) {</span>
@@ -445,7 +445,7 @@ public class NearestNeighbor2DLong {
 <span class="fc" id="L445">                    goal = (int)Math.ceil(closestDistPlusTol);</span>
 <span class="fc" id="L446">                    yLow = estimateLowBound(y, goal); </span>
                 }
-<span class="pc bpc" id="L448" title="1 of 4 branches missed.">                if ((p2 != -1) &amp;&amp; dp2 &lt;= closestDistPlusTol) {</span>
+<span class="fc bfc" id="L448" title="All 4 branches covered.">                if ((p2 != -1) &amp;&amp; dp2 &lt;= closestDistPlusTol) {</span>
 <span class="fc" id="L449">                    closestIndexes.add(p2);</span>
                 }
 <span class="fc bfc" id="L451" title="All 4 branches covered.">                if ((s2 != -1) &amp;&amp; ds2 &lt;= closestDistPlusTol) {</span>
@@ -732,8 +732,8 @@ public class NearestNeighbor2DLong {
 <span class="fc" id="L732">        int yLow = estimateLowBound(y, goal);</span>
        
         int yCurrent;
-<span class="fc bfc" id="L735" title="All 2 branches covered.">        if (predecessor == -1) {</span>
-<span class="fc" id="L736">            yCurrent = Integer.MIN_VALUE;</span>
+<span class="pc bpc" id="L735" title="1 of 2 branches missed.">        if (predecessor == -1) {</span>
+<span class="nc" id="L736">            yCurrent = Integer.MIN_VALUE;</span>
         } else {
 <span class="fc" id="L738">            int pRow = getRow(predecessor);</span>
 <span class="fc bfc" id="L739" title="All 2 branches covered.">            if (pRow &lt; y) {</span>
@@ -801,11 +801,11 @@ public class NearestNeighbor2DLong {
 <span class="nc" id="L801">                    goal = dMax;</span>
                 }
 <span class="fc" id="L803">                yLow = estimateLowBound(y, goal);</span>
-<span class="pc bpc" id="L804" title="1 of 6 branches missed.">            } else if (dp2 == closestDist &amp;&amp; (dp2 != Double.MAX_VALUE)</span>
+<span class="pc bpc" id="L804" title="2 of 6 branches missed.">            } else if (dp2 == closestDist &amp;&amp; (dp2 != Double.MAX_VALUE)</span>
                 &amp;&amp; (dp2 &lt;= dMax)) {               
 <span class="fc" id="L806">                closestIndexes.add(p2);</span>
-<span class="fc bfc" id="L807" title="All 2 branches covered.">                if (dp2 == ds2) {</span>
-<span class="fc" id="L808">                    closestIndexes.add(s2);</span>
+<span class="pc bpc" id="L807" title="1 of 2 branches missed.">                if (dp2 == ds2) {</span>
+<span class="nc" id="L808">                    closestIndexes.add(s2);</span>
                 }
 <span class="pc bpc" id="L810" title="2 of 6 branches missed.">            } else if (ds2 == closestDist &amp;&amp; (ds2 != Double.MAX_VALUE)</span>
                 &amp;&amp; (ds2 &lt;= dMax)) {                

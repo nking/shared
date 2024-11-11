@@ -15,43 +15,43 @@ import java.util.Random;
     }
 
     /**
-<span class="fc bfc" id="L18" title="All 2 branches covered.">     * sort the numbers using a randomized version of pivot choice.  the runtime complexity is expected to be</span>
-<span class="fc" id="L19">     * O(n*log_2(n)) where n = a.length.</span>
-<span class="fc" id="L20">     * </span>
-<span class="fc" id="L21">     * @param a</span>
+     * sort the numbers using a randomized version of pivot choice.  the runtime complexity is expected to be
+     * O(n*log_2(n)) where n = a.length.
+     * 
+     * @param a
      * @param idxLo
-<span class="fc" id="L23">     * @param idxHi</span>
+     * @param idxHi
      * @param rand
      */
-<span class="fc" id="L26">    public static void sort(double[] a, int idxLo, int idxHi, Random rand) {</span>
-<span class="fc" id="L27">        if (idxLo &lt; idxHi) {</span>
-            int idxMid = partition(a, idxLo, idxHi, rand);
-<span class="fc bfc" id="L29" title="All 2 branches covered.">            sort(a, idxLo, idxMid - 1, rand);</span>
-<span class="fc bfc" id="L30" title="All 2 branches covered.">            sort(a, idxMid + 1, idxHi, rand);</span>
-<span class="fc" id="L31">        }</span>
-<span class="fc bfc" id="L32" title="All 2 branches covered.">    }</span>
-<span class="fc" id="L33"></span>
-<span class="fc" id="L34">    private static int partition(double[] a, int idxLo, int idxHi) {</span>
+    public static void sort(double[] a, int idxLo, int idxHi, Random rand) {
+<span class="fc bfc" id="L27" title="All 2 branches covered.">        if (idxLo &lt; idxHi) {</span>
+<span class="fc" id="L28">            int idxMid = partition(a, idxLo, idxHi, rand);</span>
+<span class="fc" id="L29">            sort(a, idxLo, idxMid - 1, rand);</span>
+<span class="fc" id="L30">            sort(a, idxMid + 1, idxHi, rand);</span>
+        }
+<span class="fc" id="L32">    }</span>
+
+    private static int partition(double[] a, int idxLo, int idxHi) {
 <span class="fc" id="L35">        double x = a[idxHi];</span>
-        int i = idxLo - 1;
+<span class="fc" id="L36">        int i = idxLo - 1;</span>
         double swap;
-        for (int k = idxLo; k &lt; idxHi; ++k) {
-<span class="fc" id="L39">            if (a[k] &lt;= x) {</span>
-<span class="fc bfc" id="L40" title="All 2 branches covered.">                ++i;</span>
-<span class="fc" id="L41">                if (i != k) {</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">        for (int k = idxLo; k &lt; idxHi; ++k) {</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">            if (a[k] &lt;= x) {</span>
+<span class="fc" id="L40">                ++i;</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">                if (i != k) {</span>
 <span class="fc" id="L42">                    swap = a[i];</span>
 <span class="fc" id="L43">                    a[i] = a[k];</span>
-                    a[k] = swap;
-<span class="fc" id="L45">                }</span>
+<span class="fc" id="L44">                    a[k] = swap;</span>
+                }
             }
         }
-        ++i;
-        if (i != idxHi) {
-            swap = a[idxHi];
-            a[idxHi] = a[i];
-            a[i] = swap;
+<span class="fc" id="L48">        ++i;</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">        if (i != idxHi) {</span>
+<span class="fc" id="L50">            swap = a[idxHi];</span>
+<span class="fc" id="L51">            a[idxHi] = a[i];</span>
+<span class="fc" id="L52">            a[i] = swap;</span>
         }
-        return i;
+<span class="fc" id="L54">        return i;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
