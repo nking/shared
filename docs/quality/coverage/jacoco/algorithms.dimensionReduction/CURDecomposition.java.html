@@ -307,8 +307,8 @@ import no.uib.cipr.matrix.SVD;
 <span class="fc" id="L307">            j = selectedRowIdxs[i];</span>
 <span class="pc bnc" id="L308" title="All 4 branches missed.">            assert(j &gt;= 0 &amp;&amp; j &lt; m);</span>
             
-<span class="pc bpc" id="L310" title="1 of 2 branches missed.">            if (!freq.containsKey(j)) {</span>
-<span class="nc" id="L311">                continue;</span>
+<span class="fc bfc" id="L310" title="All 2 branches covered.">            if (!freq.containsKey(j)) {</span>
+<span class="fc" id="L311">                continue;</span>
             }
             
 <span class="fc" id="L314">            d = freq.get(j);</span>
@@ -319,8 +319,8 @@ import no.uib.cipr.matrix.SVD;
 <span class="fc" id="L319">                factor = 1. / Math.sqrt(k * rowPMF[j]);</span>
             }
             
-<span class="pc bpc" id="L322" title="1 of 2 branches missed.">            if (d &gt; 1) {</span>
-<span class="nc" id="L323">                factor *= Math.sqrt(d);</span>
+<span class="fc bfc" id="L322" title="All 2 branches covered.">            if (d &gt; 1) {</span>
+<span class="fc" id="L323">                factor *= Math.sqrt(d);</span>
             }
             
             //extract row j from a and multiply each item by factor
@@ -366,7 +366,7 @@ import no.uib.cipr.matrix.SVD;
         
 <span class="fc" id="L367">        int rank = 0;</span>
 <span class="fc bfc" id="L368" title="All 2 branches covered.">        for (i = 0; i &lt; s.length; ++i) {</span>
-<span class="fc bfc" id="L369" title="All 2 branches covered.">            if (Math.abs(s[i]) &gt; eps) {</span>
+<span class="pc bpc" id="L369" title="1 of 2 branches missed.">            if (Math.abs(s[i]) &gt; eps) {</span>
 <span class="fc" id="L370">                rank++;</span>
             }
         }
@@ -380,7 +380,7 @@ import no.uib.cipr.matrix.SVD;
 <span class="fc" id="L380">        double[][] sInvSq = MatrixUtil.zeros(nr, nc);</span>
 <span class="fc" id="L381">        int len = Math.min(nr, nc);</span>
 <span class="fc bfc" id="L382" title="All 2 branches covered.">        for (i = 0; i &lt; len; ++i) {</span>
-<span class="fc bfc" id="L383" title="All 2 branches covered.">            if (s[i] &gt; eps) {</span>
+<span class="pc bpc" id="L383" title="1 of 2 branches missed.">            if (s[i] &gt; eps) {</span>
 <span class="fc" id="L384">                sInvSq[i][i] = 1./(s[i]*s[i]);</span>
             }
         }

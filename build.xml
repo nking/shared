@@ -402,6 +402,8 @@
                 <batchtest todir="${tests.out.dir}">
                     <fileset dir="${tests.out.dir}">
                         <exclude name="**/*$*.class" />
+			<exclude name="**/thirdparty/kit/MMCA/*.class" />
+			<exclude name="**/thirdparty.kit.MMCA*.class" />
                         <exclude name="**/A0*Test.class" />
                         <include name="**/*Test.class" />
                     </fileset>
@@ -425,6 +427,7 @@
                         <include name="**/*.class" />
                         <exclude name="**/*$*.class" />
                         <exclude name="**/*Plotter*.class" />
+			<exclude name="**/thirdparty/kit/MMCA/*.class" />
                         <exclude name="**/thirdparty/ca/uol/aig/fftpack/*.class" />
                     </fileset>
                 </classfiles>
