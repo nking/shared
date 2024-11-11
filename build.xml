@@ -181,7 +181,9 @@
             sourcepath="${src.dir}"
             destdir="${doc.dir}/api"
             package="true"
-            packagenames="algorithms.*,com.climbwithyourfeet.*,thirdparty.*,ctci.*" >
+	packagenames="algorithms.*,com.climbwithyourfeet.*,thirdparty.*,ctci.*" 
+		 excludepackagenames="thirdparty.kit.*"
+		 >
             <classpath refid="compile.classpath"/>
         </javadoc>
     </target>
@@ -373,7 +375,8 @@
         </tstamp>
         <jar destfile="${classes.dir}/com.climbwithyourfeet.shared_${TS}.jar" 
              manifest="${jar.mf}">
-            <fileset dir="${src.out.dir}" includes="*/**"/>
+	<fileset dir="${src.out.dir}" includes="*/**" excludes="thirdparty/kit/**"
+	/>
             <fileset dir="${basedir}" includes="LICENSE.txt"/>
             <fileset dir="${basedir}" includes="README.txt"/>
             <fileset dir="${resources.dir}" 
