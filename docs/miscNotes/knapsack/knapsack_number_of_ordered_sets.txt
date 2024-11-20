@@ -1,0 +1,14 @@
+to count the number of subsequences of a weight array that sum
+to a given target we can use an O(n) solution instead of the
+pseudo-polynomial r.t.c. of O(n*target) from using a standard
+knapsack dp pattern.
+
+Because order matters for the items in the weight array,
+we can use a sliding windows approach to count the number of
+sub-sequences that sum up to a target.
+
+Because order matters for the items in the weight array, we 
+are dealing with ordered sets and can use principles of counting:
+   the exact number of subsequences 
+      = atMostCount(weights, target) - atMostCount(weights, target - 1)
+
