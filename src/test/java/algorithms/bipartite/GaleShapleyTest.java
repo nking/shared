@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 
 import java.util.*;
 
-public class StableMarriageTest extends TestCase {
+public class GaleShapleyTest extends TestCase {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void test1() {
@@ -34,7 +34,7 @@ public class StableMarriageTest extends TestCase {
 
         int[] m0 = new int[]{3, 0, 2, 1};
 
-        int[] m = StableMarriage.match(aPrefs, bPrefs);
+        int[] m = GaleShapley.match(aPrefs, bPrefs);
 
         assertTrue(Arrays.equals(m0, m));
     }
@@ -67,7 +67,7 @@ public class StableMarriageTest extends TestCase {
         int[] m1 = new int[]{2, 0, 1};
         int[] m2 = new int[]{1, 2, 0};
 
-        int[] m = StableMarriage.match(aPrefs, bPrefs);
+        int[] m = GaleShapley.match(aPrefs, bPrefs);
 
         assertTrue(Arrays.equals(m0, m) || Arrays.equals(m1, m) || Arrays.equals(m2, m));
     }

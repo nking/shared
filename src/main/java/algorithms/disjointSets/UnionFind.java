@@ -9,6 +9,7 @@ import java.util.List;
 public class UnionFind {
     protected final int[] parent;
     protected final int[] rank;
+    // nComponents will be wrong once an i or j in union have been merged more than once
     protected int nComponents = 0;
     protected final int n;
 

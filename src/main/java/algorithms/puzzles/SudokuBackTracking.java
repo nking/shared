@@ -559,4 +559,5 @@ public class SudokuBackTracking {
         return indexes;
     }
 
+
 }

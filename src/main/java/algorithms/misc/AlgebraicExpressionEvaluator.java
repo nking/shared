@@ -169,7 +169,7 @@ public class AlgebraicExpressionEvaluator {
                 // a Shift stage of shift-reduce parsing
 
                 // we have positive or negative numbers that
-                // may begin with a . if the user dropped the 0 as an integer.
+                // may begin with a . if the user dropped the 0 as an integer in a decimal number.
                 prevWasNumber = true;
                 parseForNumber(i, j, chars, i01);
                 i = i01[1];

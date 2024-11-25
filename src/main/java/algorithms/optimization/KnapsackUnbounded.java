@@ -231,6 +231,7 @@ public class KnapsackUnbounded {
      * count the number of ways that a combination of an unbounded quantity of weights
      * can sum up to exactly EQ target, where the sequences are counted rather than sets,
      * e.g. [1,2] is counted and [2,1] is counted.
+     * r.t.c. is O(n*target) where n = weights.length.
      * @param target the exact sum that a combination of and unbounded quantity of weights should sum to
      * @param weights non-negative array of item weights
      * @return
@@ -260,4 +261,5 @@ public class KnapsackUnbounded {
         //System.out.printf("tab=%s\n", Arrays.toString(tab));
         return tab[target];
     }
+
 }

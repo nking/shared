@@ -1,16 +1,18 @@
 package algorithms.bipartite;
 
-import java.util.List;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Map;
 
-public class StableMarriage {
+public class GaleShapley {
 
     /**
      * given two groups a and b and ranked preferences of each element for elements
      * in the opposite group, match each element of a with and element in b
      * in a "stable" way (at least one prefers their assigned partner).
+     *
+     * The results tend towards group 'a' receiving their most prefered pairings while
+     * group 'b' receives their least-preferred pairings.
      *
      <pre>
      CLRS chap 25.2, Gale-Shapley algorithm

@@ -2,6 +2,7 @@ package algorithms.misc;
 
 import algorithms.signalProcessing.Util;
 import algorithms.statistics.UnivariateNormalDistribution;
+import algorithms.util.FormatArray;
 import algorithms.util.PairInt;
 import algorithms.util.PairIntArray;
 import gnu.trove.iterator.TIntIntIterator;
@@ -1028,6 +1029,26 @@ public class MiscMath0Test extends TestCase {
             MiscMath0.singleIndexToMultiDimension(idx, dims, out);
             assertTrue(Arrays.equals(indexes, out));
 
+        }
+    }
+
+    public void testCalcQuartilesMinMax() {
+        double[] x, qM, expAns;
+
+        x = new double[]{6, 7, 15, 36, 39, 40, 41, 42, 43, 47, 49};
+        expAns = new double[]{6, 15., 40., 43., 49.};
+        qM = MiscMath0.calcQuartiles(x);
+        assertEquals(expAns.length, qM.length);
+        for (int i = 0; i < expAns.length; ++i) {
+            assertTrue(Math.abs(expAns[i] - qM[i]) < 1E-7);
+        }
+
+        x = new double[]{7, 15, 36, 39, 40, 41.};
+        expAns = new double[]{7, 15., 37.5, 40., 41.};
+        qM = MiscMath0.calcQuartiles(x);
+        assertEquals(expAns.length, qM.length);
+        for (int i = 0; i < expAns.length; ++i) {
+            assertTrue(Math.abs(expAns[i] - qM[i]) < 1E-7);
         }
     }
 }

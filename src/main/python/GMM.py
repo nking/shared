@@ -33,9 +33,10 @@ class GMM:
         self.n = X.shape[0]
         # init mu with random selection from X
         # k mu's
-        # shape [k x p]
+        # shape [k x p].  randomly selects from range 0:n-1 of X, and does so k times
+        #  so becomes k rows of X
         self.mu = X[np.random.choice(self.n, self.k, replace=False)]
-        # shape [k x 1]
+        # shape [k x 1].  creates array of length k and fills it with 1/k
         self.phi = np.full(self.k, 1. / self.k)
         # np.cov(X, rowvar=False) is same as np.matmul(X_zc.T, X_zc)/( (1.-p)**2) where X_zc has zero-centered cols
         # k arrays of size [pxp] initialized with covariance of entire dataset X

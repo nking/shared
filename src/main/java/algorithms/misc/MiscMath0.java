@@ -869,6 +869,26 @@ public class MiscMath0 {
     }
 
     /**
+     * calculate the quartiles Q1, Q2 Q3 and min and max of x.
+     <pre>
+     https://en.m.wikipedia.org/wiki/Quartile
+     Method 1
+     </pre>
+     @param x
+     @return min, Q1, Q2, Q3, max
+     */
+    public static double[] calcQuartiles(double[] x) {
+        x = Arrays.copyOf(x, x.length);
+        Arrays.sort(x);
+        int n = x.length;
+        double[] out = new double[]{x[0], x[n/4], x[n/2], x[n*3/4], x[n-1]};
+        if ((n&1)==0) {
+            out[2] = (x[n/2] + x[(n/2)-1])/2;
+        }
+        return out;
+    }
+
+    /**
      * calculate the mean of x and the sum of the squared differences
      * (SSD) between x and the mean.
      * The SSD can be used to calculate the biased or unbiased

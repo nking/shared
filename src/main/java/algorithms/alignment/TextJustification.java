@@ -15,10 +15,10 @@ public class TextJustification {
      * number of spaces between words is at least 1.
      * returns the total number of added spaces and fill output list with the text justified to line lengths <= width.
      *
-     * @param words list of words to consecutively justify to line lengths <= width
-     * @param width widht of column to place consecutive words and spaces between them
-     * @param output and output array to fill with justified text
-     * @return
+     * @param words list of words to consecutively justify to line lengths LEQ width
+     * @param width width of column to place consecutive words and spaces between them
+     * @param output an empty output array to fill with justified text
+     * @return total number of added spaces
      */
     public int justify(String[] words, int width, List<String> output) {
 
@@ -28,11 +28,13 @@ public class TextJustification {
         Map<Integer, BestSoln> memo = new HashMap<>();
         List<List<Integer>> rows = new ArrayList<>();
 
+	// initialize with first word
         rows.add(new ArrayList<>());
         rows.get(0).add(0);
         int currRSum = words[0].length();
 
-        BestSoln best = recurse(0, 1, 0, currRSum, width, words, rows, memo);
+	//(row index, word index, int prevPSum, int currRSum,...
+        BestSoln best = recursion(0, 1, 0, currRSum, width, words, rows, memo);
 
         output.clear();
         // transform rows into words
@@ -52,8 +54,8 @@ public class TextJustification {
         return best.cost;
     }
 
-    protected BestSoln recurse(int rIdx, int wIdx, int prevPSum, int currRSum, final int width,
-                               String[] words, List<List<Integer>> rows, Map<Integer, BestSoln> memo) {
+    protected BestSoln recursion(int rIdx, int wIdx, int prevPSum, int currRSum, final int width,
+        String[] words, List<List<Integer>> rows, Map<Integer, BestSoln> memo) {
         ++counter;
 
         if (wIdx >= words.length) {
@@ -66,7 +68,7 @@ public class TextJustification {
 
         assert(currRSum > 0);
         String w = words[wIdx];
-        int cost0 = w.length() + 1;
+        int cost0 = w.length() + 1; // the 1 is counting space before the word
 
         // add to current row if can
         BestSoln p0 = new BestSoln(null, Integer.MAX_VALUE);
@@ -75,8 +77,8 @@ public class TextJustification {
                 rows.add(new ArrayList<>());
             }
             rows.get(rIdx).add(wIdx);
-            p0 = recurse(rIdx, wIdx + 1, prevPSum, currRSum + cost0, width, words, rows, memo);
-            // remove wIdx so can use it on p1 recursion:
+            p0 = recursion(rIdx, wIdx + 1, prevPSum, currRSum + cost0, width, words, rows, memo);
+            //backtracking: remove wIdx so can use it on p1 recursion:
             rows.get(rIdx).remove(rows.get(rIdx).size() - 1);
         }
 
@@ -87,7 +89,8 @@ public class TextJustification {
         rows.get(rIdx + 1).add(wIdx);
         int prevPSum1 = prevPSum + (width - currRSum);
         int cost1 = cost0 - 1;
-        BestSoln p1 = recurse(rIdx + 1, wIdx + 1, prevPSum1, cost1, width, words, rows, memo);
+        BestSoln p1 = recursion(rIdx + 1, wIdx + 1, prevPSum1, cost1, width, words, rows, memo);
+	//backtracking: remove so can try another permutation
         rows.get(rIdx + 1).remove(rows.get(rIdx + 1).size() - 1);
 
         if (p0.cost <= p1.cost) {

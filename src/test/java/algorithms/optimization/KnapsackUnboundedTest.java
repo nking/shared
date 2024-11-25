@@ -148,7 +148,7 @@ public class KnapsackUnboundedTest extends TestCase {
         assertEquals(expAns, ans);
     }
 
-    public void testCountNumberOfWaysForTarget() {
+    public void testCountNumberOfSetsAndSequencesForTarget() {
 
         int[] w;
         int target, ans, expAns;
