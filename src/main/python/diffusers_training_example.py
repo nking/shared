@@ -23,6 +23,10 @@ The DDPM paper reference is
 Ho, J., Jain, A. and Abbeel, P., 2020. Denoising diffusion probabilistic models.
 Advances in Neural Information Processing Systems, 33, pp.6840-6851.
 
+Some additional context and details of diffusion models as score based energy models
+can be found in Staford CS236 lectures, e.g. 
+https://youtu.be/E69Lp_T9nVg?si=foXtpFVYqbGwf3Ag
+
 This tutorial's choice of training images is a set of well curated images of butterflies.
 One can also find a pretrained model from a set of cat images "google/ddpm-cat-256".
 The butterfly training uses many images that are carefully prepared to represent samples from the same distribution.
