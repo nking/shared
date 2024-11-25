@@ -231,34 +231,36 @@ import java.util.Arrays;
      * count the number of ways that a combination of an unbounded quantity of weights
      * can sum up to exactly EQ target, where the sequences are counted rather than sets,
      * e.g. [1,2] is counted and [2,1] is counted.
+     * r.t.c. is O(n*target) where n = weights.length.
      * @param target the exact sum that a combination of and unbounded quantity of weights should sum to
      * @param weights non-negative array of item weights
      * @return
      */
     public static int numberOfSequencesForTarget(int[] weights, int target) {
 
-<span class="fc" id="L240">        int n = weights.length;</span>
+<span class="fc" id="L241">        int n = weights.length;</span>
 
         // tab[wc] holds the number of ways that the item weights sum to wc.
 
-<span class="fc" id="L244">        int[] tab = new int[target + 1];</span>
-<span class="fc" id="L245">        tab[0] = 1;</span>
+<span class="fc" id="L245">        int[] tab = new int[target + 1];</span>
+<span class="fc" id="L246">        tab[0] = 1;</span>
 
         int i, wc, wc2;
         // to count sequences instead of sets, outer loop is indexes to include all prev calc items
         // in current weight count
-<span class="fc bfc" id="L250" title="All 2 branches covered.">        for (wc = 1; wc &lt;= target; ++wc) {</span>
-<span class="fc bfc" id="L251" title="All 2 branches covered.">            for (i = 0; i &lt; n; ++i) {</span>
+<span class="fc bfc" id="L251" title="All 2 branches covered.">        for (wc = 1; wc &lt;= target; ++wc) {</span>
+<span class="fc bfc" id="L252" title="All 2 branches covered.">            for (i = 0; i &lt; n; ++i) {</span>
                 // the remaining sum after weight subtracted
-<span class="fc" id="L253">                wc2 = wc - weights[i];</span>
-<span class="fc bfc" id="L254" title="All 2 branches covered.">                if (wc2 &gt;= 0) {</span>
+<span class="fc" id="L254">                wc2 = wc - weights[i];</span>
+<span class="fc bfc" id="L255" title="All 2 branches covered.">                if (wc2 &gt;= 0) {</span>
                     // adds counts from remaining sum
-<span class="fc" id="L256">                    tab[wc] += tab[wc2];</span>
+<span class="fc" id="L257">                    tab[wc] += tab[wc2];</span>
                 }
             }
         }
         //System.out.printf(&quot;tab=%s\n&quot;, Arrays.toString(tab));
-<span class="fc" id="L261">        return tab[target];</span>
+<span class="fc" id="L262">        return tab[target];</span>
     }
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

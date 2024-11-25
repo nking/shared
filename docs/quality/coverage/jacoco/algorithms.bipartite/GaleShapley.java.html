@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GaleShapley.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.bipartite</a> &gt; <span class="el_source">GaleShapley.java</span></div><h1>GaleShapley.java</h1><pre class="source lang-java linenums">package algorithms.bipartite;
+
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Map;
+
+<span class="pc" id="L7">public class GaleShapley {</span>
+
+    /**
+     * given two groups a and b and ranked preferences of each element for elements
+     * in the opposite group, match each element of a with and element in b
+     * in a &quot;stable&quot; way (at least one prefers their assigned partner).
+     *
+     * The results tend towards group 'a' receiving their most prefered pairings while
+     * group 'b' receives their least-preferred pairings.
+     *
+     &lt;pre&gt;
+     CLRS chap 25.2, Gale-Shapley algorithm
+     &lt;/pre&gt;
+
+     Note that both aPrefs and bPrefs have to rank every member of the other list.
+
+     * @param aPrefs each element is a ranked list of b indexes ordered by preference.
+     *               note that the algorithm modifies the list.
+     * @param bPrefs each element is a ranked list of b preferences where the
+     *               Map has key=element in a, value = rank (preference).
+     * @return
+     */
+    public static int[] match(LinkedList&lt;Integer&gt;[] aPrefs, Map&lt;Integer, Integer&gt;[] bPrefs) {
+<span class="fc" id="L30">        int n = aPrefs.length;</span>
+<span class="pc bpc" id="L31" title="1 of 2 branches missed.">        if (bPrefs.length != n) {</span>
+<span class="nc" id="L32">            throw new IllegalArgumentException(&quot;aPrefs.length must == bPrefs.length&quot;);</span>
+        }
+<span class="fc" id="L34">        int[] mAB = new int[n];</span>
+<span class="fc" id="L35">        Arrays.fill(mAB, -1);</span>
+
+<span class="fc" id="L37">        int[] mBA = new int[n];</span>
+<span class="fc" id="L38">        Arrays.fill(mBA, -1);</span>
+
+<span class="fc" id="L40">        int nAMatched = 0;</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        while (nAMatched != n) {</span>
+
+<span class="fc bfc" id="L43" title="All 2 branches covered.">            for (int a0 = 0; a0 &lt; n; ++a0) {</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">                if (mAB[a0] == -1) {</span>
+<span class="pc bnc" id="L45" title="All 4 branches missed.">                    assert(aPrefs[a0] != null &amp;&amp; !aPrefs[a0].isEmpty());</span>
+<span class="fc" id="L46">                    int b = aPrefs[a0].pollFirst();</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">                    if (mBA[b] == -1) {</span>
+<span class="fc" id="L48">                        mAB[a0] = b;</span>
+<span class="fc" id="L49">                        mBA[b] = a0;</span>
+<span class="fc" id="L50">                        ++nAMatched;</span>
+                    } else {
+<span class="fc" id="L52">                        int a1 = mBA[b];</span>
+<span class="pc bnc" id="L53" title="All 2 branches missed.">                        assert(mAB[a1] == b);</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">                        if (bPrefs[b].get(a1) &gt; bPrefs[b].get(a0)) {</span>
+<span class="fc" id="L55">                            mAB[a1] = -1;</span>
+<span class="fc" id="L56">                            mAB[a0] = b;</span>
+<span class="fc" id="L57">                            mBA[b] = a0;</span>
+                        }
+                        //  else a0 remains free
+                    }
+                }
+            }
+        }
+<span class="fc" id="L64">        return mAB;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

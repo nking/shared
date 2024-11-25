@@ -405,12 +405,12 @@ YFastTrie
       
 <span class="fc" id="L406">        long existingRepr = xftReps.get(index);</span>
       
-<span class="fc bfc" id="L408" title="All 2 branches covered.">        if (tree.isEmpty()) {</span>
+<span class="pc bpc" id="L408" title="1 of 2 branches missed.">        if (tree.isEmpty()) {</span>
             // just deleted the last item so remove from rbs
             // delete is O(log_2(w)) + O(w-l)
-<span class="pc bpc" id="L411" title="1 of 2 branches missed.">            if (xftReps.containsKey(index)) {</span>
-<span class="fc" id="L412">                xft.remove(Long.valueOf(existingRepr));</span>
-<span class="fc" id="L413">                xftReps.remove(index);</span>
+<span class="nc bnc" id="L411" title="All 2 branches missed.">            if (xftReps.containsKey(index)) {</span>
+<span class="nc" id="L412">                xft.remove(Long.valueOf(existingRepr));</span>
+<span class="nc" id="L413">                xftReps.remove(index);</span>
             }
 <span class="fc bfc" id="L415" title="All 2 branches covered.">        } else if (node == existingRepr) {</span>
             
@@ -525,8 +525,8 @@ YFastTrie
         //    items in it.
                 
 <span class="fc" id="L527">        Long prev = xft.predecessor(Long.valueOf(node));</span>
-<span class="pc bpc" id="L528" title="1 of 2 branches missed.">        if (prev == null) {</span>
-<span class="nc" id="L529">            return -1;</span>
+<span class="fc bfc" id="L528" title="All 2 branches covered.">        if (prev == null) {</span>
+<span class="fc" id="L529">            return -1;</span>
         }
         
 <span class="fc" id="L532">        long prev0Index = prev.longValue()/binSz;</span>

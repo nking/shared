@@ -35,7 +35,7 @@ import java.util.logging.Logger;
  *     g[n] is the shortest distance traveled path from the sourceIndx to the
  *          node n
  *     h[n] is the smallest estimated cost from the node n to destinationIndx
- *     f[n] is the total search cost from sourceIndex to node n
+ *     f[n] is the total search cost from sourceIndex to node n to destinationIdx
  *          f(n) = g(n) + h(n)
  * Goal:
  *     find the path that creates the smallest f[destinationIndx]
