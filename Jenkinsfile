@@ -14,13 +14,13 @@ pipeline {
         stage('Build') {
             steps {
                echo 'Building..'
-               //sh 'ant compileTests'
+               sh 'ant compileTests'
             }
         }
         stage('Test') {
             steps {
                echo 'Testing..'
-               //sh 'ant runTests'
+               sh 'ant runTests'
             }
         }
         stage('Deploy') {
