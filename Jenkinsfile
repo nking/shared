@@ -23,9 +23,9 @@ pipeline {
                sh 'ant runTests'
             }
         }
-        // TODO: add static code analysis
+        // TODO: add static code analysis (spotbugs, or included in SAST tool)
         // TODO: add SAST scanners, for java and the c/c++, and rust code
-        // Checkmarx and/or CodeThreat (requires an acct)
+        // Snyk, SonarCube community edition
         stage('Deploy') {
             steps {
                // increment version in shared.mf too
