@@ -11,12 +11,12 @@ pipeline {
         skipStagesAfterUnstable()
     }
     stages {
-        stage('Build') {
-            steps {
-               echo 'Building..'
-               sh 'ant compileTests'
-            }
-        }
+        //stage('Build') {
+        //     steps {
+        //        echo 'Building..'
+        //        sh 'ant compileTests'
+        //     }
+        //}
         stage('Test') {
             steps {
                echo 'Testing..'
