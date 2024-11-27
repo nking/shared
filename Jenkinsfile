@@ -23,6 +23,9 @@ pipeline {
                sh 'ant runTests'
             }
         }
+        // TODO: add static code analysis
+        // TODO: add SAST scanners, for java and the c/c++, and rust code
+        // Checkmarx and/or CodeThreat (requires an acct)
         stage('Deploy') {
             steps {
                // increment version in shared.mf too
