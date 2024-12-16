@@ -192,6 +192,14 @@ public class SubsetChooser {
 
         return nValues;
     }
+
+    public boolean hasNext() {
+        return (count < np);
+    }
+
+    public long getNp() {
+        return np;
+    }
     
     /**
      * given a constructed array, populates it with the next selected subset

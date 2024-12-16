@@ -9,6 +9,9 @@ import junit.framework.TestCase;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.Map;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -52,7 +55,6 @@ public class KruskalsMinimumSpanningTreeTest extends TestCase {
             assertEquals(e, s);
         }
     }
-    
     public void test0() {
         /*
         Following example in Cormen, Leiserson, Rivest, and Stein Chap 23, MST, Fig 23.4.
@@ -172,4 +174,86 @@ public class KruskalsMinimumSpanningTreeTest extends TestCase {
         assertTrue(mst.containsKey(g));
         assertTrue(mst.get(g).contains(h));
     }
+
+    public void test1() {
+        /*
+        Following example in Cormen, Leiserson, Rivest, and Stein Chap 23, MST, Fig 23.4.
+        
+                 / [b] --- 8 ----/[c]-- 7  -- [d]\
+               4    |          2     \         |    9
+          [a]       11      [i]         4     14      [e]
+               8    |     7     6              |   10
+                 \ [h] / -- 1  --[g]-- 2 -- \ [f]/
+        */
+        
+        int a = 0; int b = 1; int c = 2; int d = 3; int e = 4; int f = 5;
+        int g = 6; int h = 7; int i = 8;
+        
+        int n = 9;
+        int idx;
+        int expectedWeightSum = 37;
+
+        Map<Integer, Map<Integer, Double>> graph = new HashMap<>();
+        for (idx = 0; idx < n; ++idx) {
+	    graph.put(idx, new HashMap<Integer, Double>());
+        }	    
+        
+        /*
+                 / [b] --- 8 ----/[c]-- 7  -- [d]\
+               4    |          2     \         |    9
+          [a]       11      [i]         4     14      [e]
+               8    |     7     6              |   10
+                 \ [h] / -- 1  --[g]-- 2 -- \ [f]/
+        */
+
+        graph.get(a).put(b, 4.);
+        graph.get(a).put(h, 8.);
+
+        graph.get(b).put(c, 8.);
+        graph.get(b).put(h, 11.);
+
+        graph.get(c).put(d, 7.);
+        graph.get(c).put(f, 4.);
+        graph.get(c).put(i, 2.);
+
+        graph.get(d).put(e, 9.);
+        graph.get(d).put(f, 14.);
+
+        graph.get(e).put(f, 10.);
+
+        graph.get(f).put(g, 2.);
+
+        graph.get(g).put(h, 1.);
+        graph.get(g).put(i, 6.);
+        
+        graph.get(h).put(i, 7.);
+
+        double[] outSum = new double[1];
+
+        Map<Integer, Map<Integer, Double>> mst = KruskalsMinimumSpanningTree
+	       .mst(graph, outSum);
+
+	//TODO: finish here
+	assertTrue(Math.abs(outSum[0] - expectedWeightSum) < 1E-7);
+
+	assertTrue(mst.containsKey(a));
+        assertTrue(mst.get(a).containsKey(b));
+        assertTrue(mst.get(a).containsKey(h));
+
+        assertTrue(mst.containsKey(c));
+        assertTrue(mst.get(c).containsKey(d));
+        assertTrue(mst.get(c).containsKey(f));
+        assertTrue(mst.get(c).containsKey(i));
+
+        assertTrue(mst.containsKey(d));
+        assertTrue(mst.get(d).containsKey(e));
+
+        assertTrue(mst.containsKey(f));
+        assertTrue(mst.get(f).containsKey(g));
+
+        assertTrue(mst.containsKey(g));
+        assertTrue(mst.get(g).containsKey(h));
+
+    }
 }
+    

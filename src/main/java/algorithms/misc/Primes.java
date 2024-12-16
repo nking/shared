@@ -482,9 +482,11 @@ public class Primes {
         int j;
         for (int i = 2; i < sqrtN; ++i) {
             if (b.isSet(i)) {
-                for (j = i*i; j < n && j <= (Integer.MAX_VALUE - i); j+=i) {
+                //for (j = i*i; j < n && j <= (Integer.MAX_VALUE - i); j+=i) {
+                for (j = i*i; j < n; j+=i) {
                     // remove all multiples of i
                     b.clearBit(j);
+		    if ((j + i) < j) break; // overflow
                 }
             }
         }

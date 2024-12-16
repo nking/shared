@@ -13,7 +13,11 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.stream.IntStream;
 
 /**
@@ -24,9 +28,10 @@ import java.util.stream.IntStream;
   Kruskal's grows a forest by sorting the edges first and then adding edges that 
   are not yet connected to the tree.
   
-  * RuntimeComplexity is O(|E| lg_2|E|), 
+  * Runtime Complexity is O(|E| lg_2|E|),
       which for sparse graphs having |E| .lt. |V|^2,
       gives O(|E| lg_2|V|).
+    so for dense graphs, one should prefere Prim's.
       
   Best time Kruskal's is O(|E| lg_2|V|).
   Best time  Prim's w/ fib heaps is O(|E| + |V|lg_2|V|).
@@ -166,4 +171,89 @@ public class KruskalsMinimumSpanningTree {
         return sortedKeys;
     }
     
+    /**
+     given an undirected weighted graph adjMap, find a minimum spanning tree, and return
+     it as an adjacency map of the original graph.
+     */
+    public static Map<Integer, Map<Integer, Double>> 
+        mst(Map<Integer, Map<Integer, Double>> adjMap, double[] outputSum) {
+
+	/*
+	 * sort the edges by weight and add them to the growing forest if not already
+	 * present.*/
+	int nEdges = 0;
+	for (int u : adjMap.keySet()) {
+	    nEdges += adjMap.get(u).size();
+        }
+
+	int[][] edges = new int[nEdges][];
+	double[] weights = new double[nEdges];
+	int i = 0;
+	for (int u : adjMap.keySet()) {
+            for (Map.Entry<Integer, Double> entry : adjMap.get(u).entrySet()) {
+		edges[i] = new int[]{u, entry.getKey()};
+		weights[i] = entry.getValue();
+                ++i;
+	    } 
+	}
+
+	List<int[]> tree = mst(edges, weights, outputSum);
+
+	Map<Integer, Map<Integer, Double>> out = new HashMap<>();
+
+        for (int[] edge : tree) {
+	    if (adjMap.containsKey(edge[0]) && adjMap.get(edge[0]).containsKey(edge[1])) {
+		out.putIfAbsent(edge[0], new HashMap<Integer, Double>());
+		out.get(edge[0]).put(edge[1], adjMap.get(edge[0]).get(edge[1]));
+            } else {
+		out.putIfAbsent(edge[1], new HashMap<Integer, Double>());
+		out.get(edge[1]).put(edge[0], adjMap.get(edge[1]).get(edge[0]));
+            } 
+	}	
+
+	return out;
+    }
+
+    /**
+     given an undirected weighted graph and weights, find a minimum spanning tree,
+     and return it as edges of the original graph.
+     */
+    public static List<int[]> mst(int[][] edges, double[] weights, double[] outputSum) {
+
+        int[] sortedIdxs = IntStream.range(0, edges.length) .boxed()
+	    .sorted( (i, j) -> Double.compare(weights[i], weights[j]))
+	    .mapToInt(ele -> ele).toArray();	
+
+	// count number of vertices
+	int nV = 0;
+	Set<Integer> vS = new HashSet<>();
+	for (int[] edge : edges) {
+	    vS.add(edge[0]);
+	    vS.add(edge[1]);
+	}
+
+        UnionFind uf = new UnionFind(vS.size());
+
+	List<int[]> out = new ArrayList<>();
+	
+	if (outputSum != null && outputSum.length > 0) {
+	    outputSum[0] = 0;
+	}
+
+	for (int i = 0; i < sortedIdxs.length; ++i) {
+
+	    if (out.size() == (vS.size()-1)) break;
+
+	    int idx = sortedIdxs[i];
+
+	    if (uf.find(edges[idx][0]) != uf.find(edges[idx][1])) {
+		uf.union(edges[idx][0], edges[idx][1]);
+
+		out.add(Arrays.copyOf(edges[idx], 2));
+		outputSum[0] += weights[idx];
+	    }
+	}
+
+	return out;
+    }
 }

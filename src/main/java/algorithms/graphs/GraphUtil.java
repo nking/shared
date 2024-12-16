@@ -615,4 +615,63 @@ public class GraphUtil {
         }
         return edges;
     }
+
+    public <T> int countNodes(Map<Integer, Map<Integer, T>> adjMap) {
+        Set<Integer> nodes = new HashSet<>();
+        for (int u : adjMap.keySet()) {
+            nodes.add(u);
+            for (int v : adjMap.get(u).keySet()) {
+                nodes.add(v);
+            }
+        }
+        return nodes.size();
+    }
+
+    protected static Map<Integer, List<double[]>> createSortedAdjList(int nNodes, Map<Integer, Map<Integer, Double>> adjMap0) {
+
+        Map<Integer, List<double[]>> adjMap = new HashMap<>();
+
+        for (int u : adjMap0.keySet()) {
+            for (Map.Entry<Integer, Double> entry : adjMap0.get(u).entrySet()) {
+                int v = entry.getKey();
+                double w = entry.getValue();
+                adjMap.putIfAbsent(u, new ArrayList<double[]>());
+                adjMap.putIfAbsent(v, new ArrayList<double[]>());
+                adjMap.get(u).add(new double[]{v, w});
+                adjMap.get(v).add(new double[]{u, w});
+            }
+        }
+
+        for (int key : adjMap.keySet()) {
+            Collections.sort(adjMap.get(key), (o1, o2) -> Double.compare(o1[1], o2[1]));
+        }
+
+        return adjMap;
+    }
+
+    public static int[] findMinWeightEdge(Map<Integer, Map<Integer, Double>> adjMap) {
+        double min = Double.POSITIVE_INFINITY;
+        int[] minEdge = new int[2];
+        for (int u : adjMap.keySet()) {
+            for (Map.Entry<Integer, Double> entry : adjMap.get(u).entrySet()) {
+                if (entry.getValue() < min) {
+                    min = entry.getValue();
+                    minEdge[0] = u;
+                    minEdge[1] = entry.getKey();
+                }
+            }
+        }
+        return minEdge;
+    }
+
+    public <T> int countNodes2(Map<Integer, Set<Integer>> adjMap) {
+        Set<Integer> nodes = new HashSet<>();
+        for (int u : adjMap.keySet()) {
+            nodes.add(u);
+            for (int v : adjMap.get(u)) {
+                nodes.add(v);
+            }
+        }
+        return nodes.size();
+    }
 }
