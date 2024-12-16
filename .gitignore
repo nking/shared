@@ -11,6 +11,7 @@ venv
 _*
 ._*
 *.class
+src/test/resources/nearly_integer_sum_k6.txt
 build.log
 log
 data
