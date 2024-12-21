@@ -43,8 +43,8 @@ expect that the total 392043 cycles was composed of:
       N_threads * (context switch + thread avg)
    estimate context switch = (392043 / 8192.) - 3.3
                      ~ 44 cycles
-           which agrees w/ expected write to memory from cache being
-           ~ 100 times a cache write ~ 100 ns on a COT computer
+           which agrees w/ expected write to memory from register being
+           ~ 100 times a cache write ~ 100 ns on a COTS computer
            (order of magnitude rough estimates)
 
 we can expect that if we were to use simd serially, that
