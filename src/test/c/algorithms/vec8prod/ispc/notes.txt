@@ -7,7 +7,7 @@ The unit test for N = 1<<16 = 65536 length input array produced
 the following results when run on a computer with these characteristics:
 
 Summary:  ispc method performed better than a serial per element product calculation
-in terms of completing a correct answer 5-5 times faster.
+in terms of completing a correct answer ~5 times faster.
 
 measurements taken using computer w/
     level 3 Cache: 3 MB shared (not used here)
