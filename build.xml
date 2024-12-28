@@ -238,7 +238,7 @@
             </classpath>
             <formatter type="plain" usefile="true"/>
             <jvmarg value="-enableassertions" />
-            <jvmarg value="-Xmx2048m" />
+            <jvmarg value="-Xmx1024m" />
             <!--
             <jvmarg value="-XX:MaxPermSize=512m" />
             -->
@@ -271,8 +271,14 @@
             </classpath>
             <formatter type="plain" usefile="true"/>
             <jvmarg value="-enableassertions" />
-            <jvmarg value="-Xmx2048m" />
+            <jvmarg value="-Xmx1024m" />
+            <!-- if having trouble allocating an array, consider also
+                 increasing the max size in bytes, of the young generation
+                 nursery with -Xmn<size> -->
+
             <!--
+            <jvmarg value="-Xmx2048m" />
+            <jvmarg value="-Xmx3072m" />
             <jvmarg value="-XX:MaxPermSize=512m" />
             -->
             <sysproperty key="java.util.logging.config.file" value="${src.out.dir}/logging.properties"/>
@@ -344,7 +350,7 @@
 
             <jvmarg line="-enableassertions -Xdebug -Xrunjdwp:transport=dt_socket,address=5005,server=y,suspend=y"/>
  
-            <jvmarg value="-Xmx2048m" />
+            <jvmarg value="-Xmx1024m" />
             <!--
             <jvmarg value="-XX:MaxPermSize=512m" />
             -->
