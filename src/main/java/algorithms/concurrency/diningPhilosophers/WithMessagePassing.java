@@ -14,7 +14,8 @@ public class WithMessagePassing extends AbstractDiningPhilosophers {
 
     /*
 
-    NOTE: when implementing, if not using blocking queues, consider Thread.onSpinWait() for condition...
+    NOTE: when implementing, if not using blocking queues,
+    consider Thread.onSpinWait() for condition...
 
         Chandy-Misra message passing algorithm:
 

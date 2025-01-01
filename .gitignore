@@ -31,8 +31,9 @@ tt
 tmp_tmp*
 tmp_tmp*/*
 A0*Test*
-tests/A0*
-tests/A?Test*
-tests/A??Test*
-tests/ATest*
+src/test/java/algorithms/A0*
+src/test/java/algorithms/A?Test*
+src/test/java/algorithms/A??Test*
+src/test/java/algorithms/ATest*
+src/main/java/thirdparty/kit/*
 target/

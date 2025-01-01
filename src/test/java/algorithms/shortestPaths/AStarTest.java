@@ -50,13 +50,13 @@ public class AStarTest extends TestCase {
         dAG[e].insert(dest);
         weights[e].put(dest, (2*2));
         
-        heuristics[a] = (2*4);
-        heuristics[b] = (2*2);
-        heuristics[c] = (2*4);
-        heuristics[d] = (int)(2*4.5);
-        heuristics[e] = (2*2);
-        
-        heuristics[src] = Integer.MAX_VALUE;
+        // heuris must be <= true dist
+        heuristics[src] = 2*(int)(Math.sqrt(5*5 + 3*3));
+        heuristics[a] = 2*(int)(Math.sqrt(4*4+3*3));
+        heuristics[b] = 2*(int)(Math.sqrt(2.5*2.5+4*4));
+        heuristics[c] = 2*(int)(Math.sqrt(4*4));
+        heuristics[d] = 2*(int)(Math.sqrt(1*1+5*5));
+        heuristics[e] = 2*(int)(Math.sqrt(2*2));
         heuristics[dest] = 0;
         
         AStar srch = new AStar(dAG, weights, heuristics, src, dest);
@@ -85,7 +85,7 @@ public class AStarTest extends TestCase {
          *-1  [0]/  1   2   3   4   5
          *
          *    -1
-         */
+         */  
 
         //SimpleLinkedListNode[] dAG, TIntIntMap[] weights, 
         //int[] heuristics, int sourceVertex, int destVertex

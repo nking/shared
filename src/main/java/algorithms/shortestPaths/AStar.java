@@ -176,6 +176,7 @@ public class AStar {
      * edge with value being the edge weight.
      @param heuristics an array of feasible heuristics with the array index 
      * being the node index.
+     Admissible heuristics are LEQ true distance from node to goal.
      <pre>
      for more information, see:
         http://theory.stanford.edu/~amitp/GameProgramming/Heuristics.html
@@ -339,9 +340,6 @@ public class AStar {
         g = new int[graph.length];
         Arrays.fill(g, sentinel);
                 
-        // presumably this is always correct:
-        h[src] = sentinel;
-        
         g[src] = 0;
         f[src] = h[src];
                 

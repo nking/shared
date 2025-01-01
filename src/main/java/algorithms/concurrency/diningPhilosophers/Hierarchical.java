@@ -22,7 +22,7 @@ public class Hierarchical extends AbstractDiningPhilosophers {
 
         this.forkLocks = new ReentrantLock[n];
         for (int i = 0; i < n; ++i) {
-            forkLocks[i] = new ReentrantLock();
+            forkLocks[i] = new ReentrantLock(true);
         }
     }
 

@@ -1,7 +1,6 @@
 to count the number of subsequences of a weight array that sum
 to a given target we can use an O(n) solution instead of the
-pseudo-polynomial r.t.c. of O(n*target) from using a standard
-knapsack-0-1 dp pattern.
+knapsack-0-1 pseudo-polynomial r.t.c. of O(n*target).
 
 Because order matters for the items in the weight array,
 we can use a sliding windows approach to count the number of
@@ -12,3 +11,16 @@ are dealing with ordered sets and can use principles of counting:
    the exact number of subsequences 
       = atMostCount(weights, target) - atMostCount(weights, target - 1)
 
+public long atMostCount(int[] weights, int target) {
+    long count = 0;
+    int sum = 0;
+    for (int right=0, left=0; right < weights.length; ++right) {
+        sum += weights[right];
+        while (sum > target && left <= right) {
+            sum -= weights[left];
+            ++left;
+        }
+        count += (right - left) + 1;
+    }
+    return count;
+}
