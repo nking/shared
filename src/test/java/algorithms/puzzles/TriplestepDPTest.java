@@ -14,8 +14,8 @@ public class TriplestepDPTest extends TestCase {
     the answer would be by composition: 2^(n-1).
 
     The author estimates the recursive solution as having
-    r.t.c. as O(3^n), but by sketch of the recursion tree,
-    can ve summarized as O(((1<<n) + (1<<(n-1)) + (1<<(n-2)))
+    r.t.c. as O(3^n), but a sketch of the recursion tree,
+    can be summarized as O(((1<<n) + (1<<(n-1)) + (1<<(n-2)))
     which closely approximates the nIter tracked below.
      */
 
