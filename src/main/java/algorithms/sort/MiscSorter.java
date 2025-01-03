@@ -164,24 +164,6 @@ public class MiscSorter {
         return indexes;
     }
 
-    public static class SortMetaData {
-        int[] indexes = null;
-        int numberOfInversions = -1;
-    }
-
-    public static SortMetaData mergeSortCountInversions(double[] a1) {
-        int[] indexes = new int[a1.length];
-        for (int i = 0; i < indexes.length; ++i) {
-            indexes[i] = i;
-        }
-
-        SortMetaData d = new SortMetaData();
-        d.indexes = indexes;
-        d.numberOfInversions = sortBy1stArg(a1, indexes, 0, a1.length - 1, true);
-
-        return d;
-    }
-    
     /**
      * use merge sort to sort a1 in increasing value order and return the 
      * indexes of the original a1 indexes in the sorted order.
@@ -237,8 +219,8 @@ public class MiscSorter {
                         t[idxT] = y[st1];
                         ++st1;
                     } else {
-                        // inversion: a pair is a[st1], a[st2]
-                        System.out.printf("inversion (%.3e,%.3e)\n", y[st1], y[st2]);
+                        // inversion: a pair is a[st1], a[st2] counts swaps more than once though in terms of entire array
+                        ///System.out.printf("inversion (%.3e,%.3e)\n", y[st1], y[st2]);
                         t[idxT] = y[st2];
                         ++st2;
                     }
@@ -317,7 +299,7 @@ public class MiscSorter {
                         idxN2[k-1][colS] = idx1;
                         ++st1;
                     } else {
-                        // an inversion pair is y[idx1], y[idx2]
+                        // an inversion pair is y[idx1], y[idx2]  counts swaps more than once though in terms of entire array
                         //System.out.printf("inversion idxL1=%d idxL2=%d (%.3e,%.3e)\n", idx1, idx2, y[idx1], y[idx2]);
                         idxN2[k-1][colS] = idx2;
                         ++st2;
@@ -1586,9 +1568,8 @@ public class MiscSorter {
      @param idxLo
      @param idxHi 
      @param ascendingSort
-     @return number of inversions
      */
-    private static int sortBy1stArg(double[] a1, int[] a2, int idxLo,
+    public static void sortBy1stArg(double[] a1, int[] a2, int idxLo,
         int idxHi, boolean ascendingSort) {
 
         int nInv = 0;
@@ -1597,13 +1578,12 @@ public class MiscSorter {
 
             int indexMid = (idxLo + idxHi) >> 1;
 
-            nInv += sortBy1stArg(a1, a2, idxLo, indexMid, ascendingSort);
+            sortBy1stArg(a1, a2, idxLo, indexMid, ascendingSort);
 
-            nInv += sortBy1stArg(a1, a2, indexMid + 1, idxHi, ascendingSort);
+            sortBy1stArg(a1, a2, indexMid + 1, idxHi, ascendingSort);
 
-            nInv += mergeBy1stArg(a1, a2, idxLo, indexMid, idxHi, ascendingSort);
+            mergeBy1stArg(a1, a2, idxLo, indexMid, idxHi, ascendingSort);
         }
-        return nInv;
     }
     
     private static int mergeBy1stArg(double[] a1, int[] a2,

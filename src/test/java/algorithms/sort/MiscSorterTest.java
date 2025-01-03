@@ -291,21 +291,6 @@ public class MiscSorterTest extends TestCase {
         
     }
 
-    public void testMergeSortCountInversions() {
-
-        double[] a;
-        int nInv;
-        MiscSorter.SortMetaData data;
-
-        a = new double[]{3, 7, 1, 5};
-        data = MiscSorter.mergeSortCountInversions(a);
-        assertEquals(3, data.numberOfInversions);
-
-        a = new double[]{3, 7, 1, 5, 1, 40, 12, -12};//3+4+1+2+1+2+1
-        data = MiscSorter.mergeSortCountInversions(a);
-        assertEquals(14, data.numberOfInversions);
-
-    }
     public void testSortByFirstArgument_1() {
 
         int[] a = new int[]{3, 7, 1, 5};
