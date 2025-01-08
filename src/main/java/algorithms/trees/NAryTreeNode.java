@@ -1,5 +1,6 @@
-package algorithms;
+package algorithms.trees;
 
+import algorithms.DoublyLinkedList;
 import algorithms.DoublyLinkedList.DoublyLinkedNode;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;

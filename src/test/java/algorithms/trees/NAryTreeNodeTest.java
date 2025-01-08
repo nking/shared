@@ -1,5 +1,6 @@
-package algorithms;
+package algorithms.trees;
 
+import algorithms.DoublyLinkedList;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 
@@ -31,10 +32,10 @@ public class NAryTreeNodeTest extends TestCase {
          10 11 12    13 14                             15
         */
         int n = 16;
-        NAryTreeNode[] nodes = new NAryTreeNode[n];
+        algorithms.trees.NAryTreeNode[] nodes = new algorithms.trees.NAryTreeNode[n];
         int i;
         for (i = 0; i < n; ++i) {
-            nodes[i] = new NAryTreeNode(i);
+            nodes[i] = new algorithms.trees.NAryTreeNode(i);
         }
         nodes[0].addChild(nodes[1]);
         nodes[1].addChild(nodes[3]);
@@ -62,13 +63,13 @@ public class NAryTreeNodeTest extends TestCase {
         assertTrue(nodes[14].getChildren().isEmpty());
         assertFalse(nodes[0].getChildren().isEmpty());
         
-        NAryTreeNode copiedNode = NAryTreeNode.copyTree(nodes[0]);
-        TreeTraversal tt = new TreeTraversal();
-        DoublyLinkedList<NAryTreeNode> copiedLevOrdTraversal = 
+        algorithms.trees.NAryTreeNode copiedNode = algorithms.trees.NAryTreeNode.copyTree(nodes[0]);
+        algorithms.trees.TreeTraversal tt = new TreeTraversal();
+        DoublyLinkedList<NAryTreeNode> copiedLevOrdTraversal =
             tt.getLevelOrderIterative(copiedNode);
         assertEquals(n, copiedLevOrdTraversal.size());
-        NAryTreeNode current = copiedLevOrdTraversal.peekFirst();
-        Set<NAryTreeNode> children;
+        algorithms.trees.NAryTreeNode current = copiedLevOrdTraversal.peekFirst();
+        Set<algorithms.trees.NAryTreeNode> children;
         TIntSet copiedChildrenData;
         while (current != null) {
             if (current.getParent() != null) {
@@ -81,15 +82,15 @@ public class NAryTreeNodeTest extends TestCase {
             
             assertEquals(children.size(), copiedChildrenData.size());
 
-            for (NAryTreeNode child : children) {
+            for (algorithms.trees.NAryTreeNode child : children) {
                 assertTrue(copiedChildrenData.contains(child.getData()));
             }
             
-            current = (NAryTreeNode) current.next;
+            current = (algorithms.trees.NAryTreeNode) current.next;
         }
     }    
 
-    private TIntSet getData(Set<NAryTreeNode> children) {
+    private TIntSet getData(Set<algorithms.trees.NAryTreeNode> children) {
         TIntSet set = new TIntHashSet();
         for (NAryTreeNode child : children) {
             set.add(child.getData());

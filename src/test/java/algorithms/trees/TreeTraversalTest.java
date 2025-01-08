@@ -1,5 +1,6 @@
-package algorithms;
+package algorithms.trees;
 
+import algorithms.DoublyLinkedList;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import junit.framework.TestCase;
@@ -10,7 +11,7 @@ import junit.framework.TestCase;
  */
 public class TreeTraversalTest extends TestCase {
 
-    
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public void test2() {
 
         /*
@@ -20,10 +21,10 @@ public class TreeTraversalTest extends TestCase {
          7     10     8      11
                         9   12 13
          */
-        BinaryTreeNode[] nodes = new BinaryTreeNode[14];
+        algorithms.trees.BinaryTreeNode<Integer>[] nodes = new algorithms.trees.BinaryTreeNode[14];
         int i;
         for (i = 0; i < nodes.length; ++i) {
-            nodes[i] = new BinaryTreeNode(i);
+            nodes[i] = new algorithms.trees.BinaryTreeNode<Integer>(i);
         }
         nodes[0].setLeft(nodes[1]);
         nodes[0].setRight(nodes[2]);
@@ -53,7 +54,7 @@ public class TreeTraversalTest extends TestCase {
         nodes[12].setParent(nodes[11]);
         nodes[13].setParent(nodes[11]);
 
-        TreeTraversal btt = new TreeTraversal();
+        algorithms.trees.TreeTraversal btt = new algorithms.trees.TreeTraversal();
         
         System.out.println("pre-order:");
         btt.preorderRecursive(nodes[0]);
@@ -92,10 +93,10 @@ public class TreeTraversalTest extends TestCase {
         visited: 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
         */
         int n = 16;
-        NAryTreeNode[] nodes = new NAryTreeNode[n];
+        algorithms.trees.NAryTreeNode[] nodes = new algorithms.trees.NAryTreeNode[n];
         int i;
         for (i = 0; i < n; ++i) {
-            nodes[i] = new NAryTreeNode(i);
+            nodes[i] = new algorithms.trees.NAryTreeNode(i);
         }
         nodes[0].addChild(nodes[1]);
         nodes[1].addChild(nodes[3]);
@@ -115,17 +116,18 @@ public class TreeTraversalTest extends TestCase {
         nodes[9].addChild(nodes[15]);
         
         //System.out.println("NAry-tree reversed level order traversal");
-        TreeTraversal tt = new TreeTraversal();
+        algorithms.trees.TreeTraversal tt = new algorithms.trees.TreeTraversal();
         DoublyLinkedList<NAryTreeNode> rlo = tt.getReverseLevelOrderIterative2(nodes[0]);
         assertEquals(n, rlo.size());
-        NAryTreeNode current = rlo.peekFirst();
+        algorithms.trees.NAryTreeNode current = rlo.peekFirst();
         for (i = 0; i < rlo.size(); ++i) {
             //System.out.printf("%d, ", current.getData());
     //        assertEquals(n-i-1, current.getData());
-            current = (NAryTreeNode) current.next;
+            current = (algorithms.trees.NAryTreeNode) current.next;
         }
         //System.out.println();
     }
+
 
     public void testNAryLevelOrder() {
         /*
@@ -151,10 +153,10 @@ public class TreeTraversalTest extends TestCase {
         expectedLevels[4] = new TIntHashSet(new int[]{10, 11, 12, 13, 14, 15});
         
         int n = 16;
-        NAryTreeNode[] nodes = new NAryTreeNode[n];
+        algorithms.trees.NAryTreeNode[] nodes = new algorithms.trees.NAryTreeNode[n];
         int i;
         for (i = 0; i < n; ++i) {
-            nodes[i] = new NAryTreeNode(i);
+            nodes[i] = new algorithms.trees.NAryTreeNode(i);
         }
         nodes[0].addChild(nodes[1]);
         nodes[1].addChild(nodes[3]);
@@ -174,10 +176,10 @@ public class TreeTraversalTest extends TestCase {
         nodes[9].addChild(nodes[15]);
         
         //System.out.println("NAry-tree level order traversal");
-        TreeTraversal tt = new TreeTraversal();
-        DoublyLinkedList<NAryTreeNode> rlo = tt.getLevelOrderIterative(nodes[0]);
+        algorithms.trees.TreeTraversal tt = new algorithms.trees.TreeTraversal();
+        DoublyLinkedList<algorithms.trees.NAryTreeNode> rlo = tt.getLevelOrderIterative(nodes[0]);
         assertEquals(n, rlo.size());
-        NAryTreeNode current = rlo.peekFirst();
+        algorithms.trees.NAryTreeNode current = rlo.peekFirst();
         TIntSet expectedLevel = null;
         int j;
         for (i = 0; i < rlo.size(); ++i) {
@@ -207,21 +209,22 @@ public class TreeTraversalTest extends TestCase {
         0   2     4   6               10    12
      * @return
      */
+
     public void testPredecessor() {
-        TreeTraversal traversal = new TreeTraversal();
-        BinaryTreeNode root = getTree0();
-        BinaryTreeNode r;
+        algorithms.trees.TreeTraversal traversal = new algorithms.trees.TreeTraversal();
+        algorithms.trees.BinaryTreeNode<Integer> root = getTree0();
+        algorithms.trees.BinaryTreeNode<Integer> r;
 
         // get pred of node 9
         r = traversal.predeccesor(root.getRight().getLeft());
-        assertEquals(7, r.getData());
+        assertEquals(7, r.data.intValue());
         // get pred of node 5
         r = traversal.predeccesor(root.getLeft().getRight());
-        assertEquals(4, r.getData());
+        assertEquals(4, r.getData().intValue());
 
         // get pred of root
         r = traversal.predeccesor(root);
-        assertEquals(6, r.getData());
+        assertEquals(6, r.getData().intValue());
 
         // pred for 0
         r = traversal.predeccesor(root.getLeft().getLeft().getLeft());
@@ -236,28 +239,29 @@ public class TreeTraversalTest extends TestCase {
         0   2     4   6               10    12
      * @return
      */
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public void testSuccessor() {
-        TreeTraversal traversal = new TreeTraversal();
-        BinaryTreeNode root = getTree0();
-        BinaryTreeNode r;
+        algorithms.trees.TreeTraversal traversal = new TreeTraversal();
+        algorithms.trees.BinaryTreeNode<Integer> root = getTree0();
+        algorithms.trees.BinaryTreeNode<Integer> r;
 
         // get successor of node 9
         r = traversal.successor(root.getRight().getLeft());
-        assertEquals(10, r.getData());
+        assertEquals(10, r.getData().intValue());
 
         // get successor of node 10
         r = traversal.successor(root.getRight().getLeft().getRight());
-        assertEquals(11, r.getData());
+        assertEquals(11, r.getData().intValue());
 
         // remove node 6
         root.getLeft().getRight().setRight(null);
         // get successor of node 5
         r = traversal.successor(root.getLeft().getRight());
-        assertEquals(7, r.getData());
+        assertEquals(7, r.getData().intValue());
 
         // get successor of root
         r = traversal.successor(root);
-        assertEquals(9, r.getData());
+        assertEquals(9, r.getData().intValue());
 
         // get successor of 13
         r = traversal.successor(root.getRight().getRight());
@@ -271,8 +275,8 @@ public class TreeTraversalTest extends TestCase {
         0   2     4   6               10    12
      * @return
      */
-    public BinaryTreeNode getTree0() {
-        BinaryTreeNode root = new BinaryTreeNode(7);
+    public algorithms.trees.BinaryTreeNode<Integer> getTree0() {
+        algorithms.trees.BinaryTreeNode<Integer> root = new algorithms.trees.BinaryTreeNode<Integer>(7);
         addLeft(root, 3);
         addLeft(root.getLeft(),1);
         addRight(root.getLeft(),5);
@@ -289,14 +293,14 @@ public class TreeTraversalTest extends TestCase {
         addLeft(root.getRight().getRight(),12);
         return root;
     }
-    protected BinaryTreeNode addLeft(BinaryTreeNode node, int val) {
-        BinaryTreeNode node2 = new BinaryTreeNode(val);
+    protected algorithms.trees.BinaryTreeNode<Integer> addLeft(algorithms.trees.BinaryTreeNode<Integer> node, int val) {
+        algorithms.trees.BinaryTreeNode<Integer> node2 = new algorithms.trees.BinaryTreeNode<Integer>(val);
         node.setLeft(node2);
         node2.setParent(node);
         return node;
     }
-    protected BinaryTreeNode addRight(BinaryTreeNode node, int val) {
-        BinaryTreeNode node2 = new BinaryTreeNode(val);
+    protected algorithms.trees.BinaryTreeNode<Integer> addRight(algorithms.trees.BinaryTreeNode<Integer> node, int val) {
+        algorithms.trees.BinaryTreeNode<Integer> node2 = new BinaryTreeNode<Integer>(val);
         node.setRight(node2);
         node2.setParent(node);
         return node;

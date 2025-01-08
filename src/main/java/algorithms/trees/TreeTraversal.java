@@ -1,5 +1,6 @@
-package algorithms;
+package algorithms.trees;
 
+import algorithms.DoublyLinkedList;
 import algorithms.heapsAndPQs.HeapNode;
 
 import java.util.*;
@@ -23,7 +24,7 @@ public class TreeTraversal {
      </pre>
      @param root root of tree
      */
-    public void preorderRecursive(BinaryTreeNode root) {
+    public void preorderRecursive(BinaryTreeNode<Integer> root) {
         if (root != null) {
             System.out.println(root.getData());
             preorderRecursive(root.getLeft());
@@ -38,12 +39,12 @@ public class TreeTraversal {
                 3                        11
            1         5              9         13
         0   2     4   6           8   10    12
-                        
+
      visits: 0,1,2,3,4,5,6,7,8,9,10,11,12,13
      </pre>
      @param root tree root
      */
-    public void inorderRecursive(BinaryTreeNode root) {
+    public void inorderRecursive(BinaryTreeNode<Integer> root) {
         if (root != null) {
             inorderRecursive(root.getLeft());
             System.out.printf("%d, ", root.getData());
@@ -65,7 +66,7 @@ public class TreeTraversal {
      </pre>
      @param root tree root
      */
-    public void postorderRecursive(BinaryTreeNode root) {
+    public void postorderRecursive(BinaryTreeNode<Integer> root) {
         if (root != null) {
             postorderRecursive(root.getLeft());
             postorderRecursive(root.getRight());
@@ -86,8 +87,8 @@ public class TreeTraversal {
      </pre>
      @param node
      */
-    public void preorderIterative(BinaryTreeNode node) {
-        Stack<BinaryTreeNode> stack = new Stack<>();
+    public void preorderIterative(BinaryTreeNode<Integer> node) {
+        Stack<BinaryTreeNode<Integer>> stack = new Stack<>();
         while (!stack.isEmpty() || node != null) {
             if (node != null) {
                 System.out.printf("%d, ", node.getData());
@@ -100,7 +101,7 @@ public class TreeTraversal {
         }
         System.out.println();
     }
-    
+
     /**
      * left subtree, root, right subtree
      <pre>
@@ -114,8 +115,8 @@ public class TreeTraversal {
      </pre>
      @param node
      */
-    public void inorderIterative(BinaryTreeNode node) {
-        Stack<BinaryTreeNode> stack = new Stack<>();
+    public void inorderIterative(BinaryTreeNode<Integer> node) {
+        Stack<BinaryTreeNode<Integer>> stack = new Stack<>();
         int c = 0;
         while (!stack.isEmpty() || node != null) {
             c++;
@@ -133,9 +134,9 @@ public class TreeTraversal {
     }
 
     static class Snapshot {
-        final BinaryTreeNode node;
+        final BinaryTreeNode<Integer> node;
         int stage;
-        public Snapshot(BinaryTreeNode node, int stage) {
+        public Snapshot(BinaryTreeNode<Integer> node, int stage) {
             this.node = node;
             this.stage = stage;
         }
@@ -154,8 +155,8 @@ public class TreeTraversal {
      @param node
      */
 
-    public void inorderIterative2(BinaryTreeNode node) {        
-        // recursion to iteration: 
+    public void inorderIterative2(BinaryTreeNode<Integer> node) {
+        // recursion to iteration:
         //    https://www.codeproject.com/Articles/418776/How-to-replace-recursive-functions-using-stack-and
         Stack<Snapshot> s = new Stack<Snapshot>();
         s.push(new Snapshot(node, 0));
@@ -170,14 +171,14 @@ public class TreeTraversal {
                     case 0: {
                         currentSnapshot.stage++;
                         s.push(currentSnapshot);
-                        s.push(new Snapshot(currentSnapshot.node.getLeft(), 0));                        
+                        s.push(new Snapshot(currentSnapshot.node.getLeft(), 0));
                         break;
                     }
                     case 1: {
-                       System.out.printf("%d, ", currentSnapshot.node.getData());                        
+                       System.out.printf("%d, ", currentSnapshot.node.getData());
                         currentSnapshot.stage++;
                         s.push(currentSnapshot);
-                        break; 
+                        break;
                     }
                     case 2:{
                         s.push(new Snapshot(currentSnapshot.node.getRight(), 0));
@@ -189,7 +190,7 @@ public class TreeTraversal {
         System.out.printf("  nCalls=%d", c);
         System.out.println();
     }
-    
+
     /**
      * left subtree, right subtree, root
      <pre>
@@ -208,9 +209,9 @@ public class TreeTraversal {
          https://www.cs.odu.edu/~zeil/cs361/latest/Public/recursionConversion/index.html
      @param node
      */
-    public void postorderIterative(BinaryTreeNode node) {
-        Stack<BinaryTreeNode> stack = new Stack<>();
-        Stack<BinaryTreeNode> stack2 = new Stack<>();
+    public void postorderIterative(BinaryTreeNode<Integer> node) {
+        Stack<BinaryTreeNode<Integer>> stack = new Stack<>();
+        Stack<BinaryTreeNode<Integer>> stack2 = new Stack<>();
         stack.push(node);
         while (!stack.isEmpty()) {
             node = stack.pop();
@@ -243,8 +244,8 @@ public class TreeTraversal {
      </pre>
      @param node tree root
      */
-    public void levelOrderIterative(BinaryTreeNode node) {
-        Queue<BinaryTreeNode> queue = new ArrayDeque<>();
+    public void levelOrderIterative(BinaryTreeNode<Integer> node) {
+        Queue<BinaryTreeNode<Integer>> queue = new ArrayDeque<>();
         while (node != null) {
             System.out.printf("%d, ", node.getData());
             if (node.getLeft() != null) {
@@ -257,13 +258,13 @@ public class TreeTraversal {
         }
         System.out.println();
     }
-    
+
     /**
      *
      @param node
      */
     public static void printLevelOrder(HeapNode node) {
-        
+
         Queue<HeapNode> queue = new ArrayDeque<>();
         Queue<Integer> nodeLevel = new ArrayDeque<>();
         Queue<Long> nodeParent = new ArrayDeque<>();
@@ -272,16 +273,16 @@ public class TreeTraversal {
         int level = 0;
         Character lOrR = '-';
         Long parent = -1L;
-        
+
         while (node != null) {
-            
-            System.out.printf("L=%d, [%d, %s], %s of key %d\n", 
+
+            System.out.printf("L=%d, [%d, %s], %s of key %d\n",
                 level, node.getKey(), node.getData() != null ?
                 ((Integer)node.getData()).toString() : "-",
                 lOrR, parent);
-            
+
             ++level;
-            
+
             if (node.getLeft() != null) {
                 queue.add(node.getLeft());
                 nodeLevel.add(level);
@@ -322,9 +323,9 @@ public class TreeTraversal {
      </pre>
      @param node
      */
-    public void reverseLevelOrderIterative(BinaryTreeNode node) {
-        Queue<BinaryTreeNode> queue = new ArrayDeque<>();//FIFO
-        Stack<BinaryTreeNode> stack2 = new Stack<>();
+    public void reverseLevelOrderIterative(BinaryTreeNode<Integer> node) {
+        Queue<BinaryTreeNode<Integer>> queue = new ArrayDeque<>();//FIFO
+        Stack<BinaryTreeNode<Integer>> stack2 = new Stack<>();
         queue.add(node);
         while (!queue.isEmpty()) {
             node = queue.remove();//retrieves first in list
@@ -342,11 +343,11 @@ public class TreeTraversal {
         }
         System.out.println();
     }
-    
+
     /**
      * given a tree represented by node, return a doubly-linked list of nodes
      * visited in a reverse level-order traversal.
-     * 
+     *
      @param node the tree to be traversed from bottom up to this node using
      * reverse level-order traversal.
      * NOTE that any next and prev links in the tree are overwritten by the
@@ -355,15 +356,15 @@ public class TreeTraversal {
      @return a double-linked list of nodes in reverse level order traversal.
      */
     public DoublyLinkedList<NAryTreeNode> getReverseLevelOrderIterative2(NAryTreeNode node) {
-        
+
         DoublyLinkedList<NAryTreeNode> out = new DoublyLinkedList<NAryTreeNode>();
-        
+
         Queue<NAryTreeNode> queue = new ArrayDeque<>();//FIFO
         Stack<NAryTreeNode> stack2 = new Stack<>();
         queue.add(node);
-        
+
         Set<NAryTreeNode> children;
-        
+
         while (!queue.isEmpty()) {
             node = queue.remove();//retrieves first in list
             stack2.push(node);
@@ -379,7 +380,7 @@ public class TreeTraversal {
         }
         return out;
     }
-    
+
     /**
      * a.k.a. breadth first traversal
      <pre>
@@ -392,7 +393,7 @@ public class TreeTraversal {
      visits: 7, 3, 11, 1, 5, 9, 13, 0, 2, 4, 6, 8, 10, 12
      </pre>
      @param node n-ary tree root
-     @return 
+     @return
      */
     public DoublyLinkedList<NAryTreeNode> getLevelOrderIterative(NAryTreeNode node) {
         Queue<NAryTreeNode> queue = new ArrayDeque<>();
@@ -410,16 +411,16 @@ public class TreeTraversal {
         }
         return out;
     }
-    
+
     /**
-     * 
+     *
      @param node tree root
      @return a double-linked list of nodes in reverse level order traversal.
      */
-    public DoublyLinkedList<BinaryTreeNode> getReverseLevelOrderIterative(BinaryTreeNode node) {
-        DoublyLinkedList<BinaryTreeNode> out = new DoublyLinkedList<BinaryTreeNode>();
-        Queue<BinaryTreeNode> queue = new ArrayDeque<>();//FIFO
-        Stack<BinaryTreeNode> stack2 = new Stack<>();
+    public List<BinaryTreeNode<Integer>> getReverseLevelOrderIterative(BinaryTreeNode<Integer> node) {
+        List<BinaryTreeNode<Integer>> out = new ArrayList<>();
+        Queue<BinaryTreeNode<Integer>> queue = new ArrayDeque<>();//FIFO
+        Stack<BinaryTreeNode<Integer>> stack2 = new Stack<>();
         queue.add(node);
         while (!queue.isEmpty()) {
             node = queue.remove();//retrieves first in list
@@ -447,15 +448,15 @@ public class TreeTraversal {
      * @param node
      * @return
      */
-    public BinaryTreeNode successor(BinaryTreeNode node) {
+    public BinaryTreeNode<Integer> successor(BinaryTreeNode<Integer> node) {
         if (node.getRight() != null) {
             // left most node in right subtree
             return minimum(node.getRight());
         }
 
         // find lowest ancestor of node whose left child is an ancestor of node.
-        BinaryTreeNode parent = node.getParent();
-        BinaryTreeNode child = node;
+        BinaryTreeNode<Integer> parent = node.getParent();
+        BinaryTreeNode<Integer> child = node;
         while (parent != null && child == parent.getRight()) {
             child = parent;
             parent = parent.getParent();
@@ -480,14 +481,14 @@ public class TreeTraversal {
      * @param node
      * @return
      */
-    public BinaryTreeNode predeccesor(BinaryTreeNode node) {
+    public BinaryTreeNode<Integer> predeccesor(BinaryTreeNode<Integer> node) {
         if (node.getLeft() != null) {
             // max in left subtree
             return maximum(node.getLeft());
         }
         // find max in parent left subtree
-        BinaryTreeNode parent = node.getParent();
-        BinaryTreeNode child = node;
+        BinaryTreeNode<Integer> parent = node.getParent();
+        BinaryTreeNode<Integer> child = node;
         while (parent != null && child == parent.getLeft()) {
             child = parent;
             parent = parent.getParent();
@@ -512,7 +513,7 @@ public class TreeTraversal {
      * @param node
      * @return
      */
-    public BinaryTreeNode minimum(BinaryTreeNode node) {
+    public BinaryTreeNode<Integer> minimum(BinaryTreeNode<Integer> node) {
         while (node.getLeft() != null) {
             node = node.getLeft();
         }
@@ -536,7 +537,7 @@ public class TreeTraversal {
      * @param node
      * @return
      */
-    public BinaryTreeNode maximum(BinaryTreeNode node) {
+    public BinaryTreeNode<Integer> maximum(BinaryTreeNode<Integer> node) {
         while (node.getRight() != null) {
             node = node.getRight();
         }
