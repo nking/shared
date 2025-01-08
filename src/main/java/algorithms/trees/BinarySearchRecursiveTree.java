@@ -12,45 +12,15 @@ import java.util.Stack;
  * @param <T> data type within the BinaryTreeNode
  * @param <S> the BinaryTreeNode or extension
  */
-public class BinarySearchRecursiveTree<T extends Comparable<T>, S extends BinaryTreeNode<T>> {
+public class BinarySearchRecursiveTree<T extends Comparable<T>, S extends BinaryTreeNode<T>>
+        extends AbstractBinarySearchTree<T, S> {
+        //<T extends Comparable<T>, S extends BinaryTreeNode<T>>
+//extends AbstractBinarySearchTree<T, S> {
 
-    protected S root = null;
+    // NOTE" internally, uses convention for interpreting S.compareTo
+    // as left is < 0 else right
 
     public BinarySearchRecursiveTree(){}
-
-    /**
-     * insert data and return the node.  Note that every delete operation modifies the tree
-     * in non-recursive version, so do not rely on the state of any node retained after
-     * a bst delete.
-     * @param data
-     * @return
-     */
-    public S insert(T data) {
-        S node = newNode(data);
-        root = _insert(root, node);
-        return node;
-    }
-
-    protected void updateN(BinaryTreeNode<T> node) {
-        if (node == null) return;
-        node.n = 1;
-        if (node.left != null) {
-            node.n += node.left.n;
-        }
-        if (node.right != null) {
-            node.n += node.right.n;
-        }
-    }
-
-    protected void updateNAndAncestors(BinaryTreeNode<T> node) {
-        if (node == null) return;
-        updateN(node);
-        BinaryTreeNode<T> parent = node.parent;
-        while (parent != null) {
-            updateN(parent);
-            parent = parent.parent;
-        }
-    }
 
     /**
      * method to construct a BinaryTree node or extension.  overrride as needed.
@@ -58,7 +28,7 @@ public class BinarySearchRecursiveTree<T extends Comparable<T>, S extends Binary
      * @param data
      * @return
      */
-    protected S newNode(T data) {
+    public S newNode(T data) {
         return (S) new BinaryTreeNode<T>(data);
     }
 
@@ -95,14 +65,6 @@ public class BinarySearchRecursiveTree<T extends Comparable<T>, S extends Binary
         return top;
     }
 
-    public boolean contains(T data) {
-        return (search(data) != null);
-    }
-
-    protected S search(T data) {
-        return _search(root, data);
-    }
-
     protected S _search(S top, T data) {
         if (top == null) {
             return null;
@@ -115,16 +77,6 @@ public class BinarySearchRecursiveTree<T extends Comparable<T>, S extends Binary
         } else {
             return _search((top.right == null) ? null : (S)top.right, data);
         }
-    }
-
-    /**
-     * delete tree a single node having value data.
-     * @param node
-     * @return
-     */
-    public boolean delete(T data) {
-        S node = search(data);
-        return delete(node);
     }
 
     /**
@@ -192,186 +144,16 @@ public class BinarySearchRecursiveTree<T extends Comparable<T>, S extends Binary
     }
 
     /**
-     * find minimum node for subtree top.
-     * @param top
-     * @return minimum node
-     * @param <T> comparable data carried by BinaryTreeNode
-     */
-    public S minimum(BinaryTreeNode<T> top) {
-        if (top == null) return null;
-        // is left node
-        BinaryTreeNode<T> node = top;
-        while (node.left != null) {
-            node = (node.left == null) ? null : node.left;
-        }
-        return (node == null) ? null : (S)node;
-    }
-
-    /**
-     * find maximum node for subtree top.
-     * @param top
-     * @return minimum node
-     * @param <T> comparable data carried by BinaryTreeNode
-     */
-    public S maximum(BinaryTreeNode<T> top) {
-        if (top == null) return null;
-        // is rightmost node
-        BinaryTreeNode<T> node = top;
-        while (node.right != null) {
-            node = node.right;
-        }
-        return (node == null) ? null : (S)node;
-    }
-
-    /**
-     * find successor node for node.
-     * @param top
-     * @return successor node
-     * @param <T> comparable data carried by BinaryTreeNode
-     */
-    public S successor(BinaryTreeNode<T> node) {
-        if (node == null) return null;
-        /*
-                0
-           10        20
-                  11     30
-                        21
-         */
-        if (node.right != null) {
-            return minimum(node.right);
-        }
-        // find lowest ancestor of node whose left child is an ancestor of node
-        BinaryTreeNode<T> p = node.parent;
-        while (p != null && p.right != null && p.right.equals(node)) {
-            p = p.parent;
-        }
-        return (p == null) ? null : (S)p;
-    }
-
-    /**
-     * find predecessor node for node.
-     * @param top
-     * @return predecessor node
-     * @param <T> comparable data carried by BinaryTreeNode
-     */
-    public S predecessor(BinaryTreeNode<T> node) {
-        if (node == null) return null;
-        /*
-                0
-           10        20
-                  11     30
-                        21
-         */
-        if (node.left != null) {
-            return maximum(node.right);
-        }
-        // find lowest ancestor of node whose right child is an ancestor of node
-        BinaryTreeNode<T> p = node.parent;
-        while (p != null && p.left != null && p.left.equals(node)) {
-            p = p.parent;
-        }
-        return (p == null) ? null : (S)p;
-    }
-
-    /**
-     * rotate node to the right
-     <pre>
-     e.g.
-     given tree or subtree A:
-              A
-           B      C
-        D    E
-     rightRotate(A) creates:
-              B
-           D      A
-                 E  C
-     </pre>
-     * @param node
+     * insert data and return the node.  Note that every delete operation modifies the tree
+     * in non-recursive version, so do not rely on the state of any node retained after
+     * a bst delete.
+     * @param data
      * @return
      */
-    protected BinaryTreeNode<T> rotateRight(BinaryTreeNode<T> node) {
-        BinaryTreeNode<T> tmp = node.left; //*
-        BinaryTreeNode<T> p = node.parent;
-        node.left = tmp.right; //*
-
-        tmp.right = node;  //*
-        node.parent = tmp;
-        tmp.parent = p;
-
-        if (node.left != null) {
-            node.left.parent = node;
-        }
-
-        if (p != null) {
-            if (p.left.equals(node)) {
-                p.left = tmp;
-            } else {
-                p.right = tmp;
-            }
-        }
-        return tmp;
+    public S insert(T data) {
+        // method implemented for sake of method documentation which is a warning.
+        return super.insert(data);
     }
 
-    /**
-     rotate node to the left
-     <pre>
-     e.g.
-     given tree or subtree B:
-              B
-           D      A
-                 E  C
-     leftRotate(B) creates:
-              A
-           B      C
-        D    E
-     </pre>
-     @param node
-     @return
-     */
-    protected BinaryTreeNode<T> rotateLeft(BinaryTreeNode<T> node) {
-        BinaryTreeNode<T> node2 = node.right; //*
-        BinaryTreeNode<T> p = node.parent;
-        node.right = node2.left; //*
 
-        node2.left = node;  //*
-        node.parent = node2;
-        node2.parent = p;
-
-        if (node.right != null) {
-            node.right.parent = node;
-        }
-
-        if (p != null) {
-            if (p.left.equals(node)) {
-                p.left = node2;
-            } else {
-                p.right = node2;
-            }
-        }
-        return node2;
-    }
-
-    /**
-     * return data from in-order traversal of tree.
-     * @return
-     */
-    public List<T> inOrderTraversal() {
-        List<T> out = new ArrayList<>();
-        BinaryTreeNode<T> node = root;
-        if (node == null) {
-            return out;
-        }
-        Stack<BinaryTreeNode<T>> s = new Stack<>();
-        while (!s.isEmpty() || node != null) {
-            if (node != null) {
-                s.push(node);
-                node = node.left;
-            } else {
-                node = s.pop();
-                out.add(node.data);
-                node = node.right;
-            }
-        }
-        return out;
-    }
 }

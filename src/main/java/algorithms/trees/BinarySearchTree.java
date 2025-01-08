@@ -8,12 +8,14 @@ import java.util.*;
  * @param <T> data type within the BinaryTreeNode
  * @param <S> the BinaryTreeNode or extension
  */
-public class BinarySearchTree<T extends Comparable<T>, S extends BinaryTreeNode<T>> {
-
-    protected S root = null;
+public class BinarySearchTree<T extends Comparable<T>, S extends BinaryTreeNode<T>>
+        extends AbstractBinarySearchTree<T, S> {
+    // NOTE" internally, uses convention for interpreting S.compareTo
+    // as left is < 0 else right
 
     public BinarySearchTree(){}
 
+    @Override
     public S insert(T data) {
         S node = newNode(data);
         S parent = _insert(root, node);
@@ -32,24 +34,13 @@ public class BinarySearchTree<T extends Comparable<T>, S extends BinaryTreeNode<
         return node;
     }
 
-    protected void updateN(BinaryTreeNode<T> node) {
-        if (node == null) return;
-        node.n = 1;
-        if (node.left != null) {
-            node.n += node.left.n;
-        }
-        if (node.right != null) {
-            node.n += node.right.n;
-        }
-    }
-
     /**
      * method to construct a BinaryTree node or extension.  overrride as needed.
      * default is to construct S
      * @param data
      * @return
      */
-    protected S newNode(T data) {
+    public S newNode(T data) {
         return (S) new BinaryTreeNode<T>(data);
     }
 
@@ -87,15 +78,12 @@ public class BinarySearchTree<T extends Comparable<T>, S extends BinaryTreeNode<
         return p;
     }
 
-    public boolean contains(T data) {
-        return (search(data) != null);
-    }
-
-    protected S search(T data) {
-        if (root == null) {
+    @Override
+    protected S _search(S top, T data) {
+        if (top == null) {
             return null;
         }
-        S node = root;
+        S node = top;
         int comp;
         while (node != null) {
             comp = data.compareTo(node.data);
@@ -131,7 +119,7 @@ public class BinarySearchTree<T extends Comparable<T>, S extends BinaryTreeNode<
      * @param node
      * @return
      */
-    public boolean delete(S node) {
+    public boolean delete(BinaryTreeNode<T> node) {
 
         // delete when node has no children
         if (node.left == null && node.right == null) {
@@ -178,189 +166,5 @@ public class BinarySearchTree<T extends Comparable<T>, S extends BinaryTreeNode<
         }
 
         return true;
-    }
-
-    /**
-     * find minimum node for subtree top.
-     * @param top
-     * @return minimum node
-     * @param <T> comparable data carried by BinaryTreeNode
-     */
-    public S minimum(BinaryTreeNode<T> top) {
-        if (top == null) return null;
-        // is left node
-        BinaryTreeNode<T> node = top;
-        while (node.left != null) {
-            node = node.left;
-        }
-        return (node == null) ? null : (S)node;
-    }
-
-    /**
-     * find maximum node for subtree top.
-     * @param top
-     * @return minimum node
-     * @param <T> comparable data carried by BinaryTreeNode
-     */
-    public S maximum(BinaryTreeNode<T> top) {
-        if (top == null) return null;
-        // is rightmost node
-        BinaryTreeNode<T> node = top;
-        while (node.right != null) {
-            node = node.right;
-        }
-        return (node == null) ? null : (S) node;
-    }
-
-    /**
-     * find successor node for node.
-     * @param top
-     * @return successor node
-     * @param <T> comparable data carried by BinaryTreeNode
-     */
-    public S successor(BinaryTreeNode<T> node) {
-        if (node == null) return null;
-        /*
-                0
-           10        20
-                  11     30
-                        21
-         */
-        if (node.right != null) {
-            return minimum((node.right == null) ? null : (S)node.right);
-        }
-        // find lowest ancestor of node whose left child is an ancestor of node
-        BinaryTreeNode<T> p = (node.parent == null) ? null : (S)node.parent;
-        while (p != null && p.right != null && p.right.equals(node)) {
-            p = p.parent;
-        }
-        return (p == null) ? null : (S)p;
-    }
-
-    /**
-     * find predecessor node for node.
-     * @param top
-     * @return predecessor node
-     * @param <T> comparable data carried by BinaryTreeNode
-     */
-    public S predecessor(BinaryTreeNode<T> node) {
-        if (node == null) return null;
-        /*
-                0
-           10        20
-                  11     30
-                        21
-         */
-        if (node.left != null) {
-            return maximum((node.right == null) ? null : (S)node.right);
-        }
-        // find lowest ancestor of node whose right child is an ancestor of node
-        BinaryTreeNode<T> p = node.parent;
-        while (p != null && p.left != null && p.left.equals(node)) {
-            p = p.parent;
-        }
-        return (p == null) ? null : (S)p;
-    }
-
-    /**
-     * rotate node to the right
-     <pre>
-     e.g.
-     given tree or subtree A:
-              A
-           B      C
-        D    E
-     rightRotate(A) creates:
-              B
-           D      A
-                 E  C
-     </pre>
-     * @param node
-     * @return
-     */
-    public S rotateRight(BinaryTreeNode<T> node) {
-        BinaryTreeNode<T> tmp = node.left; //*
-        BinaryTreeNode<T> p = node.parent;
-        node.left = tmp.right; //*
-
-        tmp.right = node;  //*
-        node.parent = tmp;
-        tmp.parent = p;
-
-        if (node.left != null) {
-            node.left.parent = node;
-        }
-
-        if (p != null) {
-            if (p.left.equals(node)) {
-                p.left = tmp;
-            } else {
-                p.right = tmp;
-            }
-        }
-        return (tmp == null) ? null : (S) tmp;
-    }
-
-    /**
-     rotate node to the left
-     <pre>
-     e.g.
-     given tree or subtree B:
-              B
-           D      A
-                 E  C
-     leftRotate(B) creates:
-              A
-           B      C
-        D    E
-     </pre>
-     @param node
-     @return
-     */
-    public S rotateLeft(BinaryTreeNode<T> node) {
-        BinaryTreeNode<T> node2 = node.right; //*
-        BinaryTreeNode<T> p = node.parent;
-        node.right = node2.left; //*
-
-        node2.left = node;  //*
-        node.parent = node2;
-        node2.parent = p;
-
-        if (node.right != null) {
-            node.right.parent = node;
-        }
-
-        if (p != null) {
-            if (p.left.equals(node)) {
-                p.left = node2;
-            } else {
-                p.right = node2;
-            }
-        }
-        return (node2 == null) ? null : (S)node2;
-    }
-
-    /**
-     * return data from in-order traversal of tree.
-     * @return
-     */
-    public List<T> inOrderTraversal() {
-        List<T> out = new ArrayList<>();
-        S node = root;
-        if (node == null) {
-            return out;
-        }
-        Stack<S> s = new Stack<>();
-        while (!s.isEmpty() || node != null) {
-            if (node != null) {
-                s.push(node);
-                node = (node.left == null) ? null : (S)node.left;
-            } else {
-                node = s.pop();
-                out.add(node.data);
-                node = (node.right == null) ? null : (S)node.right;
-            }
-        }
-        return out;
     }
 }

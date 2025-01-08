@@ -4,11 +4,11 @@ import java.util.Arrays;
 
 /**
  * an update-able datastructure which can be used to hold numbers, given an index for them
- * that starts at 1.  It's an efficient holder of prefix sums that is update-able in a
+ * that starts at 1 (or 0 w/ flag).  It's an efficient holder of prefix sums that is update-able in a
  * runtime complexity of O(log(n)) where n is the number of values it is constructed with.
  *
  * If one needs range minimum or maximum queries in an update-able structure for
- * r.t.c. of O(log(n)), should probably use a sortedtree like TreeSet which is a Red-Blac Tree.
+ * r.t.c. of O(log(n)), should probably use a SortedTree like TreeSet which is a Red-Black Tree.
  *
  <pre>
  references:
