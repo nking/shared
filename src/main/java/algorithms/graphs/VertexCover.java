@@ -1,8 +1,8 @@
 package algorithms.graphs;
 
-import algorithms.TreeTraversal;
+import algorithms.trees.TreeTraversal;
 import algorithms.DoublyLinkedList;
-import algorithms.NAryTreeNode;
+import algorithms.trees.NAryTreeNode;
 import algorithms.matrix.MatrixUtil;
 import algorithms.optimization.LinearProgramming;
 import algorithms.optimization.LinearProgramming.SlackForm;
