@@ -1,6 +1,6 @@
 package algorithms.encoding;
 
-import algorithms.TreeTraversal;
+import algorithms.trees.TreeTraversal;
 import algorithms.VeryLongBitString;
 import algorithms.bipartite.YFastTrieWrapper;
 import algorithms.heapsAndPQs.HeapNode;
@@ -8,7 +8,7 @@ import algorithms.misc.MiscMath0;
 import gnu.trove.iterator.TIntIntIterator;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
-import java.math.BigInteger;
+
 import java.util.ArrayDeque;
 import java.util.Queue;
 

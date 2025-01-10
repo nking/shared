@@ -186,7 +186,7 @@ public class MinHeapForRT2012 {
         
         heap1.insert(node);
         
-        log.fine("insert into fib minHeap at key =" + key);        
+        log.fine("insert into fib minHeap at key =" + key);
     }
     
     /**
@@ -207,7 +207,7 @@ public class MinHeapForRT2012 {
         
         heap2.insert(node);
         
-        log.fine("insert into yft minHeap at key =" + key);        
+        log.fine("insert into yft minHeap at key =" + key);
     }
     
     /**
