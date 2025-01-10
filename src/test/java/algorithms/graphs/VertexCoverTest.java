@@ -1,6 +1,6 @@
 package algorithms.graphs;
 
-import algorithms.NAryTreeNode;
+import algorithms.trees.NAryTreeNode;
 import algorithms.matrix.MatrixUtil;
 import algorithms.optimization.LinearProgramming.StandardForm;
 import algorithms.util.PairInt;

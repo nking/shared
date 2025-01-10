@@ -12,7 +12,9 @@ import java.util.*;
 public class TreeTraversal {
 
     /**
-     * root, left subtree, right subtree.
+     root, left subtree, right subtree.
+     Note that a pre-order traversal gives the Euler tour for this tree when
+     Euler start node is the root.
      <pre>
        e.g.
                             7
@@ -75,7 +77,10 @@ public class TreeTraversal {
     }
 
     /**
-     * root, left subtree, right subtree
+     * root, left subtree, right subtree.
+
+     Note that a pre-order traversal gives the Euler tour for this tree when
+     Euler start node is the root.
      <pre>
                            7
                 3                        11
@@ -100,6 +105,26 @@ public class TreeTraversal {
             }
         }
         System.out.println();
+    }
+
+    public int[] getPreorder(BinaryTreeNode<Integer> node) {
+        List<Integer> vals = new ArrayList<>();
+        Stack<BinaryTreeNode<Integer>> s = new Stack<>();
+        while (!s.isEmpty() || node != null) {
+            if (node != null) {
+                vals.add(node.getData());
+                s.push(node);
+                node = node.getLeft();
+            } else {
+                node = s.pop();
+                node = node.getRight();
+            }
+        }
+        int[] out = new int[vals.size()];
+        for (int i = 0; i < vals.size(); ++i) {
+            out[i] = vals.get(i);
+        }
+        return out;
     }
 
     /**

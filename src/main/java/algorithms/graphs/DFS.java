@@ -3,6 +3,7 @@ package algorithms.graphs;
 import algorithms.sort.MiscSorter;
 import algorithms.util.SimpleLinkedListNode;
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 /**
    DFS
@@ -113,6 +114,14 @@ public class DFS {
             }
         }        
     }
+
+    /**
+     * walk only the paths reachable from src
+     * @param src
+     */
+    public void walk(int src) {
+        visit(src);
+    }
     
     /**
      * alterative pattern for walking code
@@ -195,6 +204,18 @@ public class DFS {
      */
     public int[] getOrderedEndIndexes() {
         return sortForIndexes(tf);
+    }
+
+    public int[] getEulerTourFromEndTimes() {
+        // decending sort
+        int[] sIdxs = IntStream.range(0, tf.length).boxed()
+                .sorted((a, b) -> {
+                    int c = tf[b] - tf[a];
+                    if (c != 0) return c;
+                    return a - b;
+                }).mapToInt(ele->ele).toArray();
+
+        return sIdxs;
     }
     
     /**

@@ -1,5 +1,6 @@
 package algorithms.graphs;
 
+import algorithms.trees.BinaryTreeNode;
 import algorithms.util.PairInt;
 import algorithms.util.SimpleLinkedListNode;
 import gnu.trove.iterator.TIntIterator;
@@ -150,6 +151,19 @@ public class GraphUtil {
         return g2;
     }
 
+    public static TIntObjectMap<TIntSet> convertGraph2(Map<Integer, Set<Integer>> g) {
+
+        TIntObjectMap<TIntSet> g2 = new TIntObjectHashMap<>();
+        int u;
+        for (Map.Entry<Integer, Set<Integer>> entry : g.entrySet()) {
+            u = entry.getKey();
+            for (int v : entry.getValue()) {
+                g2.putIfAbsent(u, new TIntHashSet());
+                g2.get(u).add(v);
+            }
+        }
+        return g2;
+    }
     /**
      *
      @param g
@@ -368,15 +382,32 @@ public class GraphUtil {
 
     public static Map<Integer, Set<Integer>> copy(Map<Integer, Set<Integer>> adjMap) {
         Map<Integer, Set<Integer>> c = new HashMap<Integer, Set<Integer>>();
-
-        Iterator<Map.Entry<Integer, Set<Integer>>> iter = adjMap.entrySet().iterator();
-        while (iter.hasNext()) {
-            Map.Entry<Integer, Set<Integer>> entry = iter.next();
+        for (Map.Entry<Integer, Set<Integer>> entry : adjMap.entrySet()) {
             Set<Integer> set = new HashSet<Integer>(entry.getValue());
             c.put(entry.getKey(), set);
         }
         return c;
     }
+
+    public static Map<Integer, LinkedList<Integer>> convertGraph3(Map<Integer, Set<Integer>> adjMap) {
+        Map<Integer, LinkedList<Integer>> c = new HashMap<>();
+        for (Map.Entry<Integer, Set<Integer>> entry : adjMap.entrySet()) {
+            LinkedList<Integer> list = new LinkedList<Integer>(entry.getValue());
+            c.put(entry.getKey(), list);
+        }
+        return c;
+    }
+
+    public static Map<Integer, LinkedList<Integer>> copy2(Map<Integer, LinkedList<Integer>> adjMap) {
+        Map<Integer, LinkedList<Integer>> c = new HashMap<>();
+        for (Map.Entry<Integer, LinkedList<Integer>> entry : adjMap.entrySet()) {
+            LinkedList<Integer> list = new LinkedList<Integer>(entry.getValue());
+            c.put(entry.getKey(), list);
+        }
+        return c;
+    }
+
+
 
     /**
      * find the vertex with the largest number of neighbors.

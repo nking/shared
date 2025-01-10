@@ -97,7 +97,8 @@ public class FenwickTreeLong {
     }
 
 
-    // Returns the sum of the interval [leftIdx, rightIdx], O(log(n))
+    // r.t.c. O(log(n))
+    // Returns the sum of the interval [leftIdx, rightIdx],
     public long sum(int leftIdx, int rightIdx) {
         if (rightIdx < leftIdx) throw new IllegalArgumentException("Make sure rightIdx >= leftIdx");
         return prefixSum(rightIdx) - prefixSum(leftIdx - 1);

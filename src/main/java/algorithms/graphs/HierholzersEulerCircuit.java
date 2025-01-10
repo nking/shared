@@ -5,12 +5,17 @@ import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.set.TIntSet;
-import java.util.Stack;
+
+import java.util.*;
 
 /**
  Hierholzer’s Algorithm to create a euler circuit from a directed graph.
  Euler circuit is a path that traverses every edge of a graph, and the path
  ends on the starting vertex.  Edges are only included once, but vertexes can be included more than once.
+
+ Note that if the input graph is a tree, the result is the same as
+ a tree pre-order traversal when starting from the same source node.
+
  <pre>
  The implementation follows from:
  https://www.geeksforgeeks.org/hierholzers-algorithm-directed-graph/
@@ -41,8 +46,11 @@ public class HierholzersEulerCircuit {
      create a euler circuit from a directed graph.
      Euler circuit is a path that traverses every edge of a graph, and the path 
      ends on the starting vertex.
+     Note that if given a tree with directed edges that do not return to start,
+     the result is a Euler Tour defined as a pre-order traversal of the tree starting
+     from startNode=0.
      @param g adjacency list of directed graph
-     @return 
+     @return euler circuit
      */
     public int[] createCircuit(TIntObjectMap<TIntSet> g) {
         if (g.isEmpty()) {
@@ -59,9 +67,12 @@ public class HierholzersEulerCircuit {
      create a euler circuit from a directed graph.
      Euler circuit is a path that traverses every edge of a graph, and the path 
      ends on the starting vertex.
+     Note that if given a tree with directed edges that do not return to start,
+     the result is a Euler Tour defined as a pre-order traversal of the tree starting
+     from startNode.
      @param g adjacency list of directed graph
      @param startNode
-     @return 
+     @return euler circuit
      */
     public int[] createCircuit(TIntObjectMap<TIntSet> g, int startNode) {
         if (g.isEmpty()) {
@@ -70,22 +81,16 @@ public class HierholzersEulerCircuit {
                
         // make a copy of g to modify
         TIntObjectMap<TIntSet> g2 = MatrixUtil.copy(g);
-          
-        Stack<Integer> curPath = new Stack<Integer>();
+
         TIntList circuit = new TIntArrayList();
-        
-        // start vertex
-        int curV = startNode;
-        curPath.add(curV);
-        
-        int nextV;
-        TIntSet neighbors2;
-       
+
+        Stack<Integer> curPath = new Stack<Integer>();
+        curPath.add(startNode);
+
         while (!curPath.isEmpty()) {
-            curV = curPath.peek();
-            neighbors2 = g2.get(curV);
+            TIntSet neighbors2 = g2.get(curPath.peek());
             if (neighbors2 != null && !neighbors2.isEmpty()) {
-                nextV = neighbors2.iterator().next();
+                int nextV = neighbors2.iterator().next();
                 neighbors2.remove(nextV);
                 curPath.add(nextV);
             } else {
@@ -96,5 +101,64 @@ public class HierholzersEulerCircuit {
         circuit.reverse();
         
         return circuit.toArray();
+    }
+
+    /**
+     create a euler circuit from a directed graph.
+     Euler circuit is a path that traverses every edge of a graph, and the path
+     ends on the starting vertex.
+     Note that if given a tree with directed edges that do not return to start,
+     the result is a Euler Tour defined as a pre-order traversal of the tree starting
+     from startNode.
+     @param g adjacency list of directed graph
+     @param startNode
+     @return a 2-dimensional array where row 0 is the euler circuit
+     and row 1 is the distance of each node from startNode (which has dist=0)
+     */
+    public int[][] createCircuitAndDepth(Map<Integer, LinkedList<Integer>> g, int startNode) {
+        if (g.isEmpty()) {
+            return new int[0][0];
+        }
+
+        // make a copy of g to modify
+        Map<Integer, LinkedList<Integer>> g2 = GraphUtil.copy2(g);
+
+        TIntList circuit = new TIntArrayList();
+        Map<Integer, Integer> distMap = new HashMap<>();
+        distMap.put(startNode, 0);
+
+        Stack<Integer> curPath = new Stack<Integer>();
+        curPath.add(startNode);
+
+        while (!curPath.isEmpty()) {
+            LinkedList<Integer> neighbors2 = g2.get(curPath.peek());
+            if (neighbors2 != null && !neighbors2.isEmpty()) {
+                curPath.add(neighbors2.pollFirst());
+            } else {
+                int node = curPath.pop();
+
+                // calc dist
+                int prevDist = 0;
+                if (!circuit.isEmpty()) {
+                    prevDist = distMap.get(circuit.get(circuit.size() - 1));
+                }
+                if (distMap.containsKey(node)) {
+                    distMap.put(node, Math.min(distMap.get(node), prevDist + 1));
+                } else {
+                    distMap.put(node, prevDist + 1);
+                }
+
+                circuit.add(node);
+            }
+        }
+
+        circuit.reverse();
+        int[][] out = new int[2][];
+        out[0] = circuit.toArray();
+        out[1] = new int[out[0].length];
+        for (int i = 0; i < out[1].length; ++i) {
+            out[1][i] = distMap.get(out[0][i]);
+        }
+        return out;
     }
 }
