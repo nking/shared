@@ -3,7 +3,7 @@ package algorithms.range;
 import java.util.Arrays;
 
 /**
- * a data structure that takes an integer array of data and performs sum and update 
+ * a data structure that takes an integer array of data and performs sum and update
  * operations on it.  
  * The update operation has r.t.c. O(sqrt(n)) which is better
  * performance than the O(n) update for a prefix sum array.
@@ -25,7 +25,7 @@ public class SqrtDecomp {
         blockSize = (int)Math.sqrt(n) + 1;
         blocks = new long[blockSize];
         for (int i = 0; i < n; ++i) {
-            blocks[i/ blockSize] += a[i];
+            blocks[i/blockSize] += a[i];
         }
         this.a = Arrays.copyOf(a, n);
     }
@@ -41,7 +41,7 @@ public class SqrtDecomp {
         long[] out = new long[queries.length];
         int r, l;
         for (int i = 0; i < queries.length; ++i) {
-            out[i] = sum(queries[i][0], queries[i][1],indexesAre0Based);
+            out[i] = sum(queries[i][0], queries[i][1], indexesAre0Based);
         }
         return out;
     }
@@ -55,11 +55,14 @@ public class SqrtDecomp {
      * @return
      */
     public long sum(int l, int r, boolean indexesAre0Based) {
-        if (!indexesAre0Based) {
-            --r;
-            --l;
+        if (indexesAre0Based) {
+            ++r;
+            ++l;
         }
-        return sum(r) - sum(l - 1);
+        long s1 = sum(r);
+        long s2 = sum(l - 1);
+        return s1 - s2;
+        //return sum(r) - sum(l - 1);
     }
 
     //r.t.c. O(sqrt(n)) where n = a.length;
@@ -75,13 +78,14 @@ public class SqrtDecomp {
     }
 
     /** O(1) update to set a[i] to v */
-    public void update(int i, int v, boolean indexesAre0Based) {
+    public void set(int i, long v, boolean indexesAre0Based) {
         if (!indexesAre0Based) {
             --i;
         }
-        blocks[i / blockSize] -= a[i];
+        int bIdx = i / blockSize;
+        blocks[bIdx] -= a[i];
         a[i] = v;
-        blocks[i / blockSize] += a[i];
+        blocks[bIdx] += a[i];
     }
 
     /**
@@ -97,7 +101,7 @@ public class SqrtDecomp {
             --r;
         }
         for (int j = l; j <= r; ++j) {
-            update(j, updateArray[2], indexesAre0Based);
+            set(j, a[j] + updateArray[2], indexesAre0Based);
         }
     }
 
@@ -107,7 +111,7 @@ public class SqrtDecomp {
      * @param updates array of [left, right, add] arrays.
      * @param indexesAre0Based
      */
-    public void updateArray(int[][] updates, boolean indexesAre0Based) {
+    public void update(int[][] updates, boolean indexesAre0Based) {
         for (int i = 0; i < updates.length; ++i) {
             update(updates[i], indexesAre0Based);
         }
