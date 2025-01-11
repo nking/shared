@@ -18,5 +18,6 @@ public class SegmentTreeTest extends TestCase {
 
         sum = st.sum(2, 7);
         assertEquals(26, sum);
+
     }
 }

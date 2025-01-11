@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 /**
  * a heap-like data structure for intervals.
- * It's update and query operations haver r.t.c. O(log(n)) where n is the largest
+ * It's update and query operations have r.t.c. O(log(n)) where n is the largest
  * index that the tree can hold.
  * pre-processing is done during construction and has r.t.c. O(n).
  * s.c. is O(n*log(n))

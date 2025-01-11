@@ -3,12 +3,10 @@ package algorithms.trees;
 import java.util.Arrays;
 
 /**
+ * Fenwick Tree a.k.a. Binary Indexed Tree (BIT).
  * an update-able datastructure which can be used to hold numbers, given an index for them
  * that starts at 1 (or 0 w/ flag).  It's an efficient holder of prefix sums that is update-able in a
  * runtime complexity of O(log(n)) where n is the number of values it is constructed with.
- *
- * If one needs range minimum or maximum queries in an update-able structure for
- * r.t.c. of O(log(n)), should probably use a SortedTree like TreeSet which is a Red-Black Tree.
  *
  <pre>
  references:
@@ -17,6 +15,51 @@ import java.util.Arrays;
  https://github.com/williamfiset/Algorithms/tree/master/src/main/java/com/williamfiset/algorithms/datastructures/fenwicktree
  The William Fiset code uses the MIT license:
  https://github.com/williamfiset/Algorithms/blob/master/LICENSE
+ </pre>
+
+ internally, the tree is built to store prefix sums over varying ranges of indexes of a.
+ that is, the positions of partial sums of a are dependent upon the bits set in index i.
+ NOTE: the actual tree positions are i+1 for a 0-based indexing, but the math is
+ explained here for 1-based indexing:
+
+ build tree:
+    tree = copy of a.
+    then loop over tree indices 1 thru n-1
+       tree[1 + lsb(i)] += tree[i]
+ can see this for the loop:
+    i    LSB(i)  LSB(i)_bit    # of #s summed    j
+    1     1        0             1               i+1
+    2     2        1             2               i+2
+    3     1        0             1               i+1
+    4     4        2             4               i+4
+    5     1        0             1               i+1
+    6     2        1             2               i+2
+    7     1        0             1               i+1
+    8     8        3             8               i+8
+ ...
+
+ then reading from the tree:
+    get(i,j) = prefixSum(j) - prefixSum(i - 1);
+    where prefixSum(idx) = {
+        long sum = 0L;
+        while (idx != 0) {
+           sum += tree[idx];
+           idx -= lSB(idx);
+        }
+        return sum;
+    }
+
+ updating tree:
+     update(idx, val) = {
+         while (idx < tree.length) {
+             tree[idx] += val;
+             idx += lSB(_idx);
+         }
+     }
+
+ <pre>
+ for 2D Fenwick tree, see end of article:
+ https://www.topcoder.com/thrive/articles/Binary%20Indexed%20Trees
  </pre>
  */
 public class FenwickTreeLong {
@@ -29,7 +72,7 @@ public class FenwickTreeLong {
 
     /**
      * constuct a fenwick tree to hold n values.
-     * @param n
+     * @param n maximum number of numbers to be placed in the tree.
      @param use0Based if true, you are inserting all values in the array and
       *                  access this FenwickTree using indexes
       *                  0 through n-1, inclusive where n is the length of the array,
@@ -71,7 +114,9 @@ public class FenwickTreeLong {
         int j;
         for (int i = 1; i < tree.length; ++i) {
             j = i + lSB(i);
-            if (j < tree.length) tree[j] += tree[i];
+            if (j < tree.length) {
+                tree[j] += tree[i];
+            }
         }
     }
 
@@ -89,9 +134,11 @@ public class FenwickTreeLong {
         long sum = 0L;
         while (idx != 0) {
             sum += tree[idx];
+            // these are all equiv.  have chosen the one complementary to build and add methods
             // drop the LSB  A = A & (A - 1)
-            idx &= (idx - 1);
-            //idx &= ~lSB(idx); // Equivalently, i -= lsb(i);
+            //idx &= (idx - 1);
+            //idx &= ~lSB(idx);
+            idx -= lSB(idx);
         }
         return sum;
     }

@@ -89,8 +89,6 @@ public class LeastCommonAncestor {
         this.treeSrc = src;
 
 
-        //not finished implementing an O(1) lookup method
-
         // create a bi-directional adjacency map out of the indices parent child relationships:
         Map<Integer, LinkedList<Integer>> adjMap = createBiDirectionalMap(tree);
 
@@ -103,7 +101,7 @@ public class LeastCommonAncestor {
 
         assert (eulerCircuitAndDepth[0].length == (2 * n - 1));
 
-        //Store occurence of first occurrence each vertex in E another array R.
+        //Store occurence of first occurrence each vertex in E another array firstVisit.
         // Size will be n as there are n vertices.
         this.firstVisit = new int[n];
         Arrays.fill(firstVisit, -1);

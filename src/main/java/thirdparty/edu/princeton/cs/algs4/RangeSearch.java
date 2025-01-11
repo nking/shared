@@ -98,7 +98,7 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
     *  randomized insertion
     ***************************************************************************/
     /**
-     * insert interval, but if it intersects with an 
+     * insert interval, but if it intersects with an
      * interval already in tree, set the existing value
      * to the given val, and return the previous value
      * before the overwrite by val.  If null is returned

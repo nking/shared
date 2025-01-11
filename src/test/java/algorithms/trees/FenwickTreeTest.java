@@ -28,7 +28,7 @@ public class FenwickTreeTest extends TestCase {
         run(a, b, true);
     }
 
-    public void _testPositive1() {
+    public void testPositive1() {
 
         long seed = System.nanoTime();
         Random rand = new Random(seed);
@@ -69,7 +69,7 @@ public class FenwickTreeTest extends TestCase {
         run(a, b, true);
     }
 
-    public void _test1() {
+    public void test1() {
 
         long seed = System.nanoTime();
         //seed = 1234567L;
