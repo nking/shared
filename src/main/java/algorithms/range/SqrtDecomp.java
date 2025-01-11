@@ -93,7 +93,7 @@ public class SqrtDecomp {
      * @param updateArray array holding left, right, add
      * @param indexesAre0Based
      */
-    public void update(int[] updateArray, boolean indexesAre0Based) {
+    public void updateAdd(int[] updateArray, boolean indexesAre0Based) {
         int l = updateArray[0];
         int r = updateArray[1];
         if (!indexesAre0Based) {
@@ -111,9 +111,9 @@ public class SqrtDecomp {
      * @param updates array of [left, right, add] arrays.
      * @param indexesAre0Based
      */
-    public void update(int[][] updates, boolean indexesAre0Based) {
+    public void updateAdd(int[][] updates, boolean indexesAre0Based) {
         for (int i = 0; i < updates.length; ++i) {
-            update(updates[i], indexesAre0Based);
+            updateAdd(updates[i], indexesAre0Based);
         }
     }
 

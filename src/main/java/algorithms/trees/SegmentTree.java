@@ -16,42 +16,19 @@ import java.util.Arrays;
  </pre>
  */
 public class SegmentTree {
-    /*
-    given an array of numbers a,
-    stores the sum within index ranges in a tree of non-overlapping ranges that
-    proceeed from root being index range [i=0, j=n-1].
-    left being [i, (i+j)/2] and right being [((i+j)/2)+1, j].
-    The leaf nodes are single indices.
-
-    The tree can be built for sums or other operations,
-    though BigInteger is not used internally, so the input should be such that operations
-     won't overflow for a long (values < (1<<63)-1).
-     */
-    public static enum TYPE {
-        SUM
-        //can add more types such as mult, max, freq, etc
-    }
 
     // M holds indices
     protected final long[] tree;
     protected final int n;
 
-    protected final TYPE type;
+    public SegmentTree(int[] a) {
 
-    protected final boolean use0BasedIndexes;
-
-    public SegmentTree(int[] a, TYPE type, boolean use0BasedIndexes) {
-        if (type == null) {
-            throw new IllegalArgumentException("type cannot be null");
-        }
         n = a.length;
-        this.tree = new long[4*n];
-        this.type = type;
-        this.use0BasedIndexes = use0BasedIndexes;
+        this.tree = new long[2*n];
 
-        int idx = use0BasedIndexes ? 0 : 1;
+        build(a, 1, 0, n-1);
 
-        build(a, idx, 0, n-1);
+        System.out.printf("tree=%s\n", Arrays.toString(tree));
     }
 
     /*
@@ -68,53 +45,55 @@ public class SegmentTree {
         i.parent = (i-1)/2
      */
 
-    protected void build(int[] a, int idx, int i, int j) {
+    protected void build(int[] a, int tIdx, int i, int j) {
         if (i == j) {
-            tree[idx] = a[i];
+            tree[tIdx] = a[i];
             return;
         }
         int mid = (i+j)/2;
-        int iLeftChild = 2*idx;
-        int iRightChild = iLeftChild + 1;
-        if (use0BasedIndexes) {
-            ++iLeftChild;
-            ++iRightChild;
-        }
-        build(a,iLeftChild, i, mid);
-        build(a,iRightChild, mid + 1, j);
-        tree[idx] = tree[iLeftChild] + tree[iRightChild];
+        int tLeftChild = 2*tIdx;
+        int tRightChild = tLeftChild + 1;
+
+        build(a,tLeftChild, i, mid);
+
+        build(a,tRightChild, mid + 1, j);
+
+        tree[tIdx] = tree[tLeftChild] + tree[tRightChild];
     }
 
+    /**
+     * return the sum from a[i0] to a[i1], inclusive.
+     * @param i0
+     * @param i1
+     * @return
+     */
     public long sum(int i0, int i1) {
-        int idx = use0BasedIndexes ? 0 : 1;
-        long s = sum(idx, 0, n-1, i0, i1);
+        long s = sum(1, 0, n-1, i0, i1);
         return s;
     }
 
-    protected long sum(int idx, int treeL, int treeR, int qL, int qR) {
-        if (qL > qR)
+    protected long sum(int tIdx, int treeL, int treeR, int qL, int qR) {
+        if (qL > qR) {
             return 0;
+        }
 
         if (treeL == qL && treeR == qR) {
-            return tree[idx];
+            return tree[tIdx];
         }
 
         int mid = (treeL + treeR)/2;
-        int iLeftChild = 2*idx;
-        int iRightChild = iLeftChild + 1;
-        if (use0BasedIndexes) {
-            ++iLeftChild;
-            ++iRightChild;
-        }
+        int tLeftChild = 2*tIdx;
+        int tRightChild = tLeftChild + 1;
 
-        //long s1 = sum(iLeftChild, treeL, mid, qL, Math.min(qR, mid));
-        //long s2 = sum(iRightChild, mid + 1, treeR, Math.max(qL, mid+1), qR);
-        //return s1 + s2;
-        return sum(iLeftChild, treeL, mid, qL, Math.min(qR, mid))
-                + sum(iRightChild, mid + 1, treeR, Math.max(qL, mid+1), qR);
+        return sum(tLeftChild, treeL, mid, qL, Math.min(qR, mid))
+                + sum(tRightChild, mid + 1, treeR, Math.max(qL, mid+1), qR);
+    }
+/*
+    public void updateSet(int i, int newVal) {
+        updateSet(1, 0, n-1, i, newVal);
     }
 
-    public void update(int idx, int treeL, int treeR, int pos, int newVal) {
+    protected void updateSet(int idx, int treeL, int treeR, int pos, int newVal) {
         if (treeL == treeR) {
             tree[idx] = newVal;
             return;
@@ -123,17 +102,13 @@ public class SegmentTree {
         int mid = (treeL + treeR)/2;
         int iLeftChild = 2*idx;
         int iRightChild = iLeftChild + 1;
-        if (use0BasedIndexes) {
-            ++iLeftChild;
-            ++iRightChild;
-        }
 
         if (pos <= mid) {
-            update(iLeftChild, treeL, mid, pos, newVal);
+            updateSet(iLeftChild, treeL, mid, pos, newVal);
         } else {
-            update(iRightChild, mid+1, treeR, pos, newVal);
+            updateSet(iRightChild, mid+1, treeR, pos, newVal);
         }
 
         tree[idx] = tree[iLeftChild] + tree[iRightChild];
-    }
+    }*/
 }

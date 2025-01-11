@@ -63,7 +63,7 @@ public class PrefixSumArray {
      * @param rangesAre0Based if true, the range indexes in the updates are 0-based
      *                        indexes, else are 1-based indexes.
      */
-    public void update(int[][] updates, boolean rangesAre0Based) {
+    public void updateAdd(int[][] updates, boolean rangesAre0Based) {
         // create a difference of the queries, then apply it to the prefix sum
         int[] diffs = new int[array.length];
         int i0, i1;

@@ -19,7 +19,7 @@ public class PrefixSumArrayTest extends TestCase {
                 {5,7,1},
                 {3,3,3}
         };
-        psa.update(updates, use0BasedIndexes);
+        psa.updateAdd(updates, use0BasedIndexes);
         assertEquals(74, psa.sum(0, 7, use0BasedIndexes));
         assertEquals(24, psa.sum(4, 6, use0BasedIndexes));
 

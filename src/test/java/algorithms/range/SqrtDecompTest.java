@@ -20,14 +20,14 @@ public class SqrtDecompTest extends TestCase {
                 {5,7,1},
                 {3,3,3}
         };
-        sd.update(updates, use0BasedIndexes);
+        sd.updateAdd(updates, use0BasedIndexes);
 
         s = sd.sum(0, 7, use0BasedIndexes);
-        System.out.printf("s=%d, expect=%d\n", s, 74);
+        //System.out.printf("s=%d, expect=%d\n", s, 74);
         assertEquals(74, s);
 
         s = sd.sum(4, 6, use0BasedIndexes);
-        System.out.printf("s=%d, expect=%d\n", s, 24);
+        //System.out.printf("s=%d, expect=%d\n", s, 24);
         assertEquals(24, s);
 
     }
