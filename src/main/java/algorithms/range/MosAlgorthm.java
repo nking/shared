@@ -93,6 +93,12 @@ public class MosAlgorthm {
     /**
      * given integer array a, count the occurences of every number within query range for each query.
      * r.t.c. is O((N+Q)*sqrt(N)) where N is a.length and Q is q.length.
+     <pre>
+     adapted from
+         author Ajay https://www.geeksforgeeks.org/mos-algorithm-query-square-root-decomposition-set-1-introduction/
+     and adapted from
+         https://cp-algorithms.com/data_structures/sqrt_decomposition.html#mos-algorithm
+     </pre>
      * @param a array of integers
      * @param q array of queries of indexes into array 'a' as inclusive query ranges.
      * @return frequency maps for each query range are returned.
