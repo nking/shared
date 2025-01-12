@@ -1715,7 +1715,7 @@ public class MiscMath0 {
         for (i = n; i > (n-k); i--) {
             result = result*i;
             if (result < 0) throw new ArithmeticException("the result will not fit in a long.  Use computeNDivKTimesNMinusKBigInteger instead.");
-            result /= (i - n + k);
+            result /= (i - (n - k));
         }
 
         return Math.round(result);
