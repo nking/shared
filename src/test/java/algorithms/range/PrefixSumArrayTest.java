@@ -13,6 +13,8 @@ public class PrefixSumArrayTest extends TestCase {
         PrefixSumArray psa = new PrefixSumArray(a);
         assertEquals(26, psa.sum(2, 7, use0BasedIndexes));
 
+        assertEquals(5, psa.sum(3, 4, use0BasedIndexes));
+
         int[][] updates = new int[][]{
                 {2,4,3},
                 {1,5,4},

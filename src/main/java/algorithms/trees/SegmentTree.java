@@ -28,7 +28,7 @@ public class SegmentTree {
 
         build(a, 1, 0, n-1);
 
-        System.out.printf("tree=%s\n", Arrays.toString(tree));
+        //System.out.printf("tree=%s\n", Arrays.toString(tree));
     }
 
     /*
@@ -45,18 +45,20 @@ public class SegmentTree {
         i.parent = (i-1)/2
      */
 
-    protected void build(int[] a, int tIdx, int i, int j) {
-        if (i == j) {
-            tree[tIdx] = a[i];
+    protected void build(int[] a, int tIdx, int treeL, int treeR) {
+        if (treeL == treeR) {
+            tree[tIdx] = a[treeL];
             return;
         }
-        int mid = (i+j)/2;
-        int tLeftChild = 2*tIdx;
-        int tRightChild = tLeftChild + 1;
+        int mid = (treeL+treeR)/2;
+        //int tLeftChild = 2*idx;
+        //int tRightChild = iLeftChild + 1;
+        int tLeftChild = tIdx + 1;
+        int tRightChild = tIdx + (2 * (mid - treeL + 1));
 
-        build(a,tLeftChild, i, mid);
+        build(a,tLeftChild, treeL, mid);
 
-        build(a,tRightChild, mid + 1, j);
+        build(a,tRightChild, mid + 1, treeR);
 
         tree[tIdx] = tree[tLeftChild] + tree[tRightChild];
     }
@@ -82,33 +84,38 @@ public class SegmentTree {
         }
 
         int mid = (treeL + treeR)/2;
-        int tLeftChild = 2*tIdx;
-        int tRightChild = tLeftChild + 1;
+        //int tLeftChild = 2*tIdx;
+        //int tRightChild = tLeftChild + 1;
+        int tLeftChild = tIdx + 1;
+        int tRightChild = tIdx + (2 * (mid - treeL + 1));
 
         return sum(tLeftChild, treeL, mid, qL, Math.min(qR, mid))
                 + sum(tRightChild, mid + 1, treeR, Math.max(qL, mid+1), qR);
     }
-/*
+
     public void updateSet(int i, int newVal) {
         updateSet(1, 0, n-1, i, newVal);
+        //System.out.printf("*tree=%s\n", Arrays.toString(tree));
     }
 
-    protected void updateSet(int idx, int treeL, int treeR, int pos, int newVal) {
+    protected void updateSet(int tIdx, int treeL, int treeR, int pos, int newVal) {
         if (treeL == treeR) {
-            tree[idx] = newVal;
+            tree[tIdx] = newVal;
             return;
         }
 
         int mid = (treeL + treeR)/2;
-        int iLeftChild = 2*idx;
-        int iRightChild = iLeftChild + 1;
+        //int tLeftChild = 2*idx;
+        //int tRightChild = iLeftChild + 1;
+        int tLeftChild = tIdx + 1;
+        int tRightChild = tIdx + (2 * (mid - treeL + 1));
 
         if (pos <= mid) {
-            updateSet(iLeftChild, treeL, mid, pos, newVal);
+            updateSet(tLeftChild, treeL, mid, pos, newVal);
         } else {
-            updateSet(iRightChild, mid+1, treeR, pos, newVal);
+            updateSet(tRightChild, mid+1, treeR, pos, newVal);
         }
 
-        tree[idx] = tree[iLeftChild] + tree[iRightChild];
-    }*/
+        tree[tIdx] = tree[tLeftChild] + tree[tRightChild];
+    }
 }
