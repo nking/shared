@@ -238,4 +238,101 @@ public class AVLTreeTest extends TestCase {
         }
     }
 
+    public void testOrderStatistics() {
+        /*
+                           7
+                3                        11
+           1         5              9         13
+        0   2     4   6           8   10    12
+        */
+        AVLTree<Integer, AVLTreeNode<Integer>> avl = new AVLTree<>();
+
+        // level order inserts
+        avl.insert(7);
+
+        avl.insert(3);
+        avl.insert(11);
+
+        avl.insert(1);
+        avl.insert(5);
+        avl.insert(9);
+        avl.insert(13);
+
+        avl.insert(0);
+        avl.insert(2);
+        avl.insert(4);
+        avl.insert(6);
+        avl.insert(8);
+        avl.insert(10);
+        avl.insert(12);
+
+        /*
+        long rank(T data);
+        long rank(BinaryTreeNode<T> t, T data);
+         */
+        long expR, ansR;
+        int data;
+        AVLTreeNode<Integer> node;
+
+        data = 0;
+        ansR = avl.rank(data);
+        expR = 1;
+        assertEquals(expR, ansR);
+
+        data = 13;
+        ansR = avl.rank(data);
+        expR = 14;
+        assertEquals(expR, ansR);
+
+        data = 6;
+        ansR = avl.rank(data);
+        expR = 7;
+        assertEquals(expR, ansR);
+
+        data = 0;
+        ansR = avl.rank(avl.root, data);
+        expR = 1;
+        assertEquals(expR, ansR);
+
+        data = 4;
+        ansR = avl.rank(avl.search(5), data);
+        expR = 1;
+        assertEquals(expR, ansR);
+
+        data = 9;
+        ansR = avl.rank(avl.search(11), data);
+        expR = 2;
+        assertEquals(expR, ansR);
+
+        /*
+        S select(long rank);
+        S select(BinaryTreeNode<T> t, long rank);
+         */
+        long rank;
+        AVLTreeNode<Integer> ansNode;
+
+        rank = 1;
+        ansNode = avl.select(rank);
+        assertTrue(ansNode.data == 0);
+
+        rank = 14;
+        ansNode = avl.select(rank);
+        assertTrue(ansNode.data == 13);
+
+        rank = 1;
+        ansNode = avl.select(avl.search(5), rank);
+        assertTrue(ansNode.data == 4);
+
+        rank = 3;
+        ansNode = avl.select(avl.search(5), rank);
+        assertTrue(ansNode.data == 6);
+
+        rank = 2;
+        ansNode = avl.select(avl.search(11), rank);
+        assertTrue(ansNode.data == 9);
+
+        rank = 12;
+        ansNode = avl.select(avl.search(11), rank);
+        assertNull(ansNode);
+    }
 }

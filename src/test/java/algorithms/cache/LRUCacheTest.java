@@ -1,8 +1,9 @@
-package algorithms;
+package algorithms.cache;
 
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+
 import junit.framework.TestCase;
 
 /**
@@ -20,7 +21,7 @@ public class LRUCacheTest extends TestCase {
         float loadFactor = (3 + 2.f)/3;
         boolean accessOrder = true;
         
-        LRUCache<Integer, Integer> lRUCache = new LRUCache<Integer, Integer>(
+        algorithms.cache.LRUCache<Integer, Integer> lRUCache = new LRUCache<Integer, Integer>(
             initialCapacity, loadFactor);
         
         for (int i = 0; i < initialCapacity; ++i) {

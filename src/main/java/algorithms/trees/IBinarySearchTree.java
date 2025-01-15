@@ -2,6 +2,11 @@ package algorithms.trees;
 
 import java.util.List;
 
+/**
+ * interface for a binary search tree and 2 order statistic methods
+ * @param <T> the data type in a node
+ * @param <S> the node type in the tree
+ */
 public interface IBinarySearchTree
         <T extends Comparable<T>, S extends BinaryTreeNode<T>> {
 
@@ -23,6 +28,14 @@ public interface IBinarySearchTree
     S successor(BinaryTreeNode<T> node);
 
     S predecessor(BinaryTreeNode<T> node);
+
+    long rank(T data);
+
+    long rank(BinaryTreeNode<T> t, T data);
+
+    S select(long rank);
+
+    S select(BinaryTreeNode<T> t, long rank);
 
     List<T> inOrderTraversal();
 }

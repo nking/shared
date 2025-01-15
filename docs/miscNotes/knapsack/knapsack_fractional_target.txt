@@ -1,0 +1,10 @@
+the problem is to determine the max value one can
+put in the knapsack given a target weight 
+and given that the items can be taken as fractions
+instead of 0-1.
+
+the solution is greedy and O(n*log(n)).
+   calc vw[i] = value[i]/weight[i] for each item.
+   descending sort by vw
+   loop over desc sorted vw 
+   take as much of each item as can while maintaing sum <= target

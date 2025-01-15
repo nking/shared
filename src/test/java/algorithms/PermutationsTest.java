@@ -5,7 +5,7 @@ import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 
 import java.lang.reflect.Array;
-import java.util.Arrays;
+import java.util.*;
 import java.util.stream.IntStream;
 
 import junit.framework.TestCase;
@@ -71,6 +71,79 @@ public class PermutationsTest extends TestCase {
             }
         }
         assertEquals(6, found.size());
+    }
+
+    public void test3() {
+        int[] m = new int[]{1,2,3};
+
+        List<int[]> expected = new ArrayList<>();
+        expected.add(new int[]{1,2,3});
+        expected.add(new int[]{1,3,2});
+        expected.add(new int[]{2,1,3});
+        expected.add(new int[]{2,3,1});
+        expected.add(new int[]{3,1,2});
+        expected.add(new int[]{3,2,1});
+
+        List<int[]> ans1 = Permutations.permuteLexicographically(Arrays.copyOf(m, m.length), true);
+        assertEquals(expected, ans1);
+        List<int[]> ans2 = Permutations.recursivePermute(Arrays.copyOf(m, m.length));
+        assertEquals(expected, ans2);
+    }
+
+    public void test4() {
+        int[] a = new int[] {1,2,4,1,3};
+        int[] expAns = new int[]{1,2,4,3,1};
+
+        int[] ans = Arrays.copyOf(a, a.length);
+        Permutations.findNextLexicographically(ans);
+        assertTrue(Arrays.equals(expAns, ans));
+
+        Permutations.findPrevLexicographically(ans);
+        assertTrue(Arrays.equals(a, ans));
+    }
+
+    protected void assertEquals(List<int[]> expected, List<int[]> ans) {
+        assertEquals(expected.size(), ans.size());
+        expected = new ArrayList<>(expected);
+        for (int[] a : ans) {
+            for (int i = 0; i < expected.size(); ++i) {
+                int[] e = expected.get(i);
+                if (Arrays.equals(a, e)) {
+                    expected.remove(i);
+                    break;
+                }
+            }
+        }
+        assertEquals(0, expected.size());
+    }
+
+    public void _testR() {
+        int[] m = new int[]{1,2,3};
+        r(m.length, m);
+    }
+
+    protected void r(int mIdx, int[] m) {
+        if (mIdx == 0) {
+            //System.out.printf("%s\n", Arrays.toString(m));
+            return;
+        }
+        for (int i = 0; i < mIdx; ++i) {
+            r(mIdx-1, m);
+            int j = mIdx - 1;
+            if (i < j) {
+                if ((mIdx&1)!=1) { // even
+                    m[i]      ^= m[j];
+                    m[j] ^= m[i];
+                    m[i]      ^= m[j];
+                } else {//odd
+                    if (0 != j) {
+                        m[0]      ^= m[j];
+                        m[j] ^= m[0];
+                        m[0]      ^= m[j];
+                    }
+                }
+            }
+        }
     }
     
 }

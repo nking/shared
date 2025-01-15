@@ -13,7 +13,8 @@ public class TreeTraversal {
 
     /**
      root, left subtree, right subtree.
-     Note that a pre-order traversal gives the Euler tour for this tree when
+     Note that a pre-order traversal gives the Euler tour (minus reversed edges)
+     for this tree when
      Euler start node is the root.
      <pre>
        e.g.
@@ -79,7 +80,8 @@ public class TreeTraversal {
     /**
      * root, left subtree, right subtree.
 
-     Note that a pre-order traversal gives the Euler tour for this tree when
+     Note that a pre-order traversal gives the Euler tour (minus reversed edges)
+     for this tree when
      Euler start node is the root.
      <pre>
                            7
@@ -106,7 +108,23 @@ public class TreeTraversal {
         }
         System.out.println();
     }
+    /**
+     get the values of the tree nodes by traversing with pre-order which is:
+     root, left subtree, right subtree.
 
+     Note that a pre-order traversal gives the Euler tour (minus reversed edges) for this tree when
+     Euler start node is the root.
+     <pre>
+                           7
+                3                        11
+           1         5              9         13
+        0   2     4   6           8   10    12
+
+     visits: 7, 3, 1, 0, 2,5,4,6,11,9,8,10,13,12
+
+     </pre>
+     @param node
+     */
     public int[] getPreorder(BinaryTreeNode<Integer> node) {
         List<Integer> vals = new ArrayList<>();
         Stack<BinaryTreeNode<Integer>> s = new Stack<>();

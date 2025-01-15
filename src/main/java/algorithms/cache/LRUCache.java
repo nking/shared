@@ -1,4 +1,4 @@
-package algorithms;
+package algorithms.cache;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

@@ -595,8 +595,7 @@ public class Misc {
     }
   
     /**
-     * schedule the largest penalties first if they fit before deadline (duration of
-     * each task is a time unit of 1).
+     * schedule the largest penalties first if they fit before deadline (duration of each task is a time unit of 1).
      * runtime complexity is O(N * log_2(N))
      @param deadlines deadlines of each task
      @param penalties penalties of each task

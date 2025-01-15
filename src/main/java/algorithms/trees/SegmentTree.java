@@ -55,6 +55,7 @@ public class SegmentTree {
         //int tRightChild = iLeftChild + 1;
         int tLeftChild = tIdx + 1;
         int tRightChild = tIdx + (2 * (mid - treeL + 1));
+        // this is tRightChild = tIdx + treeR - treeL + 2
 
         build(a,tLeftChild, treeL, mid);
 
@@ -88,6 +89,7 @@ public class SegmentTree {
         //int tRightChild = tLeftChild + 1;
         int tLeftChild = tIdx + 1;
         int tRightChild = tIdx + (2 * (mid - treeL + 1));
+        // this is tRightChild = tIdx + treeR - treeL + 2
 
         return sum(tLeftChild, treeL, mid, qL, Math.min(qR, mid))
                 + sum(tRightChild, mid + 1, treeR, Math.max(qL, mid+1), qR);
@@ -109,6 +111,7 @@ public class SegmentTree {
         //int tRightChild = iLeftChild + 1;
         int tLeftChild = tIdx + 1;
         int tRightChild = tIdx + (2 * (mid - treeL + 1));
+        // this is tRightChild = tIdx + treeR - treeL + 2
 
         if (pos <= mid) {
             updateSet(tLeftChild, treeL, mid, pos, newVal);

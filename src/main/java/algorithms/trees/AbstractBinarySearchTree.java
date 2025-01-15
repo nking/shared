@@ -121,6 +121,89 @@ public abstract class AbstractBinarySearchTree
         return (p == null) ? null : (S)p;
     }
 
+    /**
+     * find data in this tree and return its rank (i.e., its 1-based index in an in-order tree traversal)
+     <pre>
+     reference
+     https://en.wikipedia.org/wiki/Order_statistic_tree
+     </pre>
+     * @param data
+     * @return the rank of data in the tree, else -1 if not in tree
+     */
+    public long rank(T data) {
+        return rank(root, data);
+    }
+
+    /**
+     * find data in this tree and return its rank (i.e., its 1-based index in an in-order tree traversal)
+     <pre>
+     reference
+     https://en.wikipedia.org/wiki/Order_statistic_tree
+     </pre>
+     @param t top node of subtree
+     @param data
+     @return the rank of data in the tree, else -1 if not in tree
+     */
+    public long rank(BinaryTreeNode<T> t, T data) {
+        if (t == null) {
+            return -1;
+        }
+        BinaryTreeNode<T> x = _search((S)t, data);
+        if (x == null) return -1;
+
+        long r = (x.left != null) ? x.left.n + 1 : 1;
+
+        BinaryTreeNode<T> y = x;
+        while (y != null && !y.equals(t)) {
+            BinaryTreeNode<T> p = y.parent;
+            if (p != null && p.right != null && p.right.equals(y)) {
+                r += (p.left != null) ? p.left.n + 1 : 1;
+            }
+            y = p;
+        }
+        return r;
+    }
+
+    /**
+     * select the rank-th node of this tree where rank is its rank, that is, its 1-based index in an in-order
+     * tree traversal.
+     <pre>
+     reference
+     https://en.wikipedia.org/wiki/Order_statistic_tree
+     </pre>
+     * @param rank
+     * @return the node with rank rank in this tree else null if there is no
+     * node in tree with that rank
+     */
+    public S select(long rank) {
+        if (root == null) return null;
+        // Returns the rank'th element (one-indexed) of the elements in t
+        return select(root, rank);
+    }
+
+    /**
+     * select the rank-th node with respect to subtree t, where rank is its rank, that is, its 1-based index in an in-order
+     * tree traversal.
+     <pre>
+     reference
+     https://en.wikipedia.org/wiki/Order_statistic_tree
+     </pre>
+     * @param rank
+     * @return the node with rank rank in subtree t, else null if there is no
+     *      * node in subtree t with that rank
+     */
+    public S select(BinaryTreeNode<T> t, long rank) {
+        if (t == null) return null;
+        // Returns the rank'th element (one-indexed) of the elements in t
+        long s = (t.left != null) ? t.left.n + 1 : 1;
+        if (rank == s) {
+            return (S)t;
+        } else if (rank < s) {
+            return select(t.left, rank);
+        } else {
+            return select(t.right, rank - s);
+        }
+    }
 
     /**
      * rotate node to the right

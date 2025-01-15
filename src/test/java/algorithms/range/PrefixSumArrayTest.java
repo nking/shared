@@ -3,6 +3,8 @@ package algorithms.range;
 import algorithms.trees.SegmentTree;
 import junit.framework.TestCase;
 
+import java.util.Arrays;
+
 public class PrefixSumArrayTest extends TestCase {
 
     public void test0() {
@@ -25,5 +27,24 @@ public class PrefixSumArrayTest extends TestCase {
         assertEquals(74, psa.sum(0, 7, use0BasedIndexes));
         assertEquals(24, psa.sum(4, 6, use0BasedIndexes));
 
+    }
+
+    public void test1() {
+        int[] a;
+        int[][] updateAndQuery;
+        long[] ans, expAns;
+        boolean rangesAre0Based;
+
+        a = new int[]{0, 1, 2, 3, 4};
+        updateAndQuery = new int[][] {
+                {1,3, -1},
+                {3,4, +3}
+        };
+
+        rangesAre0Based = true;
+        expAns = new long[]{6, 12};
+
+        ans = PrefixSumArray.updateAddQuery(a, updateAndQuery, rangesAre0Based);
+        assertTrue(Arrays.equals(expAns, ans));
     }
 }
