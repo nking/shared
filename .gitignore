@@ -12,6 +12,7 @@ _*
 ._*
 *.class
 src/test/resources/nearly_integer_sum_k6.txt
+src/test/resources/*hackerrank*
 *hackerrank*
 *leetcode*
 build.log
