@@ -44,6 +44,7 @@ public class SelectKMinSum {
                 tabCurr[s] = tabPrev[s];
                 for (int iK = 0; iK < k; iK++) {
 
+                    // use s only if it includes iK
                     if ((s&(1<<iK)) != 0) {
                         // difference in set bits between s and iK.  this is a candidate previous
                         // set to add to that does not include iK
