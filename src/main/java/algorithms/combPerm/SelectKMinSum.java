@@ -29,23 +29,19 @@ public class SelectKMinSum {
         int k = kByNChoices.length;
         int n = kByNChoices[0].length;
 
-        long[][] tab = new long[1<<k][n];
+        long[] tabPrev = new long[1<<k];
         long sentinel = Long.MAX_VALUE;
-        for (long[] t : tab) {
-            Arrays.fill(t, sentinel);
-        }
+        Arrays.fill(tabPrev, sentinel);
 
         // init for 1st column of kByNChoices
         for (int iK = 0; iK < k; iK++) {
-            tab[1<<iK][0] = kByNChoices[iK][0];
+            tabPrev[1<<iK] = kByNChoices[iK][0];
         }
 
         for (int i = 1; i < n; i++) {
-
+            long[] tabCurr = new long[1<<k];
             for (int s = 0; s < 1<<k; s++) {
-
-                tab[s][i] = tab[s][i-1];
-
+                tabCurr[s] = tabPrev[s];
                 for (int iK = 0; iK < k; iK++) {
 
                     if ((s&(1<<iK)) != 0) {
@@ -59,17 +55,18 @@ public class SelectKMinSum {
                         // include current selection by including previous and adding to it.
                         // exclude by not changing (above we already set to previous without
                         // adding current)
-                        long includePlusCurr = tab[sInclude][i-1] != sentinel ?
-                                tab[sInclude][i-1] + kByNChoices[iK][i] : kByNChoices[iK][i];
+                        long includePlusCurr = tabPrev[sInclude] != sentinel ?
+                                tabPrev[sInclude] + kByNChoices[iK][i] : kByNChoices[iK][i];
 
-                        if (tab[s][i] == sentinel || includePlusCurr <= tab[s][i]) {
-                            tab[s][i] = includePlusCurr;
+                        if (tabCurr[s] == sentinel || includePlusCurr <= tabCurr[s]) {
+                            tabCurr[s] = includePlusCurr;
                         }
                     }
-                }
-            }
+                } // end loop over iK
+            } // end loop over s
+            tabPrev = tabCurr;
         }
 
-        return tab[(1<<k)-1][n-1];
+        return tabPrev[(1<<k)-1];
     }
 }
