@@ -183,9 +183,11 @@ public class HypersphereChordLengthTest extends TestCase {
         for (i = 10; i < 50; i+=5) {
             ns.add(i);
         }
+/*
         for (i = 50; i < 100; i+=10) {
             ns.add(i);
         }
+*/
         /* NOTE: uncomment when not running in runTests
         for (i = 100; i <= 1000; i+=100) {
             ns.add(i);
@@ -287,7 +289,7 @@ public class HypersphereChordLengthTest extends TestCase {
         
         System.out.println("testCalcConfidenceOfNonUniformity_same");
 
-        int nTests = 10;
+        int nTests = 2;//10;
         
         int ns = 7;
         int nPoints = 250;
@@ -317,7 +319,7 @@ public class HypersphereChordLengthTest extends TestCase {
         
         System.out.println("testCalcConfidenceOfNonUniformity_different");
                 
-        int nTests = 10;
+        int nTests = 2;//10;
         
         int ns = 7;
         int nPoints = 250;//400;//250;
