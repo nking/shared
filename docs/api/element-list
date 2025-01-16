@@ -1,8 +1,12 @@
 algorithms
 algorithms.alignment
 algorithms.bipartite
+algorithms.cache
+algorithms.combPerm
 algorithms.compGeometry
 algorithms.compGeometry.convexHull
+algorithms.concurrency
+algorithms.concurrency.diningPhilosophers
 algorithms.connected
 algorithms.correlation
 algorithms.dimensionReduction
@@ -18,6 +22,7 @@ algorithms.msts
 algorithms.optimization
 algorithms.optimization.tsp
 algorithms.puzzles
+algorithms.range
 algorithms.scheduling
 algorithms.search
 algorithms.shortestPaths
