@@ -1,4 +1,4 @@
-package algorithms;
+package algorithms.combPerm;
 
 import algorithms.misc.MiscMath0;
 import gnu.trove.set.TIntSet;

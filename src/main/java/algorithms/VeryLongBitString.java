@@ -671,6 +671,7 @@ public final class VeryLongBitString {
     /**
      * where bits2 are set in bits1, unset the bits in bits1.
      * This is the bitwise 'subtract' operation A 'bitwise and' ~B.
+     * It subtracts from A any set bits in B.
      @param bs1 a bitstring
      @param bs2 another bitstring
      @return the difference between otherBS and this bitstring

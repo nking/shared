@@ -1,6 +1,6 @@
 package algorithms.graphs;
 
-import algorithms.PermutationsWithAwait;
+import algorithms.combPerm.PermutationsWithAwait;
 import algorithms.matrix.MatrixUtil;
 import algorithms.util.PairInt;
 import gnu.trove.iterator.TIntIntIterator;

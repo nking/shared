@@ -1,12 +1,9 @@
-package algorithms;
+package algorithms.combPerm;
 
-import algorithms.misc.MiscMath0;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 
-import java.lang.reflect.Array;
 import java.util.*;
-import java.util.stream.IntStream;
 
 import junit.framework.TestCase;
 

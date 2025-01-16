@@ -1,11 +1,8 @@
-package algorithms;
+package algorithms.combPerm;
 
 import algorithms.misc.MiscMath0;
-import gnu.trove.map.TIntIntMap;
-import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.set.hash.TIntHashSet;
 
-import java.math.BigInteger;
 import java.util.Arrays;
 
 public class SubsequenceChooser {

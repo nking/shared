@@ -1,8 +1,7 @@
 package algorithms.misc;
 
-import algorithms.SubsetChooser;
+import algorithms.combPerm.SubsetChooser;
 import algorithms.matrix.MatrixUtil;
-import algorithms.search.MiscBisectingSearch;
 import algorithms.sort.CountingSort;
 import algorithms.util.PairInt;
 import algorithms.util.PairIntArray;

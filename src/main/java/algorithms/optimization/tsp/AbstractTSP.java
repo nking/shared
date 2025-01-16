@@ -1,7 +1,7 @@
 package algorithms.optimization.tsp;
 
-import algorithms.PermutationsWithAwait;
-import algorithms.SubsetChooser;
+import algorithms.combPerm.PermutationsWithAwait;
+import algorithms.combPerm.SubsetChooser;
 import algorithms.misc.MiscMath0;
 import gnu.trove.iterator.TLongDoubleIterator;
 import gnu.trove.list.TIntList;

@@ -1,6 +1,6 @@
 package algorithms.misc;
 
-import algorithms.SubsetChooser;
+import algorithms.combPerm.SubsetChooser;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import junit.framework.TestCase;

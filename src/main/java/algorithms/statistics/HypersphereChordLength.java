@@ -1,6 +1,6 @@
 package algorithms.statistics;
 
-import algorithms.SubsetChooser;
+import algorithms.combPerm.SubsetChooser;
 import algorithms.misc.Distances;
 import algorithms.misc.Histogram;
 import algorithms.misc.HistogramHolder;
