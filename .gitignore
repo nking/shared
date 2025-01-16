@@ -4,7 +4,9 @@
 *.swm
 *.swn
 *.swo
-.idea
+*.iml
+.idea/
+/.idea/*
 .vscode
 .ipynb_*
 venv
@@ -38,3 +40,5 @@ src/test/java/algorithms/A??Test*
 src/test/java/algorithms/ATest*
 src/main/java/thirdparty/kit/*
 target/
+/.idea
+/.idea
