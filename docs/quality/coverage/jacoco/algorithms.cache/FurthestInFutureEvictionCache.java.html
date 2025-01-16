@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FurthestInFutureEvictionCache.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.cache</a> &gt; <span class="el_source">FurthestInFutureEvictionCache.java</span></div><h1>FurthestInFutureEvictionCache.java</h1><pre class="source lang-java linenums">package algorithms.cache;
+
+import java.util.*;
+
+/**
+ * given a list of block ids that will be requested in that order,
+ * and given a cache with a size limit, when the cache is full and
+ * experiences a miss, this algorithm chooses the cache element to
+ * evict as the index in the cache with a next use index furthest in future than the others' in the cache
+ */
+<span class="pc" id="L11">public class FurthestInFutureEvictionCache {</span>
+
+    /**
+     * given the future block ids and the cache size, return the number of hits and misses from following
+     * the furthest in future cache evict policy.
+     * r.t.c. is O(n * cacheSize) where n is length of block indexes.
+     * @param blockIdxs the block numbers that will be requested, in order of time
+     * @param cacheSize the number of blocks that can fit in the cache.
+     * @return an array of length 3 holding:
+     &lt;pre&gt;
+     row 0 contains the compulsory cache misses (the number of hits to fill the cache.
+     row 1 contains the number of cache misses minus the compulsory.
+     row 2 contains the number of cache hits.
+    &lt;/pre&gt;
+     */
+    public static int[] predict(int[] blockIdxs, int cacheSize) {
+
+<span class="fc" id="L28">        Map&lt;Integer, LinkedList&lt;Integer&gt;&gt; blockIndexMap = new HashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">        for (int i = 0; i &lt; blockIdxs.length; ++i) {</span>
+<span class="fc" id="L30">            blockIndexMap.putIfAbsent(blockIdxs[i], new LinkedList&lt;&gt;());</span>
+<span class="fc" id="L31">            blockIndexMap.get(blockIdxs[i]).add(i);</span>
+        }
+
+        // row 0 is compulsory cache misses
+        // row 1 is cache misses - compulsory
+        // row 2 is cache hits
+<span class="fc" id="L37">        int[] counts = new int[3];</span>
+<span class="fc" id="L38">        Set&lt;Integer&gt; cache = new HashSet&lt;&gt;(cacheSize);</span>
+
+        int b;
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        for (int i = 0; i &lt; blockIdxs.length; ++i) {</span>
+<span class="fc" id="L42">            b = blockIdxs[i];</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">            if (cache.size() &lt; cacheSize) {</span>
+<span class="fc" id="L44">                cache.add(b);</span>
+<span class="fc" id="L45">                ++counts[0]; // compulsory miss</span>
+            } else {
+<span class="fc bfc" id="L47" title="All 2 branches covered.">                if (cache.contains(b)) {</span>
+<span class="fc" id="L48">                    ++counts[2]; // a hit</span>
+                } else {
+<span class="fc" id="L50">                    ++counts[1]; // miss</span>
+
+                    // find key to evict
+<span class="fc" id="L53">                    int evictIdx = Integer.MIN_VALUE;</span>
+<span class="fc" id="L54">                    int evictKey = -1;</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">                    for (int key : cache) {</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">                        if (!blockIndexMap.containsKey(key)) {</span>
+                            // no future use, so choose it
+<span class="fc" id="L58">                            evictKey = key;</span>
+<span class="fc" id="L59">                            break;</span>
+                        }
+<span class="fc" id="L61">                        int idx = blockIndexMap.get(key).peekFirst();</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">                        if (idx &gt; evictIdx) {</span>
+<span class="fc" id="L63">                            evictIdx = idx;</span>
+<span class="fc" id="L64">                            evictKey = key;</span>
+                        }
+<span class="fc" id="L66">                    }</span>
+<span class="pc bnc" id="L67" title="All 2 branches missed.">                    assert(evictKey != -1);</span>
+<span class="fc" id="L68">                    cache.remove(evictKey);</span>
+
+                    // add b
+<span class="fc" id="L71">                    cache.add(b);</span>
+                }
+            }
+            // remove i from blockIndexMap
+<span class="pc bnc" id="L75" title="All 2 branches missed.">            assert(blockIndexMap.containsKey(b));</span>
+<span class="pc bnc" id="L76" title="All 2 branches missed.">            assert(blockIndexMap.get(b).peekFirst() == i);</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">            if (blockIndexMap.get(b).size() == 1) {</span>
+<span class="fc" id="L78">                blockIndexMap.remove(b);</span>
+            } else {
+<span class="fc" id="L80">                blockIndexMap.get(b).pollFirst();</span>
+            }
+        }
+
+<span class="fc" id="L84">        return counts;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

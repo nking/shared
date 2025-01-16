@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Hierarchical.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.concurrency.diningPhilosophers</a> &gt; <span class="el_source">Hierarchical.java</span></div><h1>Hierarchical.java</h1><pre class="source lang-java linenums">package algorithms.concurrency.diningPhilosophers;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class Hierarchical extends AbstractDiningPhilosophers {
+    protected ReentrantLock[] forkLocks;
+
+    public Hierarchical(int n, int thinkTimeMsec) {
+<span class="fc" id="L12">        super(n, thinkTimeMsec, Hierarchical.class.getSimpleName());</span>
+
+<span class="fc" id="L14">        this.forkLocks = new ReentrantLock[n];</span>
+<span class="fc bfc" id="L15" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L16">            forkLocks[i] = new ReentrantLock();</span>
+        }
+<span class="fc" id="L18">    }</span>
+
+    public Hierarchical(int n, int thinkTimeMsec, String label) {
+<span class="fc" id="L21">        super(n, thinkTimeMsec, label);</span>
+
+<span class="fc" id="L23">        this.forkLocks = new ReentrantLock[n];</span>
+<span class="fc bfc" id="L24" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L25">            forkLocks[i] = new ReentrantLock(true);</span>
+        }
+<span class="fc" id="L27">    }</span>
+
+    //   0   1   2
+    // 2  0    1   2
+    protected ReentrantLock getLowerFork(int i) {
+<span class="fc bfc" id="L32" title="All 2 branches covered.">        if (i == 0) {</span>
+<span class="fc" id="L33">            return forkLocks[0];</span>
+        }
+<span class="fc" id="L35">        return forkLocks[i - 1];</span>
+    }
+
+    protected ReentrantLock getHigherFork(int i) {
+<span class="fc bfc" id="L39" title="All 2 branches covered.">        if (i == 0) {</span>
+<span class="fc" id="L40">            return forkLocks[n - 1];</span>
+        }
+<span class="fc" id="L42">        return forkLocks[i];</span>
+    }
+
+    public void dine(int bitesPer, int timeoutSec) throws InterruptedException {
+
+<span class="fc" id="L47">        initDine(bitesPer);</span>
+
+        // start all threads.
+        // each tries to obtain low number fork, high number fork, eat, release forks. think
+<span class="fc" id="L51">        List&lt;Thread&gt; threadList = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L53">            Thread thr = new Thread(eat(i, timeoutSec));</span>
+<span class="fc" id="L54">            threadList.add(thr);</span>
+<span class="fc" id="L55">            thr.start();</span>
+        }
+<span class="fc bfc" id="L57" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L58">            threadList.get(i).join();</span>
+        }
+
+<span class="fc" id="L61">        closeDine();</span>
+<span class="fc" id="L62">    }//end dine</span>
+
+    protected Runnable eat(int i, int timeoutSec) {
+<span class="fc" id="L65">        return new Runnable() {</span>
+            @Override
+            public void run() {
+                while (bites.containsKey(i)) {
+                    try {
+                        boolean s = getLowerFork(i).tryLock(timeoutSec, TimeUnit.MILLISECONDS);
+                        if (!s) continue;
+                        s = getHigherFork(i).tryLock(timeoutSec, TimeUnit.MILLISECONDS);
+                        if (!s) continue;
+                        if (bites.containsKey(i)) {
+                            if (bites.get(i) == 1) {
+                                bites.remove(i);
+                            } else {
+                                bites.put(i, bites.get(i) - 1);
+                            }
+                            //System.out.printf(&quot;%d eats\n&quot;, i);
+                        }
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    } finally {
+                        if (getLowerFork(i).isHeldByCurrentThread()) {
+                            getLowerFork(i).unlock();
+                        }
+                        if (getHigherFork(i).isHeldByCurrentThread()) {
+                            getHigherFork(i).unlock();
+                            try {
+                                Thread.sleep(thinkTimeMilliSec);
+                            } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt();
+                            }
+                        }
+                    }
+                }
+            }
+        };
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

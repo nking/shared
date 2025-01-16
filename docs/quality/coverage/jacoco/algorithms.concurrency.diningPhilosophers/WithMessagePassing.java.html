@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WithMessagePassing.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.concurrency.diningPhilosophers</a> &gt; <span class="el_source">WithMessagePassing.java</span></div><h1>WithMessagePassing.java</h1><pre class="source lang-java linenums">package algorithms.concurrency.diningPhilosophers;
+
+public class WithMessagePassing extends AbstractDiningPhilosophers {
+
+    public WithMessagePassing(int n, int thinkTimeMsec, String label) {
+<span class="nc" id="L6">        super(n, thinkTimeMsec, label);</span>
+<span class="nc" id="L7">        throw new UnsupportedOperationException(&quot;not yet implemented&quot;);</span>
+    }
+
+    @Override
+    public void dine(int bites, int timeoutSec) {
+<span class="nc" id="L12">        throw new UnsupportedOperationException(&quot;not yet implemented&quot;);</span>
+    }
+
+    /*
+
+    NOTE: when implementing, if not using blocking queues,
+    consider Thread.onSpinWait() for condition...
+
+        Chandy-Misra message passing algorithm:
+
+        init:
+           each process gets a unique int ID.
+           the fork between 2 people is given to the lower ID diner
+           and marked as dirty.
+
+                  diner   0      1    2
+              fork      d  d       d      and marked as 'dirty'
+
+         thinking:
+            if receives fork req from neighbor: clean it and gives to neighbor
+         preparing to eat:
+            any chopsticks that diner doesn't have are requested from neighbor.
+            if neighbor asks diner for a fork they have:
+                if dirty, clean it and give to neighbor.
+                else if clean, puts request in a queue, and keeps fork
+         has both forks:
+            can begin eating.
+            any requests are deferred (stored in queue).
+            forks are now dirty.
+         immed after eating
+            diner cleans forks and gives forks to requesters.
+             the priority is lowered here using the state &quot;dirty&quot; for the fork.
+
+         Wait for graph (from wikipedia):
+            -- node is a process P_i.
+            -- edge from process P_i to P_j implies P_j holds a resource needed by P_i
+               hence P_i is waiting on P_j to release its lock on resource.
+            -- if P_i is waiting on more than 1 lock, there may be relationships
+               between the locks such as disjunctive (OR) or conjunctive (AND).
+               In the conjunctive case, a possible deadlock is a cycle(s).
+               In the disjunctive case, a possible deadlock is a knot(s) where a knot is
+               an inescapable section of a directed graph.
+
+          will refer to fork with number and 'd' for dirty or 'c' for clean.
+          f0d is fork 0 dirty.
+
+          for 3 diners and a fair queueing system:
+          ----------------------
+          init: P0 has f0d, f1d
+                P1 has f2d
+          ---------------------
+          P1 -&gt; req f1c -&gt; P0
+          P2 -&gt; req f0c -&gt; P0
+          P2 -&gt; req f2c -&gt; P1
+          P0 eats
+          --------------------
+          P0 cleans forks and gives (releases mutex) to P1 and P2.
+          P1 has fc1, fc2
+          P2 has fc0
+          P0 is thinking
+          -------------------
+          P0  -&gt; req f1c -&gt; P1
+          P0 -&gt; req f2c -&gt; P2
+          P1 eats
+          -------------------
+          P1 cleans forks and gives (releases mutex) to P0 and P2.
+          P2 has has fc0, f2c
+          P0 has ...
+
+          no cycles
+
+          TODO: add mutex details and use P language
+         */
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

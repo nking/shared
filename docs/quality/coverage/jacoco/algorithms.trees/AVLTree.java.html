@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AVLTree.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.trees</a> &gt; <span class="el_source">AVLTree.java</span></div><h1>AVLTree.java</h1><pre class="source lang-java linenums">package algorithms.trees;
+
+/**
+ * a self balancing binary search tree which maintains a height difference no
+ * greater than 1 between the 2 subtrees of a node.
+ * The height is the largest distance from a node to a descendant leaf.
+ * The implementation follows MIT opencourseware class 6.006 Unit 2.
+ */
+public class AVLTree&lt;T extends Comparable&lt;T&gt;, S extends AVLTreeNode&lt;T&gt;&gt;
+        extends BinarySearchRecursiveTree&lt;T, S&gt;{
+
+    // NOTE&quot; internally, uses convention for interpreting S.compareTo
+    // as left is &lt; 0 else right
+
+    public AVLTree() {
+<span class="fc" id="L16">        super();</span>
+<span class="fc" id="L17">    }</span>
+
+    @Override
+    public S newNode(T data) {
+<span class="fc" id="L21">        return (S) new AVLTreeNode&lt;T&gt;(data);</span>
+    }
+
+    protected void updateHeight(AVLTreeNode&lt;T&gt; node) {
+<span class="fc" id="L25">        node.height = Math.max(getHeight(node.left), getHeight(node.right)) + 1;</span>
+<span class="fc" id="L26">    }</span>
+
+    protected int getHeight(BinaryTreeNode&lt;T&gt; node) {
+<span class="fc bfc" id="L29" title="All 2 branches covered.">        if (node == null) {</span>
+<span class="fc" id="L30">            return -1;</span>
+        }
+<span class="fc" id="L32">        return ((AVLTreeNode&lt;T&gt;)node).height;</span>
+    }
+
+    protected void rebalance(AVLTreeNode&lt;T&gt; node) {
+        //after each operation, updateN for node.parent and the node
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        while (node != null) {</span>
+<span class="fc" id="L38">            updateHeight(node);</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">            if (getHeight(node.left) &gt;= 2 + getHeight(node.right)) {</span>
+                // node.left is not null
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">                if (getHeight(node.left.left) &gt;= getHeight(node.left.right)) {</span>
+                    //rotation handles root assignment too when node2.parent=null
+<span class="fc" id="L43">                    BinaryTreeNode&lt;T&gt; node2 = rotateRight(node);</span>
+<span class="fc" id="L44">                } else {</span>
+<span class="nc" id="L45">                    BinaryTreeNode&lt;T&gt; node2 = rotateLeft((AVLTreeNode&lt;T&gt;)node.left);</span>
+<span class="nc" id="L46">                    updateNAndAncestors(node);</span>
+<span class="nc" id="L47">                    updateHeight(node);</span>
+<span class="nc" id="L48">                    BinaryTreeNode&lt;T&gt; node3 = rotateRight(node);</span>
+<span class="nc" id="L49">                }</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">            } else if (getHeight(node.right) &gt;= 2 + getHeight(node.left)) {</span>
+                // node.right is not null
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">                if (getHeight(node.right.right) &gt;= getHeight(node.right.left)) {</span>
+<span class="fc" id="L53">                    BinaryTreeNode&lt;T&gt; node2 = rotateLeft(node);</span>
+<span class="fc" id="L54">                } else {</span>
+<span class="nc" id="L55">                    BinaryTreeNode&lt;T&gt; node2 = rotateRight((AVLTreeNode&lt;T&gt;) node.right);</span>
+<span class="nc" id="L56">                    updateNAndAncestors(node);</span>
+<span class="nc" id="L57">                    BinaryTreeNode&lt;T&gt; node3 = rotateRight(node);</span>
+                }
+            }
+<span class="fc" id="L60">            updateNAndAncestors(node);</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">            node = (node.parent == null) ? null : (AVLTreeNode&lt;T&gt;) node.parent;</span>
+        }
+<span class="fc" id="L63">    }</span>
+
+    /**
+     * insert data and return the node.  Note that every delete operation modifies the tree
+     * in non-recursive version, so do not rely on the state of any node retained after
+     * a bst delete.
+     * @param data
+     * @return
+     */
+    @Override
+    public S insert(T data) {
+<span class="fc" id="L74">        AVLTreeNode&lt;T&gt; node = super.insert(data);</span>
+<span class="fc" id="L75">        rebalance(node);</span>
+<span class="fc" id="L76">        return (S) node;</span>
+    }
+
+    /**
+     * delete node from this tree.
+     * Also note that delete modifies internal state of 2 nodes and so any references
+     * obtained during insert may have mutated.
+     * @param node
+     * @return
+     */
+    @Override
+    public boolean delete(BinaryTreeNode&lt;T&gt; node) {
+<span class="nc bnc" id="L88" title="All 2 branches missed.">        AVLTreeNode&lt;T&gt; p = (node.parent == null) ? null : (AVLTreeNode&lt;T&gt;) node.parent;</span>
+<span class="nc" id="L89">        boolean s = super.delete(node);</span>
+<span class="nc" id="L90">        rebalance(p);</span>
+<span class="nc" id="L91">        return true;</span>
+    }
+
+    /**
+     * delete tree a single node having value data.
+     * @param node
+     * @return
+     */
+    @Override
+    public boolean delete(T data) {
+<span class="nc" id="L101">        AVLTreeNode&lt;T&gt; node = search(data);</span>
+<span class="nc" id="L102">        return delete(node);</span>
+    }
+
+    protected BinaryTreeNode&lt;T&gt; rotateRight(BinaryTreeNode&lt;T&gt; node) {
+<span class="fc" id="L106">        BinaryTreeNode&lt;T&gt; node2 = super.rotateRight(node);</span>
+<span class="fc" id="L107">        updateHeight((AVLTreeNode&lt;T&gt;) node);</span>
+<span class="fc" id="L108">        updateHeight((AVLTreeNode&lt;T&gt;) node2);</span>
+<span class="fc" id="L109">        return node2;</span>
+    }
+
+    protected BinaryTreeNode&lt;T&gt; rotateLeft(BinaryTreeNode&lt;T&gt; node) {
+<span class="fc" id="L113">        BinaryTreeNode&lt;T&gt; node2 = super.rotateLeft(node);</span>
+<span class="fc" id="L114">        updateHeight((AVLTreeNode&lt;T&gt;) node);</span>
+<span class="fc" id="L115">        updateHeight((AVLTreeNode&lt;T&gt;) node2);</span>
+<span class="fc" id="L116">        return node2;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

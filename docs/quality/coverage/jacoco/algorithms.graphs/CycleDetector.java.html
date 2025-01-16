@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CycleDetector.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.graphs</a> &gt; <span class="el_source">CycleDetector.java</span></div><h1>CycleDetector.java</h1><pre class="source lang-java linenums">package algorithms.graphs;
+
+import java.util.*;
+
+<span class="fc" id="L5">public class CycleDetector {</span>
+
+    public &lt;T&gt; boolean hasCycle(Map&lt;Integer, Map&lt;Integer, T&gt;&gt; graph) {
+
+<span class="fc" id="L9">        Map&lt;Integer, Set&lt;Integer&gt;&gt; g = new HashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L10" title="All 2 branches covered.">        for (int key : graph.keySet()) {</span>
+<span class="fc bfc" id="L11" title="All 2 branches covered.">            for (int val : graph.get(key).keySet()) {</span>
+<span class="fc" id="L12">                g.putIfAbsent(key, new HashSet&lt;Integer&gt;());</span>
+<span class="fc" id="L13">                g.get(key).add(val);</span>
+<span class="fc" id="L14">            }</span>
+<span class="fc" id="L15">        }</span>
+
+<span class="fc" id="L17">        return hasCycle2(g);</span>
+    }
+
+    private &lt;T&gt; boolean hasCycle(int u, int[] visited, int[] cycle, Map&lt;Integer, Set&lt;Integer&gt;&gt; graph) {
+<span class="fc" id="L21">        visited[u] = 1;</span>
+<span class="fc" id="L22">        cycle[u] = 1;</span>
+<span class="fc bfc" id="L23" title="All 2 branches covered.">        if (graph.containsKey(u)) {</span>
+<span class="fc bfc" id="L24" title="All 2 branches covered.">            for (int v : graph.get(u)) {</span>
+<span class="fc bfc" id="L25" title="All 2 branches covered.">                if (cycle[v] != 0) {</span>
+<span class="fc" id="L26">                    return true;</span>
+                }
+<span class="pc bpc" id="L28" title="1 of 2 branches missed.">                if (visited[v] != 0) continue;</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">                if (hasCycle(v, visited, Arrays.copyOf(cycle, cycle.length), graph)) {</span>
+<span class="fc" id="L30">                    return true;</span>
+                }
+<span class="fc" id="L32">            }</span>
+        }
+<span class="fc" id="L34">        return false;</span>
+    }
+
+    public boolean hasCycle2(Map&lt;Integer, Set&lt;Integer&gt;&gt; graph) {
+        // uses DFS to look for cycles in the graph
+<span class="fc" id="L39">        GraphUtil util = new GraphUtil();</span>
+<span class="fc" id="L40">        int nV = util.countNodes2(graph);</span>
+
+<span class="fc" id="L42">        int[] visited = new int[nV];</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">        for (int i = 0; i &lt; nV; ++i) {</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">            if (visited[i] == 0) {</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">                if (hasCycle(i, visited, new int[nV], graph)) {</span>
+<span class="fc" id="L46">                    return true;</span>
+                }
+            }
+        }
+<span class="fc" id="L50">        return false;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

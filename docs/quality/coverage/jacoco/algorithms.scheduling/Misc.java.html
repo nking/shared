@@ -595,8 +595,7 @@ import java.util.stream.IntStream;
     }
   
     /**
-     * schedule the largest penalties first if they fit before deadline (duration of
-     * each task is a time unit of 1).
+     * schedule the largest penalties first if they fit before deadline (duration of each task is a time unit of 1).
      * runtime complexity is O(N * log_2(N))
      @param deadlines deadlines of each task
      @param penalties penalties of each task
@@ -604,14 +603,14 @@ import java.util.stream.IntStream;
      */
     private int[] greedy(int[] deadlines, int[] penalties) {
 
-<span class="fc" id="L607">        int n = deadlines.length;</span>
+<span class="fc" id="L606">        int n = deadlines.length;</span>
 
         //O(N * log_2(N))
         // sort w, m into monotonically decreasing order by penalties
-<span class="fc" id="L611">        int[] sortedIndexes = IntStream.range(0, n).boxed()</span>
-<span class="fc" id="L612">                .sorted((i, j) -&gt; {return penalties[j] - penalties[i];})</span>
-<span class="fc" id="L613">                .mapToInt(ele -&gt; ele)</span>
-<span class="fc" id="L614">                .toArray();</span>
+<span class="fc" id="L610">        int[] sortedIndexes = IntStream.range(0, n).boxed()</span>
+<span class="fc" id="L611">                .sorted((i, j) -&gt; {return penalties[j] - penalties[i];})</span>
+<span class="fc" id="L612">                .mapToInt(ele -&gt; ele)</span>
+<span class="fc" id="L613">                .toArray();</span>
 
         /*
         System.out.println(&quot;sorted by decr penalty:&quot;);
@@ -624,32 +623,32 @@ import java.util.stream.IntStream;
         //TODO: consider overloading method for durations.  then need an array b to complement a, holding integrated
         // durations.
        
-<span class="fc" id="L627">        TIntList a = new TIntArrayList();</span>
-<span class="fc" id="L628">        int prevA = -1;</span>
+<span class="fc" id="L626">        TIntList a = new TIntArrayList();</span>
+<span class="fc" id="L627">        int prevA = -1;</span>
         int i;
-<span class="fc bfc" id="L630" title="All 2 branches covered.">        for (int ii = 0; ii &lt; n; ++ii) {</span>
-<span class="fc" id="L631">            i = sortedIndexes[ii];</span>
+<span class="fc bfc" id="L629" title="All 2 branches covered.">        for (int ii = 0; ii &lt; n; ++ii) {</span>
+<span class="fc" id="L630">            i = sortedIndexes[ii];</span>
             //System.out.printf(&quot;i=%d, oIdx=%d, a%d f_i=%d, (%d,%d): &quot;, i, oIdx, oIdx+1, (a.size()+1), deadlines[i], penalties[i]);
-<span class="fc bfc" id="L633" title="All 2 branches covered.">            if (deadlines[i] &gt;= (a.size()+1)) {</span>
+<span class="fc bfc" id="L632" title="All 2 branches covered.">            if (deadlines[i] &gt;= (a.size()+1)) {</span>
                 //done early
-<span class="fc" id="L635">                a.add(i);</span>
-<span class="fc" id="L636">                prevA = i;</span>
+<span class="fc" id="L634">                a.add(i);</span>
+<span class="fc" id="L635">                prevA = i;</span>
                 //System.out.println(&quot;  early accept&quot;);
-<span class="pc bpc" id="L638" title="1 of 4 branches missed.">            } else if (!a.isEmpty() </span>
-<span class="fc bfc" id="L639" title="All 2 branches covered.">                &amp;&amp; (deadlines[prevA] &gt; deadlines[i]) &amp;&amp; (deadlines[prevA] &gt;= (a.size() + 1))</span>
+<span class="pc bpc" id="L637" title="1 of 4 branches missed.">            } else if (!a.isEmpty() </span>
+<span class="fc bfc" id="L638" title="All 2 branches covered.">                &amp;&amp; (deadlines[prevA] &gt; deadlines[i]) &amp;&amp; (deadlines[prevA] &gt;= (a.size() + 1))</span>
                 ) {
-<span class="fc" id="L641">                a.add(i);</span>
-<span class="fc" id="L642">                prevA = i;</span>
+<span class="fc" id="L640">                a.add(i);</span>
+<span class="fc" id="L641">                prevA = i;</span>
                 //System.out.println(&quot;  accept&quot;);
             } /*else {
                 System.out.println(&quot;  reject&quot;);
             }*/
         }
-<span class="fc" id="L648">        int[] ao = new int[a.size()];</span>
-<span class="fc bfc" id="L649" title="All 2 branches covered.">        for (i = 0; i &lt; ao.length; ++i) {</span>
-<span class="fc" id="L650">            ao[i] = a.get(i);</span>
+<span class="fc" id="L647">        int[] ao = new int[a.size()];</span>
+<span class="fc bfc" id="L648" title="All 2 branches covered.">        for (i = 0; i &lt; ao.length; ++i) {</span>
+<span class="fc" id="L649">            ao[i] = a.get(i);</span>
         }
-<span class="fc" id="L652">        return ao;</span>
+<span class="fc" id="L651">        return ao;</span>
     }
 
     /**
@@ -690,43 +689,43 @@ import java.util.stream.IntStream;
             such that it conflicts with no other requests of this color class. 
         */
 
-<span class="fc" id="L693">        int n = s.length;</span>
+<span class="fc" id="L692">        int n = s.length;</span>
         
         // runtime complexity O(n*log_2(n))
         //sort requests by increasing start times
-<span class="fc" id="L697">        int[] sortedIndexes = IntStream.range(0, n).boxed()</span>
-<span class="fc" id="L698">                .sorted((i, j) -&gt; Double.compare(s[i], s[j]))</span>
-<span class="fc" id="L699">                .mapToInt(ele -&gt; ele).toArray();</span>
+<span class="fc" id="L696">        int[] sortedIndexes = IntStream.range(0, n).boxed()</span>
+<span class="fc" id="L697">                .sorted((i, j) -&gt; Double.compare(s[i], s[j]))</span>
+<span class="fc" id="L698">                .mapToInt(ele -&gt; ele).toArray();</span>
 
         // a color for each request
-<span class="fc" id="L702">        int[] c = new int[s.length];</span>
+<span class="fc" id="L701">        int[] c = new int[s.length];</span>
         
-<span class="fc" id="L704">        TIntSet excl = new TIntHashSet();</span>
+<span class="fc" id="L703">        TIntSet excl = new TIntHashSet();</span>
         int color;
         int i, j;
-<span class="fc bfc" id="L707" title="All 2 branches covered.">        for (int ii = 0; ii &lt; n; ++ii) {</span>
-<span class="fc" id="L708">            excl.clear();</span>
-<span class="fc" id="L709">            i = sortedIndexes[ii];</span>
+<span class="fc bfc" id="L706" title="All 2 branches covered.">        for (int ii = 0; ii &lt; n; ++ii) {</span>
+<span class="fc" id="L707">            excl.clear();</span>
+<span class="fc" id="L708">            i = sortedIndexes[ii];</span>
             //TODO: can further constrain the range of jj with a bisecting search
-<span class="fc bfc" id="L711" title="All 2 branches covered.">            for (int jj = 0; jj &lt; ii; ++jj) {</span>
+<span class="fc bfc" id="L710" title="All 2 branches covered.">            for (int jj = 0; jj &lt; ii; ++jj) {</span>
                 //j is always smaller than i so s[j] &lt;= s[i].
                 //  then order is (sj,fj)  (si,fi)
-<span class="fc" id="L714">                j = sortedIndexes[jj];</span>
+<span class="fc" id="L713">                j = sortedIndexes[jj];</span>
                 //if ([s[j],f[j]] overlaps [s[i],f[i]]) 
-<span class="fc bfc" id="L716" title="All 2 branches covered.">                if (s[i] &lt; f[j]) {</span>
-<span class="fc" id="L717">                    excl.add(c[j]);</span>
+<span class="fc bfc" id="L715" title="All 2 branches covered.">                if (s[i] &lt; f[j]) {</span>
+<span class="fc" id="L716">                    excl.add(c[j]);</span>
                 }
             }
             //Let c be the smallest color NOT in E
-<span class="pc bpc" id="L721" title="1 of 2 branches missed.">            for (color = 0; color &lt; n; ++color) {</span>
-<span class="fc bfc" id="L722" title="All 2 branches covered.">                if (!excl.contains(color)) {</span>
-<span class="fc" id="L723">                    break;</span>
+<span class="pc bpc" id="L720" title="1 of 2 branches missed.">            for (color = 0; color &lt; n; ++color) {</span>
+<span class="fc bfc" id="L721" title="All 2 branches covered.">                if (!excl.contains(color)) {</span>
+<span class="fc" id="L722">                    break;</span>
                 }
             }
-<span class="fc" id="L726">            c[i] = color;</span>
+<span class="fc" id="L725">            c[i] = color;</span>
         }
 
-<span class="fc" id="L729">        return c;</span>
+<span class="fc" id="L728">        return c;</span>
     }
 
     /**
@@ -754,62 +753,62 @@ import java.util.stream.IntStream;
      @return indexes of resources to schedule the requests on.
      */
     public int[] intervalPartitionGreedy(double[] s, double[] f) {
-<span class="fc" id="L757">        int n = s.length;</span>
-<span class="pc bpc" id="L758" title="1 of 2 branches missed.">        if (f.length != n) {</span>
-<span class="nc" id="L759">            throw new IllegalArgumentException(&quot;s and f must be same length&quot;);</span>
+<span class="fc" id="L756">        int n = s.length;</span>
+<span class="pc bpc" id="L757" title="1 of 2 branches missed.">        if (f.length != n) {</span>
+<span class="nc" id="L758">            throw new IllegalArgumentException(&quot;s and f must be same length&quot;);</span>
         }
 
         // runtime complexity O(n*log(n))
         //sort requests by increasing finish times
-<span class="fc" id="L764">        int[] sortedIndexes = IntStream.range(0, n).boxed()</span>
-<span class="fc" id="L765">                .sorted((i, j) -&gt; Double.compare(f[i], f[j]))</span>
-<span class="fc" id="L766">                .mapToInt(ele -&gt; ele).toArray();</span>
+<span class="fc" id="L763">        int[] sortedIndexes = IntStream.range(0, n).boxed()</span>
+<span class="fc" id="L764">                .sorted((i, j) -&gt; Double.compare(f[i], f[j]))</span>
+<span class="fc" id="L765">                .mapToInt(ele -&gt; ele).toArray();</span>
 
-<span class="fc" id="L768">        List&lt;List&lt;Integer&gt;&gt; resources = new ArrayList&lt;List&lt;Integer&gt;&gt;();</span>
-<span class="fc" id="L769">        List&lt;Integer&gt; current = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L770">        resources.add(current);</span>
-<span class="fc" id="L771">        double fPrev = -1;</span>
+<span class="fc" id="L767">        List&lt;List&lt;Integer&gt;&gt; resources = new ArrayList&lt;List&lt;Integer&gt;&gt;();</span>
+<span class="fc" id="L768">        List&lt;Integer&gt; current = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L769">        resources.add(current);</span>
+<span class="fc" id="L770">        double fPrev = -1;</span>
         int i;
         //O(n)
-<span class="fc bfc" id="L774" title="All 2 branches covered.">        for (int ii = 0; ii &lt; n; ++ii) {</span>
-<span class="fc" id="L775">            i = sortedIndexes[ii];</span>
-<span class="fc bfc" id="L776" title="All 2 branches covered.">            if (s[i] &lt; fPrev) {</span>
-<span class="fc" id="L777">                current = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L778">                resources.add(current);</span>
+<span class="fc bfc" id="L773" title="All 2 branches covered.">        for (int ii = 0; ii &lt; n; ++ii) {</span>
+<span class="fc" id="L774">            i = sortedIndexes[ii];</span>
+<span class="fc bfc" id="L775" title="All 2 branches covered.">            if (s[i] &lt; fPrev) {</span>
+<span class="fc" id="L776">                current = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L777">                resources.add(current);</span>
             }
-<span class="fc" id="L780">            current.add(i);</span>
-<span class="fc" id="L781">            fPrev = f[i];</span>
+<span class="fc" id="L779">            current.add(i);</span>
+<span class="fc" id="L780">            fPrev = f[i];</span>
         }
         //O(n)
         // merge resources, bottom up
         double start, finish;
         int jj, j;
-<span class="fc bfc" id="L787" title="All 2 branches covered.">        for (int ii = resources.size() - 1; ii &gt; 0; --ii) {</span>
-<span class="fc" id="L788">            current = resources.get(ii);</span>
-<span class="fc" id="L789">            start = s[current.get(0)];</span>
+<span class="fc bfc" id="L786" title="All 2 branches covered.">        for (int ii = resources.size() - 1; ii &gt; 0; --ii) {</span>
+<span class="fc" id="L787">            current = resources.get(ii);</span>
+<span class="fc" id="L788">            start = s[current.get(0)];</span>
             // search lower indexes for feasible concatenation
-<span class="fc bfc" id="L791" title="All 2 branches covered.">            for (jj = ii - 1; jj &gt;= 0; --jj) {</span>
-<span class="fc" id="L792">                List&lt;Integer&gt; lower = resources.get(jj);</span>
-<span class="fc" id="L793">                finish = f[lower.get(lower.size() - 1)];</span>
-<span class="fc bfc" id="L794" title="All 2 branches covered.">                if (start &gt;= finish) {</span>
+<span class="fc bfc" id="L790" title="All 2 branches covered.">            for (jj = ii - 1; jj &gt;= 0; --jj) {</span>
+<span class="fc" id="L791">                List&lt;Integer&gt; lower = resources.get(jj);</span>
+<span class="fc" id="L792">                finish = f[lower.get(lower.size() - 1)];</span>
+<span class="fc bfc" id="L793" title="All 2 branches covered.">                if (start &gt;= finish) {</span>
                     // append current to lower
-<span class="fc" id="L796">                    lower.addAll(current);</span>
-<span class="fc" id="L797">                    resources.remove(ii);</span>
-<span class="fc" id="L798">                    break;</span>
+<span class="fc" id="L795">                    lower.addAll(current);</span>
+<span class="fc" id="L796">                    resources.remove(ii);</span>
+<span class="fc" id="L797">                    break;</span>
                 }
             }
         }
 
         //O(n)
         //for each index, write the scheduled resource number
-<span class="fc" id="L805">        int[] schedResource = new int[n];</span>
-<span class="fc bfc" id="L806" title="All 2 branches covered.">        for (i = 0; i &lt; resources.size(); ++i) {</span>
-<span class="fc" id="L807">            current = resources.get(i);</span>
-<span class="fc bfc" id="L808" title="All 2 branches covered.">            for (j = 0; j &lt; current.size(); ++j) {</span>
-<span class="fc" id="L809">                schedResource[current.get(j)] = i;</span>
+<span class="fc" id="L804">        int[] schedResource = new int[n];</span>
+<span class="fc bfc" id="L805" title="All 2 branches covered.">        for (i = 0; i &lt; resources.size(); ++i) {</span>
+<span class="fc" id="L806">            current = resources.get(i);</span>
+<span class="fc bfc" id="L807" title="All 2 branches covered.">            for (j = 0; j &lt; current.size(); ++j) {</span>
+<span class="fc" id="L808">                schedResource[current.get(j)] = i;</span>
             }
         }
-<span class="fc" id="L812">        return schedResource;</span>
+<span class="fc" id="L811">        return schedResource;</span>
     }
 
     /**
@@ -839,36 +838,36 @@ import java.util.stream.IntStream;
      @return indexes of resources to schedule the requests on.
      */
     public static int[] intervalPartitionGreedySingleResource(double[] s, double[] f, boolean isSortedByF) {
-<span class="fc" id="L842">        int n = f.length;</span>
-<span class="pc bpc" id="L843" title="1 of 2 branches missed.">        if (s.length != n) {</span>
-<span class="nc" id="L844">            throw new IllegalArgumentException(&quot;s.length must equal f.length&quot;);</span>
+<span class="fc" id="L841">        int n = f.length;</span>
+<span class="pc bpc" id="L842" title="1 of 2 branches missed.">        if (s.length != n) {</span>
+<span class="nc" id="L843">            throw new IllegalArgumentException(&quot;s.length must equal f.length&quot;);</span>
         }
 
-<span class="fc" id="L847">        int[] sortedIndexes = null;</span>
-<span class="pc bpc" id="L848" title="1 of 2 branches missed.">        if (isSortedByF) {</span>
-<span class="nc" id="L849">            sortedIndexes = new int[n];</span>
-<span class="nc bnc" id="L850" title="All 2 branches missed.">            for (int i = 0; i &lt; n; ++i) {</span>
-<span class="nc" id="L851">                sortedIndexes[i] = i;</span>
+<span class="fc" id="L846">        int[] sortedIndexes = null;</span>
+<span class="pc bpc" id="L847" title="1 of 2 branches missed.">        if (isSortedByF) {</span>
+<span class="nc" id="L848">            sortedIndexes = new int[n];</span>
+<span class="nc bnc" id="L849" title="All 2 branches missed.">            for (int i = 0; i &lt; n; ++i) {</span>
+<span class="nc" id="L850">                sortedIndexes[i] = i;</span>
             }
         } else {
-<span class="fc" id="L854">            sortedIndexes = IntStream.range(0, n).boxed()</span>
-<span class="fc" id="L855">                    .sorted((i, j) -&gt; Double.compare(f[i], f[j]))</span>
-<span class="fc" id="L856">                    .mapToInt(ele -&gt; ele)</span>
-<span class="fc" id="L857">                    .toArray();</span>
+<span class="fc" id="L853">            sortedIndexes = IntStream.range(0, n).boxed()</span>
+<span class="fc" id="L854">                    .sorted((i, j) -&gt; Double.compare(f[i], f[j]))</span>
+<span class="fc" id="L855">                    .mapToInt(ele -&gt; ele)</span>
+<span class="fc" id="L856">                    .toArray();</span>
         }
 
-<span class="fc" id="L860">        TIntList a = new TIntArrayList();</span>
-<span class="fc" id="L861">        a.add(sortedIndexes[0]);</span>
-<span class="fc" id="L862">        int i, j = sortedIndexes[0];</span>
-<span class="fc bfc" id="L863" title="All 2 branches covered.">        for (int ii = 1; ii &lt; n ; ++ii) {</span>
-<span class="fc" id="L864">            i = sortedIndexes[ii];</span>
-<span class="fc bfc" id="L865" title="All 2 branches covered.">            if (s[i] &gt;= f[j]) {</span>
-<span class="fc" id="L866">                a.add(i);</span>
-<span class="fc" id="L867">                j = i;</span>
+<span class="fc" id="L859">        TIntList a = new TIntArrayList();</span>
+<span class="fc" id="L860">        a.add(sortedIndexes[0]);</span>
+<span class="fc" id="L861">        int i, j = sortedIndexes[0];</span>
+<span class="fc bfc" id="L862" title="All 2 branches covered.">        for (int ii = 1; ii &lt; n ; ++ii) {</span>
+<span class="fc" id="L863">            i = sortedIndexes[ii];</span>
+<span class="fc bfc" id="L864" title="All 2 branches covered.">            if (s[i] &gt;= f[j]) {</span>
+<span class="fc" id="L865">                a.add(i);</span>
+<span class="fc" id="L866">                j = i;</span>
             }
         }
 
-<span class="fc" id="L871">        return a.toArray();</span>
+<span class="fc" id="L870">        return a.toArray();</span>
     }
 
 }

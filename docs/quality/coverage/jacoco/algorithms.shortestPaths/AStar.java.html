@@ -176,6 +176,7 @@ public class AStar {
      * edge with value being the edge weight.
      @param heuristics an array of feasible heuristics with the array index 
      * being the node index.
+     Admissible heuristics are LEQ true distance from node to goal.
      &lt;pre&gt;
      for more information, see:
         http://theory.stanford.edu/~amitp/GameProgramming/Heuristics.html
@@ -187,13 +188,13 @@ public class AStar {
      */
     public AStar(SimpleLinkedListNode[] dAG, TIntIntMap[] weights, 
         int[] heuristics,
-<span class="fc" id="L190">        int sourceVertex, int destVertex) {</span>
+<span class="fc" id="L191">        int sourceVertex, int destVertex) {</span>
         
-<span class="pc bpc" id="L192" title="2 of 4 branches missed.">        if (dAG == null || dAG.length == 0) {</span>
-<span class="nc" id="L193">            throw new IllegalArgumentException(&quot;dAG cannot be null&quot;);</span>
+<span class="pc bpc" id="L193" title="2 of 4 branches missed.">        if (dAG == null || dAG.length == 0) {</span>
+<span class="nc" id="L194">            throw new IllegalArgumentException(&quot;dAG cannot be null&quot;);</span>
         }
-<span class="pc bpc" id="L195" title="2 of 4 branches missed.">        if (sourceVertex &lt; 0 || sourceVertex &gt;= dAG.length) {</span>
-<span class="nc" id="L196">            throw new IllegalArgumentException(&quot;sourceIndex cannot be null&quot;);</span>
+<span class="pc bpc" id="L196" title="2 of 4 branches missed.">        if (sourceVertex &lt; 0 || sourceVertex &gt;= dAG.length) {</span>
+<span class="nc" id="L197">            throw new IllegalArgumentException(&quot;sourceIndex cannot be null&quot;);</span>
         }
         
         /*
@@ -218,8 +219,8 @@ public class AStar {
         */ 
 
         // only source node is added to heap initially:
-<span class="fc" id="L221">        init(dAG, weights, heuristics, sourceVertex, destVertex);        </span>
-<span class="fc" id="L222">    }</span>
+<span class="fc" id="L222">        init(dAG, weights, heuristics, sourceVertex, destVertex);        </span>
+<span class="fc" id="L223">    }</span>
         
     /**
      * find the single shortest path in dAG with edge weights w starting from s
@@ -228,146 +229,143 @@ public class AStar {
      */
     public void find() {
                                
-<span class="pc bpc" id="L231" title="1 of 2 branches missed.">        while (heap.getNumberOfNodes() &gt; 0) {</span>
+<span class="pc bpc" id="L232" title="1 of 2 branches missed.">        while (heap.getNumberOfNodes() &gt; 0) {</span>
 
-<span class="fc" id="L233">            HeapNode uNode = heap.extractMin();</span>
+<span class="fc" id="L234">            HeapNode uNode = heap.extractMin();</span>
             
-<span class="fc" id="L235">            int u = ((Integer)uNode.getData()).intValue();</span>
+<span class="fc" id="L236">            int u = ((Integer)uNode.getData()).intValue();</span>
 
-<span class="fc" id="L237">            log.log(logLevel, &quot;u: &quot; + toString(u));</span>
+<span class="fc" id="L238">            log.log(logLevel, &quot;u: &quot; + toString(u));</span>
             
-<span class="fc bfc" id="L239" title="All 2 branches covered.">            if (u == dest) {</span>
-<span class="fc" id="L240">                log.log(logLevel, &quot;exit heap.n=&quot; + heap.getNumberOfNodes());</span>
-<span class="fc" id="L241">                return;</span>
+<span class="fc bfc" id="L240" title="All 2 branches covered.">            if (u == dest) {</span>
+<span class="fc" id="L241">                log.log(logLevel, &quot;exit heap.n=&quot; + heap.getNumberOfNodes());</span>
+<span class="fc" id="L242">                return;</span>
             }
 
-<span class="fc" id="L244">            visited[u] = 2;</span>
+<span class="fc" id="L245">            visited[u] = 2;</span>
             
             // null the entry in nodes so it isn't used in decrease key
-<span class="fc" id="L247">            nodes[u] = null;</span>
+<span class="fc" id="L248">            nodes[u] = null;</span>
             
-<span class="fc" id="L249">            TIntIntMap uWeights = w[u];</span>
+<span class="fc" id="L250">            TIntIntMap uWeights = w[u];</span>
             
-<span class="pc bpc" id="L251" title="1 of 2 branches missed.">            if (uWeights == null) {</span>
-<span class="nc" id="L252">                continue;</span>
+<span class="pc bpc" id="L252" title="1 of 2 branches missed.">            if (uWeights == null) {</span>
+<span class="nc" id="L253">                continue;</span>
             }
 
-<span class="fc" id="L255">            SimpleLinkedListNode vNode = graph[u];</span>
+<span class="fc" id="L256">            SimpleLinkedListNode vNode = graph[u];</span>
             
-<span class="pc bpc" id="L257" title="1 of 4 branches missed.">            while (vNode != null &amp;&amp; vNode.getNumberOfKeys() &gt; 0) {</span>
+<span class="pc bpc" id="L258" title="1 of 4 branches missed.">            while (vNode != null &amp;&amp; vNode.getNumberOfKeys() &gt; 0) {</span>
             
-<span class="fc" id="L259">                int v = vNode.getKey();</span>
+<span class="fc" id="L260">                int v = vNode.getKey();</span>
                
-<span class="pc bpc" id="L261" title="1 of 2 branches missed.">                if (!uWeights.containsKey(v)) {</span>
-<span class="nc" id="L262">                    throw new IllegalStateException(&quot;no weight found for edge &quot; </span>
+<span class="pc bpc" id="L262" title="1 of 2 branches missed.">                if (!uWeights.containsKey(v)) {</span>
+<span class="nc" id="L263">                    throw new IllegalStateException(&quot;no weight found for edge &quot; </span>
                     + u + &quot; to &quot; + v);
                 }
 
                 //f(n) = g(n) + h(n)
-<span class="fc" id="L267">                int gUPlusWUV = g[u];</span>
-<span class="pc bpc" id="L268" title="1 of 2 branches missed.">                if (gUPlusWUV &lt; sentinel) {</span>
-<span class="fc" id="L269">                    gUPlusWUV += uWeights.get(v);</span>
+<span class="fc" id="L268">                int gUPlusWUV = g[u];</span>
+<span class="pc bpc" id="L269" title="1 of 2 branches missed.">                if (gUPlusWUV &lt; sentinel) {</span>
+<span class="fc" id="L270">                    gUPlusWUV += uWeights.get(v);</span>
                 }
                 
-<span class="pc bpc" id="L272" title="1 of 2 branches missed.">                if (gUPlusWUV &gt;= g[v]) {</span>
-<span class="nc" id="L273">                    vNode = vNode.getNext();</span>
-<span class="nc" id="L274">                    continue;</span>
+<span class="pc bpc" id="L273" title="1 of 2 branches missed.">                if (gUPlusWUV &gt;= g[v]) {</span>
+<span class="nc" id="L274">                    vNode = vNode.getNext();</span>
+<span class="nc" id="L275">                    continue;</span>
                 }
                                 
-<span class="pc bpc" id="L277" title="1 of 2 branches missed.">                if (visited[v] == 0) {</span>
+<span class="pc bpc" id="L278" title="1 of 2 branches missed.">                if (visited[v] == 0) {</span>
                     
-<span class="fc" id="L279">                    visited[v] = 1;</span>
+<span class="fc" id="L280">                    visited[v] = 1;</span>
                     
-<span class="fc" id="L281">                    g[v] = gUPlusWUV;</span>
-<span class="fc" id="L282">                    f[v] = g[v] + h[v];</span>
+<span class="fc" id="L282">                    g[v] = gUPlusWUV;</span>
+<span class="fc" id="L283">                    f[v] = g[v] + h[v];</span>
                     
-<span class="fc" id="L284">                    int key = f[v];</span>
-<span class="fc" id="L285">                    HeapNode node = new HeapNode(key);</span>
-<span class="fc" id="L286">                    node.setData(Integer.valueOf(v));</span>
-<span class="fc" id="L287">                    nodes[v] = node;</span>
-<span class="fc" id="L288">                    predecessor[v] = u;</span>
-<span class="fc" id="L289">                    heap.insert(node);</span>
-<span class="pc bnc" id="L290" title="All 2 branches missed.">                } else if (nodes[v] != null) {</span>
+<span class="fc" id="L285">                    int key = f[v];</span>
+<span class="fc" id="L286">                    HeapNode node = new HeapNode(key);</span>
+<span class="fc" id="L287">                    node.setData(Integer.valueOf(v));</span>
+<span class="fc" id="L288">                    nodes[v] = node;</span>
+<span class="fc" id="L289">                    predecessor[v] = u;</span>
+<span class="fc" id="L290">                    heap.insert(node);</span>
+<span class="pc bnc" id="L291" title="All 2 branches missed.">                } else if (nodes[v] != null) {</span>
                     //assert(visited[v] == 1);
-<span class="nc" id="L292">                    g[v] = gUPlusWUV;</span>
-<span class="nc" id="L293">                    f[v] = g[v] + h[v];</span>
-<span class="nc" id="L294">                    predecessor[v] = u;</span>
+<span class="nc" id="L293">                    g[v] = gUPlusWUV;</span>
+<span class="nc" id="L294">                    f[v] = g[v] + h[v];</span>
+<span class="nc" id="L295">                    predecessor[v] = u;</span>
                     
                     // if h(n) is exact, can use remove here instead of decreaseKey.
-<span class="nc" id="L297">                    heap.decreaseKey(nodes[v], f[v]);</span>
+<span class="nc" id="L298">                    heap.decreaseKey(nodes[v], f[v]);</span>
                 }
                 
-<span class="fc" id="L300">                vNode = vNode.getNext();</span>
-<span class="fc" id="L301">            }</span>
-<span class="fc" id="L302">        }</span>
-<span class="nc" id="L303">    }</span>
+<span class="fc" id="L301">                vNode = vNode.getNext();</span>
+<span class="fc" id="L302">            }</span>
+<span class="fc" id="L303">        }</span>
+<span class="nc" id="L304">    }</span>
     
     private void init(SimpleLinkedListNode[] dAG, TIntIntMap[] weights, 
         int[] heuristics, int sourceVertex,
         int destVertex) {
         
-<span class="fc" id="L309">        graph = dAG.clone();</span>
-<span class="fc bfc" id="L310" title="All 2 branches covered.">        for (int i = 0; i &lt; dAG.length; ++i) {</span>
-<span class="fc" id="L311">            graph[i] = new SimpleLinkedListNode(dAG[i]);</span>
+<span class="fc" id="L310">        graph = dAG.clone();</span>
+<span class="fc bfc" id="L311" title="All 2 branches covered.">        for (int i = 0; i &lt; dAG.length; ++i) {</span>
+<span class="fc" id="L312">            graph[i] = new SimpleLinkedListNode(dAG[i]);</span>
         }
-<span class="fc" id="L313">        w = weights.clone();</span>
-<span class="fc bfc" id="L314" title="All 2 branches covered.">        for (int i = 0; i &lt; weights.length; ++i) {</span>
-<span class="pc bpc" id="L315" title="1 of 2 branches missed.">            if (weights[i] != null) {</span>
-<span class="fc" id="L316">                w[i] = new TIntIntHashMap(weights[i]);</span>
+<span class="fc" id="L314">        w = weights.clone();</span>
+<span class="fc bfc" id="L315" title="All 2 branches covered.">        for (int i = 0; i &lt; weights.length; ++i) {</span>
+<span class="pc bpc" id="L316" title="1 of 2 branches missed.">            if (weights[i] != null) {</span>
+<span class="fc" id="L317">                w[i] = new TIntIntHashMap(weights[i]);</span>
             }
         }
-<span class="fc" id="L319">        src = sourceVertex;</span>
-<span class="fc" id="L320">        dest = destVertex;</span>
+<span class="fc" id="L320">        src = sourceVertex;</span>
+<span class="fc" id="L321">        dest = destVertex;</span>
         
         // h(n)
-<span class="fc" id="L323">        h = Arrays.copyOf(heuristics, heuristics.length);</span>
+<span class="fc" id="L324">        h = Arrays.copyOf(heuristics, heuristics.length);</span>
         
-<span class="fc" id="L325">        maxValue = calcUpperLimitKeyValue();</span>
+<span class="fc" id="L326">        maxValue = calcUpperLimitKeyValue();</span>
         
-<span class="fc" id="L327">        sentinel = maxValue + 1;</span>
+<span class="fc" id="L328">        sentinel = maxValue + 1;</span>
     
-<span class="fc" id="L329">        predecessor = new int[graph.length];</span>
-<span class="fc" id="L330">        visited = new int[graph.length];</span>
-<span class="fc" id="L331">        Arrays.fill(predecessor, -1);</span>
-<span class="fc" id="L332">        Arrays.fill(visited, 0);</span>
+<span class="fc" id="L330">        predecessor = new int[graph.length];</span>
+<span class="fc" id="L331">        visited = new int[graph.length];</span>
+<span class="fc" id="L332">        Arrays.fill(predecessor, -1);</span>
+<span class="fc" id="L333">        Arrays.fill(visited, 0);</span>
         
         // f(n)
-<span class="fc" id="L335">        f = new int[graph.length];</span>
-<span class="fc" id="L336">        Arrays.fill(f, sentinel);</span>
+<span class="fc" id="L336">        f = new int[graph.length];</span>
+<span class="fc" id="L337">        Arrays.fill(f, sentinel);</span>
                 
         // g(n)
-<span class="fc" id="L339">        g = new int[graph.length];</span>
-<span class="fc" id="L340">        Arrays.fill(g, sentinel);</span>
+<span class="fc" id="L340">        g = new int[graph.length];</span>
+<span class="fc" id="L341">        Arrays.fill(g, sentinel);</span>
                 
-        // presumably this is always correct:
-<span class="fc" id="L343">        h[src] = sentinel;</span>
-        
-<span class="fc" id="L345">        g[src] = 0;</span>
-<span class="fc" id="L346">        f[src] = h[src];</span>
+<span class="fc" id="L343">        g[src] = 0;</span>
+<span class="fc" id="L344">        f[src] = h[src];</span>
                 
-<span class="fc" id="L348">        initHeap();</span>
-<span class="fc" id="L349">    }</span>
+<span class="fc" id="L346">        initHeap();</span>
+<span class="fc" id="L347">    }</span>
     
     private void initHeap() {
         
-<span class="fc" id="L353">        int n = graph.length;</span>
+<span class="fc" id="L351">        int n = graph.length;</span>
                 
-<span class="fc" id="L355">        int nBits = (int)Math.ceil(Math.log(maxValue/Math.log(2)));</span>
+<span class="fc" id="L353">        int nBits = (int)Math.ceil(Math.log(maxValue/Math.log(2)));</span>
         
         //int maxValue, int approxN, int maxNumberOfBits
-<span class="fc" id="L358">        heap = new MinHeapForRT2012(sentinel, n, nBits);</span>
+<span class="fc" id="L356">        heap = new MinHeapForRT2012(sentinel, n, nBits);</span>
 
-<span class="fc" id="L360">        nodes = new HeapNode[n];</span>
+<span class="fc" id="L358">        nodes = new HeapNode[n];</span>
 
-<span class="fc" id="L362">        int key = f[src];</span>
+<span class="fc" id="L360">        int key = f[src];</span>
 
-<span class="fc" id="L364">        HeapNode node = new HeapNode(key);</span>
-<span class="fc" id="L365">        node.setData(Integer.valueOf(src));</span>
+<span class="fc" id="L362">        HeapNode node = new HeapNode(key);</span>
+<span class="fc" id="L363">        node.setData(Integer.valueOf(src));</span>
 
-<span class="fc" id="L367">        heap.insert(node);</span>
+<span class="fc" id="L365">        heap.insert(node);</span>
 
-<span class="fc" id="L369">        nodes[src] = node;</span>
-<span class="fc" id="L370">    }</span>
+<span class="fc" id="L367">        nodes[src] = node;</span>
+<span class="fc" id="L368">    }</span>
     
     /**
      * get shortest path from source to idx
@@ -375,13 +373,13 @@ public class AStar {
      @return 
      */
     public int getDistanceFromSrc(int idx) {
-<span class="pc bpc" id="L378" title="2 of 4 branches missed.">        if (idx &lt; 0 || idx &gt;= graph.length) {</span>
-<span class="nc" id="L379">            throw new IllegalArgumentException(&quot;idx must be within bounds of graph vertices&quot;);</span>
+<span class="pc bpc" id="L376" title="2 of 4 branches missed.">        if (idx &lt; 0 || idx &gt;= graph.length) {</span>
+<span class="nc" id="L377">            throw new IllegalArgumentException(&quot;idx must be within bounds of graph vertices&quot;);</span>
         }
-<span class="pc bpc" id="L381" title="1 of 2 branches missed.">        if (predecessor == null) {</span>
-<span class="nc" id="L382">            throw new IllegalStateException(&quot;find must be run before this method can be used&quot;);</span>
+<span class="pc bpc" id="L379" title="1 of 2 branches missed.">        if (predecessor == null) {</span>
+<span class="nc" id="L380">            throw new IllegalStateException(&quot;find must be run before this method can be used&quot;);</span>
         }
-<span class="fc" id="L384">        return g[idx];</span>
+<span class="fc" id="L382">        return g[idx];</span>
     }
     
     /**
@@ -390,37 +388,37 @@ public class AStar {
      @return 
      */
     public int[] getShortestPathToVertex(int destVertex) {
-<span class="pc bpc" id="L393" title="2 of 4 branches missed.">        if (destVertex &lt; 0 || destVertex &gt;= graph.length) {</span>
-<span class="nc" id="L394">            throw new IllegalArgumentException(&quot;destIndex cannot be null&quot;);</span>
+<span class="pc bpc" id="L391" title="2 of 4 branches missed.">        if (destVertex &lt; 0 || destVertex &gt;= graph.length) {</span>
+<span class="nc" id="L392">            throw new IllegalArgumentException(&quot;destIndex cannot be null&quot;);</span>
         }
-<span class="pc bpc" id="L396" title="1 of 2 branches missed.">        if (predecessor == null) {</span>
-<span class="nc" id="L397">            throw new IllegalStateException(&quot;find must be run before this method can be used&quot;);</span>
+<span class="pc bpc" id="L394" title="1 of 2 branches missed.">        if (predecessor == null) {</span>
+<span class="nc" id="L395">            throw new IllegalStateException(&quot;find must be run before this method can be used&quot;);</span>
         }
                 
-<span class="fc" id="L400">        log.log(logLevel, &quot;    f[]=&quot; + Arrays.toString(f));</span>
-<span class="fc" id="L401">        log.log(logLevel, &quot;    g[]=&quot; + Arrays.toString(g));</span>
+<span class="fc" id="L398">        log.log(logLevel, &quot;    f[]=&quot; + Arrays.toString(f));</span>
+<span class="fc" id="L399">        log.log(logLevel, &quot;    g[]=&quot; + Arrays.toString(g));</span>
         
-<span class="fc" id="L403">        int[] p = new int[graph.length];</span>
-<span class="fc" id="L404">        p[p.length - 1] = destVertex;</span>
+<span class="fc" id="L401">        int[] p = new int[graph.length];</span>
+<span class="fc" id="L402">        p[p.length - 1] = destVertex;</span>
                 
-<span class="pc bpc" id="L406" title="1 of 2 branches missed.">        for (int i = p.length - 2; i &gt; -1; --i) {</span>
-<span class="fc bfc" id="L407" title="All 2 branches covered.">            if (destVertex == src) {</span>
-<span class="fc" id="L408">                int len = p.length - 1 - i;</span>
-<span class="fc" id="L409">                int[] t = new int[len];</span>
-<span class="fc" id="L410">                System.arraycopy(p, i + 1, t, 0, len);</span>
-<span class="fc" id="L411">                return t;</span>
-<span class="pc bpc" id="L412" title="1 of 2 branches missed.">            } else if (destVertex == -1) {</span>
-<span class="nc" id="L413">                throw new IllegalStateException(&quot;path did not complete correctly&quot;);</span>
+<span class="pc bpc" id="L404" title="1 of 2 branches missed.">        for (int i = p.length - 2; i &gt; -1; --i) {</span>
+<span class="fc bfc" id="L405" title="All 2 branches covered.">            if (destVertex == src) {</span>
+<span class="fc" id="L406">                int len = p.length - 1 - i;</span>
+<span class="fc" id="L407">                int[] t = new int[len];</span>
+<span class="fc" id="L408">                System.arraycopy(p, i + 1, t, 0, len);</span>
+<span class="fc" id="L409">                return t;</span>
+<span class="pc bpc" id="L410" title="1 of 2 branches missed.">            } else if (destVertex == -1) {</span>
+<span class="nc" id="L411">                throw new IllegalStateException(&quot;path did not complete correctly&quot;);</span>
             }
-<span class="fc" id="L415">            p[i] = predecessor[destVertex];</span>
-<span class="fc" id="L416">            destVertex = p[i];</span>
+<span class="fc" id="L413">            p[i] = predecessor[destVertex];</span>
+<span class="fc" id="L414">            destVertex = p[i];</span>
         }
         
-<span class="nc bnc" id="L419" title="All 2 branches missed.">        if (p[0] != src) {</span>
-<span class="nc" id="L420">            throw new IllegalStateException(&quot;path did not complete correctly for destIndex&quot;);</span>
+<span class="nc bnc" id="L417" title="All 2 branches missed.">        if (p[0] != src) {</span>
+<span class="nc" id="L418">            throw new IllegalStateException(&quot;path did not complete correctly for destIndex&quot;);</span>
         }
         
-<span class="nc" id="L423">        return p;</span>
+<span class="nc" id="L421">        return p;</span>
     }
     
     /**
@@ -429,69 +427,69 @@ public class AStar {
      @return
      */
     public int getSumOfPath(int[] vertexes) {
-<span class="pc bpc" id="L432" title="1 of 2 branches missed.">        if (vertexes == null) {</span>
-<span class="nc" id="L433">            throw new IllegalArgumentException(&quot;vertexes cannot be null&quot;);</span>
+<span class="pc bpc" id="L430" title="1 of 2 branches missed.">        if (vertexes == null) {</span>
+<span class="nc" id="L431">            throw new IllegalArgumentException(&quot;vertexes cannot be null&quot;);</span>
         }
-<span class="pc bpc" id="L435" title="1 of 2 branches missed.">        if (f == null) {</span>
-<span class="nc" id="L436">            throw new IllegalStateException(&quot;find must be run before this method can be used&quot;);</span>
+<span class="pc bpc" id="L433" title="1 of 2 branches missed.">        if (f == null) {</span>
+<span class="nc" id="L434">            throw new IllegalStateException(&quot;find must be run before this method can be used&quot;);</span>
         }
-<span class="fc" id="L438">        int sum = 0;</span>
+<span class="fc" id="L436">        int sum = 0;</span>
         int u, v;
-<span class="fc bfc" id="L440" title="All 2 branches covered.">        for (int i = 1; i &lt; vertexes.length; ++i) {</span>
-<span class="fc" id="L441">            u = vertexes[i - 1];</span>
-<span class="fc" id="L442">            v = vertexes[i];</span>
+<span class="fc bfc" id="L438" title="All 2 branches covered.">        for (int i = 1; i &lt; vertexes.length; ++i) {</span>
+<span class="fc" id="L439">            u = vertexes[i - 1];</span>
+<span class="fc" id="L440">            v = vertexes[i];</span>
             
-<span class="fc" id="L444">            TIntIntMap uWeights = w[u];</span>
+<span class="fc" id="L442">            TIntIntMap uWeights = w[u];</span>
             
-<span class="pc bpc" id="L446" title="2 of 4 branches missed.">            if (uWeights == null || !uWeights.containsKey(v)) {</span>
-<span class="nc" id="L447">                throw new IllegalStateException(&quot;no weight found for edge &quot; </span>
+<span class="pc bpc" id="L444" title="2 of 4 branches missed.">            if (uWeights == null || !uWeights.containsKey(v)) {</span>
+<span class="nc" id="L445">                throw new IllegalStateException(&quot;no weight found for edge &quot; </span>
                     + u + &quot; to &quot; + v);
             }
             
-<span class="fc" id="L451">            sum += uWeights.get(v);</span>
+<span class="fc" id="L449">            sum += uWeights.get(v);</span>
         }
-<span class="fc" id="L453">        return sum;</span>
+<span class="fc" id="L451">        return sum;</span>
     }
 
     private int calcUpperLimitKeyValue() {
         
-<span class="fc" id="L458">        int max = Integer.MIN_VALUE;</span>
-<span class="fc bfc" id="L459" title="All 2 branches covered.">        for (int i = 0; i &lt; w.length; ++i) {</span>
-<span class="fc" id="L460">            TIntIntMap map = w[i];</span>
-<span class="pc bpc" id="L461" title="1 of 2 branches missed.">            if (map == null) {</span>
-<span class="nc" id="L462">                continue;</span>
+<span class="fc" id="L456">        int max = Integer.MIN_VALUE;</span>
+<span class="fc bfc" id="L457" title="All 2 branches covered.">        for (int i = 0; i &lt; w.length; ++i) {</span>
+<span class="fc" id="L458">            TIntIntMap map = w[i];</span>
+<span class="pc bpc" id="L459" title="1 of 2 branches missed.">            if (map == null) {</span>
+<span class="nc" id="L460">                continue;</span>
             }
-<span class="fc" id="L464">            TIntIntIterator iter = map.iterator();</span>
+<span class="fc" id="L462">            TIntIntIterator iter = map.iterator();</span>
             int value;
-<span class="fc bfc" id="L466" title="All 2 branches covered.">            for (int j = 0; j &lt; map.size(); ++j) {</span>
-<span class="fc" id="L467">                iter.advance();</span>
-<span class="fc" id="L468">                value = iter.value() + h[i];</span>
-<span class="fc bfc" id="L469" title="All 2 branches covered.">                if (value &gt; max) {</span>
-<span class="fc" id="L470">                    max = value;</span>
+<span class="fc bfc" id="L464" title="All 2 branches covered.">            for (int j = 0; j &lt; map.size(); ++j) {</span>
+<span class="fc" id="L465">                iter.advance();</span>
+<span class="fc" id="L466">                value = iter.value() + h[i];</span>
+<span class="fc bfc" id="L467" title="All 2 branches covered.">                if (value &gt; max) {</span>
+<span class="fc" id="L468">                    max = value;</span>
                 }
             }
         }
         
         // if # of bits in max * g.length is larger than max_integer,
         //   use max_integer, else use it
-<span class="fc" id="L477">        int b1 = MiscMath0.numberOfBits(max);</span>
-<span class="fc" id="L478">        int b2 = MiscMath0.numberOfBits(graph.length);</span>
-<span class="pc bpc" id="L479" title="1 of 2 branches missed.">        if ((b1 + b2) &gt; 31) {</span>
-<span class="nc" id="L480">            max = Integer.MAX_VALUE - 1;</span>
+<span class="fc" id="L475">        int b1 = MiscMath0.numberOfBits(max);</span>
+<span class="fc" id="L476">        int b2 = MiscMath0.numberOfBits(graph.length);</span>
+<span class="pc bpc" id="L477" title="1 of 2 branches missed.">        if ((b1 + b2) &gt; 31) {</span>
+<span class="nc" id="L478">            max = Integer.MAX_VALUE - 1;</span>
         } else {
-<span class="fc" id="L482">            max *= graph.length;</span>
+<span class="fc" id="L480">            max *= graph.length;</span>
         }
         
-<span class="fc" id="L485">        return max;</span>
+<span class="fc" id="L483">        return max;</span>
     }
     
     private String toString(int u) {
-<span class="fc" id="L489">        StringBuffer sb = new StringBuffer();</span>
-<span class="fc" id="L490">        sb.append(&quot;node=&quot;).append(u).append(&quot;: visited=&quot;).append(visited[u]).</span>
-<span class="fc" id="L491">               append(&quot;, dist=&quot;).append(f[u])</span>
-<span class="fc" id="L492">                .append(&quot;, prev=&quot;).append(predecessor[u])</span>
-<span class="pc bpc" id="L493" title="1 of 2 branches missed.">                .append(&quot; is in queue=&quot;).append(!(nodes[u] == null));</span>
-<span class="fc" id="L494">        return sb.toString();</span>
+<span class="fc" id="L487">        StringBuffer sb = new StringBuffer();</span>
+<span class="fc" id="L488">        sb.append(&quot;node=&quot;).append(u).append(&quot;: visited=&quot;).append(visited[u]).</span>
+<span class="fc" id="L489">               append(&quot;, dist=&quot;).append(f[u])</span>
+<span class="fc" id="L490">                .append(&quot;, prev=&quot;).append(predecessor[u])</span>
+<span class="pc bpc" id="L491" title="1 of 2 branches missed.">                .append(&quot; is in queue=&quot;).append(!(nodes[u] == null));</span>
+<span class="fc" id="L492">        return sb.toString();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -43,12 +43,12 @@ import java.util.regex.Pattern;
 <span class="pc bpc" id="L43" title="1 of 2 branches missed.">            if (left &gt; n) {</span>
 <span class="nc" id="L44">                left = left % n;</span>
             }
-<span class="fc" id="L46">String r = &quot;^(?:[A-F0-9]{1,4}:){7}[A-F0-9]{1,4}$&quot;;</span>
+
 <span class="fc" id="L47">            reverse(a, 0, left - 1);</span>
 <span class="fc" id="L48">            reverse(a, left, n - 1);</span>
 <span class="fc" id="L49">            reverse(a, 0, n - 1);</span>
 
-<span class="fc" id="L51">        } else {</span>
+        } else {
             
 <span class="fc" id="L53">            left *= -1;</span>
 <span class="fc bfc" id="L54" title="All 2 branches covered.">            if (left &gt; n) {</span>

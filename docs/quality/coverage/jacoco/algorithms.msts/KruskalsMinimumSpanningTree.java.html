@@ -13,7 +13,11 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.stream.IntStream;
 
 /**
@@ -24,16 +28,17 @@ import java.util.stream.IntStream;
   Kruskal's grows a forest by sorting the edges first and then adding edges that 
   are not yet connected to the tree.
   
-  * RuntimeComplexity is O(|E| lg_2|E|), 
+  * Runtime Complexity is O(|E| lg_2|E|),
       which for sparse graphs having |E| .lt. |V|^2,
       gives O(|E| lg_2|V|).
+    so for dense graphs, one should prefere Prim's.
       
   Best time Kruskal's is O(|E| lg_2|V|).
   Best time  Prim's w/ fib heaps is O(|E| + |V|lg_2|V|).
   
  * @author nichole
  */
-<span class="nc" id="L36">public class KruskalsMinimumSpanningTree {</span>
+<span class="nc" id="L41">public class KruskalsMinimumSpanningTree {</span>
     
     /**
      * find a minimum spanning tree using Kruskal's algorithm.
@@ -62,52 +67,52 @@ import java.util.stream.IntStream;
          *      return A
         */
                 
-<span class="fc" id="L65">        DisjointForest&lt;Integer&gt; forest = new DisjointForest&lt;&gt;();</span>
-<span class="fc" id="L66">        TIntObjectMap&lt;DisjointSet2Node&lt;Integer&gt;&gt; vertexMap = new TIntObjectHashMap&lt;&gt;();</span>
+<span class="fc" id="L70">        DisjointForest&lt;Integer&gt; forest = new DisjointForest&lt;&gt;();</span>
+<span class="fc" id="L71">        TIntObjectMap&lt;DisjointSet2Node&lt;Integer&gt;&gt; vertexMap = new TIntObjectHashMap&lt;&gt;();</span>
         
-<span class="fc" id="L68">        int nV = graph.length;</span>
+<span class="fc" id="L73">        int nV = graph.length;</span>
         
         DisjointSet2Node&lt;Integer&gt; uVertex, vVertex;
         int u, v;
-<span class="fc bfc" id="L72" title="All 2 branches covered.">        for (u = 0; u &lt; nV; ++u) {</span>
-<span class="fc" id="L73">            uVertex = new DisjointSet2Node&lt;&gt;(u);</span>
-<span class="fc" id="L74">            vertexMap.put(u, uVertex);</span>
-<span class="fc" id="L75">            forest.makeSet(uVertex);</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">        for (u = 0; u &lt; nV; ++u) {</span>
+<span class="fc" id="L78">            uVertex = new DisjointSet2Node&lt;&gt;(u);</span>
+<span class="fc" id="L79">            vertexMap.put(u, uVertex);</span>
+<span class="fc" id="L80">            forest.makeSet(uVertex);</span>
         }
         
-<span class="fc" id="L78">        PairInt[] w = sortWeightsNonDecreasing(edgeWeights);</span>
+<span class="fc" id="L83">        PairInt[] w = sortWeightsNonDecreasing(edgeWeights);</span>
         
-<span class="fc" id="L80">        TIntObjectMap&lt;SimpleLinkedListNode&gt; a = new TIntObjectHashMap&lt;&gt;();</span>
+<span class="fc" id="L85">        TIntObjectMap&lt;SimpleLinkedListNode&gt; a = new TIntObjectHashMap&lt;&gt;();</span>
         
         DisjointSet2Node&lt;Integer&gt; aUV;
-<span class="fc" id="L83">        long sum = 0;</span>
-<span class="fc" id="L84">        int nMSTEdges = 0;</span>
-<span class="fc bfc" id="L85" title="All 2 branches covered.">        for (PairInt e : w) {</span>
-<span class="fc" id="L86">            u = e.getX();</span>
-<span class="fc" id="L87">            v = e.getY();</span>
-<span class="fc" id="L88">            uVertex = forest.findSet(vertexMap.get(u));</span>
-<span class="fc" id="L89">            vVertex = forest.findSet(vertexMap.get(v));</span>
+<span class="fc" id="L88">        long sum = 0;</span>
+<span class="fc" id="L89">        int nMSTEdges = 0;</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">        for (PairInt e : w) {</span>
+<span class="fc" id="L91">            u = e.getX();</span>
+<span class="fc" id="L92">            v = e.getY();</span>
+<span class="fc" id="L93">            uVertex = forest.findSet(vertexMap.get(u));</span>
+<span class="fc" id="L94">            vVertex = forest.findSet(vertexMap.get(v));</span>
             
-<span class="fc bfc" id="L91" title="All 2 branches covered.">            if (!uVertex.equals(vVertex)) {</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">            if (!uVertex.equals(vVertex)) {</span>
                 
-<span class="fc" id="L93">                aUV = forest.union(uVertex, vVertex);</span>
+<span class="fc" id="L98">                aUV = forest.union(uVertex, vVertex);</span>
                 
-<span class="fc bfc" id="L95" title="All 2 branches covered.">                if (a.containsKey(u)) {</span>
-<span class="fc" id="L96">                    a.get(u).insert(v);</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">                if (a.containsKey(u)) {</span>
+<span class="fc" id="L101">                    a.get(u).insert(v);</span>
                 } else {
-<span class="fc" id="L98">                    SimpleLinkedListNode node = new SimpleLinkedListNode(v);</span>
-<span class="fc" id="L99">                    a.put(u, node);</span>
+<span class="fc" id="L103">                    SimpleLinkedListNode node = new SimpleLinkedListNode(v);</span>
+<span class="fc" id="L104">                    a.put(u, node);</span>
                 }
-<span class="fc" id="L101">                sum += edgeWeights.get(new PairInt(u, v));</span>
-<span class="fc" id="L102">                nMSTEdges++;</span>
+<span class="fc" id="L106">                sum += edgeWeights.get(new PairInt(u, v));</span>
+<span class="fc" id="L107">                nMSTEdges++;</span>
             }
         }
         
-<span class="fc" id="L106">        System.out.println(&quot;forest stats=&quot; + forest.toString());</span>
-<span class="fc" id="L107">        System.out.printf(&quot;%d edges out of %d in minimumspanning tree.  sum=%d\n&quot;,</span>
-<span class="fc" id="L108">            nMSTEdges, edgeWeights.size(), sum);</span>
+<span class="fc" id="L111">        System.out.println(&quot;forest stats=&quot; + forest.toString());</span>
+<span class="fc" id="L112">        System.out.printf(&quot;%d edges out of %d in minimumspanning tree.  sum=%d\n&quot;,</span>
+<span class="fc" id="L113">            nMSTEdges, edgeWeights.size(), sum);</span>
         
-<span class="fc" id="L110">        return a;</span>
+<span class="fc" id="L115">        return a;</span>
     }
 
     /**
@@ -120,51 +125,136 @@ import java.util.stream.IntStream;
      */
     public static List&lt;Integer&gt; mst(int[][] edgeWeights) {
         // [x,y, w]  sort by col2
-<span class="fc" id="L123">        int n = edgeWeights.length;</span>
-<span class="fc" id="L124">        int[] sortedIdxs</span>
-<span class="fc" id="L125">                = IntStream.range(0, n).boxed()</span>
-<span class="fc" id="L126">                .sorted((i, j)-&gt; Integer.compare(edgeWeights[i][2], edgeWeights[j][2]))</span>
-<span class="fc" id="L127">                .mapToInt(ele-&gt;ele).toArray();</span>
+<span class="fc" id="L128">        int n = edgeWeights.length;</span>
+<span class="fc" id="L129">        int[] sortedIdxs</span>
+<span class="fc" id="L130">                = IntStream.range(0, n).boxed()</span>
+<span class="fc" id="L131">                .sorted((i, j)-&gt; Integer.compare(edgeWeights[i][2], edgeWeights[j][2]))</span>
+<span class="fc" id="L132">                .mapToInt(ele-&gt;ele).toArray();</span>
 
-<span class="fc" id="L129">        List&lt;Integer&gt; mstEdgeIndexes = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L130">        UnionFind uF = new UnionFind(n);</span>
-<span class="fc bfc" id="L131" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L132">            int idx = sortedIdxs[i];</span>
-<span class="fc" id="L133">            int u =edgeWeights[idx][0];</span>
-<span class="fc" id="L134">            int v = edgeWeights[idx][1];</span>
-<span class="fc bfc" id="L135" title="All 2 branches covered.">            if (uF.find(u) != uF.find(v)) {</span>
-<span class="fc" id="L136">                mstEdgeIndexes.add(idx);</span>
-<span class="fc" id="L137">                uF.union(u, v);</span>
+<span class="fc" id="L134">        List&lt;Integer&gt; mstEdgeIndexes = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L135">        UnionFind uF = new UnionFind(n);</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L137">            int idx = sortedIdxs[i];</span>
+<span class="fc" id="L138">            int u =edgeWeights[idx][0];</span>
+<span class="fc" id="L139">            int v = edgeWeights[idx][1];</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">            if (uF.find(u) != uF.find(v)) {</span>
+<span class="fc" id="L141">                mstEdgeIndexes.add(idx);</span>
+<span class="fc" id="L142">                uF.union(u, v);</span>
             }
         }
 
-<span class="fc" id="L141">        return mstEdgeIndexes;</span>
+<span class="fc" id="L146">        return mstEdgeIndexes;</span>
     }
 
     static PairInt[] sortWeightsNonDecreasing(
         TObjectDoubleMap&lt;PairInt&gt; edgeWeights) {
         
-<span class="fc" id="L147">        int n = edgeWeights.size();</span>
+<span class="fc" id="L152">        int n = edgeWeights.size();</span>
         
-<span class="fc" id="L149">        PairInt[] keys = new PairInt[n];</span>
-<span class="fc" id="L150">        double[] w = new double[n];</span>
+<span class="fc" id="L154">        PairInt[] keys = new PairInt[n];</span>
+<span class="fc" id="L155">        double[] w = new double[n];</span>
         
-<span class="fc" id="L152">        TObjectDoubleIterator&lt;PairInt&gt; iter = edgeWeights.iterator();</span>
-<span class="fc bfc" id="L153" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L154">            iter.advance();</span>
-<span class="fc" id="L155">            keys[i] = iter.key();</span>
-<span class="fc" id="L156">            w[i] = iter.value();</span>
+<span class="fc" id="L157">        TObjectDoubleIterator&lt;PairInt&gt; iter = edgeWeights.iterator();</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L159">            iter.advance();</span>
+<span class="fc" id="L160">            keys[i] = iter.key();</span>
+<span class="fc" id="L161">            w[i] = iter.value();</span>
         }
         
-<span class="fc" id="L159">        int[] sortedIdxs = MiscSorter.mergeSortIncreasing(w);</span>
+<span class="fc" id="L164">        int[] sortedIdxs = MiscSorter.mergeSortIncreasing(w);</span>
         
-<span class="fc" id="L161">        PairInt[] sortedKeys = new PairInt[n];</span>
-<span class="fc bfc" id="L162" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L163">            sortedKeys[i] = keys[sortedIdxs[i]];</span>
+<span class="fc" id="L166">        PairInt[] sortedKeys = new PairInt[n];</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L168">            sortedKeys[i] = keys[sortedIdxs[i]];</span>
         }
         
-<span class="fc" id="L166">        return sortedKeys;</span>
+<span class="fc" id="L171">        return sortedKeys;</span>
     }
     
+    /**
+     given an undirected weighted graph adjMap, find a minimum spanning tree, and return
+     it as an adjacency map of the original graph.
+     */
+    public static Map&lt;Integer, Map&lt;Integer, Double&gt;&gt; 
+        mst(Map&lt;Integer, Map&lt;Integer, Double&gt;&gt; adjMap, double[] outputSum) {
+
+	/*
+	 * sort the edges by weight and add them to the growing forest if not already
+	 * present.*/
+<span class="fc" id="L184">	int nEdges = 0;</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">	for (int u : adjMap.keySet()) {</span>
+<span class="fc" id="L186">	    nEdges += adjMap.get(u).size();</span>
+<span class="fc" id="L187">        }</span>
+
+<span class="fc" id="L189">	int[][] edges = new int[nEdges][];</span>
+<span class="fc" id="L190">	double[] weights = new double[nEdges];</span>
+<span class="fc" id="L191">	int i = 0;</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">	for (int u : adjMap.keySet()) {</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">            for (Map.Entry&lt;Integer, Double&gt; entry : adjMap.get(u).entrySet()) {</span>
+<span class="fc" id="L194">		edges[i] = new int[]{u, entry.getKey()};</span>
+<span class="fc" id="L195">		weights[i] = entry.getValue();</span>
+<span class="fc" id="L196">                ++i;</span>
+<span class="fc" id="L197">	    } </span>
+<span class="fc" id="L198">	}</span>
+
+<span class="fc" id="L200">	List&lt;int[]&gt; tree = mst(edges, weights, outputSum);</span>
+
+<span class="fc" id="L202">	Map&lt;Integer, Map&lt;Integer, Double&gt;&gt; out = new HashMap&lt;&gt;();</span>
+
+<span class="fc bfc" id="L204" title="All 2 branches covered.">        for (int[] edge : tree) {</span>
+<span class="pc bpc" id="L205" title="2 of 4 branches missed.">	    if (adjMap.containsKey(edge[0]) &amp;&amp; adjMap.get(edge[0]).containsKey(edge[1])) {</span>
+<span class="fc" id="L206">		out.putIfAbsent(edge[0], new HashMap&lt;Integer, Double&gt;());</span>
+<span class="fc" id="L207">		out.get(edge[0]).put(edge[1], adjMap.get(edge[0]).get(edge[1]));</span>
+            } else {
+<span class="nc" id="L209">		out.putIfAbsent(edge[1], new HashMap&lt;Integer, Double&gt;());</span>
+<span class="nc" id="L210">		out.get(edge[1]).put(edge[0], adjMap.get(edge[1]).get(edge[0]));</span>
+            } 
+<span class="fc" id="L212">	}	</span>
+
+<span class="fc" id="L214">	return out;</span>
+    }
+
+    /**
+     given an undirected weighted graph and weights, find a minimum spanning tree,
+     and return it as edges of the original graph.
+     */
+    public static List&lt;int[]&gt; mst(int[][] edges, double[] weights, double[] outputSum) {
+
+<span class="fc" id="L223">        int[] sortedIdxs = IntStream.range(0, edges.length) .boxed()</span>
+<span class="fc" id="L224">	    .sorted( (i, j) -&gt; Double.compare(weights[i], weights[j]))</span>
+<span class="fc" id="L225">	    .mapToInt(ele -&gt; ele).toArray();	</span>
+
+	// count number of vertices
+<span class="fc" id="L228">	int nV = 0;</span>
+<span class="fc" id="L229">	Set&lt;Integer&gt; vS = new HashSet&lt;&gt;();</span>
+<span class="fc bfc" id="L230" title="All 2 branches covered.">	for (int[] edge : edges) {</span>
+<span class="fc" id="L231">	    vS.add(edge[0]);</span>
+<span class="fc" id="L232">	    vS.add(edge[1]);</span>
+	}
+
+<span class="fc" id="L235">        UnionFind uf = new UnionFind(vS.size());</span>
+
+<span class="fc" id="L237">	List&lt;int[]&gt; out = new ArrayList&lt;&gt;();</span>
+	
+<span class="pc bpc" id="L239" title="2 of 4 branches missed.">	if (outputSum != null &amp;&amp; outputSum.length &gt; 0) {</span>
+<span class="fc" id="L240">	    outputSum[0] = 0;</span>
+	}
+
+<span class="pc bpc" id="L243" title="1 of 2 branches missed.">	for (int i = 0; i &lt; sortedIdxs.length; ++i) {</span>
+
+<span class="fc bfc" id="L245" title="All 2 branches covered.">	    if (out.size() == (vS.size()-1)) break;</span>
+
+<span class="fc" id="L247">	    int idx = sortedIdxs[i];</span>
+
+<span class="fc bfc" id="L249" title="All 2 branches covered.">	    if (uf.find(edges[idx][0]) != uf.find(edges[idx][1])) {</span>
+<span class="fc" id="L250">		uf.union(edges[idx][0], edges[idx][1]);</span>
+
+<span class="fc" id="L252">		out.add(Arrays.copyOf(edges[idx], 2));</span>
+<span class="fc" id="L253">		outputSum[0] += weights[idx];</span>
+	    }
+	}
+
+<span class="fc" id="L257">	return out;</span>
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PrefixSumArray.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.range</a> &gt; <span class="el_source">PrefixSumArray.java</span></div><h1>PrefixSumArray.java</h1><pre class="source lang-java linenums">package algorithms.range;
+
+import algorithms.util.FormatArray;
+
+import java.util.Arrays;
+
+public class PrefixSumArray {
+    // length is a.length + 1
+    // array[0] = 0.
+    // a query for [i0,i1] is array[i1+1] - array[i0]
+    // e.g. [1,2] = array[2+1] - array[1]
+    protected long[] array;
+
+<span class="fc" id="L14">    public PrefixSumArray(long[] a) {</span>
+<span class="fc" id="L15">        array = new long[a.length + 1];</span>
+<span class="fc" id="L16">        System.arraycopy(a, 0, array, 1, a.length);</span>
+<span class="fc bfc" id="L17" title="All 2 branches covered.">        for (int i = 1; i &lt; array.length; ++i) {</span>
+<span class="fc" id="L18">            array[i] += array[i-1];</span>
+        }
+<span class="fc" id="L20">    }</span>
+
+    public static long[] createPrefixArray(int[] a) {
+<span class="fc" id="L23">        int n = a.length;</span>
+        // create prefix array to use for range queries
+<span class="fc" id="L25">        long[] psa = new long[n+1];</span>
+<span class="fc bfc" id="L26" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L27">            psa[i+1] = a[i];</span>
+        }
+<span class="fc bfc" id="L29" title="All 2 branches covered.">        for (int i = 1; i &lt; psa.length; ++i) {</span>
+<span class="fc" id="L30">            psa[i] += psa[i-1];</span>
+        }
+<span class="fc" id="L32">        return psa;</span>
+    }
+
+    public static long[] createPrefixArray(long[] a) {
+<span class="nc" id="L36">        int n = a.length;</span>
+        // create prefix array to use for range queries
+<span class="nc" id="L38">        long[] psa = new long[n+1];</span>
+<span class="nc" id="L39">        System.arraycopy(a, 0, psa, 1, a.length);</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">        for (int i = 1; i &lt; psa.length; ++i) {</span>
+<span class="nc" id="L41">            psa[i] += psa[i-1];</span>
+        }
+<span class="nc" id="L43">        return psa;</span>
+    }
+
+    public long[] sum(int[][] queries, boolean queriesAre0Based) {
+<span class="nc" id="L47">        return sum(array, queries, queriesAre0Based);</span>
+    }
+
+    protected static long[] sum(long[] prefixArray, int[][] queries, boolean queriesAre0Based) {
+<span class="fc" id="L51">        long[] out = new long[queries.length];</span>
+        int i0, i1;
+<span class="fc bfc" id="L53" title="All 2 branches covered.">        for (int i = 0; i &lt; queries.length; ++i) {</span>
+<span class="fc" id="L54">            int[] q = queries[i];</span>
+<span class="fc" id="L55">            i0 = q[0];</span>
+<span class="fc" id="L56">            i1 = q[1];</span>
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">            if (queriesAre0Based) {</span>
+<span class="fc" id="L58">                ++i0;</span>
+<span class="fc" id="L59">                ++i1;</span>
+            }
+<span class="pc bpc" id="L61" title="2 of 4 branches missed.">            if (i0 &lt; 0 || i1 &gt;= prefixArray.length) {</span>
+<span class="nc" id="L62">                throw new IllegalArgumentException(&quot;i0 or i1 out of bounds&quot;);</span>
+            }
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">            if (i0-1 &lt; 0) {</span>
+<span class="nc" id="L65">                i0 = 0;</span>
+            }
+<span class="fc" id="L67">            out[i] = prefixArray[i1] - prefixArray[i0-1];</span>
+        }
+<span class="fc" id="L69">        return out;</span>
+    }
+
+    public long sum(int i0, int i1, boolean queriesAre0Based) {
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">        if (queriesAre0Based) {</span>
+<span class="fc" id="L74">            ++i0;</span>
+<span class="fc" id="L75">            ++i1;</span>
+        }
+<span class="pc bpc" id="L77" title="2 of 4 branches missed.">        if (i0 &lt; 0 || i1 &gt;= array.length) {</span>
+<span class="nc" id="L78">            throw new IllegalArgumentException(&quot;i0 or i1 out of bounds&quot;);</span>
+        }
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">        if (i0-1 &lt; 0) {</span>
+<span class="nc" id="L81">            i0 = 0;</span>
+        }
+<span class="fc" id="L83">        return array[i1] - array[i0-1];</span>
+    }
+
+    /**
+     * given an array of updates, update the internal data for it.
+     * each update is a range start, end, and amount to add to the region.
+     * The runtime complexity is O(updates.length + a.length).
+     * @param updates an array of [start index, end index, add value].
+     * @param rangesAre0Based if true, the range indexes in the updates are 0-based
+     *                        indexes, else are 1-based indexes.
+     */
+    public void updateAdd(int[][] updates, boolean rangesAre0Based) {
+<span class="fc" id="L95">         updateAdd(array, updates, rangesAre0Based);</span>
+<span class="fc" id="L96">    }</span>
+
+    protected static void updateAdd(long[] prefixArray, int[][] updates, boolean rangesAre0Based) {
+        // create a difference array of the queries, then apply it to the prefix sum
+<span class="fc" id="L100">        int[] diffs = new int[prefixArray.length];</span>
+        int i0, i1;
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        for (int[] update : updates) {</span>
+<span class="fc" id="L103">            i0 = update[0];</span>
+<span class="fc" id="L104">            i1 = update[1];</span>
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">            if (rangesAre0Based) {</span>
+<span class="fc" id="L106">                ++i0;</span>
+<span class="fc" id="L107">                ++i1;</span>
+            }
+<span class="pc bpc" id="L109" title="2 of 4 branches missed.">            if (i0 &lt; 0 || i1 &gt;= prefixArray.length) {</span>
+<span class="nc" id="L110">                throw new IllegalArgumentException(&quot;i0 or i1 out of bounds&quot;);</span>
+            }
+<span class="fc" id="L112">            diffs[i0] += update[2];</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">            if (i1+1 &lt; prefixArray.length) {</span>
+<span class="fc" id="L114">                diffs[i1 + 1] -= update[2];</span>
+            }
+        }
+
+        // update prefix array
+<span class="fc" id="L119">        int sum = 0;</span>
+<span class="fc" id="L120">        int curr = 0;</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">        for (int i = 0; i &lt; prefixArray.length; ++i) {</span>
+<span class="fc" id="L122">            curr += diffs[i];</span>
+<span class="fc" id="L123">            sum += curr;</span>
+<span class="fc" id="L124">            prefixArray[i] += sum;</span>
+        }
+<span class="fc" id="L126">    }</span>
+
+    /**
+     * given an array 'a' of data, and array updateAndQuery of update ranges,
+     * update the array 'a' by the update add amounts, and return sums of the ranges for each update.
+     * each updateAndQuery row is a range start, end, inclusive, and amount to add to the region.
+     * The runtime complexity is O(updates.length + a.length).
+     * @param updateAndQuery an array of [start index, end index, add value].
+     * @param rangesAre0Based if true, the range indexes in the updates are 0-based
+     *                        indexes, else are 1-based indexes.
+     *                        Note that if they are 1-based indexes, the updateAndQuery ranges
+     *                        are converted to 0-based.
+     * @raturn the sums of the ranges
+     */
+    public static long[] updateAddQuery(int[] a, int[][] updateAndQuery, boolean rangesAre0Based) {
+<span class="fc" id="L141">        int n = a.length;</span>
+<span class="pc bpc" id="L142" title="1 of 2 branches missed.">        if (!rangesAre0Based) {</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">            for (int[] update : updateAndQuery) {</span>
+<span class="nc" id="L144">                --update[0];</span>
+<span class="nc" id="L145">                --update[1];</span>
+            }
+        }
+
+<span class="fc" id="L149">        Misc.updateAddUsingDifferenceArray(a, updateAndQuery);</span>
+
+        // create prefix array to use for range queries
+<span class="fc" id="L152">        long[] psa = createPrefixArray(a);</span>
+
+<span class="fc" id="L154">        return sum(psa, updateAndQuery, true);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

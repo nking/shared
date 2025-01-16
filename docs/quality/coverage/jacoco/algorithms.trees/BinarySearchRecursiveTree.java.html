@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BinarySearchRecursiveTree.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.trees</a> &gt; <span class="el_source">BinarySearchRecursiveTree.java</span></div><h1>BinarySearchRecursiveTree.java</h1><pre class="source lang-java linenums">package algorithms.trees;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
+
+/**
+ * a binary tree with additional operations for search, successor, predeccesor, minimum, and maximum.
+ *
+ * The recursive binary search tree is easier to memorize, and is used as a basis for a balanced binary search
+ * tree AVL implementation.
+ * @param &lt;T&gt; data type within the BinaryTreeNode
+ * @param &lt;S&gt; the BinaryTreeNode or extension
+ */
+<span class="fc" id="L15">public class BinarySearchRecursiveTree&lt;T extends Comparable&lt;T&gt;, S extends BinaryTreeNode&lt;T&gt;&gt;</span>
+        extends AbstractBinarySearchTree&lt;T, S&gt; {
+        //&lt;T extends Comparable&lt;T&gt;, S extends BinaryTreeNode&lt;T&gt;&gt;
+//extends AbstractBinarySearchTree&lt;T, S&gt; {
+
+    // NOTE&quot; internally, uses convention for interpreting S.compareTo
+    // as left is &lt; 0 else right
+
+<span class="fc" id="L23">    public BinarySearchRecursiveTree(){}</span>
+
+    /**
+     * method to construct a BinaryTree node or extension.  overrride as needed.
+     * default is to construct S
+     * @param data
+     * @return
+     */
+    public S newNode(T data) {
+<span class="fc" id="L32">        return (S) new BinaryTreeNode&lt;T&gt;(data);</span>
+    }
+
+    /**
+     * insert node into subtree top.  if result is that node has no parent, then top was null and null is returned,
+     * else the parent node of the inserted node is returned.
+     * Note that every delete operation modifies the tree
+     * in non-recursive version, so do not rely on the state of any node retained after
+     * @param top the subtree root node
+     * @param node the node to insert into the subtree
+     * @return parent of node inserted into tree
+     * @param &lt;T&gt; node data type that extends Comparable
+     */
+    protected S _insert(S top, S node) {
+<span class="fc bfc" id="L46" title="All 2 branches covered.">        if (top == null) {</span>
+<span class="fc" id="L47">            return node;</span>
+        }
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">        if (node == null) {</span>
+<span class="nc" id="L50">            return null;</span>
+        }
+<span class="fc" id="L52">        int comp = node.data.compareTo(top.data);</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">        if (comp &lt; 0) {</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">            top.left = _insert((top.left == null) ? null : (S)top.left, node);</span>
+<span class="fc" id="L55">            top.left.parent = top;</span>
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">            updateN((top.left == null) ? null : (S)top.left);</span>
+        } else {
+<span class="fc bfc" id="L58" title="All 2 branches covered.">            top.right = _insert((top.right == null) ? null : (S)top.right, node);</span>
+<span class="fc" id="L59">            top.right.parent = top;</span>
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">            updateN((top.right == null) ? null : (S)top.right);</span>
+        }
+
+<span class="fc" id="L63">        updateN(top);</span>
+
+<span class="fc" id="L65">        return top;</span>
+    }
+
+    protected S _search(S top, T data) {
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">        if (top == null) {</span>
+<span class="nc" id="L70">            return null;</span>
+        }
+<span class="fc" id="L72">        int comp = data.compareTo(top.data);</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        if (comp == 0) {</span>
+<span class="fc" id="L74">            return top;</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">        } else if (comp &lt; 0) {</span>
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">            return _search((top.left == null) ? null : (S)top.left, data);</span>
+        } else {
+<span class="pc bpc" id="L78" title="1 of 2 branches missed.">            return _search((top.right == null) ? null : (S)top.right, data);</span>
+        }
+    }
+
+    /**
+     * delete node from this tree.
+     * note that the in-order traversal print remains the same, but is missing the deleted node.
+     * Also note that delete modifies internal state of 2 nodes and so any references
+     * obtained during insert may have mutated.
+     * @param node
+     * @return
+     */
+    public boolean delete(BinaryTreeNode&lt;T&gt; node) {
+        // delete when node has no children
+<span class="fc bfc" id="L92" title="All 4 branches covered.">        if (node.left == null &amp;&amp; node.right == null) {</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">            if (node.parent == null) {</span>
+<span class="fc" id="L94">                root = null;</span>
+<span class="fc bfc" id="L95" title="All 4 branches covered.">            } else if (node.parent.left != null &amp;&amp; node.parent.left.equals(node)) {</span>
+<span class="fc" id="L96">                node.parent.left = null;</span>
+<span class="fc" id="L97">                updateNAndAncestors(node.parent);</span>
+            } else {
+<span class="pc bnc" id="L99" title="All 2 branches missed.">                assert(node.parent.right.equals(node));</span>
+<span class="fc" id="L100">                node.parent.right = null;</span>
+<span class="fc" id="L101">                updateNAndAncestors(node.parent);</span>
+            }
+<span class="fc bfc" id="L103" title="All 4 branches covered.">        } else if (node.left == null || node.right == null) {</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">            S subTree = (node.left == null) ? (S)node.right : (S)node.left;</span>
+            // delete when node has 1 child
+<span class="fc bfc" id="L106" title="All 2 branches covered.">            if (node.parent == null) {</span>
+<span class="fc" id="L107">                root = subTree;</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">                if (subTree != null) {</span>
+<span class="fc" id="L109">                    subTree.parent = null;</span>
+                }
+<span class="fc bfc" id="L111" title="All 4 branches covered.">            } else if (node.parent.left != null &amp;&amp; node.parent.left.equals(node)) {</span>
+<span class="fc" id="L112">                node.parent.left = subTree;</span>
+<span class="fc" id="L113">                subTree.parent = node.parent;</span>
+<span class="fc" id="L114">                updateNAndAncestors(node.parent.left);</span>
+            } else {
+<span class="pc bnc" id="L116" title="All 2 branches missed.">                assert(node.parent.right.equals(node));</span>
+<span class="fc" id="L117">                node.parent.right = subTree;</span>
+<span class="fc" id="L118">                subTree.parent = node.parent;</span>
+<span class="fc" id="L119">                updateNAndAncestors(node.parent.right);</span>
+            }
+<span class="fc" id="L121">        } else {</span>
+            // delete when node has 2 children, choose the min of node
+            // to replace it
+<span class="fc" id="L124">            BinaryTreeNode&lt;T&gt; min = minimum(node.right); // node.right is not null</span>
+
+            //  min is to the right of node and min.left = null
+
+            // keep node in current position, but swap all of its information
+            // with min.
+            // then delete min.
+
+<span class="fc" id="L132">            T tmp = node.data;</span>
+<span class="fc" id="L133">            node.data = min.data;</span>
+<span class="fc" id="L134">            min.data = tmp;</span>
+
+<span class="fc" id="L136">            BinaryTreeNode&lt;T&gt; tmp1 = min.parent;</span>
+
+<span class="fc" id="L138">            boolean deleted = delete(min);</span>
+
+            //updateNAndAncestors(tmp1);
+        }
+
+<span class="fc" id="L143">        return true;</span>
+    }
+
+    /**
+     * insert data and return the node.  Note that every delete operation modifies the tree
+     * in non-recursive version, so do not rely on the state of any node retained after
+     * a bst delete.
+     * @param data
+     * @return
+     */
+    public S insert(T data) {
+        // method implemented for sake of method documentation which is a warning.
+<span class="fc" id="L155">        return super.insert(data);</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WaitForGraph.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.concurrency</a> &gt; <span class="el_source">WaitForGraph.java</span></div><h1>WaitForGraph.java</h1><pre class="source lang-java linenums">package algorithms.concurrency;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * NOTE: this class is not thread-safe.  Its a toy model.
+ */
+<span class="fc" id="L11">public class WaitForGraph {</span>
+    // key = process ID, value = set of resource IDs
+<span class="fc" id="L13">    Map&lt;Integer, Set&lt;Integer&gt;&gt; procResWaitMap = new HashMap&lt;&gt;();</span>
+    // key = resource ID, value = process ID... is a 1-1 mapping reverse of procResWaitMap
+<span class="fc" id="L15">    Map&lt;Integer, Integer&gt; resProcAllocMap = new HashMap&lt;&gt;();</span>
+
+    // for reverse lookup
+
+    // a graph path is procResWaitMap process ID -&gt; resource ID -&gt; resProcAllocMap resourceID -&gt; processID
+    //    etc.
+
+    /**
+     * add a resource allocation to the graph (internally, also removes it from process wait map).
+     * @param processID
+     * @param resourceID
+     */
+    public void addAlloc(int processID, int resourceID) {
+        //int currProcID = resProcAllocMap.get(resourceID);
+<span class="fc" id="L29">        resProcAllocMap.put(resourceID, processID);</span>
+<span class="pc bpc" id="L30" title="1 of 2 branches missed.">        if (procResWaitMap.containsKey(processID)) {</span>
+<span class="nc" id="L31">            procResWaitMap.get(processID).remove(resourceID);</span>
+        }
+<span class="fc" id="L33">    }</span>
+    protected void addRequest(int processID, int resourceID) {
+<span class="fc" id="L35">        procResWaitMap.putIfAbsent(processID, new HashSet&lt;&gt;());</span>
+<span class="fc" id="L36">        procResWaitMap.get(processID).add(resourceID);</span>
+<span class="fc" id="L37">    }</span>
+
+    public boolean addRequestIfCannotDeadlock(int processID, int resourceID) {
+<span class="fc bfc" id="L40" title="All 2 branches covered.">        if (cannotDeadlock(processID, resourceID)) {</span>
+<span class="fc" id="L41">            addRequest(processID, resourceID);</span>
+<span class="fc" id="L42">            return true;</span>
+        }
+<span class="fc" id="L44">        return false;</span>
+    }
+
+    /**
+     * if requesting resourceID for process processID cannot create a deadlock, return true.
+     * Note that if the resource is already held by processID, this method will return false.
+     * @param processID
+     * @param resourceID
+     * @return
+     */
+    public boolean cannotDeadlock(int processID, int resourceID) {
+
+<span class="fc" id="L56">        Set&lt;Integer&gt; visitedP = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L57">        visitedP.add(processID);</span>
+
+<span class="fc" id="L59">        Set&lt;Integer&gt; cycle = new HashSet&lt;Integer&gt;();</span>
+<span class="fc" id="L60">        cycle.add(processID);</span>
+
+<span class="fc" id="L62">        boolean hasCycle = hasCycle(resourceID, visitedP, cycle);</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">        return !hasCycle;</span>
+    }
+
+    protected boolean hasCycle(int resourceID, Set&lt;Integer&gt; visitedP, Set&lt;Integer&gt; cycle) {
+
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        if (!resProcAllocMap.containsKey(resourceID)) {</span>
+<span class="fc" id="L69">            return false;</span>
+        }
+<span class="fc" id="L71">        int processID = resProcAllocMap.get(resourceID);</span>
+
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        if (cycle.contains(processID)) {</span>
+<span class="fc" id="L74">            return true;</span>
+        }
+
+<span class="pc bpc" id="L77" title="1 of 4 branches missed.">        if (visitedP.contains(processID) || !procResWaitMap.containsKey(processID)) {</span>
+<span class="fc" id="L78">            return false;</span>
+        }
+
+<span class="pc bpc" id="L81" title="1 of 2 branches missed.">        for (int resID : procResWaitMap.get(processID)) {</span>
+<span class="fc" id="L82">            Set&lt;Integer&gt; cycle2 = new HashSet&lt;&gt;(cycle);</span>
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">            if (hasCycle(resID, visitedP, cycle2)) {</span>
+<span class="fc" id="L84">                return true;</span>
+            }
+<span class="nc" id="L86">        }</span>
+
+<span class="nc" id="L88">        return false;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

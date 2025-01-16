@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MosAlgorthm.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.range</a> &gt; <span class="el_source">MosAlgorthm.java</span></div><h1>MosAlgorthm.java</h1><pre class="source lang-java linenums">package algorithms.range;
+
+import java.util.*;
+
+/**
+ * an algorithm used to process many queries of a static array (no modifications).
+ *
+ */
+<span class="nc" id="L9">public class MosAlgorthm {</span>
+
+    /**
+     * calculates the sum of all range queries of array 'a'.
+     * r.t.c. is O((N+Q)*sqrt(N)) where N is a.length and Q is q.length.
+     * Note that in contrast, a prefix array method is O(N + Q).
+     *
+     * Mo's algorithm is more helpful for problems when any use of a prefix array
+     * would be multidimensional.  see other example methods in this class.
+     &lt;pre&gt;
+     adapted from
+     author Ajay https://www.geeksforgeeks.org/mos-algorithm-query-square-root-decomposition-set-1-introduction/
+     and adapted from
+     https://cp-algorithms.com/data_structures/sqrt_decomposition.html#mos-algorithm
+     &lt;/pre&gt;
+     * @param a array of integers.
+     * @param q array of queries that are 0-based ranges of indexes of array 'a', inclusive.
+     * @return sum of each query range.
+     */
+    public static long[] querySums(int[] a, int[][] q) {
+
+<span class="fc" id="L30">        int blockSize = (int)Math.sqrt(a.length);</span>
+
+        // sort so that those within same block are grouped together, and those
+        // outside are ascending or descending ordered by right range.
+        // this sorting tries to reduce the number of times that currL and currR are changed
+        // in the code below it.
+        // r.t.c. O(Q*log(Q))
+<span class="fc" id="L37">        Arrays.sort(q, new Comparator&lt;int[]&gt;() {</span>
+            public int compare(int[] x, int[] y) {
+                if (x[0] / blockSize != y[0] / blockSize) {
+                    return x[0] - y[0];
+                }
+                /*
+                improvement from
+                In odd blocks sort the right index in ascending order and
+                in even blocks sort it in descending order.
+                This will minimize the movement of right pointer, as the normal sorting will move the right pointer
+                from the end back to the beginning at the start of every block. With the improved version this
+                resetting is no more necessary.
+                NLK: for the while loops below, reduction of nIter is when asc sort right for even,
+                else descending sort right for odd.
+                */
+                if (((x[0]/blockSize) &amp;1)==0) {
+                    return x[1] - y[1];
+                } else {
+                    return y[1] - x[1];
+                }
+                //return x[1] - y[1];// default
+            }
+        });
+
+<span class="fc" id="L61">        int currL = 0;</span>
+<span class="fc" id="L62">        int currR = 0;</span>
+<span class="fc" id="L63">        long currSum = 0;</span>
+        int qL, qR;
+<span class="fc" id="L65">        long[] out = new long[q.length];</span>
+
+<span class="fc bfc" id="L67" title="All 2 branches covered.">        for (int i = 0; i &lt; q.length; i++) {</span>
+            // qL and qR values of current range
+<span class="fc" id="L69">            qL = q[i][0];</span>
+<span class="fc" id="L70">            qR = q[i][1];</span>
+
+<span class="fc bfc" id="L72" title="All 2 branches covered.">            while (currL &lt; qL) {</span>
+<span class="fc" id="L73">                currSum -= a[currL];</span>
+<span class="fc" id="L74">                currL++;</span>
+            }
+<span class="fc bfc" id="L76" title="All 2 branches covered.">            while (currL &gt; qL) {</span>
+<span class="fc" id="L77">                currSum += a[currL - 1];</span>
+<span class="fc" id="L78">                currL--;</span>
+            }
+<span class="fc bfc" id="L80" title="All 2 branches covered.">            while (currR &lt;= qR) {</span>
+<span class="fc" id="L81">                currSum += a[currR];</span>
+<span class="fc" id="L82">                currR++;</span>
+            }
+<span class="fc bfc" id="L84" title="All 2 branches covered.">            while (currR &gt; qR + 1) {</span>
+<span class="fc" id="L85">                currSum -= a[currR - 1];</span>
+<span class="fc" id="L86">                currR--;</span>
+            }
+<span class="fc" id="L88">            out[i] = currSum;</span>
+        }
+<span class="fc" id="L90">        return out;</span>
+    }
+
+    /**
+     * given integer array a, count the occurences of every number within query range for each query.
+     * r.t.c. is O((N+Q)*sqrt(N)) where N is a.length and Q is q.length.
+     &lt;pre&gt;
+     adapted from
+         author Ajay https://www.geeksforgeeks.org/mos-algorithm-query-square-root-decomposition-set-1-introduction/
+     and adapted from
+         https://cp-algorithms.com/data_structures/sqrt_decomposition.html#mos-algorithm
+     &lt;/pre&gt;
+     * @param a array of integers
+     * @param q array of queries of indexes into array 'a' as inclusive query ranges.
+     * @return frequency maps for each query range are returned.
+     */
+    public static List&lt;Map&lt;Integer, Integer&gt;&gt; queryFrequencies(int[] a, int[][] q) {
+        //if store as long[][][] we have ragged arrays of result[i] for q[i] = array of [number, count]
+        // which is a ragged array, so we lose some of the benefits of efficient memory load/store
+        //
+        // List&lt;Map&lt;Integer, Integer&gt;&gt; takes more space but is more usable.
+
+<span class="fc" id="L112">        List&lt;Map&lt;Integer, Integer&gt;&gt; out = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L114">        int n = a.length;</span>
+
+<span class="fc" id="L116">        int blockSize = (int)Math.ceil(Math.sqrt(n));</span>
+
+<span class="fc" id="L118">        Arrays.sort(q, new Comparator&lt;int[]&gt;(){</span>
+            public int compare(int[]x, int[] y) {
+                if ((x[0] / blockSize) != (y[0] / blockSize)) {
+                    return x[0] - y[0];
+                }
+                if (((x[0] / blockSize) &amp; 1) == 0) {
+                    return y[1] - x[1];
+                } else {
+                    return x[1] - y[1];
+                }
+            }
+        });
+
+<span class="fc" id="L131">        int currL = 0;</span>
+<span class="fc" id="L132">        int currR = -1;</span>
+<span class="fc" id="L133">        long currSum = 0;</span>
+        int qL, qR;
+
+<span class="fc" id="L136">        Map&lt;Integer, Integer&gt; freqMap = new HashMap&lt;&gt;();</span>
+
+<span class="fc bfc" id="L138" title="All 2 branches covered.">        for (int i = 0; i &lt; q.length; i++) {</span>
+            // qL and qR values of current range
+<span class="fc" id="L140">            qL = q[i][0];</span>
+<span class="fc" id="L141">            qR = q[i][1];</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">            while (currL &gt; qL) {</span>
+<span class="fc" id="L143">                currL--;</span>
+<span class="fc" id="L144">                freqMap.put(a[currL], freqMap.getOrDefault(a[currL], 0) + 1);</span>
+            }
+<span class="fc bfc" id="L146" title="All 2 branches covered.">            while (currR &lt; qR) {</span>
+<span class="fc" id="L147">                currR++;</span>
+<span class="fc" id="L148">                freqMap.put(a[currR], freqMap.getOrDefault(a[currR], 0) + 1);</span>
+            }
+<span class="fc bfc" id="L150" title="All 2 branches covered.">            while (currR &gt; qR) {</span>
+<span class="fc" id="L151">                freqMap.put(a[currR], freqMap.getOrDefault(a[currR], 0) - 1);</span>
+<span class="fc" id="L152">                currR--;</span>
+            }
+<span class="fc bfc" id="L154" title="All 2 branches covered.">            while (currL &lt; qL) {</span>
+<span class="fc" id="L155">                freqMap.put(a[currL], freqMap.getOrDefault(a[currL], 0) - 1);</span>
+<span class="fc" id="L156">                currL++;</span>
+            }
+            //O(nUnique from a[minQ] to a[maxQ])
+<span class="fc" id="L159">            out.add(writeMap(freqMap));</span>
+        }
+<span class="fc" id="L161">        return out;</span>
+    }
+
+    private static Map&lt;Integer, Integer&gt; writeMap(Map&lt;Integer, Integer&gt; freqMap) {
+<span class="fc" id="L165">        Map&lt;Integer, Integer&gt; out = new HashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">        for (Map.Entry&lt;Integer, Integer&gt; entry : freqMap.entrySet()){</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">            if (entry.getValue() != 0) {</span>
+<span class="fc" id="L168">                out.put(entry.getKey(), entry.getValue());</span>
+            }
+<span class="fc" id="L170">        }</span>
+<span class="fc" id="L171">        return out;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

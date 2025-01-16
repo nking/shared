@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SqrtDecomp.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.range</a> &gt; <span class="el_source">SqrtDecomp.java</span></div><h1>SqrtDecomp.java</h1><pre class="source lang-java linenums">package algorithms.range;
+
+import java.util.Arrays;
+
+/**
+ * a data structure that takes an integer array of data and performs sum and update
+ * operations on it.  
+ * The update operation has r.t.c. O(sqrt(n)) which is better
+ * performance than the O(n) update for a prefix sum array.
+ * If no updates are ever performed, one should prefer a prefix sum array because of the O(1)
+ * sum operation.
+ * &lt;pre&gt;
+ *     reference https://usaco.guide/plat/sqrt?lang=java#blocking
+ * &lt;/pre&gt;
+ */
+public class SqrtDecomp {
+    
+    protected int blockSize;//nBins
+    protected int n;
+    protected long[] blocks;
+    protected long[] a;
+
+<span class="fc" id="L23">    public SqrtDecomp(long[] a) {</span>
+<span class="fc" id="L24">        n = a.length;</span>
+<span class="fc" id="L25">        blockSize = (int)Math.sqrt(n) + 1;</span>
+<span class="fc" id="L26">        blocks = new long[blockSize];</span>
+<span class="fc bfc" id="L27" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L28">            blocks[i/blockSize] += a[i];</span>
+        }
+<span class="fc" id="L30">        this.a = Arrays.copyOf(a, n);</span>
+<span class="fc" id="L31">    }</span>
+
+    /**
+     * r.t.c. O(queries.length * sqrt(n)) where n = a.length;
+     * @param queries array of elements containing ranges, e.g. [l, r] inclusive
+     * @param indexesAre0Based whether the query range points are 0-based indexes
+     *                         (else false is 1-based indexing).
+     * @return
+     */
+    public long[] sum(int[][] queries, boolean indexesAre0Based) {
+<span class="nc" id="L41">        long[] out = new long[queries.length];</span>
+        int r, l;
+<span class="nc bnc" id="L43" title="All 2 branches missed.">        for (int i = 0; i &lt; queries.length; ++i) {</span>
+<span class="nc" id="L44">            out[i] = sum(queries[i][0], queries[i][1], indexesAre0Based);</span>
+        }
+<span class="nc" id="L46">        return out;</span>
+    }
+
+    /**
+     * r.t.c. O(sqrt(n)) where n = a.length;
+     * @param l start index of query range
+     * @param r stop index of query range inclusive
+     * @param indexesAre0Based whether the query range points are 0-based indexes
+     *                         (else false is 1-based indexing).
+     * @return
+     */
+    public long sum(int l, int r, boolean indexesAre0Based) {
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">        if (indexesAre0Based) {</span>
+<span class="fc" id="L59">            ++r;</span>
+<span class="fc" id="L60">            ++l;</span>
+        }
+<span class="fc" id="L62">        long s1 = sum(r);</span>
+<span class="fc" id="L63">        long s2 = sum(l - 1);</span>
+<span class="fc" id="L64">        return s1 - s2;</span>
+        //return sum(r) - sum(l - 1);
+    }
+
+    //r.t.c. O(sqrt(n)) where n = a.length;
+    protected long sum(int r) {
+<span class="fc" id="L70">        long res = 0;</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">        for (int i = 0; i &lt; r / blockSize; i++) {</span>
+<span class="fc" id="L72">            res += blocks[i];</span>
+        }
+<span class="fc bfc" id="L74" title="All 2 branches covered.">        for (int i = (r / blockSize) * blockSize; i &lt; r; i++) {</span>
+<span class="fc" id="L75">            res += a[i];</span>
+        }
+<span class="fc" id="L77">        return res;</span>
+    }
+
+    /** O(1) update to set a[i] to v */
+    public void set(int i, long v, boolean indexesAre0Based) {
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">        if (!indexesAre0Based) {</span>
+<span class="nc" id="L83">            --i;</span>
+        }
+<span class="fc" id="L85">        int bIdx = i / blockSize;</span>
+<span class="fc" id="L86">        blocks[bIdx] -= a[i];</span>
+<span class="fc" id="L87">        a[i] = v;</span>
+<span class="fc" id="L88">        blocks[bIdx] += a[i];</span>
+<span class="fc" id="L89">    }</span>
+
+    /**
+     * update the internal data for the given range and addition
+     * @param updateArray array holding left, right, add
+     * @param indexesAre0Based
+     */
+    public void updateAdd(int[] updateArray, boolean indexesAre0Based) {
+<span class="fc" id="L97">        int l = updateArray[0];</span>
+<span class="fc" id="L98">        int r = updateArray[1];</span>
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">        if (!indexesAre0Based) {</span>
+<span class="nc" id="L100">            --l;</span>
+<span class="nc" id="L101">            --r;</span>
+        }
+<span class="fc bfc" id="L103" title="All 2 branches covered.">        for (int j = l; j &lt;= r; ++j) {</span>
+<span class="fc" id="L104">            set(j, a[j] + updateArray[2], indexesAre0Based);</span>
+        }
+<span class="fc" id="L106">    }</span>
+
+    /**
+     * r.t.c. is (updates.length * (query range))
+     * update internal data to add updates[i][2]
+     * @param updates array of [left, right, add] arrays.
+     * @param indexesAre0Based
+     */
+    public void updateAdd(int[][] updates, boolean indexesAre0Based) {
+<span class="fc bfc" id="L115" title="All 2 branches covered.">        for (int i = 0; i &lt; updates.length; ++i) {</span>
+<span class="fc" id="L116">            updateAdd(updates[i], indexesAre0Based);</span>
+        }
+<span class="fc" id="L118">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EvenOdd.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.concurrency.diningPhilosophers</a> &gt; <span class="el_source">EvenOdd.java</span></div><h1>EvenOdd.java</h1><pre class="source lang-java linenums">package algorithms.concurrency.diningPhilosophers;
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
+
+/**
+ * a toy model close to sequential for timing comparisons.
+ */
+public class EvenOdd extends AbstractDiningPhilosophers {
+<span class="fc" id="L10">    ReentrantLock eatLock = new ReentrantLock();</span>
+
+    // needed for the alternating first last diner when n is an odd number
+<span class="fc" id="L13">    int nEvenIter = 0;</span>
+
+    public EvenOdd(int n, int thinkTimeMsec) {
+<span class="fc" id="L16">        super(n, thinkTimeMsec, EvenOdd.class.getSimpleName());</span>
+<span class="fc" id="L17">    }</span>
+
+    public void dine(int bitesPer, int timeoutSec) throws InterruptedException {
+
+<span class="fc" id="L21">        initDine(bitesPer);</span>
+
+<span class="fc" id="L23">        Thread thrE = new Thread(groupEat(0, timeoutSec));</span>
+<span class="fc" id="L24">        Thread thrO = new Thread(groupEat(1, timeoutSec));</span>
+<span class="fc" id="L25">        thrE.start();</span>
+<span class="fc" id="L26">        thrO.start();</span>
+<span class="fc" id="L27">        thrE.join();</span>
+<span class="fc" id="L28">        thrO.join();</span>
+
+<span class="fc" id="L30">        closeDine();</span>
+<span class="fc" id="L31">    }//end dine</span>
+
+    protected boolean foodOnPlates(int evenOdd) {
+<span class="fc bfc" id="L34" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc bfc" id="L35" title="All 4 branches covered.">            if ((i &amp; 1) == evenOdd &amp;&amp; bites.containsKey(i)) {</span>
+<span class="fc" id="L36">                return true;</span>
+            }
+        }
+<span class="fc" id="L39">        return false;</span>
+    }
+
+    protected Runnable groupEat(int evenOdd, int timeOut) {
+<span class="fc" id="L43">        return new Runnable() {</span>
+            public void run() {
+                while (foodOnPlates(evenOdd)) {
+                    try {
+                        if (eatLock.tryLock(timeOut, TimeUnit.SECONDS)) {
+                            for (int i = 0; i &lt; n; ++i) {
+                                if ((i &amp; 1) != evenOdd || !bites.containsKey(i)) {
+                                    continue;
+                                }
+
+                                // if nIsOdd and this is the even eating group, we need to alternate
+                                // the eating between first and last diner.
+                                //  when nEvenIter is even, 0 eats, else n-1 eats
+                                if (nIsOdd &amp;&amp; evenOdd == 0) {
+                                    if (i == (n - 1) &amp;&amp; ((nEvenIter &amp; 1) == 0)) {
+                                        continue;
+                                    } else if (i == 0 &amp;&amp; ((nEvenIter &amp; 1) != 0)) {
+                                        continue;
+                                    }
+                                }
+                                if (bites.containsKey(i)) {
+                                    if (bites.get(i) == 1) {
+                                        bites.remove(i);
+                                    } else {
+                                        bites.put(i, bites.get(i) - 1);
+                                    }
+                                    //System.out.printf(&quot;%d eats\n&quot;, i);
+                                }
+                            }// end i loop
+                        }// end locked eat
+                    } catch (InterruptedException e) {
+                        System.out.printf(&quot;eatLock interrupted\n&quot;);
+                        Thread.currentThread().interrupt();
+                    } finally {
+                        if (eatLock.isHeldByCurrentThread()) {
+                            eatLock.unlock();
+                            if (evenOdd == 0) ++nEvenIter;
+                            try {
+                                Thread.sleep(thinkTimeMilliSec);
+                            } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt();
+                            }
+                        }
+                    }
+                }
+            }// end while food on plate
+        };// end run
+
+    }// end groupEat
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

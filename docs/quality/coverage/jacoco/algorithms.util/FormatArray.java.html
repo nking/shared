@@ -201,6 +201,21 @@ import java.util.Collection;
         }
 <span class="fc" id="L202">        return sb.toString();</span>
     }
+
+    public static String toString(String[][] a, String format) {
+<span class="nc" id="L206">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc bnc" id="L207" title="All 2 branches missed.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="nc bnc" id="L208" title="All 2 branches missed.">            for (int j = 0; j &lt; a[i].length; ++j) {</span>
+<span class="nc" id="L209">                sb.append(String.format(format, a[i][j]));</span>
+<span class="nc bnc" id="L210" title="All 2 branches missed.">                if (j &lt; (a[i].length - 1)) {</span>
+<span class="nc" id="L211">                    sb.append(&quot;,&quot;);</span>
+                }
+<span class="nc" id="L213">                sb.append(&quot; &quot;);</span>
+            }
+<span class="nc" id="L215">            sb.append(&quot;\n&quot;);</span>
+        }
+<span class="nc" id="L217">        return sb.toString();</span>
+    }
     
     /**
      *
@@ -209,18 +224,18 @@ import java.util.Collection;
      @return
      */
     public static String toString(float[][] a, String decimalFormat) {
-<span class="nc" id="L212">        StringBuilder sb = new StringBuilder();</span>
-<span class="nc bnc" id="L213" title="All 2 branches missed.">        for (int i = 0; i &lt; a.length; ++i) {</span>
-<span class="nc bnc" id="L214" title="All 2 branches missed.">            for (int j = 0; j &lt; a[i].length; ++j) {</span>
-<span class="nc" id="L215">                sb.append(String.format(decimalFormat, a[i][j]));</span>
-<span class="nc bnc" id="L216" title="All 2 branches missed.">                if (j &lt; (a[i].length - 1)) {</span>
-<span class="nc" id="L217">                    sb.append(&quot;,&quot;);</span>
+<span class="nc" id="L227">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc bnc" id="L228" title="All 2 branches missed.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="nc bnc" id="L229" title="All 2 branches missed.">            for (int j = 0; j &lt; a[i].length; ++j) {</span>
+<span class="nc" id="L230">                sb.append(String.format(decimalFormat, a[i][j]));</span>
+<span class="nc bnc" id="L231" title="All 2 branches missed.">                if (j &lt; (a[i].length - 1)) {</span>
+<span class="nc" id="L232">                    sb.append(&quot;,&quot;);</span>
                 }
-<span class="nc" id="L219">                sb.append(&quot; &quot;);</span>
+<span class="nc" id="L234">                sb.append(&quot; &quot;);</span>
             }
-<span class="nc" id="L221">            sb.append(&quot;\n&quot;);</span>
+<span class="nc" id="L236">            sb.append(&quot;\n&quot;);</span>
         }
-<span class="nc" id="L223">        return sb.toString();</span>
+<span class="nc" id="L238">        return sb.toString();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -3,6 +3,7 @@
 import algorithms.sort.MiscSorter;
 import algorithms.util.SimpleLinkedListNode;
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 /**
    DFS
@@ -44,7 +45,7 @@ import java.util.Arrays;
 * 
  * @author nichole
  */
-<span class="fc" id="L47">public class DFS {</span>
+<span class="fc" id="L48">public class DFS {</span>
 
     /**
      * adjacency matrix with connected i to j indicated by the index and each
@@ -77,7 +78,7 @@ import java.util.Arrays;
     /**
      *
      */
-<span class="fc" id="L80">    protected int time = 0;</span>
+<span class="fc" id="L81">    protected int time = 0;</span>
     
     /**
      @param directedEdges  adjacency matrix with connected i to j indicated 
@@ -87,81 +88,89 @@ import java.util.Arrays;
      * For example, adjacent to node 3 is found via directedEdges[3] as all in 
      * the linked list.
      */
-<span class="fc" id="L90">    public DFS(SimpleLinkedListNode[] directedEdges) {</span>
-<span class="pc bpc" id="L91" title="1 of 2 branches missed.">        if (directedEdges == null) {</span>
-<span class="nc" id="L92">            throw new IllegalArgumentException(&quot;directedEdges cannot be null&quot;);</span>
+<span class="fc" id="L91">    public DFS(SimpleLinkedListNode[] directedEdges) {</span>
+<span class="pc bpc" id="L92" title="1 of 2 branches missed.">        if (directedEdges == null) {</span>
+<span class="nc" id="L93">            throw new IllegalArgumentException(&quot;directedEdges cannot be null&quot;);</span>
         }
-<span class="fc" id="L94">        g = directedEdges.clone();</span>
-<span class="fc bfc" id="L95" title="All 2 branches covered.">        for (int i = 0; i &lt; g.length; ++i) {</span>
-<span class="fc" id="L96">            g[i] = new SimpleLinkedListNode(directedEdges[i]);</span>
+<span class="fc" id="L95">        g = directedEdges.clone();</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">        for (int i = 0; i &lt; g.length; ++i) {</span>
+<span class="fc" id="L97">            g[i] = new SimpleLinkedListNode(directedEdges[i]);</span>
         }
-<span class="fc" id="L98">        this.visited = new int[g.length];</span>
-<span class="fc" id="L99">        this.td = new int[g.length];</span>
-<span class="fc" id="L100">        this.tf = new int[g.length];</span>
-<span class="fc" id="L101">        this.predecessor = new int[g.length];</span>
-<span class="fc" id="L102">        Arrays.fill(predecessor, -1);</span>
-<span class="fc" id="L103">    }</span>
+<span class="fc" id="L99">        this.visited = new int[g.length];</span>
+<span class="fc" id="L100">        this.td = new int[g.length];</span>
+<span class="fc" id="L101">        this.tf = new int[g.length];</span>
+<span class="fc" id="L102">        this.predecessor = new int[g.length];</span>
+<span class="fc" id="L103">        Arrays.fill(predecessor, -1);</span>
+<span class="fc" id="L104">    }</span>
 
     /**
      *
      */
     public void walk() {
 
-<span class="fc bfc" id="L110" title="All 2 branches covered.">        for (int u = 0; u &lt; g.length; u++) {</span>
-<span class="fc bfc" id="L111" title="All 2 branches covered.">            if (visited[u] == 0) {</span>
-<span class="fc" id="L112">                visit(u);</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">        for (int u = 0; u &lt; g.length; u++) {</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">            if (visited[u] == 0) {</span>
+<span class="fc" id="L113">                visit(u);</span>
             }
         }        
-<span class="fc" id="L115">    }</span>
+<span class="fc" id="L116">    }</span>
+
+    /**
+     * walk only the paths reachable from src
+     * @param src
+     */
+    public void walk(int src) {
+<span class="fc" id="L123">        visit(src);</span>
+<span class="fc" id="L124">    }</span>
     
     /**
      * alterative pattern for walking code
      @param vertexOrder
      */
     void _walk(int[] vertexOrder) {
-<span class="fc bfc" id="L122" title="All 2 branches covered.">        for (int u : vertexOrder) {</span>
-<span class="fc bfc" id="L123" title="All 2 branches covered.">            if (visited[u] == 0) {</span>
-<span class="fc" id="L124">                visit(u);</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">        for (int u : vertexOrder) {</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">            if (visited[u] == 0) {</span>
+<span class="fc" id="L133">                visit(u);</span>
             }
         }
-<span class="fc" id="L127">    }</span>
+<span class="fc" id="L136">    }</span>
     
     private void visit(int u) {
         //System.out.println(&quot;load method frame for &quot; + u);
         
-<span class="fc" id="L132">        visited[u] = 1;</span>
-<span class="fc" id="L133">        time++;</span>
+<span class="fc" id="L141">        visited[u] = 1;</span>
+<span class="fc" id="L142">        time++;</span>
         //System.out.println(&quot;  visiting &quot; + u + &quot; to set td=&quot; + time);
-<span class="fc" id="L135">        td[u] = time;</span>
+<span class="fc" id="L144">        td[u] = time;</span>
 
-<span class="fc" id="L137">        SimpleLinkedListNode next = g[u];</span>
+<span class="fc" id="L146">        SimpleLinkedListNode next = g[u];</span>
         
-<span class="fc bfc" id="L139" title="All 4 branches covered.">        while (next != null &amp;&amp; next.getNumberOfKeys() &gt; 0) {</span>
-<span class="fc" id="L140">            int v = next.getKey();</span>
-<span class="fc bfc" id="L141" title="All 2 branches covered.">            if (visited[v] == 0) {</span>
-<span class="fc" id="L142">                predecessor[v] = u;</span>
-<span class="fc" id="L143">                visit(v);</span>
-<span class="fc bfc" id="L144" title="All 2 branches covered.">            } else if (predecessor[v] == -1) {</span>
+<span class="fc bfc" id="L148" title="All 4 branches covered.">        while (next != null &amp;&amp; next.getNumberOfKeys() &gt; 0) {</span>
+<span class="fc" id="L149">            int v = next.getKey();</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">            if (visited[v] == 0) {</span>
+<span class="fc" id="L151">                predecessor[v] = u;</span>
+<span class="fc" id="L152">                visit(v);</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">            } else if (predecessor[v] == -1) {</span>
                 // visited v because of order invoked from walk, but predecessor of v was not visited before v
-<span class="fc" id="L146">                predecessor[v] = u;</span>
+<span class="fc" id="L155">                predecessor[v] = u;</span>
             }
-<span class="fc" id="L148">            next = next.getNext();</span>
-<span class="fc" id="L149">        }</span>
-<span class="fc" id="L150">        visited[u] = 2;</span>
-<span class="fc" id="L151">        time++;</span>
-<span class="fc" id="L152">        tf[u] = time;</span>
+<span class="fc" id="L157">            next = next.getNext();</span>
+<span class="fc" id="L158">        }</span>
+<span class="fc" id="L159">        visited[u] = 2;</span>
+<span class="fc" id="L160">        time++;</span>
+<span class="fc" id="L161">        tf[u] = time;</span>
         //System.out.println(&quot;  visited &quot; + u + &quot;) to set tf=&quot; + time);
-<span class="fc" id="L154">    }</span>
+<span class="fc" id="L163">    }</span>
     
     /**
      * get predecessor indexes
      @return get predecessor indexes
      */
     public int[] getPredecessorIndexes() {
-<span class="pc bpc" id="L161" title="1 of 2 branches missed.">        if (predecessor == null) {</span>
-<span class="nc" id="L162">            return null;</span>
+<span class="pc bpc" id="L170" title="1 of 2 branches missed.">        if (predecessor == null) {</span>
+<span class="nc" id="L171">            return null;</span>
         }
-<span class="fc" id="L164">        return Arrays.copyOf(predecessor, predecessor.length);</span>
+<span class="fc" id="L173">        return Arrays.copyOf(predecessor, predecessor.length);</span>
     }
     
     /**
@@ -169,24 +178,24 @@ import java.util.Arrays;
      @return 
      */
     public int[] getOrderedBeginIndexes() {
-<span class="fc" id="L172">        return sortForIndexes(td);</span>
+<span class="fc" id="L181">        return sortForIndexes(td);</span>
     }
     
     private int[] sortForIndexes(int[] a) {
-<span class="pc bpc" id="L176" title="1 of 2 branches missed.">        if (a == null) {</span>
-<span class="nc" id="L177">            throw new IllegalArgumentException(&quot;a cannot be null&quot;);</span>
+<span class="pc bpc" id="L185" title="1 of 2 branches missed.">        if (a == null) {</span>
+<span class="nc" id="L186">            throw new IllegalArgumentException(&quot;a cannot be null&quot;);</span>
         }
-<span class="pc bpc" id="L179" title="1 of 2 branches missed.">        if (g == null) {</span>
-<span class="nc" id="L180">            return null;</span>
+<span class="pc bpc" id="L188" title="1 of 2 branches missed.">        if (g == null) {</span>
+<span class="nc" id="L189">            return null;</span>
         }
-<span class="pc bnc" id="L182" title="All 2 branches missed.">        assert(a.length == g.length);</span>
-<span class="fc" id="L183">        a = Arrays.copyOf(a, a.length);</span>
-<span class="fc" id="L184">        int[] idxs = new int[a.length];</span>
-<span class="fc bfc" id="L185" title="All 2 branches covered.">        for (int i = 0; i &lt; idxs.length; ++i) {</span>
-<span class="fc" id="L186">            idxs[i] = i;</span>
+<span class="pc bnc" id="L191" title="All 2 branches missed.">        assert(a.length == g.length);</span>
+<span class="fc" id="L192">        a = Arrays.copyOf(a, a.length);</span>
+<span class="fc" id="L193">        int[] idxs = new int[a.length];</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">        for (int i = 0; i &lt; idxs.length; ++i) {</span>
+<span class="fc" id="L195">            idxs[i] = i;</span>
         }
-<span class="fc" id="L188">        MiscSorter.sortBy1stArg(a, idxs);</span>
-<span class="fc" id="L189">        return idxs;</span>
+<span class="fc" id="L197">        MiscSorter.sortBy1stArg(a, idxs);</span>
+<span class="fc" id="L198">        return idxs;</span>
     }
     
     /**
@@ -194,7 +203,19 @@ import java.util.Arrays;
      @return 
      */
     public int[] getOrderedEndIndexes() {
-<span class="fc" id="L197">        return sortForIndexes(tf);</span>
+<span class="fc" id="L206">        return sortForIndexes(tf);</span>
+    }
+
+    public int[] getEulerTourFromEndTimes() {
+        // decending sort
+<span class="fc" id="L211">        int[] sIdxs = IntStream.range(0, tf.length).boxed()</span>
+<span class="fc" id="L212">                .sorted((a, b) -&gt; {</span>
+<span class="fc" id="L213">                    int c = tf[b] - tf[a];</span>
+<span class="pc bpc" id="L214" title="1 of 2 branches missed.">                    if (c != 0) return c;</span>
+<span class="nc" id="L215">                    return a - b;</span>
+<span class="fc" id="L216">                }).mapToInt(ele-&gt;ele).toArray();</span>
+
+<span class="fc" id="L218">        return sIdxs;</span>
     }
     
     /**
@@ -202,7 +223,7 @@ import java.util.Arrays;
      @return
      */
     public int[] getTd() {
-<span class="fc" id="L205">        return td;</span>
+<span class="fc" id="L226">        return td;</span>
     }
 
     /**
@@ -210,7 +231,7 @@ import java.util.Arrays;
      @return
      */
     public int[] getTf() {
-<span class="fc" id="L213">        return tf;</span>
+<span class="fc" id="L234">        return tf;</span>
     }
     
 }
