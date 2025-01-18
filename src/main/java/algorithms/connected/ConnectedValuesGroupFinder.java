@@ -1,16 +1,13 @@
 package algorithms.connected;
 
-import algorithms.disjointSets.DisjointSet2Helper;
-import algorithms.disjointSets.DisjointSet2Node;
-import algorithms.util.PixelHelper;
-import gnu.trove.iterator.TLongObjectIterator;
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
+import algorithms.disjointSets.UnionFind;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -19,30 +16,22 @@ import java.util.logging.Logger;
  * is defined by the default "4 neighbor" offsets, but can be overridden to use
  * all 8 neighbors.
  *
- * The runtime complexity is essentially O(N_points).
+ * The runtime complexity is O(N_points).  The resulting pixel coordinates use
+ * pixelIdx = (row * data[0].length) + col.
  *
  * @author nichole
  */
 public class ConnectedValuesGroupFinder implements IConnectedValuesGroupFinder {
 
-    protected final DisjointSet2Helper disjointSetHelper = new DisjointSet2Helper();
-
-    // key = pixIdx, value = disjoint set node with key pixIdx
-    protected TLongObjectMap<DisjointSet2Node<Long>> pixNodes = null;
+    protected UnionFind uf;
 
     /**
      * uses the 4 neighbor region if true, else the 8-neighbor region
      */
     protected boolean use4Neighbors = true;
 
-    /**
-     *
-     */
     protected int minimumNumberInCluster = 3;
 
-    /**
-     *
-     */
     protected Logger log = Logger.getLogger(this.getClass().getName());
 
     /**
@@ -100,18 +89,19 @@ public class ConnectedValuesGroupFinder implements IConnectedValuesGroupFinder {
      * adjacency by default is using the 4 neighbor pattern search unless the
      * user has set that to 8 neighbors. 
      * 
-     * The runtime complexity is essentially O(pixIdxs.size()).
+     *The runtime complexity is O(N_points).  The resulting pixel coordinates use
+     * pixelIdx = (row * data[0].length) + col.
      *
-     @param data
+     @param data array of data.  all rows must be same length.
      @return 
      */
     public List<TLongSet> findGroups(int[][] data) {
 
-        initMap(data);
+        uf = new UnionFind(data.length * data[0].length);
 
-        findClustersIterative(data);
+        findClustersInData(data);
 
-        List<TLongSet> groupList = prune();
+        List<TLongSet> groupList = extractClusters();
         
         return groupList;
     }
@@ -120,10 +110,10 @@ public class ConnectedValuesGroupFinder implements IConnectedValuesGroupFinder {
      *
      @param data
      */
-    protected void findClustersIterative(int[][] data) {
+    protected void findClustersInData(int[][] data) {
 
-        int w = data.length;
-        int h = data[0].length;
+        //int w = data.length;
+        //int h = data[0].length;
         
         int[] dxs;
         int[] dys;
@@ -145,12 +135,12 @@ public class ConnectedValuesGroupFinder implements IConnectedValuesGroupFinder {
             dys = new int[]{-1, 0, 1, 1};
         }
 
-        PixelHelper ph = new PixelHelper();
+        int width = data[0].length;
         
         for (int uX = 0; uX < data.length; ++uX) {
             for (int uY = 0; uY < data[uX].length; ++uY) {
                 
-                long uPixIdx = ph.toPixelIndex(uX, uY, w);
+                int uPixIdx = (uX * width) + uY;
                 
                 int uValue = data[uX][uY];
                 
@@ -163,7 +153,7 @@ public class ConnectedValuesGroupFinder implements IConnectedValuesGroupFinder {
                     int vX = uX + dxs[k];
                     int vY = uY + dys[k];
                     
-                    if (vX < 0 || vY < 0 || vX >= w || vY >= h) {
+                    if (vX < 0 || vY < 0 || vX >= data.length || vY >= data[0].length) {
                         continue;
                     }
                     
@@ -177,98 +167,37 @@ public class ConnectedValuesGroupFinder implements IConnectedValuesGroupFinder {
                         continue;
                     }
                     
-                    long vPixIdx = ph.toPixelIndex(vX, vY, w);
-                    
-                    processPair(uPixIdx, vPixIdx);
+                    int vPixIdx =(vX * width) + vY;
+
+                    if (uf.find(uPixIdx) != uf.find(vPixIdx)) {
+                        uf.union(uPixIdx, vPixIdx);
+                    }
                 }
             }
         }
     }
 
-    /**
-     *
-     @param uPoint
-     @param vPoint
-     */
-    protected void processPair(long uPoint, long vPoint) {
-
-        DisjointSet2Node<Long> uReprNode = disjointSetHelper.findSet(pixNodes.get(uPoint));
-        assert(uReprNode != null);
-
-        DisjointSet2Node<Long> vReprNode = disjointSetHelper.findSet(pixNodes.get(vPoint));
-        assert(vReprNode != null);
-
-        DisjointSet2Node<Long> mergedNode = disjointSetHelper.union(uReprNode, vReprNode);
-
-        pixNodes.put(uPoint, mergedNode);
-        pixNodes.put(vPoint, mergedNode);
-        pixNodes.put(uReprNode.getMember().intValue(), mergedNode);
-        pixNodes.put(vReprNode.getMember().longValue(), mergedNode);
-    }
-
-    protected List<TLongSet> prune() {
+    protected List<TLongSet> extractClusters() {
 
         // key = repr node index, value = set of pixels w/ repr
-        TLongObjectMap<TLongSet> map = new TLongObjectHashMap<TLongSet>();
-
-        TLongObjectIterator<DisjointSet2Node<Long>> iter = pixNodes.iterator();
-        for (int i = 0; i < pixNodes.size(); ++i) {
-
-            iter.advance();
-
-            long pixIdx = iter.key();
-            DisjointSet2Node<Long> node = iter.value();
-
-            DisjointSet2Node<Long> repr = disjointSetHelper.findSet(node);
-
-            long reprIdx = repr.getMember().longValue();
-
-            TLongSet set = map.get(reprIdx);
-            if (set == null) {
-                set = new TLongHashSet();
-                map.put(reprIdx, set);
-            }
-            set.add(pixIdx);
-        }
-
-        log.finest("number of groups before prune=" + map.size());
+        Map<Integer, Set<Integer>> reprMap = uf.getComponents();
 
         // rewrite the above into a list
         List<TLongSet> groups = new ArrayList<TLongSet>();
 
-        TLongObjectIterator<TLongSet> iter2 = map.iterator();
-        for (int i = 0; i < map.size(); ++i) {
-            iter2.advance();
-
-            TLongSet idxs = iter2.value();
-
-            if (idxs.size() >= minimumNumberInCluster) {
-                groups.add(idxs);
+        for (Map.Entry<Integer, Set<Integer>> entry : reprMap.entrySet()) {
+            if (entry.getValue().size() >= minimumNumberInCluster) {
+                TLongSet set = new TLongHashSet();
+                groups.add(set);
+                for (int idx : entry.getValue()) {
+                    set.add(idx);
+                }
             }
         }
 
-        log.finest("number of groups after prune=" + groups.size());
+        log.finest("number of groups =" + groups.size());
         
         return groups;
     }
 
-    private void initMap(int[][] data) {
-
-        int w = data.length;
-             
-        pixNodes = new TLongObjectHashMap<DisjointSet2Node<Long>>();
-        
-        PixelHelper ph = new PixelHelper();
-        
-        for (int i = 0; i < data.length; ++i) {
-            for (int j = 0; j < data[i].length; ++j) {
-                
-                long pixIdx = ph.toPixelIndex(i, j, w);
-            
-                DisjointSet2Node<Long> pNode = disjointSetHelper.makeSet(new DisjointSet2Node<Long>(Long.valueOf(pixIdx)));
-
-                pixNodes.put(pixIdx, pNode);
-            }
-        }
-    }
 }

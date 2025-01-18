@@ -31,29 +31,28 @@ public class ConnectedValuesGroupFinderTest extends TestCase {
         List<TLongSet> expected = new ArrayList<TLongSet>();
         TLongSet a = new TLongHashSet();
         for (int i = 0; i < h; ++i) {
-            a.add(ph.toPixelIndex(0, i, w));
-            a.add(ph.toPixelIndex(4, i, w));
-            a.add(ph.toPixelIndex(i, 0, w));
-            a.add(ph.toPixelIndex(i, 4, w));
+            a.add((0*w) + i);
+            a.add((4*w) + i);
+            a.add((i*w) + 0);
+            a.add((i*w) + 4);
         }
         expected.add(a);
-        assertEquals(16, a.size());
         a = new TLongHashSet();//1
-        a.add(ph.toPixelIndex(1, 1, w));
-        a.add(ph.toPixelIndex(1, 2, w));
-        a.add(ph.toPixelIndex(2, 1, w));
+        a.add((1*w) + 1);
+        a.add((1*w) + 2);
+        a.add((2*w) + 1);
         expected.add(a);
         a = new TLongHashSet();//2
-        a.add(ph.toPixelIndex(2, 2, w));
-        a.add(ph.toPixelIndex(3, 1, w));
+        a.add((2*w) + 2);
+        a.add((3*w) + 1);
         expected.add(a);
         a = new TLongHashSet();//3
-        a.add(ph.toPixelIndex(1, 3, w));
-        a.add(ph.toPixelIndex(2, 3, w));
-        a.add(ph.toPixelIndex(3, 2, w));
+        a.add((1*w) + 3);
+        a.add((2*w) + 3);
+        a.add((3*w) + 2);
         expected.add(a);
         
-        int[][] data = new int[w][];
+        int[][] data = new int[h][];
         data[0] = new int[]{0, 0, 0, 0, 0};
         data[1] = new int[]{0, 1, 1, 3, 0};
         data[2] = new int[]{0, 1, 2, 3, 0};
@@ -90,25 +89,24 @@ public class ConnectedValuesGroupFinderTest extends TestCase {
             expected.remove(e);
         }
         
-        //-------
+        //--------------------- test 2
         expected = new ArrayList<TLongSet>();
         a = new TLongHashSet();
         for (int i = 0; i < h; ++i) {
-            a.add(ph.toPixelIndex(0, i, w));
-            a.add(ph.toPixelIndex(4, i, w));
-            a.add(ph.toPixelIndex(i, 0, w));
-            a.add(ph.toPixelIndex(i, 4, w));
+            a.add((0*w) + i);
+            a.add((4*w) + i);
+            a.add((i*w) + 0);
+            a.add((i*w) + 4);
         }
         expected.add(a);
-        assertEquals(16, a.size());
         a = new TLongHashSet();//1
-        a.add(ph.toPixelIndex(1, 1, w));
-        a.add(ph.toPixelIndex(1, 2, w));
-        a.add(ph.toPixelIndex(2, 1, w));
+        a.add((1*w) + 1);
+        a.add((1*w) + 2);
+        a.add((2*w) + 1);
         expected.add(a);
         a = new TLongHashSet();//3
-        a.add(ph.toPixelIndex(1, 3, w));
-        a.add(ph.toPixelIndex(2, 3, w));
+        a.add((1*w) + 3);
+        a.add((2*w) + 3);
         expected.add(a);
         /*
         data[0] = new int[]{0, 0, 0, 0, 0};
@@ -152,13 +150,13 @@ public class ConnectedValuesGroupFinderTest extends TestCase {
          //-------
         expected = new ArrayList<TLongSet>();
         a = new TLongHashSet();//1
-        a.add(ph.toPixelIndex(1, 1, w));
-        a.add(ph.toPixelIndex(1, 2, w));
-        a.add(ph.toPixelIndex(2, 1, w));
+        a.add((1*w) + 1);
+        a.add((1*w) + 2);
+        a.add((2*w) + 1);
         expected.add(a);
         a = new TLongHashSet();//3
-        a.add(ph.toPixelIndex(1, 3, w));
-        a.add(ph.toPixelIndex(2, 3, w));
+        a.add((1*w) + 3);
+        a.add((2*w) + 3);
         expected.add(a);
         /*
         data[0] = new int[]{0, 0, 0, 0, 0};
