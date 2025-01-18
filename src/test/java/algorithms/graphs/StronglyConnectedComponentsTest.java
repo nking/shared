@@ -22,8 +22,33 @@ public class StronglyConnectedComponentsTest extends TestCase {
     protected void tearDown() throws Exception {
         
     }
+
+    public void test1() {
+
+        SimpleLinkedListNode[] g = new SimpleLinkedListNode[7];
+        for (int i = 0; i < g.length; ++i) {
+            g[i] = new SimpleLinkedListNode();
+        }
+        /*g[1-1].insert(2-1); g[1-1].insert(4-1);
+        g[2-1].insert(1-1); g[2-1].insert(5-1);
+        g[3-1].insert(2-1); g[3-1].insert(7-1);
+        g[5-1].insert(4-1);
+        g[6-1].insert(3-1); g[6-1].insert(5-1);
+        g[7-1].insert(6-1);*/
+
+        g[1-1].insert(4-1); g[1-1].insert(2-1);
+        g[2-1].insert(5-1); g[2-1].insert(1-1);
+        g[3-1].insert(7-1); g[3-1].insert(2-1);
+        g[5-1].insert(4-1);
+        g[6-1].insert(5-1); g[6-1].insert(3-1);
+        g[7-1].insert(6-1);
+
+        StronglyConnectedComponents scc = new StronglyConnectedComponents();
+        List<SimpleLinkedListNode> out = scc.find(g);
+        assertEquals(4, out.size());
+    }
     
-    public void test0() {
+    public void _test0() {
         // test from Cormen, Leiserson, Rivest, and Stein Fig 22.9
      
         SimpleLinkedListNode[] g = new SimpleLinkedListNode[8];

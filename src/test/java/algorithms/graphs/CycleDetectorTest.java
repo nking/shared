@@ -9,7 +9,8 @@ public class CycleDetectorTest extends TestCase {
     public void test0() {
         Map<Integer, Map<Integer, Integer>> graph = new HashMap<>();
         /*
-        a->b ->c -> d->b
+        0->1, 1->2, 2->3, 3->2
+                    2->4
          */
         graph.putIfAbsent(0, new HashMap<>());
         graph.get(0).put(1, 1);

@@ -154,7 +154,6 @@ public class StronglyConnectedComponents {
         
         // If v is a root node, pop the stack and generate an SCC
         if (lowLink[u] == td[u] && inSCC[u] == 0) {
-            // found a bridge (no descendants of u who are also descendants of ancestor of u)
             log.log(logLevel, "    START scc " + u);
             SimpleLinkedListNode sccNode = new SimpleLinkedListNode();
             scc.add(sccNode);

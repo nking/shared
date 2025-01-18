@@ -1,12 +1,12 @@
 package algorithms.disjointSets;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * a version of Tarjan's Disjoint Forest, union find for a fixed number of vertices
  */
 public class UnionFind {
+
     protected final int[] parent;
     protected final int[] rank;
     // nComponents will be wrong once an i or j in union have been merged more than once
@@ -48,4 +48,18 @@ public class UnionFind {
         --nComponents;
         return true;
     }
+
+    public int[] getParent() {
+        return parent;
+    }
+
+    public Map<Integer, Set<Integer>> getComponents() {
+        Map<Integer, Set<Integer>> map = new HashMap();
+        for (int i = 0; i < parent.length; ++i) {
+            map.putIfAbsent(parent[i], new HashSet<>());
+            map.get(parent[i]).add(i);
+        }
+        return map;
+    }
+
 }

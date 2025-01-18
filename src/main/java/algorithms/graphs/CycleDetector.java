@@ -22,7 +22,7 @@ public class CycleDetector {
         cycle[u] = 1;
         if (graph.containsKey(u)) {
             for (int v : graph.get(u)) {
-                if (cycle[v] != 0) {
+                if (cycle[v] == 1) {
                     return true;
                 }
                 if (visited[v] != 0) continue;
@@ -31,6 +31,7 @@ public class CycleDetector {
                 }
             }
         }
+        cycle[u] = 2;
         return false;
     }
 
