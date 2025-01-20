@@ -56,8 +56,9 @@ public class UnionFind {
     public Map<Integer, Set<Integer>> getComponents() {
         Map<Integer, Set<Integer>> map = new HashMap();
         for (int i = 0; i < parent.length; ++i) {
-            map.putIfAbsent(parent[i], new HashSet<>());
-            map.get(parent[i]).add(i);
+            int p = find(parent[i]);
+            map.putIfAbsent(p, new HashSet<>());
+            map.get(p).add(i);
         }
         return map;
     }
