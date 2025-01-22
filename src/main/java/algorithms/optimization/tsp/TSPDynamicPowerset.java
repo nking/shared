@@ -3,19 +3,22 @@ package algorithms.optimization.tsp;
 import java.util.Arrays;
 
 /**
- * Given a list of distances between pairs of cities, the travelling salesperson problem finds the shortest
+ * Given a matrix of distances between pairs of cities, the travelling salesperson problem finds the shortest
  * path that visits each city exactly once.
  * The path is a Hamiltonian cycle of minimum weight.
  * This class uses a dynamic programming approach
- * of a bitstring to hold the 2^n possible states of visiting cities while re-using
- * smaller solutions for bigger ones.
+ * of a bitstring representing the 2^n possible states
+ * of visiting cities which allows decomposition of the problem into
+ * adding 1 bit of state to an existing smaller state solution that doesn't
+ * yet include the bit to add.
  */
 public class TSPDynamicPowerset {
 
     /**
      * find the minimum sum Hamiltonian cycle for the nodes given by the dist matrix.
      * Note that node 0 has been arbitrarily adopted as the start vertex, but the
-     * code could easily be adapted for another src node.
+     * code could easily be adapted for another src node or allowed to find
+     * any start node.
      * r.t.c. O((n^2)*(2^n)).  s.c. is O(n*(2^n)).
      * @param dist
      * @return an array of the minimum cycle nodes in path order.
@@ -71,7 +74,7 @@ public class TSPDynamicPowerset {
             tab[1<<i][i] = 0;
             tabPath[1<<i][i] = Integer.toString(i);
         }*/
-        // init for starting at i=0
+        // init for starting the cycle at node i=0
         tab[1<<0][0] = 0;
         tabPath[1<<0][0] = Integer.toString(0);
 
