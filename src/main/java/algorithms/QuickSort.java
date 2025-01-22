@@ -41,7 +41,52 @@ public class QuickSort {
         
         descendingSort(a, b, 0, a.length - 1);
     }
-    
+
+    /**
+     * partition array 'a' elements in range [lo, hi] inclusive
+     * around the pivot value key=a[pivotIdx]
+     * inclusive such that
+     * all elements in range [lo, hi] that have values LT key
+     * are at indexes lower than the re-positioned pivot key and all elements
+     * in range [lo, hi] with values GT key are at indexes > the re-positioned
+     * pivot key.
+     * This partition function when using pivotIdx=hi is the same as
+     * the parition function without specifying the pivot index.
+     * This method can be used in the quickselect algorithm.
+     * @param a
+     * @param lo
+     * @param hi
+     * @param pivotIdx
+     * @return the index of the re-located pivotIdx.  note that the index is w.r.t. to 0.
+     */
+    public static int partition(int[] a, int lo, int hi, int pivotIdx) {
+        if (pivotIdx != hi) { // move pivot to end
+            a[pivotIdx] ^= a[hi];
+            a[hi] ^= a[pivotIdx];
+            a[pivotIdx] ^= a[hi];
+        }
+        // the rest is the same as the quicksort partition
+        int x = a[hi];
+        int i = lo;
+        for (int k = lo; k < hi; ++k) {
+            if (a[k] < x) {
+                if (i != k) {
+                    a[i] ^= a[k];
+                    a[k] ^= a[i];
+                    a[i] ^= a[k];
+                }
+                ++i;
+            }
+        }
+        if (i != hi) {
+            a[i] ^= a[hi];
+            a[hi] ^= a[i];
+            a[i] ^= a[hi];
+        }
+        return i;
+    }
+
+
     /**
      *
      @param <T>

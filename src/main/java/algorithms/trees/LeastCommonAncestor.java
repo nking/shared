@@ -2,6 +2,7 @@ package algorithms.trees;
 
 import algorithms.graphs.HierholzersEulerCircuit;
 
+import javax.print.attribute.standard.MediaSize;
 import java.util.*;
 
 /**
@@ -307,6 +308,136 @@ public class LeastCommonAncestor {
             adjMap.get(v).add(u);
         }
         return adjMap;
+    }
+
+    /**
+     * find the distance between 2 nodes in a tree where root is the tree, and node1Val and
+     * node2Val are the nodes in the tree to find.
+     * r.t.c. is O(n) because the tree is not necessarily a binary search tree.
+     <pre>
+     method is adapted from Chapter 18 of Competitive Programming Handbook by Antti Laaksonen, Chap 18.
+     </pre>
+     * @param root
+     * @param node1Val
+     * @param node2Val
+     * @return the distance between the first nodes found in root tree with values node1Val and
+     * node2Val.  Note that if either node1Val or node2VAl are not found, the return is Long.MAX_VALUE.
+     */
+    protected static long distBetweenNodes(NAryTreeNode root, int node1Val, int node2Val) {
+        /*
+        find the nodes in the tree and store the depths of nodes along the way.
+        when both are found, ascend the tree for the node deeper than the other until
+        both nodes are same depth.
+        then while nodes are not the same node, ascend to find common parent.
+        the total dist = depth(node1) + depth(node2) - 2*depth(lca)
+         */
+        Map<NAryTreeNode, Integer> depthMap = new HashMap<>();
+        NAryTreeNode node1 = null;
+        NAryTreeNode node2 = null;
+
+        // use level order traversal until find both
+        Queue<NAryTreeNode> q = new ArrayDeque<>();
+        q.offer(root);
+        depthMap.put(root, 1);
+        if (root.getData() == node1Val) {
+            node1 = root;
+        }
+        if (root.getData() == node2Val) {
+            node2 = root;
+        }
+        while (!q.isEmpty() && (node1 == null || node2 == null)) {
+            root = q.poll();
+            int level = depthMap.get(root);
+            for (NAryTreeNode ch : root.getChildren()) {
+                depthMap.put(ch, level + 1);
+                if (ch.getData() == node1Val) {
+                    node1 = ch;
+                }
+                if (ch.getData() == node2Val) {
+                    node2 = ch;
+                }
+                if (node1 != null && node2 != null) break;
+                q.add(ch);
+            }
+        }
+        if (node1 == null || node2 == null) {
+            return Long.MAX_VALUE;
+        }
+        int d1 = depthMap.get(node1);
+        int d2 = depthMap.get(node2);
+
+        while (node1 != null && depthMap.get(node1) > depthMap.get(node2)) {
+            node1 = node1.getParent();
+        }
+        while (node1 != null && node2 != null && depthMap.get(node2) > depthMap.get(node1)) {
+            node2 = node2.getParent();
+        }
+        while (node1 != null && node2 != null && !node1.equals(node2)) {
+            node1 = node1.getParent();
+            node2 = node2.getParent();
+        }
+        int dLCA = depthMap.get(node1);
+
+        return d1 + d2 - 2*dLCA;
+    }
+
+    /**
+     * given tree 'root', find the distance between node1 and node2 in the tree.
+     * @param root
+     * @param node1
+     * @param node2
+     * @return the distance (number of edges) between node1 and node2.  If either node
+     * is not found in the tree, Long.MAX_VALUE is returned.
+     */
+    protected static long distBetweenNodes(NAryTreeNode root, NAryTreeNode node1, NAryTreeNode node2) {
+         /*
+        find the nodes in the tree and store the depths of nodes along the way.
+        when both are found, ascend the tree for the node deeper than the other until
+        both nodes are same depth.
+        then while nodes are not the same node, ascend to find common parent.
+        the total dist = depth(node1) + depth(node2) - 2*depth(lca)
+         */
+        Map<NAryTreeNode, Integer> depthMap = new HashMap<>();
+
+        // use level order traversal until find both
+        Queue<NAryTreeNode> q = new ArrayDeque<>();
+        q.offer(root);
+        depthMap.put(root, 1);
+        if (root.equals(node1)) {
+            node1 = root;
+        }
+        if (root.equals(node2)) {
+            node2 = root;
+        }
+        while (!q.isEmpty() && !depthMap.containsKey(node1) || !depthMap.containsKey(node2)) {
+            root = q.poll();
+            int level = depthMap.get(root);
+            for (NAryTreeNode ch : root.getChildren()) {
+                depthMap.put(ch, level + 1);
+                if (depthMap.containsKey(node1) && depthMap.containsKey(node2)) break;
+                q.add(ch);
+            }
+        }
+        if (!depthMap.containsKey(node1) || !depthMap.containsKey(node2)) {
+            return Long.MAX_VALUE;
+        }
+
+        int d1 = depthMap.get(node1);
+        int d2 = depthMap.get(node2);
+        //
+        while (node1 != null && depthMap.get(node1) > depthMap.get(node2)) {
+            node1 = node1.getParent();
+        }
+        while (node1 != null && node2 != null && depthMap.get(node2) > depthMap.get(node1)) {
+            node2 = node2.getParent();
+        }
+        while (node1 != null && node2 != null && !node1.equals(node2)) {
+            node1 = node1.getParent();
+            node2 = node2.getParent();
+        }
+        int dLCA = depthMap.get(node1);
+
+        return d1 + d2 - 2*dLCA;
     }
 
 }

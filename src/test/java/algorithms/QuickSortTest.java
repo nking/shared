@@ -739,5 +739,27 @@ public class QuickSortTest extends TestCase {
         assertEquals("7", (b.get(0)));
         assertEquals(7, c.get(0).intValue());
     }
-    
+
+    public void testPivot() {
+        //                         *  P               *
+        //                   0  1  2  3  4  5  6  7   8
+        int[] a = new int[] {7, 2, 4, 7, 8,21, 3, 4,  5};
+        //                   7, 2, 4, 5, 3, 4, 7, 21, 8
+
+        int pivotIdx = 3;
+        int lo = 2;
+        int hi = 8;
+        int pivotKey = a[pivotIdx];
+        int pivotIdx2 = QuickSort.partition(a, lo, hi, pivotIdx);
+
+        for (int i = lo; i <= hi; ++i) {
+            if (i < pivotIdx2) {
+                assertTrue(a[i] < pivotKey);
+            } else if (i > pivotIdx2) {
+                assertTrue(a[i] > pivotKey);
+            }
+        }
+        //System.out.printf("a=%s\n", Arrays.toString(a));
+
+    }
 }
