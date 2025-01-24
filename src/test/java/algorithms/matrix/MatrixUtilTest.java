@@ -2091,4 +2091,39 @@ public class MatrixUtilTest extends TestCase {
         assertTrue(Math.abs(eig[0] - 3) < 1E-7);
         assertTrue(Math.abs(eig[1] - -2) < 1E-7);
     }
+
+    public void testPowerOf() throws Exception {
+        double[][] a = new double[][]{
+                {12,3,5,87},
+                {23, 9,5,54},
+                {43,64,23,765},
+                {22,76,1,65}
+        };
+        int power = 4;
+        double[][] expected = MatrixUtil.createIdentityMatrix(a.length);
+        for (int i = 0; i < power; ++i) {
+            expected = MatrixUtil.multiply(expected, a);
+        }
+        double tol = 1E-5;
+        //np.matmul(np.matmul(eigenvectors, np.diag(dp)), np.linalg.inv(eigenvectors))
+
+        double[][] ans = MatrixUtil.powerOf(a, power);
+
+        for (int i = 0; i < a.length; ++i) {
+            for (int j = 0; j < a[0].length; ++j) {
+                assertTrue(Math.abs(expected[i][j] - ans[i][j]) < tol);
+            }
+        }
+
+        // need to replace MTJ with a library that uses comple numbers to imporve the accuracy:
+        ans = MatrixUtil.powerOfUsingEig(a, power);
+        /*for (int i = 0; i < a.length; ++i) {
+            for (int j = 0; j < a[0].length; ++j) {
+                double diff = Math.abs(expected[i][j] - ans[i][j]);
+                System.out.printf("diff=%e, fraction of expected=%e\n", diff, (diff/expected[i][j]));
+                //assertTrue(diff < tol);
+            }
+        }*/
+
+    }
 }

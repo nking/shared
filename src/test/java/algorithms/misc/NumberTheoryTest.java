@@ -234,4 +234,9 @@ public class NumberTheoryTest extends TestCase {
         
         assertEquals(36, NumberTheory.leastCommonMultiple(12, 18));
     }
+
+    public void testGeneratePythagoreanTriples() {
+        long[] ans = NumberTheory.generatePythagoreanTriples(1, 2);
+        assertTrue(Arrays.equals(new long[]{3,4,5}, ans));
+    }
 }

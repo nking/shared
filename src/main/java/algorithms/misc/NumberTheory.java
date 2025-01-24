@@ -18,6 +18,7 @@ public class NumberTheory {
      * return the greatest common denominator of the 2 integers.
      *
      * runtime complexity is less than the number of base10 digits in a.
+     * r.t.c. O(nlogn)
      * 
      @param a
      @param b
@@ -36,7 +37,7 @@ public class NumberTheory {
     /**
      * return the greatest common denominator of the 2 integers.
      *
-     * runtime complexity is (?)
+     * runtime complexity is O(nlogn)
      * 
      @param a
      @param b
@@ -227,5 +228,27 @@ public class NumberTheory {
         long gcd = euclid(a, b);
         
         return m/gcd;
+    }
+
+    /**
+     * gererate a Pythagorean triple of numbers, that is a, b and c where
+     * (a*a) + (b*b) = (c*c) using Euclid's formula.
+     * @param m
+     * @param n
+     * @return
+     */
+    public static long[] generatePythagoreanTriples(int n, int m) {
+        if (m <= 0 || n <= 0 || m < n) {
+            throw new IllegalArgumentException("m, n must be > 0, and m > n.");
+        }
+        return generatePythagoreanTriples(n, m, 1);
+    }
+    public static long[] generatePythagoreanTriples(int n, int m, int k) {
+        if (m <= 0 || n <= 0 || m < n || k<=0) {
+            throw new IllegalArgumentException("m, n, k must be > 0, and m > n.");
+        }
+        long m2 = m*m;
+        long n2 = n*n;
+        return new long[]{k * (m2 - n2), k * (2 * m * n), k * (m2 + n2)};
     }
 }

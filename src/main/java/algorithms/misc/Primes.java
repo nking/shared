@@ -13,6 +13,10 @@ import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
+ * a prime number is an integer that con only be divided by 1 and itself.
+ *
+ * 2 numbers are co-prime to one another if the only positive integer that
+ * divides both of them is 1, that is, a and b are co-prime if gcd(a,b)=1.
  *
  * @author nichole
  */
@@ -22,6 +26,9 @@ public class Primes {
      * find the prime factors of the integer factorization of n using
      * the Pollard-Rho algorithm and repeating on factors until they're
      * prime.
+     *
+     * r.t.c. O(sqrt(s(n))) where s(n) is the smallest prime factor of
+     * the composite number n.
      * 
      @param n
      @return
@@ -33,6 +40,28 @@ public class Primes {
         ThreadLocalRandom rand = ThreadLocalRandom.current();
         
         return findPrimeFactors(n, rand);
+    }
+
+    /**
+     * a brute force find of prime factors of n.
+     * r.t.c. is O(sqrt(n)).
+     @param n
+     @return
+      * @throws NoSuchAlgorithmException
+     */
+    public static TLongList findPrimeFactorsExact(long n) {
+
+        TLongList list = new TLongArrayList();
+        for (long i = 2; i <= (long)Math.sqrt(n); ++i) {
+            if ((n % i) == 0) {
+                list.add(i);
+                n /= i;
+            }
+        }
+        if (n > 1) {
+            list.add(n);
+        }
+        return list;
     }
     
     /**
@@ -275,14 +304,22 @@ public class Primes {
         return true;
     }
 
+    public static boolean isPrime(final long n) {
+        if (n < 2) return false;
+        for (long i = 2; i <= (long)Math.sqrt(n); ++i) {
+            if ((n % i) == 0) return false;
+        }
+        return true;
+    }
+
     /*** implements algorithm from Chap 31 of Cormen, Leiserson, Rivest, and Stein Introduction to Algorithms.
      * tests whether number n is composite (hence not prime) using the
      * number a or possibly prime.
-     * witness is a more effective extension of the test 
+     * witness is a more effective extension of the test
      * <pre>
      * a^(n-1) ≢ 1 (mod n)
      * </pre>
-     @param a number in the range [1, n-1] inclusive, that is a random number 
+     @param a number in the range [1, n-1] inclusive, that is a random number
      * which may prove that n is a composite number, and hence not prime
      @param n the number being tested for primality.  must be odd and .gt. 2.
      @param rand
@@ -459,6 +496,7 @@ public class Primes {
     /**
      * return a bit vector with set bits for the primes between 2 and n.
      * The "Sieve of Eratosthenes" is used.
+     * r.t.c. O(nloglogn)
      * <pre>
      *     reference:  https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes
      * </pre>
@@ -483,10 +521,10 @@ public class Primes {
         for (int i = 2; i < sqrtN; ++i) {
             if (b.isSet(i)) {
                 //for (j = i*i; j < n && j <= (Integer.MAX_VALUE - i); j+=i) {
-                for (j = i*i; j < n; j+=i) {
+                for (j = 2*i; j <= n; j+=i) {
                     // remove all multiples of i
                     b.clearBit(j);
-		    if ((j + i) < j) break; // overflow
+		            if ((j + i) < j) break; // overflow
                 }
             }
         }

@@ -204,11 +204,11 @@ public class PrimesTest extends TestCase {
         for (int n : ns) {
             primes = Primes.allPrimesLessThanN(n);
             double p6 = primes.length*0.06;
-            System.out.println("# primes=" + primes.length);
-            System.out.printf("primes=%s\n", Arrays.toString(primes));
+            //System.out.println("# primes=" + primes.length);
+            //System.out.printf("primes=%s\n", Arrays.toString(primes));
             int nEst6Percent = Primes.numberOfPrimes(n);
             int diff = Math.abs(primes.length - nEst6Percent);
-            System.out.printf("nEst=%d, nP=%d, diff=%d, p6=%.4f\n", nEst6Percent, primes.length, diff, p6);
+            //System.out.printf("nEst=%d, nP=%d, diff=%d, p6=%.4f\n", nEst6Percent, primes.length, diff, p6);
             assertTrue(Arrays.equals(expPrimes, primes));
         }
 
@@ -217,14 +217,27 @@ public class PrimesTest extends TestCase {
 
             primes = Primes.allPrimesLessThanN(n);
             double p7 = primes.length*0.07;
-            System.out.println("# primes=" + primes.length);
+            //System.out.println("# primes=" + primes.length);
             int nEst6Percent = Primes.numberOfPrimes(n);
             int diff = Math.abs(primes.length - nEst6Percent);
-            System.out.printf("n=%d, nPrimesEst=%d, nP=%d, diff=%d, p7=%.4f\n", n, nEst6Percent, primes.length, diff, p7);
+            //System.out.printf("n=%d, nPrimesEst=%d, nP=%d, diff=%d, p7=%.4f\n", n, nEst6Percent, primes.length, diff, p7);
             assertTrue(diff <= p7);
         }
 
+        expPrimes = new int[]{2,3,5,7,11,13, 17, 19};
+        ns = new int[]{20};//1<<30};
+        for (int n : ns) {
+
+            primes = Primes.allPrimesLessThanN(n);
+            double p7 = primes.length*0.07;
+            //System.out.println("# primes=" + primes.length);
+            int nEst6Percent = Primes.numberOfPrimes(n);
+            int diff = Math.abs(primes.length - nEst6Percent);
+            //System.out.printf("n=%d, nPrimesEst=%d, nP=%d, diff=%d, p7=%.4f\n", n, nEst6Percent, primes.length, diff, p7);
+            assertTrue(Arrays.equals(expPrimes, primes));
+        }
 
 
     }
+
 }

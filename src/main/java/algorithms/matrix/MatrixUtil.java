@@ -7,10 +7,10 @@ import algorithms.misc.MiscMath0;
 import algorithms.util.FormatArray;
 import algorithms.util.PairInt;
 import gnu.trove.list.array.TDoubleArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Random;
+
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 
 import gnu.trove.set.TDoubleSet;
 import gnu.trove.set.hash.TDoubleHashSet;
@@ -3910,7 +3910,7 @@ public class MatrixUtil {
     }
 
     /**
-     * TODO: write a version for sparse graphs.
+     *
      * determine the largest eigenvalue using the power method.  note that
      * matrix A must be diagonalize-able, that is, a positive definite matrix.
      * for best results, perform standard normalization on matrix A first
@@ -3930,6 +3930,7 @@ public class MatrixUtil {
      * how close the largest and second largest eigenvalues are and that ratio
      * tends to be near "1" for large matrices and in that case, the power
      * method isn't the right method (consider QR or SVD).
+     * TODO: write a version for sparse graphs.
      * TODO:consider implementing the inverse power method also to determine the
      * smallest eigenvalue and its eigenvector
      @param a a positive definite matrix.  if you have a transition matrix of normalized columns,
@@ -4120,78 +4121,124 @@ public class MatrixUtil {
      * A^power = S * (Delta^power) * S^-1
      * where S holds eigenvectors in its columns.  Delta is a diagonal matrix
      * holding the eigenvalues.
+     * The r.t.c. is O(n^3), but the accuracy is not as good as the powerOf() method.
+     * Note that using the eigenvalues and eignevectors to calc the power matrix in this algorithm
+     * is accurate when using python3 numpy with similar steps.  Numpy linear algebra uses
+     * complex numbers for the calculations.  Here in java, the MTJ MatrixToolkit is using real
+     * numbers instead of complex numbers.
+     * TODO: find a light weight effiicent high accuracy linear algebra library that uses complex
+     * numbers and refactor for using it.
+     <emp>NOTE: prefer to use powerOf(...) instead while this comment is here.</emp>
      @param a a square matrix
      @param power integer power to apply to matrix a
      @return  (matrix A)^power
-     * @throws no.uib.cipr.matrix.NotConvergedException
+     @throws no.uib.cipr.matrix.NotConvergedException
      */
-    public double[][] powerOf(double[][] a, int power) throws NotConvergedException {
+    public static double[][] powerOfUsingEig(double[][] a, int power) throws NotConvergedException {
+
         if (!isSquare(a)) {
             throw new IllegalArgumentException("matrix a must be square");
         }
         double eps = 1E-15;
-        MatrixUtil.SVDProducts svd = MatrixUtil.performSVD(a);
 
-        int rank = rank(svd);
+        EVD evd = EVD.factorize(new DenseMatrix(a));
+        if (!evd.hasRightEigenvectors()) {
+            throw new IllegalArgumentException("cannot calc eigenvectors of a");
+        }
+        DenseMatrix _eigVecs = evd.getRightEigenvectors();
+        double[][] eigVecs = MatrixUtil.convertToRowMajor(_eigVecs);
+        if (eigVecs.length < a.length) {
+            throw new IllegalArgumentException("cannot calc eigenvectors of a");
+        }
+        double[] d = Arrays.copyOf(evd.getRealEigenvalues(), evd.getRealEigenvalues().length);
+        assert(d.length == eigVecs.length);
 
-        if (rank < svd.u.length) {
-            // this case has eigenvalues that are 0.
-            //  det(A - lambda*I) = 0, so is not diagonalizable.
-            throw new IllegalStateException("there are eigenvalues with value 0, so matrix a is not diagonalizable");
+        int nEigs = Arrays.stream(d).boxed().collect(Collectors.toSet()).size();
+
+        if (nEigs < d.length) {
+            // can only diagonalize if eigenvector matrix is full rank. test with det != 0
+            double det = MatrixUtil.determinant(eigVecs);
+            if (Math.abs(det) < 1E-11) {
+                throw new IllegalArgumentException("cannot calc eigenvectors of a");
+            }
         }
 
-        double[] d = new double[a.length];
-        for (int i = 0; i < a.length; ++i) {
-            d[i] = Math.pow(svd.s[i], power);
+        for (int i = 0; i < d.length; ++i) {
+            d[i] = Math.pow(d[i], power);
         }
 
-        double[][] s = svd.u;
+        double[][] aPSD = MatrixUtil.multiplyByDiagonal(eigVecs, d);
+        double[][] eigVecsInv = MatrixUtil.inverse(eigVecs);
 
-        double[][] sInv;
+        aPSD = MatrixUtil.multiply(aPSD, eigVecsInv);
+
+        /*
+        double[][] _inv;
         // check that the eigenvectors are independent.
         // using left divide notation:
         //  x = A\B solves the system of linear equations A*x = B for x.
         //  X = A\B in MTJ is X = A.solve(B, X), that is, inputs are A and B.
         //  S*S^-1 = I
         //  S.solve(I, sInv) to get sInv using MTJ:
-        DenseMatrix _sInv = new DenseMatrix(s.length, s.length);
-        _sInv = (DenseMatrix) new DenseMatrix(s).solve(
-             new DenseMatrix(MatrixUtil.createIdentityMatrix(s.length)),
-             _sInv);
-        sInv = MatrixUtil.convertToRowMajor(_sInv);
-
-        /*
-            // check this condition... S not invertible so check math in A = S^-1 * Delta * S
-            //                         where S^-1 is pseudoinverse
-            //sInv = svd(s).V * pseudoinverse(svd(s).s) * svd(s).U^T
-            sInv = MatrixUtil.pseudoinverseRankDeficient(s, false);
-            double[][] chk = MatrixUtil.multiply(s, sInv);
-            System.out.printf("check S*S^-1 ~ I:\n%s\n", FormatArray.toString(chk, "%.5e"));
+        DenseMatrix _sInv = new DenseMatrix(eigVecs.length, eigVecs[0].length);
+        _sInv = (DenseMatrix) new DenseMatrix(eigVecs).solve(
+                new DenseMatrix(MatrixUtil.createIdentityMatrix(eigVecs.length)),
+                _sInv);
+        _inv = MatrixUtil.convertToRowMajor(_sInv);
+        double[][] _aPSD = MatrixUtil.multiplyByDiagonal(eigVecs, d);
+        _aPSD = MatrixUtil.multiply(_aPSD, _inv);
         */
-
-        // A = S^-1 * delta^power * S
-        double[][] aP = MatrixUtil.multiply(MatrixUtil.multiplyByDiagonal(s, d), sInv);
-
-        return aP;
+        return aPSD;
     }
 
     /**
-     * calculate the square root of symmetric positive definite matrix A using SVD.
+     * this method is not as fast as powerOfUsingEig(), but is useful for a look at power of 2 steps
+     * in multiplication.
+     * A brute force multiplication of matrix 'a' to the power 'power' has a r.t.c. of
+     * O(n^3) * the 'power' where n is the number of rows, which is also the number of columns in
+     * matrix 'a'.
+     * The r.t.c. of powerOfUsingEig() method is O(n^3), but the matrix has to be decomposable
+     * into a form E * D * E^-1 where E are eigenvectors and D is a diagonal of eigenvalues.
+     * The r.t.c. of this method powerOf(...) is O(n^3 * log(power)).
      *
-     * <pre>
-     *    [U, S, V] = svd(A)
-     *    J = V * S^(1/2) * V^T is a symmetric n×n matrix, such that square root of A = JJ.
-     *    J is non-negative definite.
-     * </pre>
-     * from Allan Jepson's lecture on Gilbert Strang's SVD in machine learning
-     * http://www.cs.toronto.edu/~jepson/csc420/notes/introSVD.pdf
-     * Also see Chap 7.4 of "Introduction to LinearAlgebra" by Strang, the section
-     * on Polar Decomposition.
-     @param a a square symmetric positive definite matrix.  If the matrix is not
-     *          positive definite matrix, use nearestPositiveSemidefiniteToA() first.
-     @return 
-     * @throws no.uib.cipr.matrix.NotConvergedException thrown by MTJ when SVD could not converge
+     * @param a
+     * @param power
+     * @return
+     * @throws NotConvergedException
      */
+    public static double[][] powerOf(double[][] a, int power) throws NotConvergedException {
+        if (!isSquare(a)) {
+            throw new IllegalArgumentException("a must be a square matrix");
+        }
+        double[][] result = createIdentityMatrix(a.length);
+        double[][] curr = MatrixUtil.copy(a);
+        while (power > 0) {
+            if ((power & 1) != 0) {
+                result = MatrixUtil.multiply(result, curr);
+            }
+            curr = MatrixUtil.multiply(curr, curr);
+            power >>= 1;
+        }
+        return result;
+    }
+
+        /**
+         * calculate the square root of symmetric positive definite matrix A using SVD.
+         *
+         * <pre>
+         *    [U, S, V] = svd(A)
+         *    J = V * S^(1/2) * V^T is a symmetric n×n matrix, such that square root of A = JJ.
+         *    J is non-negative definite.
+         * </pre>
+         * from Allan Jepson's lecture on Gilbert Strang's SVD in machine learning
+         * http://www.cs.toronto.edu/~jepson/csc420/notes/introSVD.pdf
+         * Also see Chap 7.4 of "Introduction to LinearAlgebra" by Strang, the section
+         * on Polar Decomposition.
+         @param a a square symmetric positive definite matrix.  If the matrix is not
+         *          positive definite matrix, use nearestPositiveSemidefiniteToA() first.
+         @return
+         * @throws no.uib.cipr.matrix.NotConvergedException thrown by MTJ when SVD could not converge
+         */
     public static double[][] squareRoot(double[][] a) throws NotConvergedException {
 
         if (!MatrixUtil.isPositiveDefinite(a)) {
