@@ -40,7 +40,7 @@ public class MosAlgorithmTest extends TestCase {
                 i1 = i0 + rand.nextInt(n - i0);
                 qs[j] = new int[]{i0, i1};
             }
-            long[] sums = MosAlgorthm.querySums(a, qs);
+            long[] sums = MosAlgorithm.querySums(a, qs);
             for (int j = 0; j < nQ; ++j) {
                 assertEquals(prefixA[qs[j][1] + 1] - prefixA[qs[j][0]], sums[j]);
             }
@@ -90,7 +90,7 @@ public class MosAlgorithmTest extends TestCase {
                 qs[j] = new int[]{i0, i1};
             }
 
-            List<Map<Integer, Integer>> frequencies = MosAlgorthm.queryFrequencies(a, qs);
+            List<Map<Integer, Integer>> frequencies = MosAlgorithm.queryFrequencies(a, qs);
 
             for (int j = 0; j < nQ; ++j) {
                 // brute force check

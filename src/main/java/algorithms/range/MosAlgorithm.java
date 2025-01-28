@@ -6,7 +6,7 @@ import java.util.*;
  * an algorithm used to process many queries of a static array (no modifications).
  *
  */
-public class MosAlgorthm {
+public class MosAlgorithm {
 
     /**
      * calculates the sum of all range queries of array 'a'.
