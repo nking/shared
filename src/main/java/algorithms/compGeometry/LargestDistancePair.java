@@ -18,6 +18,10 @@ import java.util.Set;
 /**
  * finds the pair of points most distant from one another a.k.a. the
  * furthest pair problem.
+ *
+ * Note that there is a maximum manhattan distance between pairs in Distance.maxManhattan(points)
+ * that is O(n*8) ~ O(n) for dimensions = 2.
+ *
  * one can imagine a rough estimate by fitting an ellipse around the given points
  * and determining the major axis of the points.
  * even more precisely, one can fit a convex hull around the points and
