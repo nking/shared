@@ -30,7 +30,7 @@ public class SegmentTreeFreq {
      */
     public SegmentTreeFreq(int[] a) {
         this.n = a.length;
-        this.tree = new Node[n];
+        this.tree = new Node[2*n];
         build(a, 1, 0, n-1);
     }
 
