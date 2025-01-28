@@ -533,4 +533,49 @@ public class LinesAndAnglesTest extends TestCase {
         assertEquals(-3, ep[3]);
         
     }
+
+    public void testAreaPolygon() {
+        double[] x = new double[]{
+            2,5,7,4,4
+        };
+        double[] y = new double[]{
+            4,5,3,1,3
+        };
+        double expArea = 17./2;
+        double area = LinesAndAngles.areaPolygon(x, y);
+        assertTrue(Math.abs(expArea - area) < 1E-7);
+    }
+
+    public void testAreaTriangle() {
+        // areaTriangle
+        //double x1, double y1, double x2, double y2, double x3, double y3)
+        /*
+
+         */
+
+        double x2 = 2;
+        double y2 = 2;
+
+        double x1 = x2+2;
+        double y1 = y2+2;
+
+        double x3 = x2 + 6;
+        double y3 = y2;
+
+        double expArea = 2 + ((4*2)/2);
+
+        double[] x = new double[]{x1, x2, x3};
+        double[] y = new double[]{y1, y2, y3};
+        double area1 = LinesAndAngles.areaPolygon(x, y);
+
+        double area2 = LinesAndAngles.areaTriangle(x1, y1, x2, y2, x3, y3);
+
+        assertTrue(Math.abs(expArea - area1) < 1E-7);
+        assertTrue(Math.abs(expArea - area2) < 1E-7);
+        double expDist = 2;
+        double minDist = LinesAndAngles.minDistPointToLine(x1, y1,
+                x2,y2,x3,y3);
+        assertTrue(Math.abs(expDist - minDist) < 1E-7);
+
+    }
 }
