@@ -99,6 +99,8 @@ public class MosAlgorithm {
      and adapted from
          https://cp-algorithms.com/data_structures/sqrt_decomposition.html#mos-algorithm
      </pre>
+     Note, can use a faster algorithm from SegmentTreeFreq called query() which has r.t.c.
+     of O((N+Q)*log(N)).
      * @param a array of integers
      * @param q array of queries of indexes into array 'a' as inclusive query ranges.
      * @return frequency maps for each query range are returned.

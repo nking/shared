@@ -1,6 +1,8 @@
 package algorithms.trees;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * a heap-like data structure for intervals.
@@ -17,7 +19,6 @@ import java.util.Arrays;
  */
 public class SegmentTree {
 
-    // M holds indices
     protected final long[] tree;
     protected final int n;
 
@@ -76,6 +77,9 @@ public class SegmentTree {
     }
 
     protected long sum(int tIdx, int treeL, int treeR, int qL, int qR) {
+        if (tIdx < 1) {
+            throw new IllegalArgumentException("tIdx must be >= 1");
+        }
         if (qL > qR) {
             return 0;
         }
@@ -101,6 +105,9 @@ public class SegmentTree {
     }
 
     protected void updateSet(int tIdx, int treeL, int treeR, int pos, int newVal) {
+        if (tIdx < 1) {
+            throw new IllegalArgumentException("tIdx must be >= 1");
+        }
         if (treeL == treeR) {
             tree[tIdx] = newVal;
             return;
