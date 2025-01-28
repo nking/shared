@@ -1,9 +1,6 @@
 package algorithms.alignment;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class TextJustification {
 
@@ -11,12 +8,7 @@ public class TextJustification {
 
 
     /**
-     * given a string of words and a column width, minimize the amount of space added between words where the
-     * number of spaces between words is at least 1.
-     * returns the total number of added spaces and fill output list with the text justified to line lengths <= width.
-     *
-     * @param words list of words to consecutively justify to line lengths LEQ width
-     * @param width width of column to place consecutive words and spaces between them
+
      * @param output an empty output array to fill with justified text
      * @return total number of added spaces
      */
@@ -69,6 +61,7 @@ public class TextJustification {
         assert(currRSum > 0);
         String w = words[wIdx];
         int cost0 = w.length() + 1; // the 1 is counting space before the word
+        if (wIdx == 0) --cost0;
 
         // add to current row if can
         BestSoln p0 = new BestSoln(null, Integer.MAX_VALUE);
@@ -120,5 +113,94 @@ public class TextJustification {
                 this.rows = null;
             }
         }
+    }
+
+    public static class Best {
+        int added;
+        List<String> lines;
+        public Best(int added, List<StringBuilder> lines) {
+            this.added = added;
+            this.lines = new ArrayList<>();
+            for (StringBuilder sb : lines) {
+                this.lines.add(sb.toString());
+            }
+        }
+    }
+
+    /**
+     * given a string of words and a column width, minimize the amount of space added between words where the
+     * number of spaces between words is at least 1.
+     * returns the total number of added spaces at ends of lines, and the words partitioned into lines.
+     *
+     * This version is recursive, like justify(), but is more readable.
+     *
+     * @param words list of words to consecutively justify to line lengths LEQ width
+     * @param width width of column to place consecutive words and spaces between them
+     * @return the total number of added spaces at ends of lines, and the words partitioned into lines.
+     */
+    public static Best justify3(String[] words, int width) {
+        Map<Integer, Best> memo = new HashMap<>();
+        List<StringBuilder> lines = new ArrayList<>();
+        StringBuilder line = new StringBuilder(words[0]);
+        lines.add(line);
+        int endSpace = width - words[0].length();
+        return r3(1, 0,
+                words, width,
+                memo, lines, line);
+    }
+
+    // 1 space is added before each word, except when it is first on a line.
+    // line is already added to lines.
+    private static Best r3(int wIdx, int added,
+                          String[] words, int width,
+                          Map<Integer, Best> memo, List<StringBuilder> lines, StringBuilder line) {
+        if (wIdx == words.length) {
+            // add end of current line
+            added += (width - line.length());
+            return new Best(added, lines);
+        }
+        if (memo.containsKey(wIdx)) {
+            return memo.get(wIdx);
+        }
+
+        // we add a space before the word
+        int wLen = 1 + words[wIdx].length();
+
+        Best solnIncl = null;
+
+        // include if can
+        if (line.length() + wLen <= width) {
+            line.append(" ").append(words[wIdx]);
+            solnIncl = r3(wIdx+1, added, words, width,
+                    memo, lines, line);
+
+            //back track, undo update to line
+            line.delete(line.length() - wLen, line.length());
+        }
+
+        // exclude by putting it on the next line
+        int diff = width - line.length();
+
+        StringBuilder line2 = new StringBuilder().append(words[wIdx]);
+        lines.add(line2);
+        Best solnExcl = r3(wIdx+1, added + diff,
+                words, width, memo,
+                lines, line2);
+
+        // back track, remove line
+        lines.remove(lines.size() - 1);
+
+        if (solnIncl == null) {
+            memo.put(wIdx, solnExcl);
+        } else {
+            // consider how to handle ties if want to enumerate
+            if (solnIncl.added <= solnExcl.added) {
+                memo.put(wIdx, solnIncl);
+            } else {
+                memo.put(wIdx, solnExcl);
+            }
+        }
+
+        return memo.get(wIdx);
     }
 }
