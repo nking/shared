@@ -12,7 +12,7 @@ import java.util.stream.IntStream;
  * The weights are the calculated Manhattan distance between the points.
  * The r.t.c. of this algorithm is O(n*log(n)).
  *
- * A detailed explanation of the lagorithm can be found in
+ * A detailed explanation of the algorithm can be found in
  * https://cp-algorithms.com/geometry/manhattan-distance.html
  */
 public class ManhattanDistMST {
@@ -75,8 +75,8 @@ public class ManhattanDistMST {
      The repository uses creative commons zero v.10 universal license https://github.com/ebi-fly13/Library/blob/main/LICENSE
 
      </pre>
-     * @param ps
-     * @return
+     * @param ps array of rows where a row is the x and y coordinates of a point
+     * @return a set of nodes holding the weights and edge indexes of ps.
      */
     protected static Set<Node> manhattanMSTEdges(int[][] ps) {
 
