@@ -30,7 +30,10 @@ public class MaxFlowBipartite {
         // build graph without src and sink first to use Hall's theorem
         Map<Integer, Integer> idxMap = new HashMap<>();
         Map<Integer, Integer> idxMapRev = new HashMap<>(); // to write to out
+
+        //key = uIdx, value = map of vIdx, val=flow
         Map<Integer, Map<Integer, Integer>> graph = new HashMap<>();
+
         int u, v, uIdx, vIdx;
 
         Map<Integer, Integer> degreesMap = null;
@@ -144,7 +147,8 @@ public class MaxFlowBipartite {
             uIdx = idxMap.get(u);
             // remove adjacent
             for (Map.Entry<Integer, Integer> entry : graph.get(uIdx).entrySet()) {
-                vIdx = entry.getValue();
+                vIdx = entry.getKey();
+                if (vIdx == src || vIdx == sink) continue;
                 v = idxMapRev.get(vIdx);
                 outVertexCover.remove(v);
             }
