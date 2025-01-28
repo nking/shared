@@ -40,6 +40,7 @@ public class ManhattanDistMST {
     /**
      * calculate the manhattan based MST for the set of data points ps which are
      * rows of x, y coordinates as integers.
+     * r.t.c. is O(n*log(n)).
      * @param ps
      * @return the MST as rows of {edge start index, edge end index, manhattan dist of edge}
      * where index is index of ps (hence represent a point).
@@ -66,6 +67,7 @@ public class ManhattanDistMST {
     /**
      * given an array of points where each row is a 2-dimensional point, find
      * the disjoint edges.
+     * r.t.c. is O(n*log(n)).
      <pre>
      reference:
      code was adapted from
