@@ -73,8 +73,8 @@ import java.util.logging.Logger;
  *
  *  @author Robert Sedgewick
  *  @author Kevin Wayne
- @param <Key>
- @param <Value>
+ @param <Key> paramter type of key
+ @param <Value> paramter type of value
  */
 
 public class RedBlackBST<Key extends Comparable<Key>, Value> {
