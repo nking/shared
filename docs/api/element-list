@@ -23,6 +23,7 @@ algorithms.optimization
 algorithms.optimization.tsp
 algorithms.puzzles
 algorithms.range
+algorithms.sat
 algorithms.scheduling
 algorithms.search
 algorithms.shortestPaths
