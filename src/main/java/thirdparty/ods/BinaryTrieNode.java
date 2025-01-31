@@ -6,7 +6,7 @@ import java.lang.reflect.Array;
 /**
  *
  * @author nichole
- @param <T>
+ @param <T> parameter type of data held by node
  */
 public class BinaryTrieNode<T> {
     T x;

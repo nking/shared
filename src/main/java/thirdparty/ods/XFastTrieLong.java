@@ -30,8 +30,8 @@ and then moved to this project
 /**
  *
  * @author nichole
- @param <S>
- @param <T>
+ @param <S> parameter type for node
+ @param <T> parameter type for value held by node
  */
 
 @SuppressWarnings("unchecked")

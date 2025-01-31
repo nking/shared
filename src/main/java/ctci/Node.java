@@ -3,8 +3,8 @@ package ctci;
 /**
  *
  * @author nichole
- @param <K>
- @param <V>
+ @param <K> parameter type of key
+ @param <V> parameter type of value
  */
 public class Node<K,V> {
 

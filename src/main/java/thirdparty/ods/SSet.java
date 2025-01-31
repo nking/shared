@@ -31,7 +31,7 @@ contains code and/or text from opendatastructures.org.
 http://github.com/patmorin/ods
  * @author morin
  * 
- @param <T>
+ @param <T> parameter type for data
  * @see SortedSSet<T>
  */
 public interface SSet<T> {

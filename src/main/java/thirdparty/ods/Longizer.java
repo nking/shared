@@ -22,7 +22,7 @@ and then moved to this project
 /**
  *
  * @author nichole
- @param <T>
+ @param <T> parameter type for data
  */
 
 

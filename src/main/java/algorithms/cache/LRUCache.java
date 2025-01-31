@@ -8,8 +8,8 @@ import java.util.Map;
  * recently accessed cache".
  * 
  * @author nichole
- @param <K>
- @param <V>
+ @param <K> type for key, e.g. String
+ @param <V> type for value, e.g. Integer
  */
 public class LRUCache<K, V> extends LinkedHashMap<K, V> {
 

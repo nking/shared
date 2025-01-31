@@ -10,7 +10,7 @@ package thirdparty.edu.princeton.cs.algs4;
  * http://algs4.cs.princeton.edu/92search/QuadTree.java.html
  * copyright for authors Robert Sedgewick and Kevin Wayne
  * is GPLV3, http://algs4.cs.princeton.edu/faq/
- @param <T>
+ @param <T> comparable parameter type for interval endpoints
  */
 public class Interval<T extends Comparable<T>> implements 
     Comparable<Interval<T>> {

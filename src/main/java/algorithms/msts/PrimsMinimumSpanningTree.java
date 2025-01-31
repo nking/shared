@@ -66,9 +66,8 @@ import java.util.Arrays;
  * runtime complexity is O((E + V)*c) where c log_2 log_2(max value in heap)
 * 
  * @author nichole
- @param <T>
  */
-public class PrimsMinimumSpanningTree<T> {
+public class PrimsMinimumSpanningTree {
     
     /**
      * find a minimum spanning tree using Prim's algorithm.

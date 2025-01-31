@@ -5,8 +5,7 @@ import algorithms.util.ObjectSpaceEstimator;
 
 /**
  * @author nichole
- @param <T>
- @param <T>
+ @param <T> parameter type of node data
  */
 public class XFastTrieNodeLong<T> extends BinaryTrieNode<T> {
     

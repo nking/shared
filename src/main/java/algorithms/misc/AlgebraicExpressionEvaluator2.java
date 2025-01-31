@@ -10,8 +10,14 @@ import java.util.*;
  */
 public class AlgebraicExpressionEvaluator2 {
 
+    /**
+     * sentinel
+     */
     protected static double sentinel = Double.POSITIVE_INFINITY;
 
+    /**
+     * map of operation priorities
+     */
     protected static Map<Character, Integer> opAlgPriorityMap = new HashMap<>();
     static {
         opAlgPriorityMap.put('^', 3);
@@ -27,7 +33,7 @@ public class AlgebraicExpressionEvaluator2 {
      * evaluates the algebraic expression.
      *
      * Recognized operators are +, -, *, /,  and ^ as power operator.
-     * The method does not evaluate binary operators (e.g. |, &&, or ^ as XOR).
+     * The method does not evaluate binary operators (e.g. |, &amp;&amp;, or ^ as XOR).
      * The method handles parenthesization in context of use in ordering and prioritizing operations,
      * but not handle square brackets or other separators.
      * The meothd can handle spaces.
@@ -52,10 +58,11 @@ public class AlgebraicExpressionEvaluator2 {
      order evaluator.
      </pre>
 
-     * @param string algebraic expression that can include parentheses.  the string must be in infix format.
+     * @param expression string algebraic expression that can include parentheses.  the string must be in infix format.
      *               infix format places the operator in between the two operands (numbers only for this method).
      * In contrast, prefix format places the operator before each pair of operands and
      * postfix places the operator after the operands.
+     * @return evaluation
      */
     public double evaluateAlgebraicExpression(String expression) {
 
@@ -87,10 +94,10 @@ public class AlgebraicExpressionEvaluator2 {
      but edited to add evaluation.
 
      </pre>
-     * @param chars
-     * @param i
-     * @param j
-     * @return
+     * @param chars character array
+     * @param i start index of chars for use in method
+     * @param j stop index, inclusive of chars  for use in method
+     * @return evaluation
      */
     protected double parseAndEvaluate(char[] chars, int i, int j) {
 
@@ -159,6 +166,14 @@ public class AlgebraicExpressionEvaluator2 {
         return result;
     }
 
+    /**
+     * evaluates vLeft operator vRight.
+     * @param chars array of characters
+     * @param op operator
+     * @param vRight right value
+     * @param vLeft left value
+     * @return result of vLeft operator vRight
+     */
     private double evaluate(char[] chars, CRange op, double vRight, double vLeft) {
         double result = 0;
 
@@ -190,6 +205,14 @@ public class AlgebraicExpressionEvaluator2 {
         return result;
     }
 
+    /**
+     *
+     * @param chars character array
+     * @param i start index of chars for use in method
+     * @param j stop index, inclusive of chars  for use in method
+     * @param outputIdxs the starting and ending indexes, inclusive
+     *                   of the number just parsed from chars
+     */
     protected void parseForNumber(int i, int j, char[] chars, int[] outputIdxs) {
         // parse number starting at i, and do not parse beyond j
         // and put starting and ending indexes in outputIdxs
@@ -204,21 +227,52 @@ public class AlgebraicExpressionEvaluator2 {
         outputIdxs[1] = i;
     }
 
+    /**
+     * string of chars bounded by cRange
+     * @param chars character array
+     * @param cRange node olding index range
+     * @return string of cars bounded by cRange
+     */
     public String toString(char[] chars, CRange cRange) {
         return String.copyValueOf(chars, cRange.i0, cRange.i1 - cRange.i0 + 1);
     }
 
+    /**
+     * number from chars[nodeData.i0] to chars[nodeData.i1] inclusive
+     * @param chars character array
+     * @param nodeData daa defining character range of interest
+     * @return number from chars[nodeData.i0] to chars[nodeData.i1] inclusive
+     */
     protected double parseNumber(char[] chars, CRange nodeData) {
         String s = String.copyValueOf(chars, nodeData.i0, nodeData.i1 - nodeData.i0 + 1);
         return Double.parseDouble(s);
     }
 
+    /**
+     * determine if the operation priority for chars[c0.i0] is greater than
+     * priority for chars[i1]
+     * @param c0 1st index in comparison is co.i0
+     * @param i1 2nd index in comparison
+     * @param chars character array
+     * @return true if operation priority for chars[c0.i0] is greater than
+     *   priority for chars[i1]
+     */
     protected boolean priorityisGT(CRange c0, int i1, char[] chars) {
         assert(c0.i0 == c0.i1);
         int p0 = opAlgPriorityMap.get(chars[c0.i0]);
         int p1 = opAlgPriorityMap.get(chars[i1]);
         return p0 > p1;
     }
+
+    /**
+     * determine if the operation priority for chars[c0.i0] is greater than
+     * or equal to priority for chars[i1]
+     * @param c0 1st index in comparison is co.i0
+     * @param i1 2nd index in comparison
+     * @param chars character array
+     * @return true if operation priority for chars[c0.i0] is greater than
+     *   or equal to priority for chars[i1]
+     */
     protected boolean priorityisGEQ(CRange c0, int i1, char[] chars) {
         assert(c0.i0 == c0.i1);
         int p0 = opAlgPriorityMap.get(chars[c0.i0]);
@@ -226,13 +280,34 @@ public class AlgebraicExpressionEvaluator2 {
         return p0 >= p1;
     }
 
+    /**
+     * check c.i0 == '('
+     * @param c range
+     * @param chars character array
+     * @return true if c.i0 == '('
+     */
     protected boolean isNotLeftParenthesis(CRange c, char[] chars) {
         return !(c.i0 == c.i1 && chars[c.i0] == '(');
     }
 
+    /**
+     * holds an index range
+     */
     protected static class CRange {
-        final int i0; // beginning index of operator or number
-        final int i1; // ending index of operator or number
+        /**
+         * beginning index of operator or number
+         */
+        final int i0;
+        /**
+         * ending index, inclusive, or operator or number
+         */
+        final int i1;
+
+        /**
+         * range node
+         * @param idx0 start index
+         * @param idx1 stop index, inclusive
+         */
         public CRange(int idx0, int idx1) {
             this.i0 = idx0;
             this.i1 = idx1;

@@ -51,7 +51,7 @@ import java.util.Arrays;
 
  updating tree:
      update(idx, val) = {
-         while (idx < tree.length) {
+         while (idx LT tree.length) {
              tree[idx] += val;
              idx += lSB(_idx);
          }
@@ -154,7 +154,7 @@ public class FenwickTreeLong {
     /**
      * get the value of the tree element at index idx
      * @param idx tree index
-     * @return
+     * @return value for element idx
      */
     public long get(int idx) {
         return sum(idx, idx);

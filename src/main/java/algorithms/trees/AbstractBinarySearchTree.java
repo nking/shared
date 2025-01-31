@@ -4,14 +4,37 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+/**
+ * abstract class for binary search trees
+ * @param <T> comparable parameter type for node data
+ * @param <S> base node class that must be used or extended
+ */
 public abstract class AbstractBinarySearchTree
         <T extends Comparable<T>, S extends BinaryTreeNode<T>> implements IBinarySearchTree<T,S>{
 
+    /**
+     * root node of this tree
+     */
     protected S root = null;
 
+    /**
+     * internal search
+     * @param top subtree root
+     * @param data node data to search for
+     * @return node having data
+     */
     protected abstract S _search(S top, T data);
+
     public abstract S newNode(T data);
+
+    /**
+     * internal insert
+     * @param top subtree root
+     * @param node node to insert
+     * @return inserted node
+     */
     protected abstract S _insert(S top, S node);
+
     public abstract boolean delete(BinaryTreeNode<T> node);
 
     public S insert(T data) {
@@ -30,8 +53,8 @@ public abstract class AbstractBinarySearchTree
 
     /**
      * delete tree a single node having value data.
-     * @param node
-     * @return
+     * @param data data to search for in nodes
+     * @return true if node was deleted
      */
     public boolean delete(T data) {
         S node = search(data);
@@ -41,9 +64,8 @@ public abstract class AbstractBinarySearchTree
 
     /**
      * find minimum node for subtree top.
-     * @param top
+     * @param top top node of subtree
      * @return minimum node
-     * @param <T> comparable data carried by BinaryTreeNode
      */
     public S minimum(BinaryTreeNode<T> top) {
         if (top == null) return null;
@@ -57,9 +79,8 @@ public abstract class AbstractBinarySearchTree
 
     /**
      * find maximum node for subtree top.
-     * @param top
+     * @param top top node of subtree
      * @return minimum node
-     * @param <T> comparable data carried by BinaryTreeNode
      */
     public S maximum(BinaryTreeNode<T> top) {
         if (top == null) return null;
@@ -73,9 +94,8 @@ public abstract class AbstractBinarySearchTree
 
     /**
      * find successor node for node.
-     * @param top
+     * @param node top node of subtree
      * @return successor node
-     * @param <T> comparable data carried by BinaryTreeNode
      */
     public S successor(BinaryTreeNode<T> node) {
         if (node == null) return null;
@@ -98,9 +118,8 @@ public abstract class AbstractBinarySearchTree
 
     /**
      * find predecessor node for node.
-     * @param top
+     * @param node top node of subtree
      * @return predecessor node
-     * @param <T> comparable data carried by BinaryTreeNode
      */
     public S predecessor(BinaryTreeNode<T> node) {
         if (node == null) return null;
@@ -127,7 +146,7 @@ public abstract class AbstractBinarySearchTree
      reference
      https://en.wikipedia.org/wiki/Order_statistic_tree
      </pre>
-     * @param data
+     * @param data value to search for in tree
      * @return the rank of data in the tree, else -1 if not in tree
      */
     public long rank(T data) {
@@ -141,7 +160,7 @@ public abstract class AbstractBinarySearchTree
      https://en.wikipedia.org/wiki/Order_statistic_tree
      </pre>
      @param t top node of subtree
-     @param data
+     @param data value of node to search for
      @return the rank of data in the tree, else -1 if not in tree
      */
     public long rank(BinaryTreeNode<T> t, T data) {
@@ -171,7 +190,8 @@ public abstract class AbstractBinarySearchTree
      reference
      https://en.wikipedia.org/wiki/Order_statistic_tree
      </pre>
-     * @param rank
+     * @param rank 1-based number rank to select within ordered tree.
+     *             e.g. for a rank of 1, the method returns the root node.
      * @return the node with rank rank in this tree else null if there is no
      * node in tree with that rank
      */
@@ -188,7 +208,8 @@ public abstract class AbstractBinarySearchTree
      reference
      https://en.wikipedia.org/wiki/Order_statistic_tree
      </pre>
-     * @param rank
+     * @param rank 1-based number rank to select within ordered tree.
+     *      e.g. for a rank of 1, the method returns the root node.
      * @return the node with rank rank in subtree t, else null if there is no
      *      * node in subtree t with that rank
      */
@@ -218,8 +239,8 @@ public abstract class AbstractBinarySearchTree
         D      A
       E  C
      </pre>
-     * @param node
-     * @return
+     * @param node top node of subtree
+     @return returns node that replaces node as result top of rotation
      */
     protected BinaryTreeNode<T> rotateRight(BinaryTreeNode<T> node) {
         BinaryTreeNode<T> node2 = node.left; //*  y=node2
@@ -259,8 +280,8 @@ public abstract class AbstractBinarySearchTree
        B      C
      D   E
      </pre>
-     @param node
-     @return
+     @param node top node of subtree
+     @return returns node that replaces node as result top of rotation
      */
     protected BinaryTreeNode<T> rotateLeft(BinaryTreeNode<T> node) {
         BinaryTreeNode<T> node2 = node.right; //*
@@ -287,8 +308,10 @@ public abstract class AbstractBinarySearchTree
     }
 
     /**
+     * traverse the tree in in-order and return the list of nodes.
+     * in-order is the pattern left subtree, root of subtree, right subtree
      * return data from in-order traversal of tree.
-     * @return
+     * @return list of nodes in in-order
      */
     public List<T> inOrderTraversal() {
         List<T> out = new ArrayList<>();
@@ -310,6 +333,10 @@ public abstract class AbstractBinarySearchTree
         return out;
     }
 
+    /**
+     * update node.n in node
+     * @param node node to be updates
+     */
     protected void updateN(BinaryTreeNode<T> node) {
         if (node == null) return;
         node.n = 1;
@@ -321,6 +348,11 @@ public abstract class AbstractBinarySearchTree
         }
     }
 
+    /**
+     * update node.n and the n variable of all of ints ancestors
+     * @param node the child node of the nodes to update, including update
+     *              of node
+     */
     protected void updateNAndAncestors(BinaryTreeNode<T> node) {
         if (node == null) return;
         updateN(node);

@@ -12,8 +12,8 @@ adapted from http://algs4.cs.princeton.edu/92search/
  
  
  *
- @param <Key>
- @param <Value> 
+ @param <Key> parameter type of key
+ @param <Value>  parameter type of value
  ******************************************************************************/
 
 public class RangeSearch<Key extends Comparable<Key>, Value>  {
@@ -27,8 +27,8 @@ public class RangeSearch<Key extends Comparable<Key>, Value>  {
 
     /**
      *
-     @param <T>
-     @param <S>
+     @param <T> parameter type of key
+     @param <S> parameter type of value
      */
     protected class RangeSearchNode<T, S> {
         T key;              // key

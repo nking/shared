@@ -69,7 +69,7 @@ public class SegmentTree {
      * return the sum from a[i0] to a[i1], inclusive.
      * @param i0
      * @param i1
-     * @return
+     * @return sum of range[i0,i1]
      */
     public long sum(int i0, int i1) {
         long s = sum(1, 0, n-1, i0, i1);

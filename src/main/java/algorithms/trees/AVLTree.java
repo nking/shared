@@ -5,6 +5,8 @@ package algorithms.trees;
  * greater than 1 between the 2 subtrees of a node.
  * The height is the largest distance from a node to a descendant leaf.
  * The implementation follows MIT opencourseware class 6.006 Unit 2.
+ * @param <T> comparable parameter type for node data
+ * @param <S> base node class that must be used or extended
  */
 public class AVLTree<T extends Comparable<T>, S extends AVLTreeNode<T>>
         extends BinarySearchRecursiveTree<T, S>{
@@ -66,8 +68,8 @@ public class AVLTree<T extends Comparable<T>, S extends AVLTreeNode<T>>
      * insert data and return the node.  Note that every delete operation modifies the tree
      * in non-recursive version, so do not rely on the state of any node retained after
      * a bst delete.
-     * @param data
-     * @return
+     * @param data data for new node to hold
+     * @return the inserted node
      */
     @Override
     public S insert(T data) {
@@ -80,8 +82,8 @@ public class AVLTree<T extends Comparable<T>, S extends AVLTreeNode<T>>
      * delete node from this tree.
      * Also note that delete modifies internal state of 2 nodes and so any references
      * obtained during insert may have mutated.
-     * @param node
-     * @return
+     * @param node node to delete
+     * @return true always
      */
     @Override
     public boolean delete(BinaryTreeNode<T> node) {
@@ -93,8 +95,8 @@ public class AVLTree<T extends Comparable<T>, S extends AVLTreeNode<T>>
 
     /**
      * delete tree a single node having value data.
-     * @param node
-     * @return
+     * @param data value to search for in node to delete
+     * @return true always
      */
     @Override
     public boolean delete(T data) {

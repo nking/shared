@@ -27,8 +27,8 @@ import java.util.Deque;
 /**
  *
  * @author nichole
- @param <S>
- @param <T>
+ @param <S> parameter type for node
+ @param <T> parameter type for value held by node
  */
 @SuppressWarnings({"unchecked"})
 public class BinaryTrieLong<S extends BinaryTrieNode<T>, T> 

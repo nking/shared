@@ -71,9 +71,9 @@ import no.uib.cipr.matrix.sparse.LinkedSparseMatrix;
  to the smallest eigenvalue of the covariance matrix, which is directly related to the correlation matrix [28].
  This incomplete list of examples shows the influence of the smallest eigenvalue in applications.
  Further information on the role of the smallest eigenvalue is given in Appendix A.
- [17] Barnett V, Lewis T. Outliers in Statistical Data. first edition ed. John Wiley & Sons; 1980.
+ [17] Barnett V, Lewis T. Outliers in Statistical Data. first edition ed. John Wiley &amp; Sons; 1980.
  [18] Gnanadesikan R. Methods for Statistical Data Analysis of Multivariate Oberservations.
- Second edition ed. John Wiley & Sons; 1997.
+ Second edition ed. John Wiley &amp; Sons; 1997.
 
  Note also, regarding finding the closest distance of a vector to a subspace in matrix A:
  One can use orthgoncal projection to solve for the distance, which is also called the residual

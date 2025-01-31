@@ -3,7 +3,7 @@ package algorithms.concurrency.diningPhilosophers;
 import java.util.HashMap;
 import java.util.Map;
 
-public  abstract class AbstractDiningPhilosophers {
+public abstract class AbstractDiningPhilosophers {
     final int n;
     final boolean nIsOdd;
     long beginDine = Long.MIN_VALUE;

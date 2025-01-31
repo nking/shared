@@ -12,13 +12,13 @@ public interface IFunction {
      * specific to a function, such as input multi-dimensional observations,
      * can be part of the concrete implementation  instance variables.
      @param coeffs
-     @return 
+     @return evaluation 
     */
     double f (double[] coeffs);
     
     /** estimates the gradient
      @param coeffs
-     @return 
+     @return gradient estimate
     */
     double[] der(double[] coeffs);
 }

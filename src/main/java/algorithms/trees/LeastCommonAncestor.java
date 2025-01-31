@@ -265,9 +265,12 @@ public class LeastCommonAncestor {
 
     /**
      * makes the parent array of a as a cartesion tree.
-     *
+      a Cartesian tree is a binary tree of array 'a'
+      where the returned array holds indexes of the
+      parent indexes.  in other words int[] tree = makeCartesionTree(a)
+          has tree[i] = j such that a[j] is the parent of a[i].
      * @param a
-     * @return
+     * @return the cartesion tree array
      */
     protected int[] makeCartesianTree(int[] a) {
         int n = a.length;
@@ -282,10 +285,11 @@ public class LeastCommonAncestor {
             while (!s.isEmpty() && a[s.peek()] >= a[i]) {
                 last = s.pop();
             }
-            if (!s.isEmpty()) {
+            // at this point, anything in s is < a[i]
+            if (!s.isEmpty()) { // tree root is min node
                 parent[i] = s.peek();
             }
-            if (last > -1) {
+            if (last > -1) { // popped indexes are children of i
                 parent[last] = i;
             }
             s.push(i);

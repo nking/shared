@@ -19,7 +19,7 @@ import java.util.*;
 
    Hungarian method can solve the assignment problem in
     O(mn + n^2(log n)), where n := |X| = |Y | and m := |E|
-       (Ramshaw & Tarjan, 2012)
+       (Ramshaw &amp; Tarjan, 2012)
  *
  * Copyright 2007 Gary Baker (GPL v3)
  *

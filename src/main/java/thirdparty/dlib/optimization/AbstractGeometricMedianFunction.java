@@ -72,25 +72,25 @@ public abstract class AbstractGeometricMedianFunction implements IFunction {
     
     /**
      *
-     @return
+     @return number of dimenstions
      */
     public abstract int getNDimensions();
     
     /**
      *
-     @return
+     @return the obs, that this the array data given to the code, that this the array data given to the code
      */
     public abstract double[] getObs();
     
     /**
      *
-     @return
+     @return the eps used by finite difference method
      */
     public abstract double getFDEps();
     
     /**
      *
-     @return
+     @return nData as (obs/nDim)
      */
     public int getNData() {
         return getObs().length/getNDimensions();
@@ -274,7 +274,7 @@ public abstract class AbstractGeometricMedianFunction implements IFunction {
     Copyright (C) 2008  Davis E. King (davis@dlib.net)
     License: Boost Software License   See LICENSE.txt for the full license.
      @param coeffs
-     @return 
+     @return finite difference array of coefficients
     */
     public double[] finiteDifference(double[] coeffs) {
 
@@ -315,7 +315,7 @@ public abstract class AbstractGeometricMedianFunction implements IFunction {
     License: Boost Software License   See LICENSE.txt for the full license.
      @param coeffs
      @param dimensionNumber
-     @return 
+     @return the finite difference of a single element of coeffs
     */
     public double finiteDifference(double[] coeffs, int dimensionNumber) {
 
@@ -350,7 +350,7 @@ public abstract class AbstractGeometricMedianFunction implements IFunction {
     /**
      *
      @param a
-     @return
+     @return string holding state
      */
     public static String toString(double[] a) {
         StringBuilder sb = new StringBuilder("[");

@@ -5,8 +5,8 @@ import java.lang.reflect.Array;
 /**
  *
  * @author nichole
- @param <K>
- @param <V>
+ @param <K> parametery type of key
+ @param <V> parametery type of value
  */
 public class HashTable<K,V> {
   

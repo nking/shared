@@ -27,7 +27,7 @@ import java.util.Set;
  * for COS 423 Princeton University.
  * 
  * @author nichole
- @param <T>
+ @param <T> parameter type for the nodes to hold as data
  */
 public class DisjointForest<T> {
 
@@ -335,7 +335,7 @@ public class DisjointForest<T> {
      * is a member of the nodes of this set
      *
      * @author nichole
-     @param <T>
+     @param <T> parameter type for the nodes to hold as data
      */
     public static class RootedTreeDisjointSet<T> {
 

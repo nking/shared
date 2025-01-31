@@ -436,7 +436,7 @@ public class TreeTraversal {
      visits: 7, 3, 11, 1, 5, 9, 13, 0, 2, 4, 6, 8, 10, 12
      </pre>
      @param node n-ary tree root
-     @return
+     @return list of level order node traversal
      */
     public DoublyLinkedList<NAryTreeNode> getLevelOrderIterative(NAryTreeNode node) {
         Queue<NAryTreeNode> queue = new ArrayDeque<>();
@@ -489,7 +489,7 @@ public class TreeTraversal {
      (Cormen, Leiserson, Rivest, and Stein "Introduction to Algorithms")
      </pre>
      * @param node
-     * @return
+     * @return the successor node
      */
     public BinaryTreeNode<Integer> successor(BinaryTreeNode<Integer> node) {
         if (node.getRight() != null) {
@@ -522,7 +522,7 @@ public class TreeTraversal {
         0   2     4   6           8   10    12
      </pre>
      * @param node
-     * @return
+     * @return predecessor node
      */
     public BinaryTreeNode<Integer> predeccesor(BinaryTreeNode<Integer> node) {
         if (node.getLeft() != null) {

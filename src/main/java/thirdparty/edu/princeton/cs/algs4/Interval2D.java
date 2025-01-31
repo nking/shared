@@ -29,7 +29,7 @@ package thirdparty.edu.princeton.cs.algs4;
  *
  *  @author Robert Sedgewick
  *  @author Kevin Wayne
- @param <T>
+ @param <T> comparable parameter type for interval
  */
 public class Interval2D<T extends Comparable<T>> 
     implements Comparable<Interval2D<T>> { 

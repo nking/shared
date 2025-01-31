@@ -14,8 +14,8 @@ import java.util.Stack;
  * http://algs4.cs.princeton.edu/92search/QuadTree.java.html
  * copyright for authors Robert Sedgewick and Kevin Wayne
  * is GPLV3, http://algs4.cs.princeton.edu/faq/
- @param <T>
- @param <Value>
+ @param <T> a comparable paramter type for the interval
+ @param <Value> paramter type for data to be held by interval node
  */
 public class QuadTreeInterval2D<T extends Comparable<T>, Value>  {
     

@@ -105,9 +105,7 @@ import java.util.stream.IntStream;
  There are 3 longest sequences.
  The length of the longest sequence is 2.
 
- <pre>
  --------------------------------
- </pre>
 
  For multi-column data and non-decreasing subsequences:
 
@@ -158,7 +156,6 @@ public class LongestIncreasingSubsequence {
      * given a list of integers, return the indexes of the longest increasing subsequence
      * where increasing is defind as stricly increasing.  If there is more than one sequence
      * with same max length, returns one of them.
-     <pre>
      <pre>
      a = new int[]{2,2,1,7,6};
 

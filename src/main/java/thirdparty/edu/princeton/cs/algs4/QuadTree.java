@@ -21,8 +21,8 @@ import java.util.List;
  * 
  *     public void insert(T x, T y, Value value)
  *     public List<Value> query2D(Interval2D<T> rect)
- @param <T>
- @param <Value>
+ @param <T> comparable parameter type for node
+ @param <Value> paramter type for data held by node
  */
 public class QuadTree<T extends Comparable<T>, Value>  {
     

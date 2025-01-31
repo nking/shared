@@ -37,8 +37,8 @@ public class BinarySearchTree<T extends Comparable<T>, S extends BinaryTreeNode<
     /**
      * method to construct a BinaryTree node or extension.  overrride as needed.
      * default is to construct S
-     * @param data
-     * @return
+     * @param data data for new node to hold
+     * @return the new node
      */
     public S newNode(T data) {
         return (S) new BinaryTreeNode<T>(data);
@@ -50,7 +50,6 @@ public class BinarySearchTree<T extends Comparable<T>, S extends BinaryTreeNode<
      * @param top the subtree root node
      * @param node the node to insert into the subtree
      * @return parent of node inserted into tree
-     * @param <T> node data type that extends Comparable
      */
     protected S _insert(S top, S node) {
         S x = top;
@@ -116,8 +115,8 @@ public class BinarySearchTree<T extends Comparable<T>, S extends BinaryTreeNode<
     /**
      * delete node from this tree.
      * note that the in-order traversal print remains the same, but is missing the deleted node.
-     * @param node
-     * @return
+     * @param node node to delete
+     * @return true always
      */
     public boolean delete(BinaryTreeNode<T> node) {
 

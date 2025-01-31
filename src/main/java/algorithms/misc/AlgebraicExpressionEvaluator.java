@@ -11,6 +11,9 @@ import java.util.*;
  */
 public class AlgebraicExpressionEvaluator {
 
+    /**
+     * map of operation priorities
+     */
     protected static Map<Character, Integer> opAlgPriorityMap = new HashMap<>();
     static {
         opAlgPriorityMap.put('^', 3);
@@ -26,7 +29,7 @@ public class AlgebraicExpressionEvaluator {
      * evaluates the algebraic expression.
      *
      * Recognized operators are +, -, *, /,  and ^ as power operator.
-     * The method does not evaluate binary operators (e.g. |, &&, or ^ as XOR).
+     * The method does not evaluate binary operators (e.g. |, &amp;&amp;, or ^ as XOR).
      * The method handles parenthesization in context of use in ordering and prioritizing operations,
      * but does not handle square brackets or other separators.
      * The meothd can handle spaces.
@@ -51,10 +54,11 @@ public class AlgebraicExpressionEvaluator {
      order evaluator.
      </pre>
 
-     * @param string algebraic expression that can include parentheses.  the string must be in infix format.
+     * @param expression string algebraic expression that can include parentheses.  the string must be in infix format.
      *               infix format places the operator in between the two operands (numbers only for this method).
      * In contrast, prefix format places the operator before each pair of operands and
      * postfix places the operator after the operands.
+     * @return evaluation
      */
     public double evaluateAlgebraicExpression(String expression) {
 
@@ -85,10 +89,10 @@ public class AlgebraicExpressionEvaluator {
      https://www.geeksforgeeks.org/program-to-convert-infix-notation-to-expression-tree/
      authored by Julkar9, and aashish1995
      </pre>
-     * @param chars
-     * @param i
-     * @param j
-     * @return
+     * @param chars character array
+     * @param i start index of chars for use in method
+     * @param j stop index, inclusive of chars  for use in method
+     * @return algebraic expr tree root node 
      */
     protected OpPair buildExprTree(char[] chars, int i, int j) {
 
@@ -189,6 +193,14 @@ public class AlgebraicExpressionEvaluator {
         return numberStack.pop();
     }
 
+    /**
+     *
+     * @param chars character array
+     * @param i start index of chars for use in method
+     * @param j stop index, inclusive of chars  for use in method
+     * @param outputIdxs the starting and ending indexes, inclusive
+     *                   of the number just parsed from chars
+     */
     protected void parseForNumber(int i, int j, char[] chars, int[] outputIdxs) {
         // parse number starting at i, and do not parse beyond j
         // and put starting and ending indexes in outputIdxs
@@ -203,6 +215,12 @@ public class AlgebraicExpressionEvaluator {
         outputIdxs[1] = i;
     }
 
+    /**
+     * use reverse level order to evaluate node.
+     * @param node operation tree root node
+     * @param chars character array
+     * @return evaluate
+     */
     protected double reverseLevelOrderEval(OpPair node, char[] chars) {
         Queue<OpPair> q = new ArrayDeque<>();
         Stack<OpPair> s = new Stack<>();
@@ -277,25 +295,63 @@ public class AlgebraicExpressionEvaluator {
         }//end while
         return result;
     }
+
+    /**
+     * string of the characters within cRange
+     * @param chars character array
+     * @param cRange range
+     * @return string of characers within cRange
+     */
     public String toString(char[] chars, CRange cRange) {
         return String.copyValueOf(chars, cRange.i0, cRange.i1 - cRange.i0 + 1);
     }
 
+    /**
+     * parse the number bounded by node
+     * @param chars character array
+     * @param node range
+     * @return the number
+     */
     protected double parseNumber(char[] chars, OpPair node) {
         return parseNumber(chars, node.data);
     }
 
+    /**
+     * parse the number bounded by nodeData
+     * @param chars character array
+     * @param nodeData range
+     * @return number parsed
+     */
     protected double parseNumber(char[] chars, CRange nodeData) {
         String s = String.copyValueOf(chars, nodeData.i0, nodeData.i1 - nodeData.i0 + 1);
         return Double.parseDouble(s);
     }
 
+    /**
+     * determine if the operation priority for chars[c0.i0] is greater than
+     * priority for chars[i1]
+     * @param c0 1st index in comparison is co.i0
+     * @param i1 2nd index in comparison
+     * @param chars character array
+     * @return true if operation priority for chars[c0.i0] is greater than
+     *   priority for chars[i1]
+     */
     protected boolean priorityisGT(CRange c0, int i1, char[] chars) {
         assert(c0.i0 == c0.i1);
         int p0 = opAlgPriorityMap.get(chars[c0.i0]);
         int p1 = opAlgPriorityMap.get(chars[i1]);
         return p0 > p1;
     }
+
+    /**
+     * determine if the operation priority for chars[c0.i0] is greater than
+     * or equal to priority for chars[i1]
+     * @param c0 1st index in comparison is co.i0
+     * @param i1 2nd index in comparison
+     * @param chars character array
+     * @return true if operation priority for chars[c0.i0] is greater than
+     *   or equal to priority for chars[i1]
+     */
     protected boolean priorityisGEQ(CRange c0, int i1, char[] chars) {
         assert(c0.i0 == c0.i1);
         int p0 = opAlgPriorityMap.get(chars[c0.i0]);
@@ -303,22 +359,56 @@ public class AlgebraicExpressionEvaluator {
         return p0 >= p1;
     }
 
+    /**
+     * check c.i0 == '('
+     * @param c range
+     * @param chars character array
+     * @return true if c.i0 == '('
+     */
     protected boolean isNotLeftParenthesis(CRange c, char[] chars) {
         return !(c.i0 == c.i1 && chars[c.i0] == '(');
     }
 
+    /**
+     * holds a node of data (operation) and
+     * left and right child nodes
+     */
     protected static class OpPair {
+        /**
+         * left child
+         */
         OpPair left = null;
+        /**
+         * right child
+         */
         OpPair right = null;
+        /**
+         * operation data
+         */
         CRange data;
         public OpPair(CRange cr) {
             this.data = cr;
         }
     }
 
+    /**
+     * holds an index range
+     */
     protected static class CRange {
-        final int i0; // beginning index of operator or number
-        final int i1; // ending index of operator or number, inclusive
+        /**
+         * beginning index of operator or number
+         */
+        final int i0;
+        /**
+         * ending index, inclusive, or operator or number
+         */
+        final int i1;
+
+        /**
+         * constructor
+         * @param idx0 start index
+         * @param idx1 stop index, inclusive
+         */
         public CRange(int idx0, int idx1) {
             this.i0 = idx0;
             this.i1 = idx1;
