@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TSPDynamicPowerset.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.optimization.tsp</a> &gt; <span class="el_source">TSPDynamicPowerset.java</span></div><h1>TSPDynamicPowerset.java</h1><pre class="source lang-java linenums">package algorithms.optimization.tsp;
+
+import java.util.Arrays;
+
+/**
+ * Given a matrix of distances between pairs of cities, the travelling salesperson problem finds the shortest
+ * path that visits each city exactly once.
+ * The path is a Hamiltonian cycle of minimum weight.
+ * This class uses a dynamic programming approach
+ * of a bitstring representing the 2^n possible states
+ * of visiting cities which allows decomposition of the problem into
+ * adding 1 bit of state to an existing smaller state solution that doesn't
+ * yet include the bit to add.
+ */
+<span class="nc" id="L15">public class TSPDynamicPowerset {</span>
+
+    /**
+     * find the minimum sum Hamiltonian cycle for the nodes given by the dist matrix.
+     * Note that node 0 has been arbitrarily adopted as the start vertex, but the
+     * code could easily be adapted for another src node or allowed to find
+     * any start node.
+     * r.t.c. O((n^2)*(2^n)).  s.c. is O(n*(2^n)).
+     * @param dist
+     * @return an array of the minimum cycle nodes in path order.
+     */
+    public static int[] findMinCycle(double[][] dist) {
+<span class="fc" id="L27">        int n = dist.length;</span>
+<span class="pc bpc" id="L28" title="1 of 2 branches missed.">        if (dist[0].length != n) {</span>
+<span class="nc" id="L29">            throw new IllegalArgumentException(&quot;expected a square matrix&quot;);</span>
+        }
+<span class="pc bpc" id="L31" title="1 of 2 branches missed.">        if (n &gt; 12) {</span>
+<span class="nc" id="L32">            throw new IllegalArgumentException(&quot;for dynamic programming approach and a COT computer, &quot; +</span>
+                    &quot;n should be &lt;= 12&quot;);
+        }
+
+        /*
+        first dimension holds the bits set, that is the set bits of the path so far.
+        second dimension holds the last node set in the path.  need for book-keeping to know that next
+        node added is an edge starting with this last node.
+         */
+<span class="fc" id="L41">        double[][] tab = new double[1&lt;&lt;n][n];</span>
+
+        //NOTE: can consider more efficient book keeping because n is small, but will use string for readability
+<span class="fc" id="L44">        String[][] tabPath = new String[1&lt;&lt;n][n];</span>
+
+        //NOTE: have edited the below so that we always start at vertex 0 since it is a cycle,
+        // and the relative order of an answer will be the same going around the cycle.
+
+        /*
+        considering subproblems.
+
+        simplest approach is start w/ s and walk thru what other vars and dimensions are needed to hold state:
+           init
+              fill all of tab with sentinel = Integer.MAX_VALUE.
+              tab[1&lt;&lt;i] = 0 for i=0 to n
+
+              for s = 0 to 1&lt;&lt;n
+                 we have a state s
+                 for i=
+                    subtract a node i to get prev state
+                    tab[s] = max ( tab[s], tab[prev] + edge from last node in s to i
+
+                    so now we see we need to store last node in tab too
+                    and iterate over each j as last j where it makes sense
+
+         */
+<span class="fc" id="L67">        double sentinel = Double.POSITIVE_INFINITY;</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        for (int i = 0; i &lt; (1&lt;&lt;n); ++i) {</span>
+<span class="fc" id="L69">            Arrays.fill(tab[i], sentinel);</span>
+        }
+        /* // this solves for any node as the start vertex.  need to adapth i loop below for it if enable.
+        for (int i = 0; i &lt; n; ++i) {
+            // init with 0 for all single node states.  the end node is itself
+            tab[1&lt;&lt;i][i] = 0;
+            tabPath[1&lt;&lt;i][i] = Integer.toString(i);
+        }*/
+        // init for starting the cycle at node i=0
+<span class="fc" id="L78">        tab[1&lt;&lt;0][0] = 0;</span>
+<span class="fc" id="L79">        tabPath[1&lt;&lt;0][0] = Integer.toString(0);</span>
+
+<span class="fc bfc" id="L81" title="All 2 branches covered.">        for (int s = 1; s &lt; (1&lt;&lt;n); ++s) {</span>
+
+            // i is the potential node to add to the state prev = S - i, that is S \ i
+            // we skip i=0 since we already set that as the starting node
+<span class="fc bfc" id="L85" title="All 2 branches covered.">            for (int i = 1; i &lt; n; ++i) {</span>
+                // make sure s and i have at least 1 bit in common
+<span class="fc bfc" id="L87" title="All 2 branches covered.">                if ((s &amp; (1&lt;&lt;i)) == 0) continue;</span>
+
+<span class="fc" id="L89">                int sPrev = (s ^ (1&lt;&lt;i));</span>
+
+                // loop over all set bits in sPrev as j
+<span class="fc" id="L92">                int tmp = sPrev;</span>
+
+<span class="fc bfc" id="L94" title="All 2 branches covered.">                while (tmp &gt; 0) {</span>
+<span class="fc" id="L95">                    int j = (int)(Math.log(tmp &amp; -tmp)/Math.log(2)); //lsb = tmp &amp; -tmp</span>
+
+<span class="fc bfc" id="L97" title="All 2 branches covered.">                    if (tab[sPrev][j] != sentinel) {</span>
+<span class="fc" id="L98">                        double d = tab[sPrev][j] + dist[j][i];</span>
+
+<span class="fc bfc" id="L100" title="All 2 branches covered.">                        if (tab[s][i] &gt; d) {</span>
+<span class="fc" id="L101">                            tab[s][i] = d;</span>
+<span class="fc" id="L102">                            tabPath[s][i] = String.format(&quot;%s,%d&quot;, tabPath[sPrev][j], i);</span>
+                        }
+
+                    }
+<span class="fc" id="L106">                    tmp &amp;= (tmp - 1);</span>
+<span class="fc" id="L107">                }</span>
+            }
+        }
+
+        // find min of all states covering all nodes.
+        // need to add the dist cost from last to first point to make it a cycle
+<span class="fc" id="L113">        int s = (1&lt;&lt;n)-1;</span>
+<span class="fc" id="L114">        double min = Integer.MAX_VALUE;</span>
+<span class="fc" id="L115">        String[] minPath = null;</span>
+<span class="fc" id="L116">        int minIdx = 0;</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">            if (tab[s][i] == sentinel) continue;</span>
+<span class="fc" id="L119">            String[] path = tabPath[s][i].split(&quot;,&quot;);</span>
+<span class="fc" id="L120">            double add = dist[Integer.parseInt(path[path.length-1])][Integer.parseInt(path[0])];</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">            if (min &gt; (tab[s][i] + add)) {</span>
+<span class="fc" id="L122">                min = tab[s][i] + add;</span>
+<span class="fc" id="L123">                minIdx = i;</span>
+<span class="fc" id="L124">                minPath = path;</span>
+            }
+        }
+<span class="fc" id="L127">        int[] path = new int[n+1];</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L129">            path[i] = Integer.parseInt(minPath[i]);</span>
+        }
+<span class="fc" id="L131">        path[n] = path[0];</span>
+<span class="fc" id="L132">        return path;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

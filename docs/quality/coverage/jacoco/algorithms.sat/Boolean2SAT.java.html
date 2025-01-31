@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Boolean2SAT.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.sat</a> &gt; <span class="el_source">Boolean2SAT.java</span></div><h1>Boolean2SAT.java</h1><pre class="source lang-java linenums">package algorithms.sat;
+
+import algorithms.graphs.StronglyConnectedComponents3;
+
+import java.util.*;
+
+<span class="fc" id="L7">public class Boolean2SAT {</span>
+
+    /**
+     * given an array of rows of CNF clauses of 2 variables, return whether
+     * a solution if the problem is satisfiable, else return null.
+     * Each clause is given as the disjunction (&quot;or&quot;) of a pair of literals,
+     * where a literal can be positive or negative.
+     * e.g. a CNF clause {-1, 3} is {@literal (-x1 \/ x3)}.
+     The r.t.c. is O(m + n) where m is the number of variables,
+     and n is the number of clauses.
+     &lt;pre&gt;
+     following description in Competetive Programming Handbook by Antti Laaksonen
+     Chap 17.2, but adding DPLL pre-processing to solve pure literals and unit variables first.
+     &lt;/pre&gt;
+     * @param cnfClauses an array of rows of CNF clauses of 2 variables.
+     * Each clause is given as the disjunction (that is, &quot;or&quot;)
+     * of a pair of literals,
+     * where a literal can be positive or negative.
+     * e.g. a CNF clause {-1, 3} is {@literal (-x1 \/ x3)}.
+     *                   allowed variable number range is [1, m], inclusive.
+     * @param the number of variables.  e.g. for a problem having
+     *            {-1,3}, {1,2} there are 3 variables: 1, 2, and 3.
+     * @return a map of key = positive literal variable number, value = true or false.
+     * note that null is returned for unsatisfiable.
+     */
+    public Map&lt;Integer, Boolean&gt; solve(int[][] cnfClauses, int m) {
+
+        /*
+        (0) Preprocess:
+            (A) preprocess for pure literals:
+              a pure literal, x_i, appears in clauses as only positive
+              or only negative.
+              (I) if x_i is a pure literal positive appearing, then
+                    it can immed be set to &quot;true&quot;,
+                  else if x_i is a pure literal negative,
+                    it can be immed set to &quot;false&quot;.
+              (II) simplify the clauses containing the pure literals
+                   (have removed this to keep the code simpler to read)
+           (B) find clauses containing just 1 variable
+               the result of the clause must be &quot;true&quot; so some variables
+               can also be set from that.
+
+        (1) create graph:
+        for each clause {a,b}, create 2 edges: (-a, b) and (-b, a).
+
+        (2) Find the strongly connected components.
+
+        (3) The problem is solvable if no nodes xi and ¬xi belong to the same
+            strongly connected component.
+
+            If a solution exists, the values for the variables can be found by going through the nodes of
+            the component graph in a reverse topological sort order.
+
+        (4) create the TS and solve in reverse TS order
+
+        will create a data structure to hold clauses as key=variable in positive form, value=set of variables
+        its paired with in positive or negative form as needed.
+
+        x1, -x3
+        clause map={(1:-3), (3:-1)}
+           as we determine x1=true, we use the map to find x3 = false, and remove both entries after solved.
+
+         */
+
+        // ===== pre-processing ==========
+<span class="fc" id="L72">        Map&lt;Integer, Boolean&gt; pureLiterals = findPureLiterals(cnfClauses, m);</span>
+
+<span class="fc" id="L74">        Map&lt;Integer, Boolean&gt; soln = new HashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">        for (Map.Entry&lt;Integer, Boolean&gt; entry : pureLiterals.entrySet()) {</span>
+<span class="fc" id="L76">            soln.put(entry.getKey(), entry.getValue());</span>
+<span class="fc" id="L77">        }</span>
+
+        /*
+        clauseMap key = literal in positive or negative form and value = paired literal in positive or negative form
+         */
+<span class="fc" id="L82">        Map&lt;Integer, Set&lt;Integer&gt;&gt; clauseMap = buildClauseMap(soln, cnfClauses, m);</span>
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">        if (clauseMap == null) {</span>
+<span class="nc" id="L84">            return null;</span>
+        }
+
+        // ======== create graph from clause Map ====
+        //for each clause {a,b}, create 2 edges: (-a, b) and (-b, a).
+<span class="fc" id="L89">        Map&lt;Integer, Collection&lt;Integer&gt;&gt; graph = new HashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">        for (Map.Entry&lt;Integer, Set&lt;Integer&gt;&gt; entry : clauseMap.entrySet()) {</span>
+<span class="fc" id="L91">            int a = entry.getKey();</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">            for (int b : entry.getValue()) {</span>
+<span class="fc" id="L93">                graph.putIfAbsent(-a, new HashSet&lt;&gt;());</span>
+<span class="fc" id="L94">                graph.get(-a).add(b);</span>
+
+<span class="fc" id="L96">                graph.putIfAbsent(-b, new HashSet&lt;&gt;());</span>
+<span class="fc" id="L97">                graph.get(-b).add(a);</span>
+<span class="fc" id="L98">            }</span>
+<span class="fc" id="L99">        }</span>
+
+        // find the strongly connected components of graph
+<span class="fc" id="L102">        StronglyConnectedComponents3 scc = new StronglyConnectedComponents3();</span>
+<span class="fc" id="L103">        Map&lt;Integer, Set&lt;Integer&gt;&gt; outputComponents = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L104">        Map&lt;Integer, Set&lt;Integer&gt;&gt; sccCondensedAdjMap = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L105">        scc.find(graph, outputComponents, sccCondensedAdjMap);</span>
+
+<span class="fc bfc" id="L107" title="All 2 branches covered.">        for (Map.Entry&lt;Integer, Set&lt;Integer&gt;&gt; entry : outputComponents.entrySet()) {</span>
+            // if comp contains positive and negative of any literal, it is not solvable
+<span class="fc" id="L109">            Set&lt;Integer&gt; comp = entry.getValue();</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">            for (int c : comp) {</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">                if (comp.contains(-c)) {</span>
+<span class="fc" id="L112">                    return null;</span>
+                }
+<span class="fc" id="L114">            }</span>
+<span class="fc" id="L115">        }</span>
+
+        // solvable, need TS of graph
+<span class="fc" id="L118">        List&lt;Integer&gt; ts = topSort(sccCondensedAdjMap);</span>
+
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">        if (ts == null) {</span>
+<span class="nc" id="L121">            throw new IllegalStateException(&quot;Error in algorithm.  clause graph strongly connected components&quot; +</span>
+                    &quot; show that problem is solvable, but the topological sort did not include all nodes.&quot;);
+        }
+
+<span class="fc bfc" id="L125" title="All 2 branches covered.">        for (int i = ts.size() - 1; i &gt;= 0; --i) {</span>
+<span class="fc" id="L126">            int root = ts.get(i);</span>
+<span class="fc" id="L127">            Set&lt;Integer&gt; comp = outputComponents.get(root);</span>
+
+<span class="fc bfc" id="L129" title="All 2 branches covered.">            for (int u : comp) {</span>
+
+<span class="fc bfc" id="L131" title="All 2 branches covered.">                if (soln.containsKey(Math.abs(u))) continue;</span>
+
+                // solve from existing clauses
+<span class="fc" id="L134">                Set&lt;Integer&gt; vs = clauseMap.get(u);</span>
+
+<span class="pc bnc" id="L136" title="All 2 branches missed.">                assert (vs != null);</span>
+
+<span class="fc bfc" id="L138" title="All 2 branches covered.">                for (int v : vs) {</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">                    if (soln.containsKey(Math.abs(v))) {</span>
+<span class="fc" id="L140">                        boolean vV = soln.get(Math.abs(v));</span>
+                        // -u /\ -v, -u /\ v, u /\ v, u /\ -v
+                        //  only if right side result is F, we have a definite uV to make clause true
+<span class="pc bpc" id="L143" title="2 of 8 branches missed.">                        if ((v &lt; 0 &amp;&amp; vV) || (v&gt;0 &amp;&amp; !vV)) {</span>
+<span class="pc bpc" id="L144" title="1 of 2 branches missed.">                           if (u &lt; 0) {//(-u, -T) so u is F</span>
+<span class="nc" id="L145">                               soln.put(-u, false);</span>
+                           } else {
+<span class="fc" id="L147">                               soln.put(u, true);</span>
+                           }
+<span class="fc" id="L149">                           break;</span>
+                        }
+                    }
+<span class="fc" id="L152">                }</span>
+
+<span class="fc bfc" id="L154" title="All 2 branches covered.">                if (soln.containsKey(Math.abs(u))) continue;</span>
+
+                // else set signu to signTrue
+<span class="pc bpc" id="L157" title="1 of 2 branches missed.">                if (u &lt; 0) {</span>
+<span class="fc" id="L158">                    soln.put(-u, false);</span>
+                } else {
+<span class="nc" id="L160">                    soln.put(u, true);</span>
+                }
+<span class="fc" id="L162">            }// end loop over 1 strongly connected component</span>
+        }// end loop over all strongly connected components
+<span class="pc bnc" id="L164" title="All 2 branches missed.">        assert(soln.size() == m);</span>
+<span class="fc" id="L165">        return soln;</span>
+    }
+
+    private List&lt;Integer&gt; topSort(Map&lt;Integer, Set&lt;Integer&gt;&gt; graph) {
+<span class="fc" id="L169">        Map&lt;Integer, Integer&gt; incoming = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L170">        Set&lt;Integer&gt; vertices = new HashSet&lt;&gt;();</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">        for (Map.Entry&lt;Integer, Set&lt;Integer&gt;&gt; entry : graph.entrySet()) {</span>
+<span class="fc" id="L172">            int u = entry.getKey();</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">            for (int v : entry.getValue()) {</span>
+<span class="fc" id="L174">                incoming.put(v, incoming.getOrDefault(u, 0) + 1);</span>
+<span class="fc" id="L175">                vertices.add(v);</span>
+<span class="fc" id="L176">            }</span>
+<span class="fc" id="L177">            vertices.add(u);</span>
+<span class="fc" id="L178">        }</span>
+        // vertices with no incoming go in queue
+<span class="fc" id="L180">        Queue&lt;Integer&gt; q = new ArrayDeque();</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">        for (int u : vertices) {</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">            if (!incoming.containsKey(u)) {</span>
+<span class="fc" id="L183">                q.offer(u);</span>
+            }
+<span class="fc" id="L185">        }</span>
+
+<span class="fc" id="L187">        List&lt;Integer&gt; out = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">        while (!q.isEmpty()) {</span>
+<span class="fc" id="L189">            int u = q.poll();</span>
+<span class="fc" id="L190">            out.add(u);</span>
+<span class="fc bfc" id="L191" title="All 2 branches covered.">            if (!graph.containsKey(u)) continue;</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">            for (int v : graph.get(u)) {</span>
+<span class="pc bpc" id="L193" title="1 of 2 branches missed.">                if (incoming.get(v) == 1) {</span>
+<span class="fc" id="L194">                    q.offer(v);</span>
+<span class="fc" id="L195">                    incoming.remove(v);</span>
+                } else {
+<span class="nc" id="L197">                    incoming.put(v, incoming.get(v) - 1);</span>
+                }
+<span class="fc" id="L199">            }</span>
+<span class="fc" id="L200">        }</span>
+<span class="pc bpc" id="L201" title="1 of 2 branches missed.">        if (out.size() &lt; vertices.size()) {</span>
+<span class="nc" id="L202">            return null;</span>
+        }
+<span class="fc" id="L204">        return out;</span>
+    }
+
+    // build a clause map
+    private Map&lt;Integer, Set&lt;Integer&gt;&gt; buildClauseMap(Map&lt;Integer, Boolean&gt; soln, int[][] cnfClauses, int m) {
+
+<span class="fc" id="L210">        Map&lt;Integer, Set&lt;Integer&gt;&gt; clauseMap = new HashMap&lt;&gt;();</span>
+
+        int a, b;
+<span class="fc bfc" id="L213" title="All 2 branches covered.">        for (int[] clause : cnfClauses) {</span>
+<span class="fc" id="L214">            a = clause[0];</span>
+<span class="fc" id="L215">            b = clause[1];</span>
+
+            /*
+            Boolean solvedClause = processUnit(a, b, soln);
+            if (solvedClause == null) {
+                return null;
+            }
+            if (solvedClause) continue;
+            solvedClause = processUnit(b, a, soln);
+            if (solvedClause == null) {
+                return null;
+            }
+            if (solvedClause) continue;
+            */
+            //add to clause map
+<span class="fc" id="L230">            clauseMap.putIfAbsent(a, new HashSet&lt;&gt;());</span>
+<span class="fc" id="L231">            clauseMap.get(a).add(b);</span>
+<span class="fc" id="L232">            clauseMap.putIfAbsent(b, new HashSet&lt;&gt;());</span>
+<span class="fc" id="L233">            clauseMap.get(b).add(a);</span>
+        }
+<span class="fc" id="L235">        return clauseMap;</span>
+    }
+
+    /**
+     *
+     * @param a
+     * @param b
+     * @param soln
+     * @return True if processed and solved both variables (b added to soln),
+     * else if False did not find  a in soln so no effect, else NULL if found a and b solved
+     * but they conflict (both are false).
+     */
+    private Boolean processUnit(int a, int b, Map&lt;Integer, Boolean&gt; soln) {
+<span class="nc bnc" id="L248" title="All 2 branches missed.">        if (a &lt; 0) {</span>
+<span class="nc" id="L249">            a *= -1;</span>
+<span class="nc" id="L250">            b *= -1;</span>
+        }
+<span class="nc bnc" id="L252" title="All 2 branches missed.">        if (soln.containsKey(a)) {</span>
+<span class="nc" id="L253">            boolean aV = soln.get(a);</span>
+<span class="nc bnc" id="L254" title="All 2 branches missed.">            if (soln.containsKey(Math.abs(b))) {</span>
+<span class="nc" id="L255">                boolean bV = soln.get(Math.abs(b));</span>
+<span class="nc bnc" id="L256" title="All 2 branches missed.">                if (b &lt; 0) {</span>
+<span class="nc bnc" id="L257" title="All 2 branches missed.">                    bV = !bV;</span>
+                }
+<span class="nc bnc" id="L259" title="All 4 branches missed.">                if (!aV &amp;&amp; !bV) {</span>
+                    // not solvable.  conflict of pure literals or unit vars
+<span class="nc" id="L261">                    return null;</span>
+                }
+<span class="nc" id="L263">            } else {</span>
+                //(a || -b)  (a || b)  (-a || -b) (-a || b)
+                // T   T,F       T,F    F    *F    *F     T
+<span class="nc bnc" id="L266" title="All 2 branches missed.">                if (!aV) {// can solve b</span>
+<span class="nc bnc" id="L267" title="All 2 branches missed.">                    if (b &lt; 0) {</span>
+                        // b is false
+<span class="nc" id="L269">                        soln.put(Math.abs(b), false);</span>
+                    } else {
+                        // b is true
+<span class="nc" id="L272">                        soln.put(Math.abs(b), false);</span>
+                    }
+<span class="nc" id="L274">                    return Boolean.TRUE;</span>
+                }
+            }
+        }
+<span class="nc" id="L278">        return Boolean.FALSE;</span>
+    }
+
+    private Map&lt;Integer, Boolean&gt; findPureLiterals(int[][] cnfClauses, int m) {
+<span class="fc" id="L282">        Set&lt;Integer&gt; posLiterals = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L283">        Set&lt;Integer&gt; negLiterals = new HashSet&lt;&gt;();</span>
+<span class="fc bfc" id="L284" title="All 2 branches covered.">        for (int[] clause : cnfClauses) {</span>
+<span class="fc bfc" id="L285" title="All 2 branches covered.">            if (clause[0] &lt; 0) {</span>
+<span class="fc" id="L286">                negLiterals.add(-clause[0]);</span>
+            } else {
+<span class="fc" id="L288">                posLiterals.add(clause[0]);</span>
+            }
+<span class="fc bfc" id="L290" title="All 2 branches covered.">            if (clause[1] &lt; 0) {</span>
+<span class="fc" id="L291">                negLiterals.add(-clause[1]);</span>
+            } else {
+<span class="fc" id="L293">                posLiterals.add(clause[1]);</span>
+            }
+        }
+<span class="fc" id="L296">        Map&lt;Integer, Boolean&gt; pureLiterals = new HashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L297" title="All 2 branches covered.">        for (int i = 1; i &lt;= m; ++i) {</span>
+<span class="pc bpc" id="L298" title="1 of 4 branches missed.">            if (posLiterals.contains(i) &amp;&amp; !negLiterals.contains(i)) {</span>
+<span class="fc" id="L299">                pureLiterals.put(i, true);</span>
+<span class="pc bpc" id="L300" title="3 of 4 branches missed.">            } else if (!posLiterals.contains(i) &amp;&amp; negLiterals.contains(i)) {</span>
+<span class="nc" id="L301">                pureLiterals.put(i, false);</span>
+            }
+        }
+<span class="fc" id="L304">        return pureLiterals;</span>
+    }
+
+    /*
+    for more than 3 variables in a clause, there are several algorithms including DPLL,
+    but none are efficient - the problem is NP-Hard
+     */
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

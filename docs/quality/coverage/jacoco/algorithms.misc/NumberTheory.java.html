@@ -18,6 +18,7 @@
      * return the greatest common denominator of the 2 integers.
      *
      * runtime complexity is less than the number of base10 digits in a.
+     * r.t.c. O(nlogn)
      * 
      @param a
      @param b
@@ -25,18 +26,18 @@
      */
     public static int euclid(int a, int b) {
         int t;
-<span class="fc bfc" id="L28" title="All 2 branches covered.">        while (b != 0) {</span>
-<span class="fc" id="L29">            t = b;</span>
-<span class="fc" id="L30">            b = Math.floorMod(a, b);//a % b;  a - floorDiv(a, b) * b</span>
-<span class="fc" id="L31">            a = t;</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">        while (b != 0) {</span>
+<span class="fc" id="L30">            t = b;</span>
+<span class="fc" id="L31">            b = Math.floorMod(a, b);//a % b;  a - floorDiv(a, b) * b</span>
+<span class="fc" id="L32">            a = t;</span>
         }
-<span class="fc" id="L33">        return Math.max(a, -a);</span>
+<span class="fc" id="L34">        return Math.max(a, -a);</span>
     }
 
     /**
      * return the greatest common denominator of the 2 integers.
      *
-     * runtime complexity is (?)
+     * runtime complexity is O(nlogn)
      * 
      @param a
      @param b
@@ -44,12 +45,12 @@
      */
     public static long euclid(long a, long b) {
         long swap;
-<span class="fc bfc" id="L47" title="All 2 branches covered.">        while (b != 0) {</span>
-<span class="fc" id="L48">            swap = b;</span>
-<span class="fc" id="L49">            b = Math.floorMod(a, b);</span>
-<span class="fc" id="L50">            a = swap;</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">        while (b != 0) {</span>
+<span class="fc" id="L49">            swap = b;</span>
+<span class="fc" id="L50">            b = Math.floorMod(a, b);</span>
+<span class="fc" id="L51">            a = swap;</span>
         }
-<span class="fc" id="L52">        return Math.max(a, -a);</span>
+<span class="fc" id="L53">        return Math.max(a, -a);</span>
     }
     
     /**
@@ -83,22 +84,22 @@
         extended Euclidean algorithm.
         */
         
-<span class="fc" id="L86">        long min = Long.MAX_VALUE;</span>
+<span class="fc" id="L87">        long min = Long.MAX_VALUE;</span>
         
-<span class="fc" id="L88">        long[] dXY = extendedEuclid(a, n);</span>
-<span class="fc" id="L89">        long d = dXY[0];</span>
-<span class="pc bpc" id="L90" title="2 of 4 branches missed.">        if (d == 0L || ((b % d) != 0)) {</span>
-<span class="nc" id="L91">            return new long[]{min};</span>
+<span class="fc" id="L89">        long[] dXY = extendedEuclid(a, n);</span>
+<span class="fc" id="L90">        long d = dXY[0];</span>
+<span class="pc bpc" id="L91" title="2 of 4 branches missed.">        if (d == 0L || ((b % d) != 0)) {</span>
+<span class="nc" id="L92">            return new long[]{min};</span>
         }
-<span class="fc" id="L93">        long m = dXY[1] * (b / d);</span>
+<span class="fc" id="L94">        long m = dXY[1] * (b / d);</span>
         // use the floor modulo operator instead of the default truncated which is '%'
-<span class="fc" id="L95">        long x0 = Math.floorMod(m, n);</span>
-<span class="fc" id="L96">        long[] s = new long[(int)d];</span>
+<span class="fc" id="L96">        long x0 = Math.floorMod(m, n);</span>
+<span class="fc" id="L97">        long[] s = new long[(int)d];</span>
         
-<span class="fc bfc" id="L98" title="All 2 branches covered.">        for (int i = 0; i &lt; d; ++i) {</span>
-<span class="fc" id="L99">            s[i] = (x0 + i * (n / d)) % n;</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">        for (int i = 0; i &lt; d; ++i) {</span>
+<span class="fc" id="L100">            s[i] = (x0 + i * (n / d)) % n;</span>
         }
-<span class="fc" id="L101">        return s;</span>
+<span class="fc" id="L102">        return s;</span>
     }
     
     /**
@@ -114,26 +115,26 @@
      */
     public static int modularExponentiation(int a, int b, int n) {
         
-<span class="pc bpc" id="L117" title="1 of 2 branches missed.">        if (a == 0) {</span>
-<span class="nc" id="L118">            return 0;</span>
+<span class="pc bpc" id="L118" title="1 of 2 branches missed.">        if (a == 0) {</span>
+<span class="nc" id="L119">            return 0;</span>
         }
-<span class="pc bpc" id="L120" title="3 of 4 branches missed.">        if (b == 0 &amp;&amp; a &lt; n) {</span>
-<span class="nc" id="L121">            return a;</span>
+<span class="pc bpc" id="L121" title="3 of 4 branches missed.">        if (b == 0 &amp;&amp; a &lt; n) {</span>
+<span class="nc" id="L122">            return a;</span>
         }
-<span class="fc" id="L123">        int c = 0;</span>
-<span class="fc" id="L124">        int d = 1;</span>
-<span class="fc" id="L125">        int k = MiscMath0.numberOfBits(b);</span>
-<span class="fc" id="L126">        int mask = 1 &lt;&lt; (k - 1);</span>
-<span class="fc bfc" id="L127" title="All 2 branches covered.">        for (int i = k - 1; i &gt;= 0; --i) {</span>
-<span class="fc" id="L128">            c *= 2;</span>
-<span class="fc" id="L129">            d = Math.floorMod(d*d, n);//(d*d) % n;</span>
-<span class="fc bfc" id="L130" title="All 2 branches covered.">            if ((b &amp; mask) != 0) {</span>
-<span class="fc" id="L131">                c++;</span>
-<span class="fc" id="L132">                d = Math.floorMod(d*a, n);//(d*a) % n;</span>
+<span class="fc" id="L124">        int c = 0;</span>
+<span class="fc" id="L125">        int d = 1;</span>
+<span class="fc" id="L126">        int k = MiscMath0.numberOfBits(b);</span>
+<span class="fc" id="L127">        int mask = 1 &lt;&lt; (k - 1);</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">        for (int i = k - 1; i &gt;= 0; --i) {</span>
+<span class="fc" id="L129">            c *= 2;</span>
+<span class="fc" id="L130">            d = Math.floorMod(d*d, n);//(d*d) % n;</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">            if ((b &amp; mask) != 0) {</span>
+<span class="fc" id="L132">                c++;</span>
+<span class="fc" id="L133">                d = Math.floorMod(d*a, n);//(d*a) % n;</span>
             } 
-<span class="fc" id="L134">            mask &gt;&gt;= 1;</span>
+<span class="fc" id="L135">            mask &gt;&gt;= 1;</span>
         }
-<span class="fc" id="L136">        return d;</span>
+<span class="fc" id="L137">        return d;</span>
     }
     
     /**
@@ -149,26 +150,26 @@
      */
     public static long modularExponentiation(long a, long b, long n) {
         
-<span class="pc bpc" id="L152" title="1 of 2 branches missed.">        if (a == 0) {</span>
-<span class="nc" id="L153">            return 0;</span>
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">        if (a == 0) {</span>
+<span class="nc" id="L154">            return 0;</span>
         }
-<span class="pc bpc" id="L155" title="3 of 4 branches missed.">        if (b == 0 &amp;&amp; a &lt; n) {</span>
-<span class="nc" id="L156">            return a;</span>
+<span class="pc bpc" id="L156" title="3 of 4 branches missed.">        if (b == 0 &amp;&amp; a &lt; n) {</span>
+<span class="nc" id="L157">            return a;</span>
         }
-<span class="fc" id="L158">        int c = 0;</span>
-<span class="fc" id="L159">        long d = 1;</span>
-<span class="fc" id="L160">        int k = MiscMath0.numberOfBits(b);</span>
-<span class="fc" id="L161">        long mask = 1 &lt;&lt; (k - 1);</span>
-<span class="fc bfc" id="L162" title="All 2 branches covered.">        for (int i = k - 1; i &gt;= 0; --i) {</span>
-<span class="fc" id="L163">            c *= 2;</span>
-<span class="fc" id="L164">            d = Math.floorMod(d*d, n);//(d*d) % n;</span>
-<span class="fc bfc" id="L165" title="All 2 branches covered.">            if ((b &amp; mask) != 0) {</span>
-<span class="fc" id="L166">                c++;</span>
-<span class="fc" id="L167">                d = Math.floorMod(d*a, n);//(d*a) % n;</span>
+<span class="fc" id="L159">        int c = 0;</span>
+<span class="fc" id="L160">        long d = 1;</span>
+<span class="fc" id="L161">        int k = MiscMath0.numberOfBits(b);</span>
+<span class="fc" id="L162">        long mask = 1 &lt;&lt; (k - 1);</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">        for (int i = k - 1; i &gt;= 0; --i) {</span>
+<span class="fc" id="L164">            c *= 2;</span>
+<span class="fc" id="L165">            d = Math.floorMod(d*d, n);//(d*d) % n;</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">            if ((b &amp; mask) != 0) {</span>
+<span class="fc" id="L167">                c++;</span>
+<span class="fc" id="L168">                d = Math.floorMod(d*a, n);//(d*a) % n;</span>
             } 
-<span class="fc" id="L169">            mask &gt;&gt;= 1;</span>
+<span class="fc" id="L170">            mask &gt;&gt;= 1;</span>
         }
-<span class="fc" id="L171">        return d;</span>
+<span class="fc" id="L172">        return d;</span>
     }
     
     /*
@@ -192,16 +193,16 @@
      * 
      */
     public static long[] extendedEuclid(long a, long b) {
-<span class="fc bfc" id="L195" title="All 2 branches covered.">        if (b == 0) {</span>
-<span class="fc" id="L196">            return new long[]{a, 1, 0};</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">        if (b == 0) {</span>
+<span class="fc" id="L197">            return new long[]{a, 1, 0};</span>
         }
         
-<span class="fc" id="L199">        long[] dxyP = extendedEuclid(b, a % b);</span>
+<span class="fc" id="L200">        long[] dxyP = extendedEuclid(b, a % b);</span>
         
-<span class="fc" id="L201">        long t = (long)Math.floor((double)a/(double)b);</span>
-<span class="fc" id="L202">        long r = dxyP[1] - t*dxyP[2];</span>
+<span class="fc" id="L202">        long t = (long)Math.floor((double)a/(double)b);</span>
+<span class="fc" id="L203">        long r = dxyP[1] - t*dxyP[2];</span>
         
-<span class="fc" id="L204">        return new long[] {dxyP[0], dxyP[2], r};</span>
+<span class="fc" id="L205">        return new long[] {dxyP[0], dxyP[2], r};</span>
     }
     
     /**
@@ -219,14 +220,36 @@
      @return 
      */
     public static long leastCommonMultiple(long a, long b) {
-<span class="pc bpc" id="L222" title="3 of 4 branches missed.">        if (a == 0 &amp;&amp; b == 0) {</span>
-<span class="nc" id="L223">            throw new IllegalArgumentException(&quot;a and b cannot both be0&quot;);</span>
+<span class="pc bpc" id="L223" title="3 of 4 branches missed.">        if (a == 0 &amp;&amp; b == 0) {</span>
+<span class="nc" id="L224">            throw new IllegalArgumentException(&quot;a and b cannot both be0&quot;);</span>
         }
         
-<span class="fc" id="L226">        long m = Math.abs(a * b);</span>
-<span class="fc" id="L227">        long gcd = euclid(a, b);</span>
+<span class="fc" id="L227">        long m = Math.abs(a * b);</span>
+<span class="fc" id="L228">        long gcd = euclid(a, b);</span>
         
-<span class="fc" id="L229">        return m/gcd;</span>
+<span class="fc" id="L230">        return m/gcd;</span>
+    }
+
+    /**
+     * gererate a Pythagorean triple of numbers, that is a, b and c where
+     * (a*a) + (b*b) = (c*c) using Euclid's formula.
+     * @param m
+     * @param n
+     * @return
+     */
+    public static long[] generatePythagoreanTriples(int n, int m) {
+<span class="pc bpc" id="L241" title="3 of 6 branches missed.">        if (m &lt;= 0 || n &lt;= 0 || m &lt; n) {</span>
+<span class="nc" id="L242">            throw new IllegalArgumentException(&quot;m, n must be &gt; 0, and m &gt; n.&quot;);</span>
+        }
+<span class="fc" id="L244">        return generatePythagoreanTriples(n, m, 1);</span>
+    }
+    public static long[] generatePythagoreanTriples(int n, int m, int k) {
+<span class="pc bpc" id="L247" title="4 of 8 branches missed.">        if (m &lt;= 0 || n &lt;= 0 || m &lt; n || k&lt;=0) {</span>
+<span class="nc" id="L248">            throw new IllegalArgumentException(&quot;m, n, k must be &gt; 0, and m &gt; n.&quot;);</span>
+        }
+<span class="fc" id="L250">        long m2 = m*m;</span>
+<span class="fc" id="L251">        long n2 = n*n;</span>
+<span class="fc" id="L252">        return new long[]{k * (m2 - n2), k * (2 * m * n), k * (m2 + n2)};</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

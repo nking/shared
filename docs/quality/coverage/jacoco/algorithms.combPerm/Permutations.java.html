@@ -50,7 +50,7 @@ import java.util.List;
         //output(A)
 <span class="fc" id="L51">        outPermutations[oc] = Arrays.copyOf(set, n);</span>
 <span class="fc" id="L52">        oc++;</span>
-        
+
         /*
         procedure recursive(k : integer, A : array of any):
             if k = 0 then {
@@ -69,7 +69,7 @@ import java.util.List;
                         swap(A[0], A[k-1])
                     end if
                 end if
-            end for        
+            end for
         */
 
 <span class="fc" id="L75">        nIter0 = 0;</span>
@@ -261,29 +261,36 @@ import java.util.List;
 
     public static List&lt;int[]&gt; recursivePermute(int[] a) {
 <span class="fc" id="L263">        int n = a.length;</span>
-<span class="fc" id="L264">        int[] tmp = new int[n];</span>
-<span class="fc" id="L265">        List&lt;int[]&gt; out = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L266">        int[] chosen = new int[n];</span>
-
-<span class="fc" id="L268">        r(a, out, tmp, 0, chosen);</span>
-<span class="fc" id="L269">        return out;</span>
+<span class="fc" id="L264">        List&lt;int[]&gt; out = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L265">        r(n, a, out);</span>
+<span class="fc" id="L266">        return out;</span>
     }
 
-    private static void r(int[] a, List&lt;int[]&gt; out, int[] tmp, int iTmp, int[] chosen) {
-<span class="fc bfc" id="L273" title="All 2 branches covered.">        if (iTmp == a.length) {</span>
-<span class="fc" id="L274">            out.add(Arrays.copyOf(tmp, tmp.length));</span>
-<span class="fc" id="L275">            return;</span>
+    private static void r(int k, int[] a, List&lt;int[]&gt; out) {
+<span class="fc bfc" id="L270" title="All 2 branches covered.">        if (k == 0) {</span>
+<span class="fc" id="L271">            out.add(Arrays.copyOf(a, a.length));</span>
+<span class="fc" id="L272">            return;</span>
         }
-<span class="fc bfc" id="L277" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc bfc" id="L278" title="All 2 branches covered.">            if (chosen[i] != 0) continue;</span>
-
-<span class="fc" id="L280">            chosen[i] = 1;</span>
-<span class="fc" id="L281">            tmp[iTmp] = a[i];</span>
-<span class="fc" id="L282">            r(a, out, tmp, iTmp+1, chosen);</span>
-
-            // backtrack:
-<span class="fc" id="L285">            chosen[i] = 0;</span>
+<span class="fc" id="L274">        int i = k - 1;</span>
+<span class="pc bpc" id="L275" title="1 of 2 branches missed.">        for (int c = 0; c &lt;= i; ++c) {</span>
+<span class="fc" id="L276">            r(i, a, out);</span>
+<span class="fc bfc" id="L277" title="All 2 branches covered.">            if (c == i) break;</span>
+<span class="fc bfc" id="L278" title="All 2 branches covered.">            if ((i&amp;1) == 0) {</span>
+                // swap 0, i
+<span class="pc bpc" id="L280" title="1 of 2 branches missed.">                if (i != 0) {</span>
+<span class="fc" id="L281">                    a[0] ^= a[i];</span>
+<span class="fc" id="L282">                    a[i] ^= a[0];</span>
+<span class="fc" id="L283">                    a[0] ^= a[i];</span>
+                }
+            } else {
+                // swap c, i
+<span class="pc bpc" id="L287" title="1 of 2 branches missed.">                if (c != i) {</span>
+<span class="fc" id="L288">                    a[c] ^= a[i];</span>
+<span class="fc" id="L289">                    a[i] ^= a[c];</span>
+<span class="fc" id="L290">                    a[c] ^= a[i];</span>
+                }
+            }
         }
-<span class="fc" id="L287">    }</span>
+<span class="fc" id="L294">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -105,9 +105,7 @@ import java.util.stream.IntStream;
  There are 3 longest sequences.
  The length of the longest sequence is 2.
 
- &lt;pre&gt;
  --------------------------------
- &lt;/pre&gt;
 
  For multi-column data and non-decreasing subsequences:
 
@@ -152,13 +150,12 @@ import java.util.stream.IntStream;
  &lt;/pre&gt;
 
  */
-<span class="pc" id="L155">public class LongestIncreasingSubsequence {</span>
+<span class="pc" id="L153">public class LongestIncreasingSubsequence {</span>
 
     /**
      * given a list of integers, return the indexes of the longest increasing subsequence
      * where increasing is defind as stricly increasing.  If there is more than one sequence
      * with same max length, returns one of them.
-     &lt;pre&gt;
      &lt;pre&gt;
      a = new int[]{2,2,1,7,6};
 
@@ -184,24 +181,24 @@ import java.util.stream.IntStream;
      */
     public static List&lt;Integer&gt; findAnyStrictlyIncreasing(int[] a) {
 
-<span class="fc" id="L187">        List&lt;Integer&gt; pileReps = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L188">        List&lt;Integer&gt; pileRepIdxs = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L184">        List&lt;Integer&gt; pileReps = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L185">        List&lt;Integer&gt; pileRepIdxs = new ArrayList&lt;&gt;();</span>
         int v;
-<span class="fc bfc" id="L190" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L191">            v = a[i];</span>
-<span class="fc bfc" id="L192" title="All 4 branches covered.">            if (pileReps.isEmpty() || v &gt; pileReps.get(pileReps.size() - 1)) {</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L188">            v = a[i];</span>
+<span class="fc bfc" id="L189" title="All 4 branches covered.">            if (pileReps.isEmpty() || v &gt; pileReps.get(pileReps.size() - 1)) {</span>
                 // create new pile for v which is GT last element
-<span class="fc" id="L194">                pileReps.add(v);</span>
-<span class="fc" id="L195">                pileRepIdxs.add(i);</span>
+<span class="fc" id="L191">                pileReps.add(v);</span>
+<span class="fc" id="L192">                pileRepIdxs.add(i);</span>
             } else {
-<span class="fc" id="L197">                int idx = MiscBisectingSearch.ceiling(pileReps, v);</span>
-<span class="pc bnc" id="L198" title="All 4 branches missed.">                assert(idx &gt;-1 &amp;&amp; idx &lt; pileReps.size());</span>
-<span class="fc" id="L199">                pileReps.set(idx, v);</span>
-<span class="fc" id="L200">                pileRepIdxs.set(idx, i);</span>
+<span class="fc" id="L194">                int idx = MiscBisectingSearch.ceiling(pileReps, v);</span>
+<span class="pc bnc" id="L195" title="All 4 branches missed.">                assert(idx &gt;-1 &amp;&amp; idx &lt; pileReps.size());</span>
+<span class="fc" id="L196">                pileReps.set(idx, v);</span>
+<span class="fc" id="L197">                pileRepIdxs.set(idx, i);</span>
             }
         }
 
-<span class="fc" id="L204">        return pileRepIdxs;</span>
+<span class="fc" id="L201">        return pileRepIdxs;</span>
     }
 
     /**
@@ -234,51 +231,51 @@ import java.util.stream.IntStream;
      */
     public static List&lt;int[]&gt; findAllStrictlyIncreasing(int[] a) {
 
-<span class="fc" id="L237">        List&lt;Integer&gt; pileReps = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L238">        List&lt;List&lt;Integer&gt;&gt; pileIdxs = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L234">        List&lt;Integer&gt; pileReps = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L235">        List&lt;List&lt;Integer&gt;&gt; pileIdxs = new ArrayList&lt;&gt;();</span>
         int v;
-<span class="fc bfc" id="L240" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L241">            v = a[i];</span>
-<span class="fc bfc" id="L242" title="All 4 branches covered.">            if (pileReps.isEmpty() || v &gt; pileReps.get(pileReps.size() - 1)) {</span>
+<span class="fc bfc" id="L237" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L238">            v = a[i];</span>
+<span class="fc bfc" id="L239" title="All 4 branches covered.">            if (pileReps.isEmpty() || v &gt; pileReps.get(pileReps.size() - 1)) {</span>
                 // create new pile if v &gt; last element
-<span class="fc" id="L244">                pileReps.add(v);</span>
-<span class="fc" id="L245">                pileIdxs.add(new ArrayList&lt;&gt;());</span>
-<span class="fc" id="L246">                pileIdxs.get(pileIdxs.size() - 1).add(i);</span>
+<span class="fc" id="L241">                pileReps.add(v);</span>
+<span class="fc" id="L242">                pileIdxs.add(new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L243">                pileIdxs.get(pileIdxs.size() - 1).add(i);</span>
             } else {
-<span class="fc" id="L248">                int idx = MiscBisectingSearch.ceiling(pileReps, v);</span>
-<span class="pc bnc" id="L249" title="All 4 branches missed.">                assert(idx &gt;-1 &amp;&amp; idx &lt; pileReps.size());</span>
-<span class="fc" id="L250">                pileReps.set(idx, v);</span>
-<span class="fc" id="L251">                pileIdxs.get(idx).add(i);</span>
+<span class="fc" id="L245">                int idx = MiscBisectingSearch.ceiling(pileReps, v);</span>
+<span class="pc bnc" id="L246" title="All 4 branches missed.">                assert(idx &gt;-1 &amp;&amp; idx &lt; pileReps.size());</span>
+<span class="fc" id="L247">                pileReps.set(idx, v);</span>
+<span class="fc" id="L248">                pileIdxs.get(idx).add(i);</span>
             }
         }
 
         // return every combination of pileIdxs
 
-<span class="fc" id="L257">        List&lt;int[]&gt; out = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L258">        int[] curr = new int[pileIdxs.size()];</span>
-<span class="fc" id="L259">        combineRecursively(0, curr, out, pileIdxs);</span>
+<span class="fc" id="L254">        List&lt;int[]&gt; out = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L255">        int[] curr = new int[pileIdxs.size()];</span>
+<span class="fc" id="L256">        combineRecursively(0, curr, out, pileIdxs);</span>
 
-<span class="fc" id="L261">        int nSize = 1;</span>
-<span class="fc bfc" id="L262" title="All 2 branches covered.">        for (int i = 0; i &lt; pileIdxs.size(); ++i) {</span>
-<span class="fc" id="L263">            nSize *= pileIdxs.get(i).size();</span>
+<span class="fc" id="L258">        int nSize = 1;</span>
+<span class="fc bfc" id="L259" title="All 2 branches covered.">        for (int i = 0; i &lt; pileIdxs.size(); ++i) {</span>
+<span class="fc" id="L260">            nSize *= pileIdxs.get(i).size();</span>
         }
-<span class="pc bnc" id="L265" title="All 2 branches missed.">        assert(out.size() == nSize);</span>
+<span class="pc bnc" id="L262" title="All 2 branches missed.">        assert(out.size() == nSize);</span>
 
-<span class="fc" id="L267">        return out;</span>
+<span class="fc" id="L264">        return out;</span>
     }
 
     private static void combineRecursively(int i, int[] curr, List&lt;int[]&gt; out, List&lt;List&lt;Integer&gt;&gt; pileIdxs) {
-<span class="fc bfc" id="L271" title="All 2 branches covered.">        if (i == pileIdxs.size()) {</span>
-<span class="fc" id="L272">            out.add(Arrays.copyOf(curr, curr.length));</span>
-<span class="fc" id="L273">            return;</span>
+<span class="fc bfc" id="L268" title="All 2 branches covered.">        if (i == pileIdxs.size()) {</span>
+<span class="fc" id="L269">            out.add(Arrays.copyOf(curr, curr.length));</span>
+<span class="fc" id="L270">            return;</span>
         }
-<span class="fc" id="L275">        List&lt;Integer&gt; currPile = pileIdxs.get(i);</span>
-<span class="fc bfc" id="L276" title="All 2 branches covered.">        for (int ii = 0; ii &lt; currPile.size(); ++ii) {</span>
-<span class="fc" id="L277">            int v = currPile.get(ii);</span>
-<span class="fc" id="L278">            curr[i] = v;</span>
-<span class="fc" id="L279">            combineRecursively(i+1, curr, out, pileIdxs);</span>
+<span class="fc" id="L272">        List&lt;Integer&gt; currPile = pileIdxs.get(i);</span>
+<span class="fc bfc" id="L273" title="All 2 branches covered.">        for (int ii = 0; ii &lt; currPile.size(); ++ii) {</span>
+<span class="fc" id="L274">            int v = currPile.get(ii);</span>
+<span class="fc" id="L275">            curr[i] = v;</span>
+<span class="fc" id="L276">            combineRecursively(i+1, curr, out, pileIdxs);</span>
         }
-<span class="fc" id="L281">    }</span>
+<span class="fc" id="L278">    }</span>
 
     /**
      * given a list of integers, return the indexes of the longest increasing subsequence
@@ -310,28 +307,28 @@ import java.util.stream.IntStream;
      */
     public static int[] findSizeAndNumberStrictlyIncreasing(int[] a) {
 
-<span class="fc" id="L313">        List&lt;Integer&gt; pileReps = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L314">        List&lt;Integer&gt; pileSizes = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L310">        List&lt;Integer&gt; pileReps = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L311">        List&lt;Integer&gt; pileSizes = new ArrayList&lt;&gt;();</span>
         int v;
-<span class="fc bfc" id="L316" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
-<span class="fc" id="L317">            v = a[i];</span>
-<span class="fc bfc" id="L318" title="All 4 branches covered.">            if (pileReps.isEmpty() || v &gt; pileReps.get(pileReps.size() - 1)) {</span>
-<span class="fc" id="L319">                pileReps.add(v);</span>
-<span class="fc" id="L320">                pileSizes.add(1);</span>
+<span class="fc bfc" id="L313" title="All 2 branches covered.">        for (int i = 0; i &lt; a.length; ++i) {</span>
+<span class="fc" id="L314">            v = a[i];</span>
+<span class="fc bfc" id="L315" title="All 4 branches covered.">            if (pileReps.isEmpty() || v &gt; pileReps.get(pileReps.size() - 1)) {</span>
+<span class="fc" id="L316">                pileReps.add(v);</span>
+<span class="fc" id="L317">                pileSizes.add(1);</span>
             } else {
-<span class="fc" id="L322">                int idx = MiscBisectingSearch.ceiling(pileReps, v);</span>
-<span class="pc bnc" id="L323" title="All 4 branches missed.">                assert(idx &gt;-1 &amp;&amp; idx &lt; pileReps.size());</span>
-<span class="fc" id="L324">                pileReps.set(idx, v);</span>
-<span class="fc" id="L325">                pileSizes.set(idx, pileSizes.get(idx) + 1);</span>
+<span class="fc" id="L319">                int idx = MiscBisectingSearch.ceiling(pileReps, v);</span>
+<span class="pc bnc" id="L320" title="All 4 branches missed.">                assert(idx &gt;-1 &amp;&amp; idx &lt; pileReps.size());</span>
+<span class="fc" id="L321">                pileReps.set(idx, v);</span>
+<span class="fc" id="L322">                pileSizes.set(idx, pileSizes.get(idx) + 1);</span>
             }
         }
 
-<span class="fc" id="L329">        int nSize = 1;</span>
-<span class="fc bfc" id="L330" title="All 2 branches covered.">        for (int i = 0; i &lt; pileSizes.size(); ++i) {</span>
-<span class="fc" id="L331">            nSize *= pileSizes.get(i);</span>
+<span class="fc" id="L326">        int nSize = 1;</span>
+<span class="fc bfc" id="L327" title="All 2 branches covered.">        for (int i = 0; i &lt; pileSizes.size(); ++i) {</span>
+<span class="fc" id="L328">            nSize *= pileSizes.get(i);</span>
         }
 
-<span class="fc" id="L334">        return new int[]{pileReps.size(), nSize};</span>
+<span class="fc" id="L331">        return new int[]{pileReps.size(), nSize};</span>
     }
 
     public class AscDescComparator implements Comparator&lt;int[]&gt; {
@@ -359,10 +356,10 @@ import java.util.stream.IntStream;
      */
     public static List&lt;int[]&gt; findAllStrictlyIncreasing(int[][] a) {
 
-<span class="fc" id="L362">        int n = a.length;</span>
+<span class="fc" id="L359">        int n = a.length;</span>
 
-<span class="pc bpc" id="L364" title="1 of 2 branches missed.">        if (a[0].length &lt; 2) {</span>
-<span class="nc" id="L365">            throw new IllegalStateException(&quot;each row length must be at least 2&quot;);</span>
+<span class="pc bpc" id="L361" title="1 of 2 branches missed.">        if (a[0].length &lt; 2) {</span>
+<span class="nc" id="L362">            throw new IllegalStateException(&quot;each row length must be at least 2&quot;);</span>
         }
 
         // created indexes sorted on ascending a[i][0] with tie breaking descending
@@ -394,55 +391,55 @@ import java.util.stream.IntStream;
                 .toArray();
         */
         // nice and compact, but produces Integer Objects in between, so this can be improved by writing a custom sort method
-<span class="fc" id="L397">        int[] sortedIdxs = IntStream.range(0, n)</span>
-<span class="fc" id="L398">                .boxed() // produces Stream&lt;Integer&gt; needed for Comparator</span>
-<span class="fc" id="L399">                .sorted((i, j) -&gt; {</span>
-<span class="fc" id="L400">                    int c = Integer.compare(a[i][0], a[j][0]);</span>
-<span class="fc bfc" id="L401" title="All 2 branches covered.">                    if (c != 0) {</span>
-<span class="fc" id="L402">                        return c;</span>
+<span class="fc" id="L394">        int[] sortedIdxs = IntStream.range(0, n)</span>
+<span class="fc" id="L395">                .boxed() // produces Stream&lt;Integer&gt; needed for Comparator</span>
+<span class="fc" id="L396">                .sorted((i, j) -&gt; {</span>
+<span class="fc" id="L397">                    int c = Integer.compare(a[i][0], a[j][0]);</span>
+<span class="fc bfc" id="L398" title="All 2 branches covered.">                    if (c != 0) {</span>
+<span class="fc" id="L399">                        return c;</span>
                     }
-<span class="fc" id="L404">                    return Integer.compare(a[j][1], a[i][1]);</span>
+<span class="fc" id="L401">                    return Integer.compare(a[j][1], a[i][1]);</span>
                 })
-<span class="fc" id="L406">                .mapToInt(element -&gt; element).toArray();</span>
+<span class="fc" id="L403">                .mapToInt(element -&gt; element).toArray();</span>
 
-<span class="fc" id="L408">        List&lt;Integer&gt; pileReps = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L409">        List&lt;List&lt;Integer&gt;&gt; pileIdxs = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L405">        List&lt;Integer&gt; pileReps = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L406">        List&lt;List&lt;Integer&gt;&gt; pileIdxs = new ArrayList&lt;&gt;();</span>
         int v2;
         int idx;
         int[] aI;
-<span class="fc bfc" id="L413" title="All 2 branches covered.">        for (int i0 = 0; i0 &lt; n; ++i0) {</span>
-<span class="fc" id="L414">            idx = sortedIdxs[i0];</span>
-<span class="fc" id="L415">            aI = a[idx];</span>
+<span class="fc bfc" id="L410" title="All 2 branches covered.">        for (int i0 = 0; i0 &lt; n; ++i0) {</span>
+<span class="fc" id="L411">            idx = sortedIdxs[i0];</span>
+<span class="fc" id="L412">            aI = a[idx];</span>
 
             // sorted already by a[i][0], now find where a[i][1] fits in patience piles
-<span class="fc" id="L418">            v2 = aI[1];</span>
+<span class="fc" id="L415">            v2 = aI[1];</span>
 
-<span class="fc bfc" id="L420" title="All 4 branches covered.">            if (pileReps.isEmpty() || v2 &gt; pileReps.get(pileReps.size() - 1)) {</span>
+<span class="fc bfc" id="L417" title="All 4 branches covered.">            if (pileReps.isEmpty() || v2 &gt; pileReps.get(pileReps.size() - 1)) {</span>
                 // create new pile if v &gt; last element
-<span class="fc" id="L422">                pileReps.add(v2);</span>
-<span class="fc" id="L423">                pileIdxs.add(new ArrayList&lt;&gt;());</span>
-<span class="fc" id="L424">                pileIdxs.get(pileIdxs.size() - 1).add(idx);</span>
+<span class="fc" id="L419">                pileReps.add(v2);</span>
+<span class="fc" id="L420">                pileIdxs.add(new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L421">                pileIdxs.get(pileIdxs.size() - 1).add(idx);</span>
             } else {
-<span class="fc" id="L426">                int _idx = MiscBisectingSearch.ceiling(pileReps, v2);</span>
-<span class="pc bnc" id="L427" title="All 4 branches missed.">                assert(_idx &gt;-1 &amp;&amp; _idx &lt; pileReps.size());</span>
-<span class="fc" id="L428">                pileReps.set(_idx, v2);</span>
-<span class="fc" id="L429">                pileIdxs.get(_idx).add(idx);</span>
+<span class="fc" id="L423">                int _idx = MiscBisectingSearch.ceiling(pileReps, v2);</span>
+<span class="pc bnc" id="L424" title="All 4 branches missed.">                assert(_idx &gt;-1 &amp;&amp; _idx &lt; pileReps.size());</span>
+<span class="fc" id="L425">                pileReps.set(_idx, v2);</span>
+<span class="fc" id="L426">                pileIdxs.get(_idx).add(idx);</span>
             }
         }
 
         // return every combination of pileIdxs
 
-<span class="fc" id="L435">        List&lt;int[]&gt; out = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L436">        int[] curr = new int[pileIdxs.size()];</span>
-<span class="fc" id="L437">        combineRecursively(0, curr, out, pileIdxs);</span>
+<span class="fc" id="L432">        List&lt;int[]&gt; out = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L433">        int[] curr = new int[pileIdxs.size()];</span>
+<span class="fc" id="L434">        combineRecursively(0, curr, out, pileIdxs);</span>
 
-<span class="fc" id="L439">        int nSize = 1;</span>
-<span class="fc bfc" id="L440" title="All 2 branches covered.">        for (int i = 0; i &lt; pileIdxs.size(); ++i) {</span>
-<span class="fc" id="L441">            nSize *= pileIdxs.get(i).size();</span>
+<span class="fc" id="L436">        int nSize = 1;</span>
+<span class="fc bfc" id="L437" title="All 2 branches covered.">        for (int i = 0; i &lt; pileIdxs.size(); ++i) {</span>
+<span class="fc" id="L438">            nSize *= pileIdxs.get(i).size();</span>
         }
-<span class="pc bnc" id="L443" title="All 2 branches missed.">        assert(out.size() == nSize);</span>
+<span class="pc bnc" id="L440" title="All 2 branches missed.">        assert(out.size() == nSize);</span>
 
-<span class="fc" id="L445">        return out;</span>
+<span class="fc" id="L442">        return out;</span>
     }
 
     /**
@@ -459,52 +456,52 @@ import java.util.stream.IntStream;
      */
     public static List&lt;Integer&gt; findAnyStrictlyIncreasing(int[][] a) {
 
-<span class="fc" id="L462">        int n = a.length;</span>
+<span class="fc" id="L459">        int n = a.length;</span>
 
-<span class="pc bpc" id="L464" title="1 of 2 branches missed.">        if (a[0].length &lt; 2) {</span>
-<span class="nc" id="L465">            throw new IllegalStateException(&quot;each row length must be at least 2&quot;);</span>
+<span class="pc bpc" id="L461" title="1 of 2 branches missed.">        if (a[0].length &lt; 2) {</span>
+<span class="nc" id="L462">            throw new IllegalStateException(&quot;each row length must be at least 2&quot;);</span>
         }
 
         // created indexes sorted on ascending a[i][0] with tie breaking descending
         // sort on a[i][1]
 
         // nice and compact, but produces Integer Objects in between, so this can be improved by writing a custom sort method
-<span class="fc" id="L472">        int[] sortedIdxs = IntStream.range(0, n)</span>
-<span class="fc" id="L473">                .boxed() // produces Stream&lt;Integer&gt; needed for Comparator</span>
-<span class="fc" id="L474">                .sorted((i, j) -&gt; {</span>
-<span class="fc" id="L475">                    int c = Integer.compare(a[i][0], a[j][0]);</span>
-<span class="fc bfc" id="L476" title="All 2 branches covered.">                    if (c != 0) {</span>
-<span class="fc" id="L477">                        return c;</span>
+<span class="fc" id="L469">        int[] sortedIdxs = IntStream.range(0, n)</span>
+<span class="fc" id="L470">                .boxed() // produces Stream&lt;Integer&gt; needed for Comparator</span>
+<span class="fc" id="L471">                .sorted((i, j) -&gt; {</span>
+<span class="fc" id="L472">                    int c = Integer.compare(a[i][0], a[j][0]);</span>
+<span class="fc bfc" id="L473" title="All 2 branches covered.">                    if (c != 0) {</span>
+<span class="fc" id="L474">                        return c;</span>
                     }
-<span class="fc" id="L479">                    return Integer.compare(a[j][1], a[i][1]);</span>
+<span class="fc" id="L476">                    return Integer.compare(a[j][1], a[i][1]);</span>
                 })
-<span class="fc" id="L481">                .mapToInt(element -&gt; element).toArray();</span>
+<span class="fc" id="L478">                .mapToInt(element -&gt; element).toArray();</span>
 
-<span class="fc" id="L483">        List&lt;Integer&gt; pileReps = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L484">        List&lt;Integer&gt; pileRepIdxs = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L480">        List&lt;Integer&gt; pileReps = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L481">        List&lt;Integer&gt; pileRepIdxs = new ArrayList&lt;&gt;();</span>
         int v2;
         int idx;
         int[] aI;
-<span class="fc bfc" id="L488" title="All 2 branches covered.">        for (int i0 = 0; i0 &lt; n; ++i0) {</span>
-<span class="fc" id="L489">            idx = sortedIdxs[i0];</span>
-<span class="fc" id="L490">            aI = a[idx];</span>
+<span class="fc bfc" id="L485" title="All 2 branches covered.">        for (int i0 = 0; i0 &lt; n; ++i0) {</span>
+<span class="fc" id="L486">            idx = sortedIdxs[i0];</span>
+<span class="fc" id="L487">            aI = a[idx];</span>
 
             // sorted already by a[i][0], now find where a[i][1] fits in patience piles
-<span class="fc" id="L493">            v2 = aI[1];</span>
+<span class="fc" id="L490">            v2 = aI[1];</span>
 
-<span class="fc bfc" id="L495" title="All 4 branches covered.">            if (pileReps.isEmpty() || v2 &gt; pileReps.get(pileReps.size() - 1)) {</span>
+<span class="fc bfc" id="L492" title="All 4 branches covered.">            if (pileReps.isEmpty() || v2 &gt; pileReps.get(pileReps.size() - 1)) {</span>
                 // create new pile if v &gt; last element
-<span class="fc" id="L497">                pileReps.add(v2);</span>
-<span class="fc" id="L498">                pileRepIdxs.add(idx);</span>
+<span class="fc" id="L494">                pileReps.add(v2);</span>
+<span class="fc" id="L495">                pileRepIdxs.add(idx);</span>
             } else {
-<span class="fc" id="L500">                int _idx = MiscBisectingSearch.ceiling(pileReps, v2);</span>
-<span class="pc bnc" id="L501" title="All 4 branches missed.">                assert(_idx &gt;-1 &amp;&amp; _idx &lt; pileReps.size());</span>
-<span class="fc" id="L502">                pileReps.set(_idx, v2);</span>
-<span class="fc" id="L503">                pileRepIdxs.set(_idx, idx);</span>
+<span class="fc" id="L497">                int _idx = MiscBisectingSearch.ceiling(pileReps, v2);</span>
+<span class="pc bnc" id="L498" title="All 4 branches missed.">                assert(_idx &gt;-1 &amp;&amp; _idx &lt; pileReps.size());</span>
+<span class="fc" id="L499">                pileReps.set(_idx, v2);</span>
+<span class="fc" id="L500">                pileRepIdxs.set(_idx, idx);</span>
             }
         }
 
-<span class="fc" id="L507">        return pileRepIdxs;</span>
+<span class="fc" id="L504">        return pileRepIdxs;</span>
     }
 
     /**
@@ -519,58 +516,58 @@ import java.util.stream.IntStream;
      */
     public static int[] findSizeAndNumberStrictlyIncreasing(int[][] a) {
 
-<span class="fc" id="L522">        int n = a.length;</span>
+<span class="fc" id="L519">        int n = a.length;</span>
 
-<span class="pc bpc" id="L524" title="1 of 2 branches missed.">        if (a[0].length &lt; 2) {</span>
-<span class="nc" id="L525">            throw new IllegalStateException(&quot;each row length must be at least 2&quot;);</span>
+<span class="pc bpc" id="L521" title="1 of 2 branches missed.">        if (a[0].length &lt; 2) {</span>
+<span class="nc" id="L522">            throw new IllegalStateException(&quot;each row length must be at least 2&quot;);</span>
         }
 
         // created indexes sorted on ascending a[i][0] with tie breaking descending
         // sort on a[i][1]
 
         // nice and compact, but produces Integer Objects in between, so this can be improved by writing a custom sort method
-<span class="fc" id="L532">        int[] sortedIdxs = IntStream.range(0, n)</span>
-<span class="fc" id="L533">                .boxed() // produces Stream&lt;Integer&gt; needed for Comparator</span>
-<span class="fc" id="L534">                .sorted((i, j) -&gt; {</span>
-<span class="fc" id="L535">                    int c = Integer.compare(a[i][0], a[j][0]);</span>
-<span class="fc bfc" id="L536" title="All 2 branches covered.">                    if (c != 0) {</span>
-<span class="fc" id="L537">                        return c;</span>
+<span class="fc" id="L529">        int[] sortedIdxs = IntStream.range(0, n)</span>
+<span class="fc" id="L530">                .boxed() // produces Stream&lt;Integer&gt; needed for Comparator</span>
+<span class="fc" id="L531">                .sorted((i, j) -&gt; {</span>
+<span class="fc" id="L532">                    int c = Integer.compare(a[i][0], a[j][0]);</span>
+<span class="fc bfc" id="L533" title="All 2 branches covered.">                    if (c != 0) {</span>
+<span class="fc" id="L534">                        return c;</span>
                     }
-<span class="fc" id="L539">                    return Integer.compare(a[j][1], a[i][1]);</span>
+<span class="fc" id="L536">                    return Integer.compare(a[j][1], a[i][1]);</span>
                 })
-<span class="fc" id="L541">                .mapToInt(element -&gt; element).toArray();</span>
+<span class="fc" id="L538">                .mapToInt(element -&gt; element).toArray();</span>
 
-<span class="fc" id="L543">        List&lt;Integer&gt; pileReps = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L544">        List&lt;List&lt;Integer&gt;&gt; pileIdxs = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L540">        List&lt;Integer&gt; pileReps = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L541">        List&lt;List&lt;Integer&gt;&gt; pileIdxs = new ArrayList&lt;&gt;();</span>
         int v2;
         int idx;
         int[] aI;
-<span class="fc bfc" id="L548" title="All 2 branches covered.">        for (int i0 = 0; i0 &lt; n; ++i0) {</span>
-<span class="fc" id="L549">            idx = sortedIdxs[i0];</span>
-<span class="fc" id="L550">            aI = a[idx];</span>
+<span class="fc bfc" id="L545" title="All 2 branches covered.">        for (int i0 = 0; i0 &lt; n; ++i0) {</span>
+<span class="fc" id="L546">            idx = sortedIdxs[i0];</span>
+<span class="fc" id="L547">            aI = a[idx];</span>
 
             // sorted already by a[i][0], now find where a[i][1] fits in patience piles
-<span class="fc" id="L553">            v2 = aI[1];</span>
+<span class="fc" id="L550">            v2 = aI[1];</span>
 
-<span class="fc bfc" id="L555" title="All 4 branches covered.">            if (pileReps.isEmpty() || v2 &gt; pileReps.get(pileReps.size() - 1)) {</span>
+<span class="fc bfc" id="L552" title="All 4 branches covered.">            if (pileReps.isEmpty() || v2 &gt; pileReps.get(pileReps.size() - 1)) {</span>
                 // create new pile if v &gt; last element
-<span class="fc" id="L557">                pileReps.add(v2);</span>
-<span class="fc" id="L558">                pileIdxs.add(new ArrayList&lt;&gt;());</span>
-<span class="fc" id="L559">                pileIdxs.get(pileIdxs.size() - 1).add(idx);</span>
+<span class="fc" id="L554">                pileReps.add(v2);</span>
+<span class="fc" id="L555">                pileIdxs.add(new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L556">                pileIdxs.get(pileIdxs.size() - 1).add(idx);</span>
             } else {
-<span class="fc" id="L561">                int _idx = MiscBisectingSearch.ceiling(pileReps, v2);</span>
-<span class="pc bnc" id="L562" title="All 4 branches missed.">                assert(_idx &gt;-1 &amp;&amp; _idx &lt; pileReps.size());</span>
-<span class="fc" id="L563">                pileReps.set(_idx, v2);</span>
-<span class="fc" id="L564">                pileIdxs.get(_idx).add(idx);</span>
+<span class="fc" id="L558">                int _idx = MiscBisectingSearch.ceiling(pileReps, v2);</span>
+<span class="pc bnc" id="L559" title="All 4 branches missed.">                assert(_idx &gt;-1 &amp;&amp; _idx &lt; pileReps.size());</span>
+<span class="fc" id="L560">                pileReps.set(_idx, v2);</span>
+<span class="fc" id="L561">                pileIdxs.get(_idx).add(idx);</span>
             }
         }
 
-<span class="fc" id="L568">        int nSize = 1;</span>
-<span class="fc bfc" id="L569" title="All 2 branches covered.">        for (int i = 0; i &lt; pileIdxs.size(); ++i) {</span>
-<span class="fc" id="L570">            nSize *= pileIdxs.get(i).size();</span>
+<span class="fc" id="L565">        int nSize = 1;</span>
+<span class="fc bfc" id="L566" title="All 2 branches covered.">        for (int i = 0; i &lt; pileIdxs.size(); ++i) {</span>
+<span class="fc" id="L567">            nSize *= pileIdxs.get(i).size();</span>
         }
 
-<span class="fc" id="L573">        return new int[]{pileReps.size(), nSize};</span>
+<span class="fc" id="L570">        return new int[]{pileReps.size(), nSize};</span>
     }
 
     /**
@@ -625,7 +622,7 @@ import java.util.stream.IntStream;
      */
     public static List&lt;int[]&gt; _findAllNonDecreasing(int[] a) {
 
-<span class="nc" id="L628">        throw new UnsupportedOperationException(&quot;not ready for use&quot;);</span>
+<span class="nc" id="L625">        throw new UnsupportedOperationException(&quot;not ready for use&quot;);</span>
 
     }
 

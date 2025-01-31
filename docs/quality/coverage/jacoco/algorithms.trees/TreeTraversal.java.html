@@ -436,7 +436,7 @@ import java.util.*;
      visits: 7, 3, 11, 1, 5, 9, 13, 0, 2, 4, 6, 8, 10, 12
      &lt;/pre&gt;
      @param node n-ary tree root
-     @return
+     @return list of level order node traversal
      */
     public DoublyLinkedList&lt;NAryTreeNode&gt; getLevelOrderIterative(NAryTreeNode node) {
 <span class="fc" id="L442">        Queue&lt;NAryTreeNode&gt; queue = new ArrayDeque&lt;&gt;();</span>
@@ -489,7 +489,7 @@ import java.util.*;
      (Cormen, Leiserson, Rivest, and Stein &quot;Introduction to Algorithms&quot;)
      &lt;/pre&gt;
      * @param node
-     * @return
+     * @return the successor node
      */
     public BinaryTreeNode&lt;Integer&gt; successor(BinaryTreeNode&lt;Integer&gt; node) {
 <span class="fc bfc" id="L495" title="All 2 branches covered.">        if (node.getRight() != null) {</span>
@@ -522,7 +522,7 @@ import java.util.*;
         0   2     4   6           8   10    12
      &lt;/pre&gt;
      * @param node
-     * @return
+     * @return predecessor node
      */
     public BinaryTreeNode&lt;Integer&gt; predeccesor(BinaryTreeNode&lt;Integer&gt; node) {
 <span class="fc bfc" id="L528" title="All 2 branches covered.">        if (node.getLeft() != null) {</span>

@@ -73,8 +73,8 @@ import java.util.logging.Logger;
  *
  *  @author Robert Sedgewick
  *  @author Kevin Wayne
- @param &lt;Key&gt;
- @param &lt;Value&gt;
+ @param &lt;Key&gt; paramter type of key
+ @param &lt;Value&gt; paramter type of value
  */
 
 public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
@@ -278,7 +278,7 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
 <span class="pc bpc" id="L278" title="1 of 2 branches missed.">        if (isEmpty()) throw new NoSuchElementException(&quot;BST underflow&quot;);</span>
 
         // if both children of root are black, set root to red
-<span class="pc bpc" id="L281" title="1 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
+<span class="pc bpc" id="L281" title="2 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
 <span class="fc" id="L282">            root.color = RED;</span>
 
 <span class="fc" id="L284">        root = deleteMin(root);</span>
@@ -343,7 +343,7 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
 <span class="pc bpc" id="L343" title="1 of 2 branches missed.">        if (!contains(key)) return;</span>
 
         // if both children of root are black, set root to red
-<span class="pc bpc" id="L346" title="1 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
+<span class="pc bpc" id="L346" title="2 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
 <span class="fc" id="L347">            root.color = RED;</span>
 
 <span class="fc" id="L349">        root = delete(root, key);</span>
@@ -357,16 +357,16 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
         // assert get(h, key) != null;
 
 <span class="fc bfc" id="L359" title="All 2 branches covered.">        if (key.compareTo(h.key) &lt; 0)  {</span>
-<span class="pc bpc" id="L360" title="1 of 4 branches missed.">            if (!isRed(h.left) &amp;&amp; !isRed(h.left.left))</span>
+<span class="fc bfc" id="L360" title="All 4 branches covered.">            if (!isRed(h.left) &amp;&amp; !isRed(h.left.left))</span>
 <span class="fc" id="L361">                h = moveRedLeft(h);</span>
 <span class="fc" id="L362">            h.left = delete(h.left, key);</span>
         }
         else {
-<span class="pc bpc" id="L365" title="1 of 2 branches missed.">            if (isRed(h.left))</span>
-<span class="nc" id="L366">                h = rotateRight(h);</span>
+<span class="fc bfc" id="L365" title="All 2 branches covered.">            if (isRed(h.left))</span>
+<span class="fc" id="L366">                h = rotateRight(h);</span>
 <span class="fc bfc" id="L367" title="All 4 branches covered.">            if (key.compareTo(h.key) == 0 &amp;&amp; (h.right == null))</span>
 <span class="fc" id="L368">                return null;</span>
-<span class="pc bpc" id="L369" title="1 of 4 branches missed.">            if (!isRed(h.right) &amp;&amp; !isRed(h.right.left))</span>
+<span class="fc bfc" id="L369" title="All 4 branches covered.">            if (!isRed(h.right) &amp;&amp; !isRed(h.right.left))</span>
 <span class="fc" id="L370">                h = moveRedRight(h);</span>
 <span class="fc bfc" id="L371" title="All 2 branches covered.">            if (key.compareTo(h.key) == 0) {</span>
 <span class="fc" id="L372">                RBNode x = min(h.right);</span>

@@ -18,6 +18,10 @@ import java.util.Set;
 /**
  * finds the pair of points most distant from one another a.k.a. the
  * furthest pair problem.
+ *
+ * Note that there is a maximum manhattan distance between pairs in Distance.maxManhattan(points)
+ * that is O(n*8) ~ O(n) for dimensions = 2.
+ *
  * one can imagine a rough estimate by fitting an ellipse around the given points
  * and determining the major axis of the points.
  * even more precisely, one can fit a convex hull around the points and
@@ -65,7 +69,7 @@ first implemented in project
  * 
  * @author nichole
  */
-<span class="nc" id="L68">public class LargestDistancePair {</span>
+<span class="nc" id="L72">public class LargestDistancePair {</span>
 
     /**
      * find the largest distance between the given pairs of points.
@@ -93,15 +97,15 @@ first implemented in project
     public static PairAndHull find(long[] x, long[] y, boolean useLinear) throws GrahamScanTooFewPointsException {
 
         // x and y
-<span class="fc" id="L96">        CHL ch = GrahamScan.computeHull(x, y, useLinear);</span>
+<span class="fc" id="L100">        CHL ch = GrahamScan.computeHull(x, y, useLinear);</span>
 
-<span class="fc" id="L98">        int n = ch.getXH().length;</span>
+<span class="fc" id="L102">        int n = ch.getXH().length;</span>
 
-<span class="fc" id="L100">        long maxDistSq = Long.MIN_VALUE;</span>
-<span class="fc" id="L101">        int maxI = -1;</span>
-<span class="fc" id="L102">        int maxJ = -1;</span>
+<span class="fc" id="L104">        long maxDistSq = Long.MIN_VALUE;</span>
+<span class="fc" id="L105">        int maxI = -1;</span>
+<span class="fc" id="L106">        int maxJ = -1;</span>
         long maxDistSqJ;
-<span class="fc" id="L104">        int maxJ2 = -1;</span>
+<span class="fc" id="L108">        int maxJ2 = -1;</span>
 
         long distSq;
         long xd;
@@ -110,36 +114,36 @@ first implemented in project
         long xRef;
         long yRef;
 
-<span class="fc" id="L113">        int nScan = n - 1;</span>
+<span class="fc" id="L117">        int nScan = n - 1;</span>
 
         int j;
         int i;
-<span class="fc bfc" id="L117" title="All 2 branches covered.">        for (i = 0; i &lt; nScan; ++i) {</span>
-<span class="fc" id="L118">            xRef = ch.getXH()[i];</span>
-<span class="fc" id="L119">            yRef = ch.getYH()[i];</span>
-<span class="fc" id="L120">            maxDistSqJ = Long.MIN_VALUE;</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">        for (i = 0; i &lt; nScan; ++i) {</span>
+<span class="fc" id="L122">            xRef = ch.getXH()[i];</span>
+<span class="fc" id="L123">            yRef = ch.getYH()[i];</span>
+<span class="fc" id="L124">            maxDistSqJ = Long.MIN_VALUE;</span>
 
-<span class="fc bfc" id="L122" title="All 2 branches covered.">            for (j = i+1; j &lt; nScan; ++j) {</span>
-<span class="fc" id="L123">                xd = ch.getXH()[j] - xRef;</span>
-<span class="fc" id="L124">                yd = ch.getYH()[j] - yRef;</span>
-<span class="fc" id="L125">                distSq = xd * xd + yd * yd;</span>
-<span class="fc bfc" id="L126" title="All 2 branches covered.">                if (distSq &gt;= maxDistSqJ) {</span>
-<span class="fc" id="L127">                    maxDistSqJ = distSq;</span>
-<span class="fc" id="L128">                    maxJ2 = j;</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">            for (j = i+1; j &lt; nScan; ++j) {</span>
+<span class="fc" id="L127">                xd = ch.getXH()[j] - xRef;</span>
+<span class="fc" id="L128">                yd = ch.getYH()[j] - yRef;</span>
+<span class="fc" id="L129">                distSq = xd * xd + yd * yd;</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">                if (distSq &gt;= maxDistSqJ) {</span>
+<span class="fc" id="L131">                    maxDistSqJ = distSq;</span>
+<span class="fc" id="L132">                    maxJ2 = j;</span>
                 } else {
                     break;
                 }
             } // end loop over j
-<span class="fc bfc" id="L133" title="All 2 branches covered.">            if (maxDistSqJ &gt; maxDistSq) {</span>
-<span class="fc" id="L134">                maxI = i;</span>
-<span class="fc" id="L135">                maxJ = maxJ2;</span>
-<span class="fc" id="L136">                maxDistSq = maxDistSqJ;</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">            if (maxDistSqJ &gt; maxDistSq) {</span>
+<span class="fc" id="L138">                maxI = i;</span>
+<span class="fc" id="L139">                maxJ = maxJ2;</span>
+<span class="fc" id="L140">                maxDistSq = maxDistSqJ;</span>
             }
         } //end loop over i
 
-<span class="fc" id="L140">        PairAndHull ph = new PairAndHull(maxI, maxJ, maxDistSq, ch);</span>
+<span class="fc" id="L144">        PairAndHull ph = new PairAndHull(maxI, maxJ, maxDistSq, ch);</span>
 
-<span class="fc" id="L142">        return ph;</span>
+<span class="fc" id="L146">        return ph;</span>
     }
 
     public static class PairAndHull {
@@ -195,18 +199,18 @@ first implemented in project
      */
     public static &lt;T extends PairInt&gt; T[] find(T[] points) throws GrahamScanTooFewPointsException {
 
-<span class="fc" id="L198">        GrahamScanPairInt&lt;T&gt; scan = new GrahamScanPairInt&lt;T&gt;();</span>
-<span class="fc" id="L199">        scan.computeHull(points);</span>
+<span class="fc" id="L202">        GrahamScanPairInt&lt;T&gt; scan = new GrahamScanPairInt&lt;T&gt;();</span>
+<span class="fc" id="L203">        scan.computeHull(points);</span>
 
-<span class="fc" id="L201">        List&lt;T&gt; hull = scan.getHull();</span>
+<span class="fc" id="L205">        List&lt;T&gt; hull = scan.getHull();</span>
 
-<span class="fc" id="L203">        int n = hull.size();</span>
+<span class="fc" id="L207">        int n = hull.size();</span>
 
-<span class="fc" id="L205">        long maxDistSq = Long.MIN_VALUE;</span>
-<span class="fc" id="L206">        int maxI = -1;</span>
-<span class="fc" id="L207">        int maxJ = -1;</span>
+<span class="fc" id="L209">        long maxDistSq = Long.MIN_VALUE;</span>
+<span class="fc" id="L210">        int maxI = -1;</span>
+<span class="fc" id="L211">        int maxJ = -1;</span>
         long maxDistSqJ;
-<span class="fc" id="L209">        int maxJ2 = -1;</span>
+<span class="fc" id="L213">        int maxJ2 = -1;</span>
 
         long distSq;
         long xd;
@@ -215,38 +219,38 @@ first implemented in project
         long xRef;
         long yRef;
 
-<span class="fc" id="L218">        int nScan = n - 1;</span>
+<span class="fc" id="L222">        int nScan = n - 1;</span>
 
         int j;
         int i;
-<span class="fc bfc" id="L222" title="All 2 branches covered.">        for (i = 0; i &lt; nScan; ++i) {</span>
-<span class="fc" id="L223">            xRef = hull.get(i).getX();</span>
-<span class="fc" id="L224">            yRef = hull.get(i).getY();</span>
-<span class="fc" id="L225">            maxDistSqJ = Long.MIN_VALUE;</span>
+<span class="fc bfc" id="L226" title="All 2 branches covered.">        for (i = 0; i &lt; nScan; ++i) {</span>
+<span class="fc" id="L227">            xRef = hull.get(i).getX();</span>
+<span class="fc" id="L228">            yRef = hull.get(i).getY();</span>
+<span class="fc" id="L229">            maxDistSqJ = Long.MIN_VALUE;</span>
 
-<span class="fc bfc" id="L227" title="All 2 branches covered.">            for (j = i+1; j &lt; nScan; ++j) {</span>
-<span class="fc" id="L228">                xd = hull.get(j).getX() - xRef;</span>
-<span class="fc" id="L229">                yd = hull.get(j).getY() - yRef;</span>
-<span class="fc" id="L230">                distSq = xd * xd + yd * yd;</span>
-<span class="fc bfc" id="L231" title="All 2 branches covered.">                if (distSq &gt;= maxDistSqJ) {</span>
-<span class="fc" id="L232">                    maxDistSqJ = distSq;</span>
-<span class="fc" id="L233">                    maxJ2 = j;</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">            for (j = i+1; j &lt; nScan; ++j) {</span>
+<span class="fc" id="L232">                xd = hull.get(j).getX() - xRef;</span>
+<span class="fc" id="L233">                yd = hull.get(j).getY() - yRef;</span>
+<span class="fc" id="L234">                distSq = xd * xd + yd * yd;</span>
+<span class="fc bfc" id="L235" title="All 2 branches covered.">                if (distSq &gt;= maxDistSqJ) {</span>
+<span class="fc" id="L236">                    maxDistSqJ = distSq;</span>
+<span class="fc" id="L237">                    maxJ2 = j;</span>
                 } else {
                     break;
                 }
             } // end loop over j
-<span class="fc bfc" id="L238" title="All 2 branches covered.">            if (maxDistSqJ &gt; maxDistSq) {</span>
-<span class="fc" id="L239">                maxI = i;</span>
-<span class="fc" id="L240">                maxJ = maxJ2;</span>
-<span class="fc" id="L241">                maxDistSq = maxDistSqJ;</span>
+<span class="fc bfc" id="L242" title="All 2 branches covered.">            if (maxDistSqJ &gt; maxDistSq) {</span>
+<span class="fc" id="L243">                maxI = i;</span>
+<span class="fc" id="L244">                maxJ = maxJ2;</span>
+<span class="fc" id="L245">                maxDistSq = maxDistSqJ;</span>
             }
         } //end loop over i
 
         // or specifiy type of class in method arguments
-<span class="fc" id="L246">        T[] pairs = (T[]) Array.newInstance(PairInt.class, 2);</span>
-<span class="fc" id="L247">        pairs[0] = hull.get(maxI);</span>
-<span class="fc" id="L248">        pairs[1] = hull.get(maxJ);</span>
-<span class="fc" id="L249">        return pairs;</span>
+<span class="fc" id="L250">        T[] pairs = (T[]) Array.newInstance(PairInt.class, 2);</span>
+<span class="fc" id="L251">        pairs[0] = hull.get(maxI);</span>
+<span class="fc" id="L252">        pairs[1] = hull.get(maxJ);</span>
+<span class="fc" id="L253">        return pairs;</span>
     }
 
 }

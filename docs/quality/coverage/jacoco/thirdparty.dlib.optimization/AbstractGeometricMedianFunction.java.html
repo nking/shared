@@ -72,25 +72,25 @@ import java.util.Arrays;
     
     /**
      *
-     @return
+     @return number of dimenstions
      */
     public abstract int getNDimensions();
     
     /**
      *
-     @return
+     @return the obs, that this the array data given to the code, that this the array data given to the code
      */
     public abstract double[] getObs();
     
     /**
      *
-     @return
+     @return the eps used by finite difference method
      */
     public abstract double getFDEps();
     
     /**
      *
-     @return
+     @return nData as (obs/nDim)
      */
     public int getNData() {
 <span class="fc" id="L96">        return getObs().length/getNDimensions();</span>
@@ -274,7 +274,7 @@ import java.util.Arrays;
     Copyright (C) 2008  Davis E. King (davis@dlib.net)
     License: Boost Software License   See LICENSE.txt for the full license.
      @param coeffs
-     @return 
+     @return finite difference array of coefficients
     */
     public double[] finiteDifference(double[] coeffs) {
 
@@ -315,7 +315,7 @@ import java.util.Arrays;
     License: Boost Software License   See LICENSE.txt for the full license.
      @param coeffs
      @param dimensionNumber
-     @return 
+     @return the finite difference of a single element of coeffs
     */
     public double finiteDifference(double[] coeffs, int dimensionNumber) {
 
@@ -350,7 +350,7 @@ import java.util.Arrays;
     /**
      *
      @param a
-     @return
+     @return string holding state
      */
     public static String toString(double[] a) {
 <span class="fc" id="L356">        StringBuilder sb = new StringBuilder(&quot;[&quot;);</span>

@@ -29,48 +29,46 @@ import java.util.Arrays;
 <span class="fc" id="L29">        int k = kByNChoices.length;</span>
 <span class="fc" id="L30">        int n = kByNChoices[0].length;</span>
 
-<span class="fc" id="L32">        long[][] tab = new long[1&lt;&lt;k][n];</span>
+<span class="fc" id="L32">        long[] tabPrev = new long[1&lt;&lt;k];</span>
 <span class="fc" id="L33">        long sentinel = Long.MAX_VALUE;</span>
-<span class="fc bfc" id="L34" title="All 2 branches covered.">        for (long[] t : tab) {</span>
-<span class="fc" id="L35">            Arrays.fill(t, sentinel);</span>
-        }
+<span class="fc" id="L34">        Arrays.fill(tabPrev, sentinel);</span>
 
         // init for 1st column of kByNChoices
-<span class="fc bfc" id="L39" title="All 2 branches covered.">        for (int iK = 0; iK &lt; k; iK++) {</span>
-<span class="fc" id="L40">            tab[1&lt;&lt;iK][0] = kByNChoices[iK][0];</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        for (int iK = 0; iK &lt; k; iK++) {</span>
+<span class="fc" id="L38">            tabPrev[1&lt;&lt;iK] = kByNChoices[iK][0];</span>
         }
 
-<span class="fc bfc" id="L43" title="All 2 branches covered.">        for (int i = 1; i &lt; n; i++) {</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        for (int i = 1; i &lt; n; i++) {</span>
+<span class="fc" id="L42">            long[] tabCurr = new long[1&lt;&lt;k];</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">            for (int s = 0; s &lt; 1&lt;&lt;k; s++) {</span>
+<span class="fc" id="L44">                tabCurr[s] = tabPrev[s];</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">                for (int iK = 0; iK &lt; k; iK++) {</span>
 
-<span class="fc bfc" id="L45" title="All 2 branches covered.">            for (int s = 0; s &lt; 1&lt;&lt;k; s++) {</span>
-
-<span class="fc" id="L47">                tab[s][i] = tab[s][i-1];</span>
-
-<span class="fc bfc" id="L49" title="All 2 branches covered.">                for (int iK = 0; iK &lt; k; iK++) {</span>
-
-<span class="fc bfc" id="L51" title="All 2 branches covered.">                    if ((s&amp;(1&lt;&lt;iK)) != 0) {</span>
-<span class="fc" id="L52">                        // difference in set bits between s and iK.  this is a candidate previous</span>
+                    // use s only if it includes iK
+<span class="fc bfc" id="L48" title="All 2 branches covered.">                    if ((s&amp;(1&lt;&lt;iK)) != 0) {</span>
+                        // difference in set bits between s and iK.  this is a candidate previous
                         // set to add to that does not include iK
-                        int sInclude = s^(1&lt;&lt;iK);
-<span class="fc bfc" id="L55" title="All 2 branches covered."></span>
-                        // too large (too many bits) for sequential approach from 0 to i:
-                        if (Integer.bitCount(sInclude) &gt; i) continue;
+<span class="fc" id="L51">                        int sInclude = s^(1&lt;&lt;iK);</span>
 
-<span class="pc bpc" id="L59" title="1 of 2 branches missed.">                        // include current selection by including previous and adding to it.</span>
+                        // too large (too many bits) for sequential approach from 0 to i:
+<span class="fc bfc" id="L54" title="All 2 branches covered.">                        if (Integer.bitCount(sInclude) &gt; i) continue;</span>
+
+                        // include current selection by including previous and adding to it.
                         // exclude by not changing (above we already set to previous without
                         // adding current)
-                        long includePlusCurr = tab[sInclude][i-1] != sentinel ?
-                                tab[sInclude][i-1] + kByNChoices[iK][i] : kByNChoices[iK][i];
-<span class="fc bfc" id="L64" title="All 2 branches covered."></span>
-<span class="fc" id="L65">                        if (tab[s][i] == sentinel || includePlusCurr &lt;= tab[s][i]) {</span>
-                            tab[s][i] = includePlusCurr;
-<span class="fc bfc" id="L67" title="All 4 branches covered.">                        }</span>
-<span class="fc" id="L68">                    }</span>
-                }
-            }
+<span class="fc bfc" id="L59" title="All 2 branches covered.">                        long includePlusCurr = tabPrev[sInclude] != sentinel ?</span>
+<span class="fc" id="L60">                                tabPrev[sInclude] + kByNChoices[iK][i] : kByNChoices[iK][i];</span>
+
+<span class="fc bfc" id="L62" title="All 4 branches covered.">                        if (tabCurr[s] == sentinel || includePlusCurr &lt;= tabCurr[s]) {</span>
+<span class="fc" id="L63">                            tabCurr[s] = includePlusCurr;</span>
+                        }
+                    }
+                } // end loop over iK
+            } // end loop over s
+<span class="fc" id="L68">            tabPrev = tabCurr;</span>
         }
 
-        return tab[(1&lt;&lt;k)-1][n-1];
+<span class="fc" id="L71">        return tabPrev[(1&lt;&lt;k)-1];</span>
     }
-<span class="fc" id="L75">}</span>
+}
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

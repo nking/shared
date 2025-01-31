@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StronglyConnectedComponents3.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.graphs</a> &gt; <span class="el_source">StronglyConnectedComponents3.java</span></div><h1>StronglyConnectedComponents3.java</h1><pre class="source lang-java linenums">package algorithms.graphs;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class StronglyConnectedComponents3 {
+
+    /*
+    a more readable version of strongly connected components.
+    adapted from
+    https://cp-algorithms.com/graph/strongly-connected-components.html
+
+    This is Kosaraju’s algorithm
+     */
+
+<span class="fc" id="L16">    public StronglyConnectedComponents3() {}</span>
+
+<span class="fc" id="L18">    protected Set&lt;Integer&gt; visited = null;</span>
+
+    /**
+     * given an DAG as an adjacency map, find strongly connected components and return
+     * them int outputComponets, and return the condensed DAG of those components in
+     * outputAdjMap.  Note that the condensed graph node numbers are the smallest vertexes
+     * in their component.
+     * r.t.c. is O(|V| + |E|).  s.c. is O(|V| + |E|)
+     * @param adjMap map w/ key = vertex, value = set of adjacent vetices.  Note that the vertices can
+     *               have negative numbers.
+     * @param outputComponents
+     * @param outputAdjMap
+     */
+    public void find(Map&lt;Integer, Collection&lt;Integer&gt;&gt; adjMap,
+                     Map&lt;Integer, Set&lt;Integer&gt;&gt; outputComponents,
+                     Map&lt;Integer, Set&lt;Integer&gt;&gt; outputAdjMap) {
+
+<span class="fc" id="L35">        visited = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L36">        outputComponents.clear();</span>
+<span class="fc" id="L37">        outputAdjMap.clear();</span>
+
+<span class="fc" id="L39">        List&lt;Integer&gt; order = new ArrayList&lt;&gt;();</span>
+
+        // first series of depth first searches
+<span class="fc bfc" id="L42" title="All 2 branches covered.">        for (int u : adjMap.keySet()) {</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">            if (!visited.contains(u)) {</span>
+                // order is by finish times for a node (after has visited all its descendants)
+<span class="fc" id="L45">                dfs(u, adjMap, order);</span>
+            }
+<span class="fc" id="L47">        }</span>
+
+        // create adjacency list of complementary graph G^T
+<span class="fc" id="L50">        Map&lt;Integer, Collection&lt;Integer&gt;&gt; adjMapRev = new HashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">        for (Map.Entry&lt;Integer, Collection&lt;Integer&gt;&gt; entry : adjMap.entrySet()) {</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">            for (int v : entry.getValue()) {</span>
+<span class="fc" id="L53">                adjMapRev.putIfAbsent(v, new HashSet&lt;&gt;());</span>
+<span class="fc" id="L54">                adjMapRev.get(v).add(entry.getKey());</span>
+<span class="fc" id="L55">            }</span>
+<span class="fc" id="L56">        }</span>
+
+<span class="fc" id="L58">        visited.clear();</span>
+
+        // root vertex of the SCC that the vertex is in
+<span class="fc" id="L61">        Map&lt;Integer, Integer&gt; roots = new HashMap&lt;&gt;();</span>
+
+        // reverse the DFS order list to use for traversal from top
+<span class="fc" id="L64">        Collections.reverse(order);</span>
+
+        // second series of depth first searches
+<span class="fc bfc" id="L67" title="All 2 branches covered.">        for (int u : order) {</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">            if (visited.contains(u)) continue;</span>
+
+<span class="fc" id="L70">            List&lt;Integer&gt; component = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L72">            dfs(u, adjMapRev, component);</span>
+
+<span class="fc" id="L74">            int root = Collections.min(component); //O(n) at worst.</span>
+            //int root = component.get(0);
+
+<span class="fc" id="L77">            outputComponents.put(root, component.stream().collect(Collectors.toSet()));</span>
+
+<span class="fc bfc" id="L79" title="All 2 branches covered.">            for (int v : component) {</span>
+<span class="fc" id="L80">                roots.put(v, root);</span>
+<span class="fc" id="L81">            }</span>
+<span class="fc" id="L82">        }</span>
+
+        // add edges to condensation graph
+<span class="fc bfc" id="L85" title="All 2 branches covered.">        for (Map.Entry&lt;Integer, Collection&lt;Integer&gt;&gt;  entry : adjMap.entrySet()) {</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">            for (int v : entry.getValue()) {</span>
+<span class="fc" id="L87">                int pU = roots.get(entry.getKey());</span>
+<span class="fc" id="L88">                int pV = roots.get(v);</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">                if (pU != pV) {</span>
+<span class="fc" id="L90">                    outputAdjMap.putIfAbsent(pU, new HashSet&lt;&gt;());</span>
+<span class="fc" id="L91">                    outputAdjMap.get(pU).add(pV);</span>
+                }
+<span class="fc" id="L93">            }</span>
+<span class="fc" id="L94">        }</span>
+<span class="fc" id="L95">    }</span>
+
+    protected void dfs(int u, Map&lt;Integer, Collection&lt;Integer&gt;&gt; adjMap, List&lt;Integer&gt; output) {
+<span class="fc" id="L98">        visited.add(u);</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">        if (adjMap.containsKey(u)) {</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">            for (int v : adjMap.get(u)) {</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">                if (!visited.contains(v)) {</span>
+<span class="fc" id="L102">                    dfs(v, adjMap, output);</span>
+                }
+<span class="fc" id="L104">            }</span>
+        }
+<span class="fc" id="L106">        output.add(u);</span>
+<span class="fc" id="L107">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

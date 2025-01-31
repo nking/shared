@@ -2,6 +2,7 @@
 
 import algorithms.graphs.HierholzersEulerCircuit;
 
+import javax.print.attribute.standard.MediaSize;
 import java.util.*;
 
 /**
@@ -23,7 +24,7 @@ import java.util.*;
  * May 16, 2000
  * &lt;/pre&gt;
  */
-<span class="fc" id="L26">public class LeastCommonAncestor {</span>
+<span class="fc" id="L27">public class LeastCommonAncestor {</span>
 
     /*
     LCA:
@@ -68,162 +69,162 @@ import java.util.*;
      *
      * @param a
      */
-<span class="fc" id="L71">    public LeastCommonAncestor(int[] a) {</span>
+<span class="fc" id="L72">    public LeastCommonAncestor(int[] a) {</span>
 
-<span class="fc" id="L73">        n = a.length;</span>
+<span class="fc" id="L74">        n = a.length;</span>
 
         // indices of parent nodes.  e.g. tree[v]=u says a[v] is a child of a[u]
-<span class="fc" id="L76">        this.tree = makeCartesianTree(a);</span>
-<span class="pc bnc" id="L77" title="All 2 branches missed.">        assert (tree.length == n);</span>
+<span class="fc" id="L77">        this.tree = makeCartesianTree(a);</span>
+<span class="pc bnc" id="L78" title="All 2 branches missed.">        assert (tree.length == n);</span>
 
-<span class="fc" id="L79">        int src = -1;</span>
-<span class="pc bpc" id="L80" title="1 of 2 branches missed.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="fc bfc" id="L81" title="All 2 branches covered.">            if (tree[i] == -1) {</span>
-<span class="fc" id="L82">                src = i;</span>
-<span class="fc" id="L83">                break;</span>
+<span class="fc" id="L80">        int src = -1;</span>
+<span class="pc bpc" id="L81" title="1 of 2 branches missed.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">            if (tree[i] == -1) {</span>
+<span class="fc" id="L83">                src = i;</span>
+<span class="fc" id="L84">                break;</span>
             }
         }
-<span class="pc bpc" id="L86" title="1 of 2 branches missed.">        if (src == -1) {</span>
-<span class="nc" id="L87">            throw new IllegalArgumentException(&quot;Error in algorithm. see tree=&quot; + Arrays.toString(tree));</span>
+<span class="pc bpc" id="L87" title="1 of 2 branches missed.">        if (src == -1) {</span>
+<span class="nc" id="L88">            throw new IllegalArgumentException(&quot;Error in algorithm. see tree=&quot; + Arrays.toString(tree));</span>
         }
-<span class="fc" id="L89">        this.treeSrc = src;</span>
+<span class="fc" id="L90">        this.treeSrc = src;</span>
 
 
         // create a bi-directional adjacency map out of the indices parent child relationships:
-<span class="fc" id="L93">        Map&lt;Integer, LinkedList&lt;Integer&gt;&gt; adjMap = createBiDirectionalMap(tree);</span>
+<span class="fc" id="L94">        Map&lt;Integer, LinkedList&lt;Integer&gt;&gt; adjMap = createBiDirectionalMap(tree);</span>
 
         // form a euler circuit (traversing edges once to connect all nodes and return to start).
-<span class="fc" id="L96">        HierholzersEulerCircuit euler = new HierholzersEulerCircuit();</span>
+<span class="fc" id="L97">        HierholzersEulerCircuit euler = new HierholzersEulerCircuit();</span>
         // row 0 : the indices of array 'a' in order of the euler circuit.
         // row 1 : the depth of the node in tree.  depth of src = 0.
         // the difference between adjacent elements in eulerCircuitAndDepth[1] is exactly 1
-<span class="fc" id="L100">        this.eulerCircuitAndDepth = euler.createCircuitAndDepth(adjMap, src);</span>
+<span class="fc" id="L101">        this.eulerCircuitAndDepth = euler.createCircuitAndDepth(adjMap, src);</span>
 
-<span class="pc bnc" id="L102" title="All 2 branches missed.">        assert (eulerCircuitAndDepth[0].length == (2 * n - 1));</span>
+<span class="pc bnc" id="L103" title="All 2 branches missed.">        assert (eulerCircuitAndDepth[0].length == (2 * n - 1));</span>
 
         //Store occurence of first occurrence each vertex in E another array firstVisit.
         // Size will be n as there are n vertices.
-<span class="fc" id="L106">        this.firstVisit = new int[n];</span>
-<span class="fc" id="L107">        Arrays.fill(firstVisit, -1);</span>
+<span class="fc" id="L107">        this.firstVisit = new int[n];</span>
+<span class="fc" id="L108">        Arrays.fill(firstVisit, -1);</span>
         int aIdx;
-<span class="fc bfc" id="L109" title="All 2 branches covered.">        for (int i = 0; i &lt; eulerCircuitAndDepth[0].length; ++i) {</span>
-<span class="fc" id="L110">            aIdx = eulerCircuitAndDepth[0][i];</span>
-<span class="fc bfc" id="L111" title="All 2 branches covered.">            if (firstVisit[aIdx] == -1) {</span>
-<span class="fc" id="L112">                firstVisit[aIdx] = i;</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">        for (int i = 0; i &lt; eulerCircuitAndDepth[0].length; ++i) {</span>
+<span class="fc" id="L111">            aIdx = eulerCircuitAndDepth[0][i];</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">            if (firstVisit[aIdx] == -1) {</span>
+<span class="fc" id="L113">                firstVisit[aIdx] = i;</span>
             }
         }
 
         //https://cp-algorithms.com/graph/lca_farachcoltonbender.html
 
         // precompute all log values
-<span class="fc" id="L119">        int m = eulerCircuitAndDepth[0].length;</span>
-<span class="fc" id="L120">        this.log2 = new int[m + 1];</span>
-<span class="fc" id="L121">        log2[0] = -1;</span>
-<span class="fc bfc" id="L122" title="All 2 branches covered.">        for (int i = 1; i &lt;= m; i++) {</span>
-<span class="fc" id="L123">            log2[i] = (log2[i/2] + 1);</span>
+<span class="fc" id="L120">        int m = eulerCircuitAndDepth[0].length;</span>
+<span class="fc" id="L121">        this.log2 = new int[m + 1];</span>
+<span class="fc" id="L122">        log2[0] = -1;</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">        for (int i = 1; i &lt;= m; i++) {</span>
+<span class="fc" id="L124">            log2[i] = (log2[i/2] + 1);</span>
         }
 
-<span class="fc" id="L126">        this.blockSize = Math.max(1, log2[m]/2);</span>
+<span class="fc" id="L127">        this.blockSize = Math.max(1, log2[m]/2);</span>
         // round-up m/blocksize:
-<span class="fc" id="L128">        this.blockCnt = (m + blockSize - 1) / blockSize;</span>
+<span class="fc" id="L129">        this.blockCnt = (m + blockSize - 1) / blockSize;</span>
 
         // precompute minimum of each block and build sparse table
         //st.assign(block_cnt, vector&lt;int&gt;(log_2[block_cnt] + 1));
-<span class="fc" id="L132">        this.st = new int[blockCnt][log2[blockCnt] + 1];</span>
-<span class="fc bfc" id="L133" title="All 2 branches covered.">        for (int i = 0, j = 0, b = 0; i &lt; m; i++, j++) {</span>
-<span class="fc bfc" id="L134" title="All 2 branches covered.">            if (j == blockSize) {</span>
-<span class="fc" id="L135">                j = 0;</span>
-<span class="fc" id="L136">                b++;</span>
+<span class="fc" id="L133">        this.st = new int[blockCnt][log2[blockCnt] + 1];</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">        for (int i = 0, j = 0, b = 0; i &lt; m; i++, j++) {</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">            if (j == blockSize) {</span>
+<span class="fc" id="L136">                j = 0;</span>
+<span class="fc" id="L137">                b++;</span>
             }
-<span class="fc bfc" id="L138" title="All 4 branches covered.">            if (j == 0 || minByH(i, st[b][0]) == i) {</span>
-<span class="fc" id="L139">                st[b][0] = i;</span>
+<span class="fc bfc" id="L139" title="All 4 branches covered.">            if (j == 0 || minByH(i, st[b][0]) == i) {</span>
+<span class="fc" id="L140">                st[b][0] = i;</span>
             }
         }
-<span class="fc bfc" id="L142" title="All 2 branches covered.">        for (int l = 1; l &lt;= log2[blockCnt]; l++) {</span>
-<span class="fc bfc" id="L143" title="All 2 branches covered.">            for (int i = 0; i &lt; blockCnt; i++) {</span>
-<span class="fc" id="L144">                int ni = i + (1 &lt;&lt; (l - 1));</span>
-<span class="fc bfc" id="L145" title="All 2 branches covered.">                if (ni &gt;= blockCnt) {</span>
-<span class="fc" id="L146">                    st[i][l] = st[i][l - 1];</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">        for (int l = 1; l &lt;= log2[blockCnt]; l++) {</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">            for (int i = 0; i &lt; blockCnt; i++) {</span>
+<span class="fc" id="L145">                int ni = i + (1 &lt;&lt; (l - 1));</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">                if (ni &gt;= blockCnt) {</span>
+<span class="fc" id="L147">                    st[i][l] = st[i][l - 1];</span>
                 } else {
-<span class="fc" id="L148">                    st[i][l] = minByH(st[i][l - 1], st[ni][l - 1]);</span>
+<span class="fc" id="L149">                    st[i][l] = minByH(st[i][l - 1], st[ni][l - 1]);</span>
                 }
             }
         }
 
         // precompute mask for each block
         //block_mask.assign(blockCnt, 0);
-<span class="fc" id="L155">        this.blockMask = new int[blockCnt];</span>
-<span class="fc bfc" id="L156" title="All 2 branches covered.">        for (int i = 0, j = 0, b = 0; i &lt; m; i++, j++) {</span>
-<span class="fc bfc" id="L157" title="All 2 branches covered.">            if (j == blockSize) {</span>
-<span class="fc" id="L158">                j = 0;</span>
-<span class="fc" id="L159">                b++;</span>
+<span class="fc" id="L156">        this.blockMask = new int[blockCnt];</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">        for (int i = 0, j = 0, b = 0; i &lt; m; i++, j++) {</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">            if (j == blockSize) {</span>
+<span class="fc" id="L159">                j = 0;</span>
+<span class="fc" id="L160">                b++;</span>
             }
-<span class="pc bpc" id="L161" title="1 of 6 branches missed.">            if (j &gt; 0 &amp;&amp; (i &gt;= m || minByH(i - 1, i) == i - 1)) {</span>
-<span class="fc" id="L162">                blockMask[b] += 1 &lt;&lt; (j - 1);</span>
+<span class="pc bpc" id="L162" title="1 of 6 branches missed.">            if (j &gt; 0 &amp;&amp; (i &gt;= m || minByH(i - 1, i) == i - 1)) {</span>
+<span class="fc" id="L163">                blockMask[b] += 1 &lt;&lt; (j - 1);</span>
             }
         }
 
         // precompute RMQ for each unique block
-<span class="fc" id="L167">        int possibilities = 1 &lt;&lt; (blockSize - 1);</span>
+<span class="fc" id="L168">        int possibilities = 1 &lt;&lt; (blockSize - 1);</span>
         //blocks.resize(possibilities);
-<span class="fc" id="L169">        this.blocks = new int[possibilities][][];</span>
+<span class="fc" id="L170">        this.blocks = new int[possibilities][][];</span>
 
-<span class="fc bfc" id="L171" title="All 2 branches covered.">        for (int b = 0; b &lt; blockCnt; b++) {</span>
-<span class="fc" id="L172">            int mask = blockMask[b];</span>
-<span class="fc bfc" id="L173" title="All 2 branches covered.">            if (blocks[mask] != null) {</span>
-<span class="fc" id="L174">                continue;</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">        for (int b = 0; b &lt; blockCnt; b++) {</span>
+<span class="fc" id="L173">            int mask = blockMask[b];</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">            if (blocks[mask] != null) {</span>
+<span class="fc" id="L175">                continue;</span>
             }
             //blocks[mask].assign(block_size, vector&lt;int&gt;(block_size));
-<span class="fc" id="L177">            blocks[mask] = new int[blockSize][blockSize];</span>
-<span class="fc bfc" id="L178" title="All 2 branches covered.">            for (int l = 0; l &lt; blockSize; l++) {</span>
-<span class="fc" id="L179">                blocks[mask][l][l] = l;</span>
-<span class="fc bfc" id="L180" title="All 2 branches covered.">                for (int r = l + 1; r &lt; blockSize; r++) {</span>
-<span class="fc" id="L181">                    blocks[mask][l][r] = blocks[mask][l][r - 1];</span>
-<span class="pc bpc" id="L182" title="1 of 2 branches missed.">                    if (b * blockSize + r &lt; m) {</span>
-<span class="fc" id="L183">                        blocks[mask][l][r] = minByH(b * blockSize + blocks[mask][l][r],</span>
+<span class="fc" id="L178">            blocks[mask] = new int[blockSize][blockSize];</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">            for (int l = 0; l &lt; blockSize; l++) {</span>
+<span class="fc" id="L180">                blocks[mask][l][l] = l;</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">                for (int r = l + 1; r &lt; blockSize; r++) {</span>
+<span class="fc" id="L182">                    blocks[mask][l][r] = blocks[mask][l][r - 1];</span>
+<span class="pc bpc" id="L183" title="1 of 2 branches missed.">                    if (b * blockSize + r &lt; m) {</span>
+<span class="fc" id="L184">                        blocks[mask][l][r] = minByH(b * blockSize + blocks[mask][l][r],</span>
                                 b * blockSize + r) - b * blockSize;
                     }
                 }
             }
         }
-<span class="fc" id="L189">    }</span>
+<span class="fc" id="L190">    }</span>
 
     protected int minByH(int i, int j) {
         //return height[euler_tour[i]] &lt; height[euler_tour[j]] ? i : j;
-<span class="fc bfc" id="L193" title="All 2 branches covered.">        return eulerCircuitAndDepth[1][i] &lt; eulerCircuitAndDepth[1][j] ? i : j;</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">        return eulerCircuitAndDepth[1][i] &lt; eulerCircuitAndDepth[1][j] ? i : j;</span>
     }
 
     //O(1) method, not yet corrected for possible 1-based indexing
     public int find(int i0, int i1) {
         //https://cp-algorithms.com/graph/lca_farachcoltonbender.html
 
-<span class="fc" id="L200">        int l = firstVisit[i0];</span>
-<span class="fc" id="L201">        int r = firstVisit[i1];</span>
-<span class="pc bpc" id="L202" title="1 of 2 branches missed.">        if (l &gt; r) { // swap</span>
-<span class="nc" id="L203">            l ^= r;</span>
-<span class="nc" id="L204">            r ^= l;</span>
-<span class="nc" id="L205">            l ^= r;</span>
+<span class="fc" id="L201">        int l = firstVisit[i0];</span>
+<span class="fc" id="L202">        int r = firstVisit[i1];</span>
+<span class="pc bpc" id="L203" title="1 of 2 branches missed.">        if (l &gt; r) { // swap</span>
+<span class="nc" id="L204">            l ^= r;</span>
+<span class="nc" id="L205">            r ^= l;</span>
+<span class="nc" id="L206">            l ^= r;</span>
         }
-<span class="fc" id="L207">        int bl = l / blockSize;</span>
-<span class="fc" id="L208">        int br = r / blockSize;</span>
-<span class="pc bpc" id="L209" title="1 of 2 branches missed.">        if (bl == br) {</span>
-<span class="nc" id="L210">            int idx = lcaInBlock(bl, l % blockSize, r % blockSize);</span>
-<span class="nc" id="L211">            return eulerCircuitAndDepth[0][idx];</span>
+<span class="fc" id="L208">        int bl = l / blockSize;</span>
+<span class="fc" id="L209">        int br = r / blockSize;</span>
+<span class="pc bpc" id="L210" title="1 of 2 branches missed.">        if (bl == br) {</span>
+<span class="nc" id="L211">            int idx = lcaInBlock(bl, l % blockSize, r % blockSize);</span>
+<span class="nc" id="L212">            return eulerCircuitAndDepth[0][idx];</span>
         }
-<span class="fc" id="L213">        int ans1 = lcaInBlock(bl, l % blockSize, blockSize - 1);</span>
-<span class="fc" id="L214">        int ans2 = lcaInBlock(br, 0, r % blockSize);</span>
-<span class="fc" id="L215">        int ans = minByH(ans1, ans2);</span>
-<span class="pc bpc" id="L216" title="1 of 2 branches missed.">        if (bl + 1 &lt; br) {</span>
-<span class="fc" id="L217">            int l2 = log2[br - bl - 1];</span>
-<span class="fc" id="L218">            int ans3 = st[bl+1][l2];</span>
-<span class="fc" id="L219">            int ans4 = st[br - (1 &lt;&lt; l2)][l2];</span>
-<span class="fc" id="L220">            ans = minByH(ans, minByH(ans3, ans4));</span>
+<span class="fc" id="L214">        int ans1 = lcaInBlock(bl, l % blockSize, blockSize - 1);</span>
+<span class="fc" id="L215">        int ans2 = lcaInBlock(br, 0, r % blockSize);</span>
+<span class="fc" id="L216">        int ans = minByH(ans1, ans2);</span>
+<span class="pc bpc" id="L217" title="1 of 2 branches missed.">        if (bl + 1 &lt; br) {</span>
+<span class="fc" id="L218">            int l2 = log2[br - bl - 1];</span>
+<span class="fc" id="L219">            int ans3 = st[bl+1][l2];</span>
+<span class="fc" id="L220">            int ans4 = st[br - (1 &lt;&lt; l2)][l2];</span>
+<span class="fc" id="L221">            ans = minByH(ans, minByH(ans3, ans4));</span>
         }
-<span class="fc" id="L222">        return eulerCircuitAndDepth[0][ans];</span>
+<span class="fc" id="L223">        return eulerCircuitAndDepth[0][ans];</span>
     }
 
     int lcaInBlock(int b, int l, int r) {
-<span class="fc" id="L226">        return blocks[blockMask[b]][l][r] + b * blockSize;</span>
+<span class="fc" id="L227">        return blocks[blockMask[b]][l][r] + b * blockSize;</span>
     }
 
     /**
@@ -238,75 +239,209 @@ import java.util.*;
      */
     public int findWithLogN(int i0, int i1) {
 
-<span class="fc" id="L241">        Set&lt;Integer&gt; common = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L242">        Set&lt;Integer&gt; common = new HashSet&lt;&gt;();</span>
 
-<span class="fc" id="L243">        int iLeft = i0;</span>
-<span class="fc" id="L244">        int iRight = i1;</span>
-<span class="pc bpc" id="L245" title="1 of 4 branches missed.">        while (iLeft != -1 || iRight != -1) {</span>
-<span class="pc bpc" id="L246" title="1 of 2 branches missed.">            if (iLeft == iRight) {</span>
-<span class="nc" id="L247">                return iLeft;</span>
-<span class="fc bfc" id="L248" title="All 2 branches covered.">            } else if (common.contains(iLeft)) {</span>
-<span class="fc" id="L249">                return iLeft;</span>
-<span class="fc bfc" id="L250" title="All 2 branches covered.">            } else if (common.contains(iRight)) {</span>
-<span class="fc" id="L251">                return iRight;</span>
+<span class="fc" id="L244">        int iLeft = i0;</span>
+<span class="fc" id="L245">        int iRight = i1;</span>
+<span class="pc bpc" id="L246" title="1 of 4 branches missed.">        while (iLeft != -1 || iRight != -1) {</span>
+<span class="pc bpc" id="L247" title="1 of 2 branches missed.">            if (iLeft == iRight) {</span>
+<span class="nc" id="L248">                return iLeft;</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">            } else if (common.contains(iLeft)) {</span>
+<span class="fc" id="L250">                return iLeft;</span>
+<span class="fc bfc" id="L251" title="All 2 branches covered.">            } else if (common.contains(iRight)) {</span>
+<span class="fc" id="L252">                return iRight;</span>
             }
-<span class="fc bfc" id="L253" title="All 2 branches covered.">            if (iLeft != -1) {</span>
-<span class="fc" id="L254">                common.add(iLeft);</span>
-<span class="fc" id="L255">                iLeft = tree[iLeft];</span>
+<span class="fc bfc" id="L254" title="All 2 branches covered.">            if (iLeft != -1) {</span>
+<span class="fc" id="L255">                common.add(iLeft);</span>
+<span class="fc" id="L256">                iLeft = tree[iLeft];</span>
             }
-<span class="pc bpc" id="L257" title="1 of 2 branches missed.">            if (iRight != -1) {</span>
-<span class="fc" id="L258">                common.add(iRight);</span>
-<span class="fc" id="L259">                iRight = tree[iRight];</span>
+<span class="pc bpc" id="L258" title="1 of 2 branches missed.">            if (iRight != -1) {</span>
+<span class="fc" id="L259">                common.add(iRight);</span>
+<span class="fc" id="L260">                iRight = tree[iRight];</span>
             }
         }
-<span class="nc" id="L262">        return -1;</span>
+<span class="nc" id="L263">        return -1;</span>
     }
 
     /**
      * makes the parent array of a as a cartesion tree.
-     *
+      a Cartesian tree is a binary tree of array 'a'
+      where the returned array holds indexes of the
+      parent indexes.  in other words int[] tree = makeCartesionTree(a)
+          has tree[i] = j such that a[j] is the parent of a[i].
      * @param a
-     * @return
+     * @return the cartesion tree array
      */
     protected int[] makeCartesianTree(int[] a) {
-<span class="fc" id="L272">        int n = a.length;</span>
-<span class="fc" id="L273">        int[] parent = new int[n];</span>
-<span class="fc" id="L274">        Arrays.fill(parent, -1);</span>
+<span class="fc" id="L276">        int n = a.length;</span>
+<span class="fc" id="L277">        int[] parent = new int[n];</span>
+<span class="fc" id="L278">        Arrays.fill(parent, -1);</span>
 
-<span class="fc" id="L276">        Stack&lt;Integer&gt; s = new Stack&lt;&gt;();</span>
+<span class="fc" id="L280">        Stack&lt;Integer&gt; s = new Stack&lt;&gt;();</span>
 
         // build cartesian tree using montonic decr queue
-<span class="fc bfc" id="L279" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L280">            int last = -1;</span>
-<span class="fc bfc" id="L281" title="All 4 branches covered.">            while (!s.isEmpty() &amp;&amp; a[s.peek()] &gt;= a[i]) {</span>
-<span class="fc" id="L282">                last = s.pop();</span>
+<span class="fc bfc" id="L283" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L284">            int last = -1;</span>
+<span class="fc bfc" id="L285" title="All 4 branches covered.">            while (!s.isEmpty() &amp;&amp; a[s.peek()] &gt;= a[i]) {</span>
+<span class="fc" id="L286">                last = s.pop();</span>
             }
-<span class="fc bfc" id="L284" title="All 2 branches covered.">            if (!s.isEmpty()) {</span>
-<span class="fc" id="L285">                parent[i] = s.peek();</span>
+            // at this point, anything in s is &lt; a[i]
+<span class="fc bfc" id="L289" title="All 2 branches covered.">            if (!s.isEmpty()) { // tree root is min node</span>
+<span class="fc" id="L290">                parent[i] = s.peek();</span>
             }
-<span class="fc bfc" id="L287" title="All 2 branches covered.">            if (last &gt; -1) {</span>
-<span class="fc" id="L288">                parent[last] = i;</span>
+<span class="fc bfc" id="L292" title="All 2 branches covered.">            if (last &gt; -1) { // popped indexes are children of i</span>
+<span class="fc" id="L293">                parent[last] = i;</span>
             }
-<span class="fc" id="L290">            s.push(i);</span>
+<span class="fc" id="L295">            s.push(i);</span>
         }
-<span class="fc" id="L292">        return parent;</span>
+<span class="fc" id="L297">        return parent;</span>
     }
 
     private Map&lt;Integer, LinkedList&lt;Integer&gt;&gt; createBiDirectionalMap(int[] tree) {
-<span class="fc" id="L296">        Map&lt;Integer, LinkedList&lt;Integer&gt;&gt; adjMap = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L301">        Map&lt;Integer, LinkedList&lt;Integer&gt;&gt; adjMap = new HashMap&lt;&gt;();</span>
         int u;
-<span class="fc bfc" id="L298" title="All 2 branches covered.">        for (int v = 0; v &lt; tree.length; ++v) {</span>
-<span class="fc" id="L299">            u = tree[v];</span>
-<span class="fc bfc" id="L300" title="All 2 branches covered.">            if (u == -1) {</span>
+<span class="fc bfc" id="L303" title="All 2 branches covered.">        for (int v = 0; v &lt; tree.length; ++v) {</span>
+<span class="fc" id="L304">            u = tree[v];</span>
+<span class="fc bfc" id="L305" title="All 2 branches covered.">            if (u == -1) {</span>
                 // root node
-<span class="fc" id="L302">                continue;</span>
+<span class="fc" id="L307">                continue;</span>
             }
-<span class="fc" id="L304">            adjMap.putIfAbsent(u, new LinkedList&lt;&gt;());</span>
-<span class="fc" id="L305">            adjMap.putIfAbsent(v, new LinkedList&lt;&gt;());</span>
-<span class="fc" id="L306">            adjMap.get(u).add(v);</span>
-<span class="fc" id="L307">            adjMap.get(v).add(u);</span>
+<span class="fc" id="L309">            adjMap.putIfAbsent(u, new LinkedList&lt;&gt;());</span>
+<span class="fc" id="L310">            adjMap.putIfAbsent(v, new LinkedList&lt;&gt;());</span>
+<span class="fc" id="L311">            adjMap.get(u).add(v);</span>
+<span class="fc" id="L312">            adjMap.get(v).add(u);</span>
         }
-<span class="fc" id="L309">        return adjMap;</span>
+<span class="fc" id="L314">        return adjMap;</span>
+    }
+
+    /**
+     * find the distance between 2 nodes in a tree where root is the tree, and node1Val and
+     * node2Val are the nodes in the tree to find.
+     * r.t.c. is O(n) because the tree is not necessarily a binary search tree.
+     &lt;pre&gt;
+     method is adapted from Chapter 18 of Competitive Programming Handbook by Antti Laaksonen, Chap 18.
+     &lt;/pre&gt;
+     * @param root
+     * @param node1Val
+     * @param node2Val
+     * @return the distance between the first nodes found in root tree with values node1Val and
+     * node2Val.  Note that if either node1Val or node2VAl are not found, the return is Long.MAX_VALUE.
+     */
+    protected static long distBetweenNodes(NAryTreeNode root, int node1Val, int node2Val) {
+        /*
+        find the nodes in the tree and store the depths of nodes along the way.
+        when both are found, ascend the tree for the node deeper than the other until
+        both nodes are same depth.
+        then while nodes are not the same node, ascend to find common parent.
+        the total dist = depth(node1) + depth(node2) - 2*depth(lca)
+         */
+<span class="fc" id="L338">        Map&lt;NAryTreeNode, Integer&gt; depthMap = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L339">        NAryTreeNode node1 = null;</span>
+<span class="fc" id="L340">        NAryTreeNode node2 = null;</span>
+
+        // use level order traversal until find both
+<span class="fc" id="L343">        Queue&lt;NAryTreeNode&gt; q = new ArrayDeque&lt;&gt;();</span>
+<span class="fc" id="L344">        q.offer(root);</span>
+<span class="fc" id="L345">        depthMap.put(root, 1);</span>
+<span class="fc bfc" id="L346" title="All 2 branches covered.">        if (root.getData() == node1Val) {</span>
+<span class="fc" id="L347">            node1 = root;</span>
+        }
+<span class="fc bfc" id="L349" title="All 2 branches covered.">        if (root.getData() == node2Val) {</span>
+<span class="fc" id="L350">            node2 = root;</span>
+        }
+<span class="fc bfc" id="L352" title="All 6 branches covered.">        while (!q.isEmpty() &amp;&amp; (node1 == null || node2 == null)) {</span>
+<span class="fc" id="L353">            root = q.poll();</span>
+<span class="fc" id="L354">            int level = depthMap.get(root);</span>
+<span class="fc bfc" id="L355" title="All 2 branches covered.">            for (NAryTreeNode ch : root.getChildren()) {</span>
+<span class="fc" id="L356">                depthMap.put(ch, level + 1);</span>
+<span class="fc bfc" id="L357" title="All 2 branches covered.">                if (ch.getData() == node1Val) {</span>
+<span class="fc" id="L358">                    node1 = ch;</span>
+                }
+<span class="fc bfc" id="L360" title="All 2 branches covered.">                if (ch.getData() == node2Val) {</span>
+<span class="fc" id="L361">                    node2 = ch;</span>
+                }
+<span class="fc bfc" id="L363" title="All 4 branches covered.">                if (node1 != null &amp;&amp; node2 != null) break;</span>
+<span class="fc" id="L364">                q.add(ch);</span>
+<span class="fc" id="L365">            }</span>
+<span class="fc" id="L366">        }</span>
+<span class="pc bpc" id="L367" title="2 of 4 branches missed.">        if (node1 == null || node2 == null) {</span>
+<span class="nc" id="L368">            return Long.MAX_VALUE;</span>
+        }
+<span class="fc" id="L370">        int d1 = depthMap.get(node1);</span>
+<span class="fc" id="L371">        int d2 = depthMap.get(node2);</span>
+
+<span class="pc bpc" id="L373" title="2 of 4 branches missed.">        while (node1 != null &amp;&amp; depthMap.get(node1) &gt; depthMap.get(node2)) {</span>
+<span class="nc" id="L374">            node1 = node1.getParent();</span>
+        }
+<span class="pc bpc" id="L376" title="2 of 6 branches missed.">        while (node1 != null &amp;&amp; node2 != null &amp;&amp; depthMap.get(node2) &gt; depthMap.get(node1)) {</span>
+<span class="fc" id="L377">            node2 = node2.getParent();</span>
+        }
+<span class="pc bpc" id="L379" title="2 of 6 branches missed.">        while (node1 != null &amp;&amp; node2 != null &amp;&amp; !node1.equals(node2)) {</span>
+<span class="fc" id="L380">            node1 = node1.getParent();</span>
+<span class="fc" id="L381">            node2 = node2.getParent();</span>
+        }
+<span class="fc" id="L383">        int dLCA = depthMap.get(node1);</span>
+
+<span class="fc" id="L385">        return d1 + d2 - 2*dLCA;</span>
+    }
+
+    /**
+     * given tree 'root', find the distance between node1 and node2 in the tree.
+     * @param root
+     * @param node1
+     * @param node2
+     * @return the distance (number of edges) between node1 and node2.  If either node
+     * is not found in the tree, Long.MAX_VALUE is returned.
+     */
+    protected static long distBetweenNodes(NAryTreeNode root, NAryTreeNode node1, NAryTreeNode node2) {
+         /*
+        find the nodes in the tree and store the depths of nodes along the way.
+        when both are found, ascend the tree for the node deeper than the other until
+        both nodes are same depth.
+        then while nodes are not the same node, ascend to find common parent.
+        the total dist = depth(node1) + depth(node2) - 2*depth(lca)
+         */
+<span class="fc" id="L404">        Map&lt;NAryTreeNode, Integer&gt; depthMap = new HashMap&lt;&gt;();</span>
+
+        // use level order traversal until find both
+<span class="fc" id="L407">        Queue&lt;NAryTreeNode&gt; q = new ArrayDeque&lt;&gt;();</span>
+<span class="fc" id="L408">        q.offer(root);</span>
+<span class="fc" id="L409">        depthMap.put(root, 1);</span>
+<span class="fc bfc" id="L410" title="All 2 branches covered.">        if (root.equals(node1)) {</span>
+<span class="fc" id="L411">            node1 = root;</span>
+        }
+<span class="fc bfc" id="L413" title="All 2 branches covered.">        if (root.equals(node2)) {</span>
+<span class="fc" id="L414">            node2 = root;</span>
+        }
+<span class="fc bfc" id="L416" title="All 6 branches covered.">        while (!q.isEmpty() &amp;&amp; !depthMap.containsKey(node1) || !depthMap.containsKey(node2)) {</span>
+<span class="fc" id="L417">            root = q.poll();</span>
+<span class="fc" id="L418">            int level = depthMap.get(root);</span>
+<span class="fc bfc" id="L419" title="All 2 branches covered.">            for (NAryTreeNode ch : root.getChildren()) {</span>
+<span class="fc" id="L420">                depthMap.put(ch, level + 1);</span>
+<span class="fc bfc" id="L421" title="All 4 branches covered.">                if (depthMap.containsKey(node1) &amp;&amp; depthMap.containsKey(node2)) break;</span>
+<span class="fc" id="L422">                q.add(ch);</span>
+<span class="fc" id="L423">            }</span>
+<span class="fc" id="L424">        }</span>
+<span class="pc bpc" id="L425" title="2 of 4 branches missed.">        if (!depthMap.containsKey(node1) || !depthMap.containsKey(node2)) {</span>
+<span class="nc" id="L426">            return Long.MAX_VALUE;</span>
+        }
+
+<span class="fc" id="L429">        int d1 = depthMap.get(node1);</span>
+<span class="fc" id="L430">        int d2 = depthMap.get(node2);</span>
+        //
+<span class="pc bpc" id="L432" title="2 of 4 branches missed.">        while (node1 != null &amp;&amp; depthMap.get(node1) &gt; depthMap.get(node2)) {</span>
+<span class="nc" id="L433">            node1 = node1.getParent();</span>
+        }
+<span class="pc bpc" id="L435" title="2 of 6 branches missed.">        while (node1 != null &amp;&amp; node2 != null &amp;&amp; depthMap.get(node2) &gt; depthMap.get(node1)) {</span>
+<span class="fc" id="L436">            node2 = node2.getParent();</span>
+        }
+<span class="pc bpc" id="L438" title="2 of 6 branches missed.">        while (node1 != null &amp;&amp; node2 != null &amp;&amp; !node1.equals(node2)) {</span>
+<span class="fc" id="L439">            node1 = node1.getParent();</span>
+<span class="fc" id="L440">            node2 = node2.getParent();</span>
+        }
+<span class="fc" id="L442">        int dLCA = depthMap.get(node1);</span>
+
+<span class="fc" id="L444">        return d1 + d2 - 2*dLCA;</span>
     }
 
 }

@@ -11,22 +11,25 @@ import java.util.*;
  */
 <span class="fc" id="L12">public class AlgebraicExpressionEvaluator {</span>
 
-<span class="fc" id="L14">    protected static Map&lt;Character, Integer&gt; opAlgPriorityMap = new HashMap&lt;&gt;();</span>
+    /**
+     * map of operation priorities
+     */
+<span class="fc" id="L17">    protected static Map&lt;Character, Integer&gt; opAlgPriorityMap = new HashMap&lt;&gt;();</span>
     static {
-<span class="fc" id="L16">        opAlgPriorityMap.put('^', 3);</span>
-<span class="fc" id="L17">        opAlgPriorityMap.put('*', 2);</span>
-<span class="fc" id="L18">        opAlgPriorityMap.put('/', 2);</span>
-<span class="fc" id="L19">        opAlgPriorityMap.put('+', 1);</span>
-<span class="fc" id="L20">        opAlgPriorityMap.put('-', 1);</span>
-<span class="fc" id="L21">        opAlgPriorityMap.put('(', 0);</span>
-<span class="fc" id="L22">        opAlgPriorityMap.put(')', 0);</span>
-<span class="fc" id="L23">    }</span>
+<span class="fc" id="L19">        opAlgPriorityMap.put('^', 3);</span>
+<span class="fc" id="L20">        opAlgPriorityMap.put('*', 2);</span>
+<span class="fc" id="L21">        opAlgPriorityMap.put('/', 2);</span>
+<span class="fc" id="L22">        opAlgPriorityMap.put('+', 1);</span>
+<span class="fc" id="L23">        opAlgPriorityMap.put('-', 1);</span>
+<span class="fc" id="L24">        opAlgPriorityMap.put('(', 0);</span>
+<span class="fc" id="L25">        opAlgPriorityMap.put(')', 0);</span>
+<span class="fc" id="L26">    }</span>
 
     /**
      * evaluates the algebraic expression.
      *
      * Recognized operators are +, -, *, /,  and ^ as power operator.
-     * The method does not evaluate binary operators (e.g. |, &amp;&amp;, or ^ as XOR).
+     * The method does not evaluate binary operators (e.g. |, &amp;amp;&amp;amp;, or ^ as XOR).
      * The method handles parenthesization in context of use in ordering and prioritizing operations,
      * but does not handle square brackets or other separators.
      * The meothd can handle spaces.
@@ -51,30 +54,31 @@ import java.util.*;
      order evaluator.
      &lt;/pre&gt;
 
-     * @param string algebraic expression that can include parentheses.  the string must be in infix format.
+     * @param expression string algebraic expression that can include parentheses.  the string must be in infix format.
      *               infix format places the operator in between the two operands (numbers only for this method).
      * In contrast, prefix format places the operator before each pair of operands and
      * postfix places the operator after the operands.
+     * @return evaluation
      */
     public double evaluateAlgebraicExpression(String expression) {
 
-<span class="fc" id="L61">        char[] chars = expression.toCharArray();</span>
+<span class="fc" id="L65">        char[] chars = expression.toCharArray();</span>
 
         // trim off any trailing semi-colons from end of expression.
-<span class="fc" id="L64">        int j = chars.length - 1;</span>
-<span class="pc bpc" id="L65" title="3 of 6 branches missed.">        while (j &gt; -1 &amp;&amp; (Character.isSpaceChar(chars[j]) || (chars[j] == ';'))) --j;</span>
+<span class="fc" id="L68">        int j = chars.length - 1;</span>
+<span class="pc bpc" id="L69" title="3 of 6 branches missed.">        while (j &gt; -1 &amp;&amp; (Character.isSpaceChar(chars[j]) || (chars[j] == ';'))) --j;</span>
 
-<span class="fc bfc" id="L67" title="All 2 branches covered.">        if (j == 0) {</span>
-<span class="pc bpc" id="L68" title="1 of 2 branches missed.">            if (Character.isSpaceChar(chars[0])) return 0;</span>
-<span class="fc" id="L69">            else return Double.parseDouble(String.copyValueOf(chars,0, 1));</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">        if (j == 0) {</span>
+<span class="pc bpc" id="L72" title="1 of 2 branches missed.">            if (Character.isSpaceChar(chars[0])) return 0;</span>
+<span class="fc" id="L73">            else return Double.parseDouble(String.copyValueOf(chars,0, 1));</span>
         };
 
-<span class="fc" id="L72">        int i = 0;</span>
-<span class="pc bpc" id="L73" title="2 of 4 branches missed.">        while (i &lt; j &amp;&amp; Character.isSpaceChar(chars[i])) ++i;</span>
+<span class="fc" id="L76">        int i = 0;</span>
+<span class="pc bpc" id="L77" title="2 of 4 branches missed.">        while (i &lt; j &amp;&amp; Character.isSpaceChar(chars[i])) ++i;</span>
 
-<span class="fc" id="L75">        OpPair root = buildExprTree(chars, i, j);</span>
+<span class="fc" id="L79">        OpPair root = buildExprTree(chars, i, j);</span>
 
-<span class="fc" id="L77">        return reverseLevelOrderEval(root, chars);</span>
+<span class="fc" id="L81">        return reverseLevelOrderEval(root, chars);</span>
     }
 
     /**
@@ -85,19 +89,19 @@ import java.util.*;
      https://www.geeksforgeeks.org/program-to-convert-infix-notation-to-expression-tree/
      authored by Julkar9, and aashish1995
      &lt;/pre&gt;
-     * @param chars
-     * @param i
-     * @param j
-     * @return
+     * @param chars character array
+     * @param i start index of chars for use in method
+     * @param j stop index, inclusive of chars  for use in method
+     * @return algebraic expr tree root node 
      */
     protected OpPair buildExprTree(char[] chars, int i, int j) {
 
         //numberStack is the equiv of the postfix format string
-<span class="fc" id="L96">        Stack&lt;OpPair&gt; numberStack = new Stack&lt;&gt;();</span>
-<span class="fc" id="L97">        Stack&lt;CRange&gt; charStack = new Stack&lt;&gt;();</span>
+<span class="fc" id="L100">        Stack&lt;OpPair&gt; numberStack = new Stack&lt;&gt;();</span>
+<span class="fc" id="L101">        Stack&lt;CRange&gt; charStack = new Stack&lt;&gt;();</span>
 
         OpPair t;
-<span class="fc" id="L100">        int[] i01 = new int[2];</span>
+<span class="fc" id="L104">        int[] i01 = new int[2];</span>
         /*
         while (i &lt;= j) {
             if c == '('
@@ -126,199 +130,285 @@ import java.util.*;
         }
          */
 
-<span class="fc" id="L129">        boolean prevWasNumber = false;</span>
-<span class="fc bfc" id="L130" title="All 2 branches covered.">        while (i &lt;= j) {</span>
-<span class="fc bfc" id="L131" title="All 2 branches covered.">            if (chars[i] == '(') {</span>
+<span class="fc" id="L133">        boolean prevWasNumber = false;</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">        while (i &lt;= j) {</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">            if (chars[i] == '(') {</span>
 
-<span class="fc" id="L133">                charStack.add(new CRange(i, i));</span>
-<span class="fc" id="L134">                prevWasNumber = false;</span>
+<span class="fc" id="L137">                charStack.add(new CRange(i, i));</span>
+<span class="fc" id="L138">                prevWasNumber = false;</span>
 
-<span class="fc bfc" id="L136" title="All 2 branches covered.">            } else if (chars[i] == ')') {</span>
-<span class="fc" id="L137">                prevWasNumber = true;//result is number</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">            } else if (chars[i] == ')') {</span>
+<span class="fc" id="L141">                prevWasNumber = true;//result is number</span>
 
                 // a Reduce stage of shift-reduce parsing
 
-<span class="pc bpc" id="L141" title="1 of 4 branches missed.">                while (!charStack.isEmpty() &amp;&amp; isNotLeftParenthesis(charStack.peek(), chars)) {</span>
+<span class="pc bpc" id="L145" title="1 of 4 branches missed.">                while (!charStack.isEmpty() &amp;&amp; isNotLeftParenthesis(charStack.peek(), chars)) {</span>
 
-<span class="fc" id="L143">                    t = new OpPair(charStack.pop());</span>
-<span class="fc" id="L144">                    t.right = numberStack.pop();</span>
-<span class="fc" id="L145">                    t.left = numberStack.pop();</span>
-<span class="fc" id="L146">                    numberStack.push(t);</span>
+<span class="fc" id="L147">                    t = new OpPair(charStack.pop());</span>
+<span class="fc" id="L148">                    t.right = numberStack.pop();</span>
+<span class="fc" id="L149">                    t.left = numberStack.pop();</span>
+<span class="fc" id="L150">                    numberStack.push(t);</span>
                 }
                 // pop the opening parenthesis:
-<span class="fc" id="L149">                charStack.pop();</span>
+<span class="fc" id="L153">                charStack.pop();</span>
 
-<span class="pc bpc" id="L151" title="1 of 4 branches missed.">            } else if (prevWasNumber &amp;&amp; opAlgPriorityMap.containsKey(chars[i])) {</span>
-<span class="fc" id="L152">                prevWasNumber = false;</span>
+<span class="pc bpc" id="L155" title="1 of 4 branches missed.">            } else if (prevWasNumber &amp;&amp; opAlgPriorityMap.containsKey(chars[i])) {</span>
+<span class="fc" id="L156">                prevWasNumber = false;</span>
 
                 // a Reduce stage of shift-reduce parsing
 
-<span class="pc bpc" id="L156" title="1 of 6 branches missed.">                while (!charStack.isEmpty() &amp;&amp; isNotLeftParenthesis(charStack.peek(), chars)</span>
-<span class="fc bfc" id="L157" title="All 4 branches covered.">                    &amp;&amp; ((chars[i] != '^' &amp;&amp; priorityisGEQ(charStack.peek(), i, chars))</span>
-<span class="pc bpc" id="L158" title="1 of 2 branches missed.">                    || (chars[i] == '^' &amp;&amp; priorityisGT(charStack.peek(), i, chars)))) {</span>
+<span class="pc bpc" id="L160" title="1 of 6 branches missed.">                while (!charStack.isEmpty() &amp;&amp; isNotLeftParenthesis(charStack.peek(), chars)</span>
+<span class="fc bfc" id="L161" title="All 4 branches covered.">                    &amp;&amp; ((chars[i] != '^' &amp;&amp; priorityisGEQ(charStack.peek(), i, chars))</span>
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">                    || (chars[i] == '^' &amp;&amp; priorityisGT(charStack.peek(), i, chars)))) {</span>
 
-<span class="fc" id="L160">                    t = new OpPair(charStack.pop());</span>
-<span class="fc" id="L161">                    t.right = numberStack.pop();</span>
-<span class="fc" id="L162">                    t.left = numberStack.pop();</span>
+<span class="fc" id="L164">                    t = new OpPair(charStack.pop());</span>
+<span class="fc" id="L165">                    t.right = numberStack.pop();</span>
+<span class="fc" id="L166">                    t.left = numberStack.pop();</span>
 
-<span class="fc" id="L164">                    numberStack.push(t);</span>
+<span class="fc" id="L168">                    numberStack.push(t);</span>
                 }
-<span class="fc" id="L166">                charStack.push(new CRange(i, i));</span>
+<span class="fc" id="L170">                charStack.push(new CRange(i, i));</span>
             } else {
 
                 // a Shift stage of shift-reduce parsing
 
                 // we have positive or negative numbers that
                 // may begin with a . if the user dropped the 0 as an integer in a decimal number.
-<span class="fc" id="L173">                prevWasNumber = true;</span>
-<span class="fc" id="L174">                parseForNumber(i, j, chars, i01);</span>
-<span class="fc" id="L175">                i = i01[1];</span>
+<span class="fc" id="L177">                prevWasNumber = true;</span>
+<span class="fc" id="L178">                parseForNumber(i, j, chars, i01);</span>
+<span class="fc" id="L179">                i = i01[1];</span>
 
-<span class="fc" id="L177">                t = new OpPair(new CRange(i01[0], i01[1]));</span>
-<span class="fc" id="L178">                numberStack.push(t);</span>
+<span class="fc" id="L181">                t = new OpPair(new CRange(i01[0], i01[1]));</span>
+<span class="fc" id="L182">                numberStack.push(t);</span>
             }
 
-<span class="fc" id="L181">            ++i;</span>
-<span class="pc bpc" id="L182" title="1 of 4 branches missed.">            while (i &lt; j &amp;&amp; Character.isSpaceChar(chars[i])) ++i;</span>
+<span class="fc" id="L185">            ++i;</span>
+<span class="pc bpc" id="L186" title="1 of 4 branches missed.">            while (i &lt; j &amp;&amp; Character.isSpaceChar(chars[i])) ++i;</span>
         }
 
         // the Accept stage of shift-reduce parsing
 
-<span class="pc bnc" id="L187" title="All 2 branches missed.">        assert(charStack.isEmpty());</span>
-<span class="pc bnc" id="L188" title="All 2 branches missed.">        assert(numberStack.size() == 1);</span>
-<span class="fc" id="L189">        return numberStack.pop();</span>
+<span class="pc bnc" id="L191" title="All 2 branches missed.">        assert(charStack.isEmpty());</span>
+<span class="pc bnc" id="L192" title="All 2 branches missed.">        assert(numberStack.size() == 1);</span>
+<span class="fc" id="L193">        return numberStack.pop();</span>
     }
 
+    /**
+     *
+     * @param chars character array
+     * @param i start index of chars for use in method
+     * @param j stop index, inclusive of chars  for use in method
+     * @param outputIdxs the starting and ending indexes, inclusive
+     *                   of the number just parsed from chars
+     */
     protected void parseForNumber(int i, int j, char[] chars, int[] outputIdxs) {
         // parse number starting at i, and do not parse beyond j
         // and put starting and ending indexes in outputIdxs
 
-<span class="pc bpc" id="L196" title="2 of 4 branches missed.">        while (i &lt; j &amp;&amp; Character.isSpaceChar(chars[i])) ++i;</span>
-<span class="fc" id="L197">        outputIdxs[0] = i;</span>
-<span class="fc bfc" id="L198" title="All 2 branches covered.">        if (chars[i] == '-') ++i;</span>
-<span class="pc bpc" id="L199" title="1 of 2 branches missed.">        if (chars[i] == '+') ++i;</span>
-<span class="pc bpc" id="L200" title="1 of 2 branches missed.">        if (chars[i] == '.') ++i;</span>
-<span class="pc bpc" id="L201" title="1 of 6 branches missed.">        while (((i+1) &lt; j) &amp;&amp; (Character.isDigit(chars[i+1]) || chars[i+1] == '.' )) ++i;</span>
+<span class="pc bpc" id="L208" title="2 of 4 branches missed.">        while (i &lt; j &amp;&amp; Character.isSpaceChar(chars[i])) ++i;</span>
+<span class="fc" id="L209">        outputIdxs[0] = i;</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">        if (chars[i] == '-') ++i;</span>
+<span class="pc bpc" id="L211" title="1 of 2 branches missed.">        if (chars[i] == '+') ++i;</span>
+<span class="pc bpc" id="L212" title="1 of 2 branches missed.">        if (chars[i] == '.') ++i;</span>
+<span class="pc bpc" id="L213" title="1 of 6 branches missed.">        while (((i+1) &lt; j) &amp;&amp; (Character.isDigit(chars[i+1]) || chars[i+1] == '.' )) ++i;</span>
 
-<span class="fc" id="L203">        outputIdxs[1] = i;</span>
-<span class="fc" id="L204">    }</span>
+<span class="fc" id="L215">        outputIdxs[1] = i;</span>
+<span class="fc" id="L216">    }</span>
 
+    /**
+     * use reverse level order to evaluate node.
+     * @param node operation tree root node
+     * @param chars character array
+     * @return evaluate
+     */
     protected double reverseLevelOrderEval(OpPair node, char[] chars) {
-<span class="fc" id="L207">        Queue&lt;OpPair&gt; q = new ArrayDeque&lt;&gt;();</span>
-<span class="fc" id="L208">        Stack&lt;OpPair&gt; s = new Stack&lt;&gt;();</span>
-<span class="fc" id="L209">        q.offer(node);</span>
+<span class="fc" id="L225">        Queue&lt;OpPair&gt; q = new ArrayDeque&lt;&gt;();</span>
+<span class="fc" id="L226">        Stack&lt;OpPair&gt; s = new Stack&lt;&gt;();</span>
+<span class="fc" id="L227">        q.offer(node);</span>
 
-<span class="fc bfc" id="L211" title="All 2 branches covered.">        while (!q.isEmpty()) {</span>
-<span class="fc" id="L212">            node = q.poll();</span>
-<span class="fc" id="L213">            s.push(node);</span>
-<span class="fc bfc" id="L214" title="All 2 branches covered.">            if (node.left != null) q.offer(node.left);</span>
-<span class="fc bfc" id="L215" title="All 2 branches covered.">            if (node.right != null) q.offer(node.right);</span>
+<span class="fc bfc" id="L229" title="All 2 branches covered.">        while (!q.isEmpty()) {</span>
+<span class="fc" id="L230">            node = q.poll();</span>
+<span class="fc" id="L231">            s.push(node);</span>
+<span class="fc bfc" id="L232" title="All 2 branches covered.">            if (node.left != null) q.offer(node.left);</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">            if (node.right != null) q.offer(node.right);</span>
         }
 
         // key = node hashcode, value=result
-<span class="fc" id="L219">        Map&lt;Integer, Double&gt; resultsMap = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L237">        Map&lt;Integer, Double&gt; resultsMap = new HashMap&lt;&gt;();</span>
 
-<span class="fc" id="L221">        double result=0;</span>
+<span class="fc" id="L239">        double result=0;</span>
         char op;
-<span class="fc bfc" id="L223" title="All 2 branches covered.">        while (!s.isEmpty()) {</span>
-<span class="fc" id="L224">            node = s.pop();</span>
+<span class="fc bfc" id="L241" title="All 2 branches covered.">        while (!s.isEmpty()) {</span>
+<span class="fc" id="L242">            node = s.pop();</span>
 
-<span class="pc bpc" id="L226" title="1 of 4 branches missed.">            if (node.left == null &amp;&amp; node.right==null) {</span>
+<span class="pc bpc" id="L244" title="1 of 4 branches missed.">            if (node.left == null &amp;&amp; node.right==null) {</span>
                 // leaf nodes have literals stored in data
-<span class="fc" id="L228">                resultsMap.put(node.hashCode(), parseNumber(chars, node.data));</span>
+<span class="fc" id="L246">                resultsMap.put(node.hashCode(), parseNumber(chars, node.data));</span>
             } else {
-<span class="pc bnc" id="L230" title="All 2 branches missed.">                assert(node.data.i0 == node.data.i1);</span>
-<span class="fc" id="L231">                op = chars[node.data.i0];</span>
+<span class="pc bnc" id="L248" title="All 2 branches missed.">                assert(node.data.i0 == node.data.i1);</span>
+<span class="fc" id="L249">                op = chars[node.data.i0];</span>
                 double v1;
 
-<span class="pc bpc" id="L234" title="1 of 2 branches missed.">                if (resultsMap.containsKey(node.left.hashCode())) {</span>
-<span class="fc" id="L235">                    v1 = resultsMap.get(node.left.hashCode());</span>
+<span class="pc bpc" id="L252" title="1 of 2 branches missed.">                if (resultsMap.containsKey(node.left.hashCode())) {</span>
+<span class="fc" id="L253">                    v1 = resultsMap.get(node.left.hashCode());</span>
                 } else {
-<span class="nc" id="L237">                    v1 = parseNumber(chars, node.left.data);</span>
+<span class="nc" id="L255">                    v1 = parseNumber(chars, node.left.data);</span>
                 }
                 double v2;
-<span class="pc bpc" id="L240" title="1 of 2 branches missed.">                if (resultsMap.containsKey(node.right.hashCode())) {</span>
-<span class="fc" id="L241">                    v2 = resultsMap.get(node.right.hashCode());</span>
+<span class="pc bpc" id="L258" title="1 of 2 branches missed.">                if (resultsMap.containsKey(node.right.hashCode())) {</span>
+<span class="fc" id="L259">                    v2 = resultsMap.get(node.right.hashCode());</span>
                 } else {
-<span class="nc" id="L243">                    v2 = parseNumber(chars, node.right.data);</span>
+<span class="nc" id="L261">                    v2 = parseNumber(chars, node.right.data);</span>
                 }
 
-<span class="pc bpc" id="L246" title="2 of 6 branches missed.">                switch(op) {</span>
+<span class="pc bpc" id="L264" title="2 of 6 branches missed.">                switch(op) {</span>
                     case '^': {
-<span class="fc" id="L248">                        result = Math.pow(v1, v2);</span>
-<span class="fc" id="L249">                        resultsMap.put(node.hashCode(), result);</span>
-<span class="fc" id="L250">                        break;</span>
+<span class="fc" id="L266">                        result = Math.pow(v1, v2);</span>
+<span class="fc" id="L267">                        resultsMap.put(node.hashCode(), result);</span>
+<span class="fc" id="L268">                        break;</span>
                     }
                     case '*': {
-<span class="fc" id="L253">                        result = v1 * v2;</span>
-<span class="fc" id="L254">                        resultsMap.put(node.hashCode(), result);</span>
-<span class="fc" id="L255">                        break;</span>
+<span class="fc" id="L271">                        result = v1 * v2;</span>
+<span class="fc" id="L272">                        resultsMap.put(node.hashCode(), result);</span>
+<span class="fc" id="L273">                        break;</span>
                     }
                     case '/': {
-<span class="nc" id="L258">                        result = v1 / v2;</span>
-<span class="nc" id="L259">                        resultsMap.put(node.hashCode(), result);</span>
-<span class="nc" id="L260">                        break;</span>
+<span class="nc" id="L276">                        result = v1 / v2;</span>
+<span class="nc" id="L277">                        resultsMap.put(node.hashCode(), result);</span>
+<span class="nc" id="L278">                        break;</span>
                     }
                     case '+': {
-<span class="fc" id="L263">                        result = v1 + v2;</span>
-<span class="fc" id="L264">                        resultsMap.put(node.hashCode(), result);</span>
-<span class="fc" id="L265">                        break;</span>
+<span class="fc" id="L281">                        result = v1 + v2;</span>
+<span class="fc" id="L282">                        resultsMap.put(node.hashCode(), result);</span>
+<span class="fc" id="L283">                        break;</span>
                     }
                     case '-': {
-<span class="fc" id="L268">                        result = v1 - v2;</span>
-<span class="fc" id="L269">                        resultsMap.put(node.hashCode(), result);</span>
-<span class="fc" id="L270">                        break;</span>
+<span class="fc" id="L286">                        result = v1 - v2;</span>
+<span class="fc" id="L287">                        resultsMap.put(node.hashCode(), result);</span>
+<span class="fc" id="L288">                        break;</span>
                     }
                     default:
-<span class="nc" id="L273">                        throw new IllegalArgumentException(&quot;ERROR: operator not recognized: &quot; + node.data);</span>
+<span class="nc" id="L291">                        throw new IllegalArgumentException(&quot;ERROR: operator not recognized: &quot; + node.data);</span>
                 }// end switch
-<span class="fc" id="L275">            }// end else</span>
+<span class="fc" id="L293">            }// end else</span>
 
         }//end while
-<span class="fc" id="L278">        return result;</span>
+<span class="fc" id="L296">        return result;</span>
     }
+
+    /**
+     * string of the characters within cRange
+     * @param chars character array
+     * @param cRange range
+     * @return string of characers within cRange
+     */
     public String toString(char[] chars, CRange cRange) {
-<span class="nc" id="L281">        return String.copyValueOf(chars, cRange.i0, cRange.i1 - cRange.i0 + 1);</span>
+<span class="nc" id="L306">        return String.copyValueOf(chars, cRange.i0, cRange.i1 - cRange.i0 + 1);</span>
     }
 
+    /**
+     * parse the number bounded by node
+     * @param chars character array
+     * @param node range
+     * @return the number
+     */
     protected double parseNumber(char[] chars, OpPair node) {
-<span class="nc" id="L285">        return parseNumber(chars, node.data);</span>
+<span class="nc" id="L316">        return parseNumber(chars, node.data);</span>
     }
 
+    /**
+     * parse the number bounded by nodeData
+     * @param chars character array
+     * @param nodeData range
+     * @return number parsed
+     */
     protected double parseNumber(char[] chars, CRange nodeData) {
-<span class="fc" id="L289">        String s = String.copyValueOf(chars, nodeData.i0, nodeData.i1 - nodeData.i0 + 1);</span>
-<span class="fc" id="L290">        return Double.parseDouble(s);</span>
+<span class="fc" id="L326">        String s = String.copyValueOf(chars, nodeData.i0, nodeData.i1 - nodeData.i0 + 1);</span>
+<span class="fc" id="L327">        return Double.parseDouble(s);</span>
     }
 
+    /**
+     * determine if the operation priority for chars[c0.i0] is greater than
+     * priority for chars[i1]
+     * @param c0 1st index in comparison is co.i0
+     * @param i1 2nd index in comparison
+     * @param chars character array
+     * @return true if operation priority for chars[c0.i0] is greater than
+     *   priority for chars[i1]
+     */
     protected boolean priorityisGT(CRange c0, int i1, char[] chars) {
-<span class="pc bnc" id="L294" title="All 2 branches missed.">        assert(c0.i0 == c0.i1);</span>
-<span class="fc" id="L295">        int p0 = opAlgPriorityMap.get(chars[c0.i0]);</span>
-<span class="fc" id="L296">        int p1 = opAlgPriorityMap.get(chars[i1]);</span>
-<span class="pc bpc" id="L297" title="1 of 2 branches missed.">        return p0 &gt; p1;</span>
+<span class="pc bnc" id="L340" title="All 2 branches missed.">        assert(c0.i0 == c0.i1);</span>
+<span class="fc" id="L341">        int p0 = opAlgPriorityMap.get(chars[c0.i0]);</span>
+<span class="fc" id="L342">        int p1 = opAlgPriorityMap.get(chars[i1]);</span>
+<span class="pc bpc" id="L343" title="1 of 2 branches missed.">        return p0 &gt; p1;</span>
     }
+
+    /**
+     * determine if the operation priority for chars[c0.i0] is greater than
+     * or equal to priority for chars[i1]
+     * @param c0 1st index in comparison is co.i0
+     * @param i1 2nd index in comparison
+     * @param chars character array
+     * @return true if operation priority for chars[c0.i0] is greater than
+     *   or equal to priority for chars[i1]
+     */
     protected boolean priorityisGEQ(CRange c0, int i1, char[] chars) {
-<span class="pc bnc" id="L300" title="All 2 branches missed.">        assert(c0.i0 == c0.i1);</span>
-<span class="fc" id="L301">        int p0 = opAlgPriorityMap.get(chars[c0.i0]);</span>
-<span class="fc" id="L302">        int p1 = opAlgPriorityMap.get(chars[i1]);</span>
-<span class="fc bfc" id="L303" title="All 2 branches covered.">        return p0 &gt;= p1;</span>
+<span class="pc bnc" id="L356" title="All 2 branches missed.">        assert(c0.i0 == c0.i1);</span>
+<span class="fc" id="L357">        int p0 = opAlgPriorityMap.get(chars[c0.i0]);</span>
+<span class="fc" id="L358">        int p1 = opAlgPriorityMap.get(chars[i1]);</span>
+<span class="fc bfc" id="L359" title="All 2 branches covered.">        return p0 &gt;= p1;</span>
     }
 
+    /**
+     * check c.i0 == '('
+     * @param c range
+     * @param chars character array
+     * @return true if c.i0 == '('
+     */
     protected boolean isNotLeftParenthesis(CRange c, char[] chars) {
-<span class="pc bpc" id="L307" title="1 of 4 branches missed.">        return !(c.i0 == c.i1 &amp;&amp; chars[c.i0] == '(');</span>
+<span class="pc bpc" id="L369" title="1 of 4 branches missed.">        return !(c.i0 == c.i1 &amp;&amp; chars[c.i0] == '(');</span>
     }
 
+    /**
+     * holds a node of data (operation) and
+     * left and right child nodes
+     */
     protected static class OpPair {
+        /**
+         * left child
+         */
         OpPair left = null;
+        /**
+         * right child
+         */
         OpPair right = null;
+        /**
+         * operation data
+         */
         CRange data;
         public OpPair(CRange cr) {
             this.data = cr;
         }
     }
 
+    /**
+     * holds an index range
+     */
     protected static class CRange {
-        final int i0; // beginning index of operator or number
-        final int i1; // ending index of operator or number, inclusive
+        /**
+         * beginning index of operator or number
+         */
+        final int i0;
+        /**
+         * ending index, inclusive, or operator or number
+         */
+        final int i1;
+
+        /**
+         * constructor
+         * @param idx0 start index
+         * @param idx1 stop index, inclusive
+         */
         public CRange(int idx0, int idx1) {
             this.i0 = idx0;
             this.i1 = idx1;

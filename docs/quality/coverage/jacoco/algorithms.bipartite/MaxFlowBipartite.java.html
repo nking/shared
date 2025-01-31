@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MaxFlowBipartite.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.bipartite</a> &gt; <span class="el_source">MaxFlowBipartite.java</span></div><h1>MaxFlowBipartite.java</h1><pre class="source lang-java linenums">package algorithms.bipartite;
+
+import algorithms.maxFlow.FordFulkerson;
+
+import java.util.*;
+
+/**
+ *  this class determines whether a perfect matching is possible,
+ * given graph data, and if so, calculates the perfect matching.
+ */
+<span class="pc" id="L11">public class MaxFlowBipartite {</span>
+
+    /**
+     * find a perfect matching of the graph given by edges, and if outVertexCover is not null,
+     * calculate the minimum vertex cover.
+     * @param edges array of edge endpoints.  e.g. edges[0] = {1, 4} for edge between node 1 and 4.
+     * @param outVertexCover if not null, the minimum vertex cover is also calculated and returned
+     *                       in this set.  WARNING: the minimum vertex cover is in a work in progress.
+     *                       A quick greedy method is implemented temporarily.
+     *                       NOTE that independent set can be constructed from the complement of the minimum
+     *                       vertex cover.
+     * @return the maximum size perfect matching of left and right nodes of the bipartite graph.
+     * If the return is null, a perfect matching was not possible.
+     */
+    public static Map&lt;Integer, Integer&gt; pairsAndMinimumVertexCover(int[][] edges, int nVertices,
+                                                      Set&lt;Integer&gt; outVertexCover) {
+        // add a src and sink node
+        // renumber the vertices to allow space for src and sink
+
+        // build graph without src and sink first to use Hall's theorem
+<span class="fc" id="L31">        Map&lt;Integer, Integer&gt; idxMap = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L32">        Map&lt;Integer, Integer&gt; idxMapRev = new HashMap&lt;&gt;(); // to write to out</span>
+
+        //key = uIdx, value = map of vIdx, val=flow
+<span class="fc" id="L35">        Map&lt;Integer, Map&lt;Integer, Integer&gt;&gt; graph = new HashMap&lt;&gt;();</span>
+
+        int u, v, uIdx, vIdx;
+
+<span class="fc" id="L39">        Map&lt;Integer, Integer&gt; degreesMap = null;</span>
+<span class="pc bpc" id="L40" title="1 of 2 branches missed.">        if (outVertexCover != null) {</span>
+<span class="fc" id="L41">            degreesMap = new HashMap&lt;&gt;();</span>
+        }
+
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        for (int[] edge : edges) {</span>
+<span class="fc" id="L45">            u = edge[0];</span>
+<span class="fc" id="L46">            v = edge[1];</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">            if (idxMap.containsKey(u)) {</span>
+<span class="fc" id="L48">                uIdx = idxMap.get(u);</span>
+            } else {
+<span class="fc" id="L50">                uIdx = idxMap.size() + 1;</span>
+<span class="fc" id="L51">                idxMap.put(u, uIdx);</span>
+            }
+<span class="fc bfc" id="L53" title="All 2 branches covered.">            if (idxMap.containsKey(v)) {</span>
+<span class="fc" id="L54">                vIdx = idxMap.get(v);</span>
+            } else {
+<span class="fc" id="L56">                vIdx = idxMap.size() + 1;</span>
+<span class="fc" id="L57">                idxMap.put(v, vIdx);</span>
+            }
+
+<span class="fc" id="L60">            graph.putIfAbsent(uIdx, new HashMap&lt;&gt;());</span>
+<span class="fc" id="L61">            graph.get(uIdx).put(vIdx, 1);</span>
+
+<span class="fc" id="L63">            idxMapRev.put(vIdx, v);</span>
+<span class="fc" id="L64">            idxMapRev.put(uIdx, u);</span>
+
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">            if (degreesMap != null) {</span>
+<span class="fc" id="L67">                degreesMap.put(uIdx, degreesMap.getOrDefault(uIdx, 0) + 1);</span>
+<span class="fc" id="L68">                degreesMap.put(vIdx, degreesMap.getOrDefault(vIdx, 0) + 1);</span>
+            }
+        }
+
+<span class="pc bpc" id="L72" title="1 of 2 branches missed.">        if (!isPossible(graph)) {</span>
+<span class="nc" id="L73">            return null;</span>
+        }
+
+        // add src and sink nodes to use FordFulkerson
+<span class="fc" id="L77">        int src = 0;</span>
+<span class="fc" id="L78">        int sink = nVertices + 1;</span>
+<span class="fc" id="L79">        graph.put(src, new HashMap&lt;&gt;());</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">        for (int[] edge : edges) {</span>
+<span class="fc" id="L81">            uIdx = idxMap.get(edge[0]);</span>
+<span class="fc" id="L82">            vIdx = idxMap.get(edge[1]);</span>
+            // add an edge from src to u
+<span class="fc" id="L84">            graph.get(src).put(uIdx, 1);</span>
+            // add an edge from v to sink
+<span class="fc" id="L86">            graph.putIfAbsent(vIdx, new HashMap&lt;&gt;());</span>
+<span class="fc" id="L87">            graph.get(vIdx).put(sink, 1);</span>
+        }
+
+<span class="fc" id="L90">        FordFulkerson f = new FordFulkerson(graph, nVertices + 2, src, sink);</span>
+<span class="fc" id="L91">        long nMatchings = f.maxFlow();</span>
+
+<span class="fc" id="L93">        Map&lt;Integer, Integer&gt; matched = new HashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">        for (int[] edge : edges) {</span>
+<span class="fc" id="L95">            u = edge[0];</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">            if (matched.containsKey(u)) continue;</span>
+<span class="fc" id="L97">            uIdx = idxMap.get(u);</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">            for (Map.Entry&lt;Integer, Integer&gt; vF : f.getRemG().get(uIdx).entrySet()) {</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">                if (vF.getValue() == 0) {</span>
+<span class="fc" id="L100">                    vIdx = vF.getKey();</span>
+<span class="fc" id="L101">                    v = idxMapRev.get(vIdx);</span>
+<span class="fc" id="L102">                    matched.put(u, v);</span>
+<span class="fc" id="L103">                    break;</span>
+                }
+<span class="fc" id="L105">            }</span>
+        }
+<span class="pc bnc" id="L107" title="All 2 branches missed.">        assert(matched.size() == nMatchings);</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">        if (outVertexCover == null) {</span>
+<span class="nc" id="L109">            return matched;</span>
+        }
+<span class="fc" id="L111">        outVertexCover.clear();</span>
+
+        //we can remove half of the nodes.
+        /*
+        TODO: replace this with formal methods.  see VertexCover.java, though those are for more complex graphs.
+
+        for each node in matched, calc the degree and store it as node, degree in an array.
+        sort the array in desc order by degree.
+        for each node in the list, remove all adjacent from the outVertexCover
+        if there are not nMatchings left when done, this greedy approach is not a good solution.
+        If the matching is small enough, exhaustive methods are possible.
+         */
+<span class="fc" id="L123">        int[][] degrees = new int[matched.size()*2][];</span>
+<span class="fc" id="L124">        int i = 0;</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">        for (Map.Entry&lt;Integer, Integer&gt; entry : matched.entrySet()) {</span>
+<span class="fc" id="L126">            u = entry.getKey();</span>
+<span class="fc" id="L127">            v = entry.getValue();</span>
+<span class="fc" id="L128">            uIdx = idxMap.get(u);</span>
+<span class="fc" id="L129">            vIdx = idxMap.get(v);</span>
+<span class="fc" id="L130">            degrees[i++] = new int[]{u, degreesMap.get(uIdx)};</span>
+<span class="fc" id="L131">            degrees[i++] = new int[]{v, degreesMap.get(vIdx)};</span>
+<span class="fc" id="L132">            outVertexCover.add(u);</span>
+<span class="fc" id="L133">            outVertexCover.add(v);</span>
+<span class="fc" id="L134">        }</span>
+
+<span class="fc" id="L136">        Arrays.sort(degrees, new Comparator&lt;int[]&gt;() {</span>
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                // descending sort by degree
+                return Integer.compare(o2[1], o1[1]);
+            }
+        });
+
+<span class="fc bfc" id="L144" title="All 2 branches covered.">        for (int[] uD : degrees) {</span>
+<span class="fc" id="L145">            u = uD[0];</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">            if (!outVertexCover.contains(u)) continue;</span>
+<span class="fc" id="L147">            uIdx = idxMap.get(u);</span>
+            // remove adjacent
+<span class="fc bfc" id="L149" title="All 2 branches covered.">            for (Map.Entry&lt;Integer, Integer&gt; entry : graph.get(uIdx).entrySet()) {</span>
+<span class="fc" id="L150">                vIdx = entry.getKey();</span>
+<span class="pc bpc" id="L151" title="1 of 4 branches missed.">                if (vIdx == src || vIdx == sink) continue;</span>
+<span class="fc" id="L152">                v = idxMapRev.get(vIdx);</span>
+<span class="fc" id="L153">                outVertexCover.remove(v);</span>
+<span class="fc" id="L154">            }</span>
+        }
+
+<span class="fc" id="L157">        return matched;</span>
+    }
+
+    /**
+     * using Hall's theorem, check whether a bipartite perfect matching is possible
+     * @param g
+     * @return
+     */
+    protected static boolean isPossible(Map&lt;Integer, Map&lt;Integer, Integer&gt;&gt; g) {
+<span class="fc" id="L166">        return isPossible(g, g.keySet());</span>
+    }
+    protected static boolean isPossible(Map&lt;Integer, Map&lt;Integer, Integer&gt;&gt; g, Set&lt;Integer&gt; leftNodes) {
+<span class="fc" id="L169">        int nLeft = leftNodes.size();</span>
+<span class="fc" id="L170">        int nRight = 0;</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">        for (int u : leftNodes) {</span>
+<span class="pc bpc" id="L172" title="1 of 2 branches missed.">            if (g.containsKey(u)) {</span>
+<span class="fc" id="L173">                nRight += g.get(u).size();</span>
+            }
+<span class="fc" id="L175">        }</span>
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">        return (nLeft &lt;= nRight);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

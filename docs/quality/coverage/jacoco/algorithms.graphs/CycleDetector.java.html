@@ -22,7 +22,7 @@ import java.util.*;
 <span class="fc" id="L22">        cycle[u] = 1;</span>
 <span class="fc bfc" id="L23" title="All 2 branches covered.">        if (graph.containsKey(u)) {</span>
 <span class="fc bfc" id="L24" title="All 2 branches covered.">            for (int v : graph.get(u)) {</span>
-<span class="fc bfc" id="L25" title="All 2 branches covered.">                if (cycle[v] != 0) {</span>
+<span class="fc bfc" id="L25" title="All 2 branches covered.">                if (cycle[v] == 1) {</span>
 <span class="fc" id="L26">                    return true;</span>
                 }
 <span class="pc bpc" id="L28" title="1 of 2 branches missed.">                if (visited[v] != 0) continue;</span>
@@ -31,23 +31,24 @@ import java.util.*;
                 }
 <span class="fc" id="L32">            }</span>
         }
-<span class="fc" id="L34">        return false;</span>
+<span class="fc" id="L34">        cycle[u] = 2;</span>
+<span class="fc" id="L35">        return false;</span>
     }
 
     public boolean hasCycle2(Map&lt;Integer, Set&lt;Integer&gt;&gt; graph) {
         // uses DFS to look for cycles in the graph
-<span class="fc" id="L39">        GraphUtil util = new GraphUtil();</span>
-<span class="fc" id="L40">        int nV = util.countNodes2(graph);</span>
+<span class="fc" id="L40">        GraphUtil util = new GraphUtil();</span>
+<span class="fc" id="L41">        int nV = util.countNodes2(graph);</span>
 
-<span class="fc" id="L42">        int[] visited = new int[nV];</span>
-<span class="fc bfc" id="L43" title="All 2 branches covered.">        for (int i = 0; i &lt; nV; ++i) {</span>
-<span class="fc bfc" id="L44" title="All 2 branches covered.">            if (visited[i] == 0) {</span>
-<span class="fc bfc" id="L45" title="All 2 branches covered.">                if (hasCycle(i, visited, new int[nV], graph)) {</span>
-<span class="fc" id="L46">                    return true;</span>
+<span class="fc" id="L43">        int[] visited = new int[nV];</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        for (int i = 0; i &lt; nV; ++i) {</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">            if (visited[i] == 0) {</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">                if (hasCycle(i, visited, new int[nV], graph)) {</span>
+<span class="fc" id="L47">                    return true;</span>
                 }
             }
         }
-<span class="fc" id="L50">        return false;</span>
+<span class="fc" id="L51">        return false;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

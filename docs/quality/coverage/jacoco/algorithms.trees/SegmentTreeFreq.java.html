@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SegmentTreeFreq.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.trees</a> &gt; <span class="el_source">SegmentTreeFreq.java</span></div><h1>SegmentTreeFreq.java</h1><pre class="source lang-java linenums">package algorithms.trees;
+
+import java.util.*;
+
+public class SegmentTreeFreq {
+
+    protected static class Node {
+        Map&lt;Integer, Integer&gt; countMap = new HashMap&lt;&gt;();
+        public Node(int v) {
+            countMap.put(v, 1);
+        }
+        public Node(Node nodeL, Node nodeR) {
+            countMap.putAll(nodeL.countMap);
+            for (Map.Entry&lt;Integer, Integer&gt; entry : nodeR.countMap.entrySet()) {
+                countMap.put(entry.getKey(), countMap.getOrDefault(entry.getKey(), 0) +
+                        entry.getValue());
+            }
+        }
+    }
+
+    protected final Node[] tree;
+    protected final int n;
+
+    /**
+     * constuctor for segment tree.  r.t.c. O(n*log(n))
+     * @param a array of numbers that frequency queries will be performed on
+     */
+<span class="fc" id="L28">    public SegmentTreeFreq(int[] a) {</span>
+<span class="fc" id="L29">        this.n = a.length;</span>
+<span class="fc" id="L30">        this.tree = new Node[2*n];</span>
+<span class="fc" id="L31">        build(a, 1, 0, n-1);</span>
+<span class="fc" id="L32">    }</span>
+
+    protected void build(int[] a, int tIdx, int treeL, int treeR) {
+<span class="fc bfc" id="L35" title="All 2 branches covered.">        if (treeL == treeR) {</span>
+<span class="fc" id="L36">            tree[tIdx] = new Node(a[treeL]);</span>
+<span class="fc" id="L37">            return;</span>
+        }
+<span class="fc" id="L39">        int mid = (treeL+treeR)/2;</span>
+        //int tLeftChild = 2*idx;
+        //int tRightChild = iLeftChild + 1;
+<span class="fc" id="L42">        int tLeftChild = tIdx + 1;</span>
+<span class="fc" id="L43">        int tRightChild = tIdx + (2 * (mid - treeL + 1));</span>
+        // this is tRightChild = tIdx + treeR - treeL + 2
+
+<span class="fc" id="L46">        build(a,tLeftChild, treeL, mid);</span>
+
+<span class="fc" id="L48">        build(a,tRightChild, mid + 1, treeR);</span>
+
+<span class="fc" id="L50">        tree[tIdx] = new Node(tree[tLeftChild], tree[tRightChild]);</span>
+<span class="fc" id="L51">    }</span>
+
+    /**
+     * query for frequencies of integer counts for the given ranges.
+     * r.t.c. is O(Q*log(N)) where Q = q.length and N = a.length from array given to constructor.
+     * (note that construction r.t.c. is O(N*log(N))) and so total is
+     * O((Q+N)log(N)).
+     * In contrast, MosAlgorithm.queryFrequencies which is O((Q+N)sqrt(N)).
+     * @param queries an array of query ranges.  each row is range [i1, i2] inclusive
+     *                where i1 and i2 are indexes of array a.  the indexes should be
+     *                0-based.
+     * @return array of frequency maps, 1 for each row of queries
+     */
+    public List&lt;Map&lt;Integer, Integer&gt;&gt; query(int[][] queries) {
+<span class="fc" id="L65">        List&lt;Map&lt;Integer, Integer&gt;&gt; out = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">        for (int[] q : queries) {</span>
+<span class="fc" id="L67">            out.add(query(q[0], q[1]));</span>
+        }
+<span class="fc" id="L69">        return out;</span>
+    }
+
+    public Map&lt;Integer, Integer&gt; query(int i0, int i1) {
+<span class="fc" id="L73">        return query(1, 0, n-1, i0, i1);</span>
+    }
+
+    protected Map&lt;Integer, Integer&gt; query(int tIdx, int treeL, int treeR, int qL, int qR) {
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">        if (tIdx &lt; 1) {</span>
+<span class="nc" id="L78">            throw new IllegalArgumentException(&quot;tIdx must be &gt;= 1&quot;);</span>
+        }
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">        if (qL &gt; qR) {</span>
+<span class="nc" id="L81">            return new HashMap&lt;&gt;();</span>
+        }
+
+<span class="pc bpc" id="L84" title="2 of 4 branches missed.">        if (treeL == qL &amp;&amp; treeR == qR) {</span>
+<span class="fc" id="L85">            return tree[tIdx].countMap;</span>
+        }
+
+<span class="nc" id="L88">        int mid = (treeL + treeR)/2;</span>
+        //int tLeftChild = 2*tIdx;
+        //int tRightChild = tLeftChild + 1;
+<span class="nc" id="L91">        int tLeftChild = tIdx + 1;</span>
+<span class="nc" id="L92">        int tRightChild = tIdx + (2 * (mid - treeL + 1));</span>
+        // this is tRightChild = tIdx + treeR - treeL + 2
+
+<span class="nc" id="L95">        Map&lt;Integer, Integer&gt; map = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L96">        Map&lt;Integer, Integer&gt; leftMap = query(tLeftChild, treeL, mid, qL, Math.min(qR, mid));</span>
+<span class="nc" id="L97">        Map&lt;Integer, Integer&gt; rightMap = query(tRightChild, mid + 1, treeR, Math.max(qL, mid+1), qR);</span>
+<span class="nc" id="L98">        map.putAll(leftMap);</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">        for (Map.Entry&lt;Integer, Integer&gt; entry : rightMap.entrySet()) {</span>
+<span class="nc" id="L100">            map.put(entry.getKey(), map.getOrDefault(entry.getKey(), 0) +</span>
+<span class="nc" id="L101">                    entry.getValue());</span>
+<span class="nc" id="L102">        }</span>
+
+<span class="nc" id="L104">        return map;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

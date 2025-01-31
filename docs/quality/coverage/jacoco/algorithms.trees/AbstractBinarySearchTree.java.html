@@ -4,121 +4,140 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-<span class="fc" id="L7">public abstract class AbstractBinarySearchTree</span>
+/**
+ * abstract class for binary search trees
+ * @param &lt;T&gt; comparable parameter type for node data
+ * @param &lt;S&gt; base node class that must be used or extended
+ */
+<span class="fc" id="L12">public abstract class AbstractBinarySearchTree</span>
         &lt;T extends Comparable&lt;T&gt;, S extends BinaryTreeNode&lt;T&gt;&gt; implements IBinarySearchTree&lt;T,S&gt;{
 
-<span class="fc" id="L10">    protected S root = null;</span>
+    /**
+     * root node of this tree
+     */
+<span class="fc" id="L18">    protected S root = null;</span>
 
+    /**
+     * internal search
+     * @param top subtree root
+     * @param data node data to search for
+     * @return node having data
+     */
     protected abstract S _search(S top, T data);
+
     public abstract S newNode(T data);
+
+    /**
+     * internal insert
+     * @param top subtree root
+     * @param node node to insert
+     * @return inserted node
+     */
     protected abstract S _insert(S top, S node);
+
     public abstract boolean delete(BinaryTreeNode&lt;T&gt; node);
 
     public S insert(T data) {
-<span class="fc" id="L18">        S node = newNode(data);</span>
-<span class="fc" id="L19">        root = _insert(root, node);</span>
-<span class="fc" id="L20">        return node;</span>
+<span class="fc" id="L41">        S node = newNode(data);</span>
+<span class="fc" id="L42">        root = _insert(root, node);</span>
+<span class="fc" id="L43">        return node;</span>
     }
 
     public S search(T data) {
-<span class="fc" id="L24">        return _search(root, data);</span>
+<span class="fc" id="L47">        return _search(root, data);</span>
     }
 
     public boolean contains(T data) {
-<span class="nc bnc" id="L28" title="All 2 branches missed.">        return (_search(root, data) != null);</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">        return (_search(root, data) != null);</span>
     }
 
     /**
      * delete tree a single node having value data.
-     * @param node
-     * @return
+     * @param data data to search for in nodes
+     * @return true if node was deleted
      */
     public boolean delete(T data) {
-<span class="fc" id="L37">        S node = search(data);</span>
-<span class="fc" id="L38">        return delete(node);</span>
+<span class="fc" id="L60">        S node = search(data);</span>
+<span class="fc" id="L61">        return delete(node);</span>
     }
 
 
     /**
      * find minimum node for subtree top.
-     * @param top
+     * @param top top node of subtree
      * @return minimum node
-     * @param &lt;T&gt; comparable data carried by BinaryTreeNode
      */
     public S minimum(BinaryTreeNode&lt;T&gt; top) {
-<span class="pc bpc" id="L49" title="1 of 2 branches missed.">        if (top == null) return null;</span>
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">        if (top == null) return null;</span>
         // is left node
-<span class="fc" id="L51">        BinaryTreeNode&lt;T&gt; node = top;</span>
-<span class="fc bfc" id="L52" title="All 2 branches covered.">        while (node.left != null) {</span>
-<span class="pc bpc" id="L53" title="1 of 2 branches missed.">            node = (node.left == null) ? null : node.left;</span>
+<span class="fc" id="L73">        BinaryTreeNode&lt;T&gt; node = top;</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">        while (node.left != null) {</span>
+<span class="pc bpc" id="L75" title="1 of 2 branches missed.">            node = (node.left == null) ? null : node.left;</span>
         }
-<span class="pc bpc" id="L55" title="1 of 2 branches missed.">        return (node == null) ? null : (S)node;</span>
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">        return (node == null) ? null : (S)node;</span>
     }
 
     /**
      * find maximum node for subtree top.
-     * @param top
+     * @param top top node of subtree
      * @return minimum node
-     * @param &lt;T&gt; comparable data carried by BinaryTreeNode
      */
     public S maximum(BinaryTreeNode&lt;T&gt; top) {
-<span class="nc bnc" id="L65" title="All 2 branches missed.">        if (top == null) return null;</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">        if (top == null) return null;</span>
         // is rightmost node
-<span class="nc" id="L67">        BinaryTreeNode&lt;T&gt; node = top;</span>
-<span class="nc bnc" id="L68" title="All 2 branches missed.">        while (node.right != null) {</span>
-<span class="nc" id="L69">            node = node.right;</span>
+<span class="nc" id="L88">        BinaryTreeNode&lt;T&gt; node = top;</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">        while (node.right != null) {</span>
+<span class="nc" id="L90">            node = node.right;</span>
         }
-<span class="nc bnc" id="L71" title="All 2 branches missed.">        return (node == null) ? null : (S)node;</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">        return (node == null) ? null : (S)node;</span>
     }
 
     /**
      * find successor node for node.
-     * @param top
+     * @param node top node of subtree
      * @return successor node
-     * @param &lt;T&gt; comparable data carried by BinaryTreeNode
      */
     public S successor(BinaryTreeNode&lt;T&gt; node) {
-<span class="nc bnc" id="L81" title="All 2 branches missed.">        if (node == null) return null;</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">        if (node == null) return null;</span>
         /*
                 0
            10        20
                   11     30
                         21
          */
-<span class="nc bnc" id="L88" title="All 2 branches missed.">        if (node.right != null) {</span>
-<span class="nc" id="L89">            return minimum(node.right);</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">        if (node.right != null) {</span>
+<span class="nc" id="L109">            return minimum(node.right);</span>
         }
         // find lowest ancestor of node whose left child is an ancestor of node
-<span class="nc" id="L92">        BinaryTreeNode&lt;T&gt; p = node.parent;</span>
-<span class="nc bnc" id="L93" title="All 6 branches missed.">        while (p != null &amp;&amp; p.right != null &amp;&amp; p.right.equals(node)) {</span>
-<span class="nc" id="L94">            p = p.parent;</span>
+<span class="nc" id="L112">        BinaryTreeNode&lt;T&gt; p = node.parent;</span>
+<span class="nc bnc" id="L113" title="All 6 branches missed.">        while (p != null &amp;&amp; p.right != null &amp;&amp; p.right.equals(node)) {</span>
+<span class="nc" id="L114">            p = p.parent;</span>
         }
-<span class="nc bnc" id="L96" title="All 2 branches missed.">        return (p == null) ? null : (S)p;</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">        return (p == null) ? null : (S)p;</span>
     }
 
     /**
      * find predecessor node for node.
-     * @param top
+     * @param node top node of subtree
      * @return predecessor node
-     * @param &lt;T&gt; comparable data carried by BinaryTreeNode
      */
     public S predecessor(BinaryTreeNode&lt;T&gt; node) {
-<span class="nc bnc" id="L106" title="All 2 branches missed.">        if (node == null) return null;</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">        if (node == null) return null;</span>
         /*
                 0
            10        20
                   11     30
                         21
          */
-<span class="nc bnc" id="L113" title="All 2 branches missed.">        if (node.left != null) {</span>
-<span class="nc" id="L114">            return maximum(node.right);</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">        if (node.left != null) {</span>
+<span class="nc" id="L133">            return maximum(node.right);</span>
         }
         // find lowest ancestor of node whose right child is an ancestor of node
-<span class="nc" id="L117">        BinaryTreeNode&lt;T&gt; p = node.parent;</span>
-<span class="nc bnc" id="L118" title="All 6 branches missed.">        while (p != null &amp;&amp; p.left != null &amp;&amp; p.left.equals(node)) {</span>
-<span class="nc" id="L119">            p = p.parent;</span>
+<span class="nc" id="L136">        BinaryTreeNode&lt;T&gt; p = node.parent;</span>
+<span class="nc bnc" id="L137" title="All 6 branches missed.">        while (p != null &amp;&amp; p.left != null &amp;&amp; p.left.equals(node)) {</span>
+<span class="nc" id="L138">            p = p.parent;</span>
         }
-<span class="nc bnc" id="L121" title="All 2 branches missed.">        return (p == null) ? null : (S)p;</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">        return (p == null) ? null : (S)p;</span>
     }
 
     /**
@@ -127,11 +146,11 @@ import java.util.Stack;
      reference
      https://en.wikipedia.org/wiki/Order_statistic_tree
      &lt;/pre&gt;
-     * @param data
+     * @param data value to search for in tree
      * @return the rank of data in the tree, else -1 if not in tree
      */
     public long rank(T data) {
-<span class="fc" id="L134">        return rank(root, data);</span>
+<span class="fc" id="L153">        return rank(root, data);</span>
     }
 
     /**
@@ -141,27 +160,27 @@ import java.util.Stack;
      https://en.wikipedia.org/wiki/Order_statistic_tree
      &lt;/pre&gt;
      @param t top node of subtree
-     @param data
+     @param data value of node to search for
      @return the rank of data in the tree, else -1 if not in tree
      */
     public long rank(BinaryTreeNode&lt;T&gt; t, T data) {
-<span class="pc bpc" id="L148" title="1 of 2 branches missed.">        if (t == null) {</span>
-<span class="nc" id="L149">            return -1;</span>
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">        if (t == null) {</span>
+<span class="nc" id="L168">            return -1;</span>
         }
-<span class="fc" id="L151">        BinaryTreeNode&lt;T&gt; x = _search((S)t, data);</span>
-<span class="pc bpc" id="L152" title="1 of 2 branches missed.">        if (x == null) return -1;</span>
+<span class="fc" id="L170">        BinaryTreeNode&lt;T&gt; x = _search((S)t, data);</span>
+<span class="pc bpc" id="L171" title="1 of 2 branches missed.">        if (x == null) return -1;</span>
 
-<span class="fc bfc" id="L154" title="All 2 branches covered.">        long r = (x.left != null) ? x.left.n + 1 : 1;</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">        long r = (x.left != null) ? x.left.n + 1 : 1;</span>
 
-<span class="fc" id="L156">        BinaryTreeNode&lt;T&gt; y = x;</span>
-<span class="pc bpc" id="L157" title="1 of 4 branches missed.">        while (y != null &amp;&amp; !y.equals(t)) {</span>
-<span class="fc" id="L158">            BinaryTreeNode&lt;T&gt; p = y.parent;</span>
-<span class="pc bpc" id="L159" title="2 of 6 branches missed.">            if (p != null &amp;&amp; p.right != null &amp;&amp; p.right.equals(y)) {</span>
-<span class="pc bpc" id="L160" title="1 of 2 branches missed.">                r += (p.left != null) ? p.left.n + 1 : 1;</span>
+<span class="fc" id="L175">        BinaryTreeNode&lt;T&gt; y = x;</span>
+<span class="pc bpc" id="L176" title="1 of 4 branches missed.">        while (y != null &amp;&amp; !y.equals(t)) {</span>
+<span class="fc" id="L177">            BinaryTreeNode&lt;T&gt; p = y.parent;</span>
+<span class="pc bpc" id="L178" title="2 of 6 branches missed.">            if (p != null &amp;&amp; p.right != null &amp;&amp; p.right.equals(y)) {</span>
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">                r += (p.left != null) ? p.left.n + 1 : 1;</span>
             }
-<span class="fc" id="L162">            y = p;</span>
-<span class="fc" id="L163">        }</span>
-<span class="fc" id="L164">        return r;</span>
+<span class="fc" id="L181">            y = p;</span>
+<span class="fc" id="L182">        }</span>
+<span class="fc" id="L183">        return r;</span>
     }
 
     /**
@@ -171,14 +190,15 @@ import java.util.Stack;
      reference
      https://en.wikipedia.org/wiki/Order_statistic_tree
      &lt;/pre&gt;
-     * @param rank
+     * @param rank 1-based number rank to select within ordered tree.
+     *             e.g. for a rank of 1, the method returns the root node.
      * @return the node with rank rank in this tree else null if there is no
      * node in tree with that rank
      */
     public S select(long rank) {
-<span class="pc bpc" id="L179" title="1 of 2 branches missed.">        if (root == null) return null;</span>
+<span class="pc bpc" id="L199" title="1 of 2 branches missed.">        if (root == null) return null;</span>
         // Returns the rank'th element (one-indexed) of the elements in t
-<span class="fc" id="L181">        return select(root, rank);</span>
+<span class="fc" id="L201">        return select(root, rank);</span>
     }
 
     /**
@@ -188,20 +208,21 @@ import java.util.Stack;
      reference
      https://en.wikipedia.org/wiki/Order_statistic_tree
      &lt;/pre&gt;
-     * @param rank
+     * @param rank 1-based number rank to select within ordered tree.
+     *      e.g. for a rank of 1, the method returns the root node.
      * @return the node with rank rank in subtree t, else null if there is no
      *      * node in subtree t with that rank
      */
     public S select(BinaryTreeNode&lt;T&gt; t, long rank) {
-<span class="fc bfc" id="L196" title="All 2 branches covered.">        if (t == null) return null;</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">        if (t == null) return null;</span>
         // Returns the rank'th element (one-indexed) of the elements in t
-<span class="fc bfc" id="L198" title="All 2 branches covered.">        long s = (t.left != null) ? t.left.n + 1 : 1;</span>
-<span class="fc bfc" id="L199" title="All 2 branches covered.">        if (rank == s) {</span>
-<span class="fc" id="L200">            return (S)t;</span>
-<span class="fc bfc" id="L201" title="All 2 branches covered.">        } else if (rank &lt; s) {</span>
-<span class="fc" id="L202">            return select(t.left, rank);</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">        long s = (t.left != null) ? t.left.n + 1 : 1;</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">        if (rank == s) {</span>
+<span class="fc" id="L221">            return (S)t;</span>
+<span class="fc bfc" id="L222" title="All 2 branches covered.">        } else if (rank &lt; s) {</span>
+<span class="fc" id="L223">            return select(t.left, rank);</span>
         } else {
-<span class="fc" id="L204">            return select(t.right, rank - s);</span>
+<span class="fc" id="L225">            return select(t.right, rank - s);</span>
         }
     }
 
@@ -218,32 +239,32 @@ import java.util.Stack;
         D      A
       E  C
      &lt;/pre&gt;
-     * @param node
-     * @return
+     * @param node top node of subtree
+     @return returns node that replaces node as result top of rotation
      */
     protected BinaryTreeNode&lt;T&gt; rotateRight(BinaryTreeNode&lt;T&gt; node) {
-<span class="fc" id="L225">        BinaryTreeNode&lt;T&gt; node2 = node.left; //*  y=node2</span>
-<span class="fc" id="L226">        BinaryTreeNode&lt;T&gt; p = node.parent;</span>
-<span class="fc" id="L227">        node.left = node2.right; //*</span>
-<span class="fc" id="L228">        node2.right = node;  //*</span>
+<span class="fc" id="L246">        BinaryTreeNode&lt;T&gt; node2 = node.left; //*  y=node2</span>
+<span class="fc" id="L247">        BinaryTreeNode&lt;T&gt; p = node.parent;</span>
+<span class="fc" id="L248">        node.left = node2.right; //*</span>
+<span class="fc" id="L249">        node2.right = node;  //*</span>
 
-<span class="pc bpc" id="L230" title="1 of 2 branches missed.">        if (node.left != null) {</span>
-<span class="nc" id="L231">            node.left.parent = node;</span>
+<span class="pc bpc" id="L251" title="1 of 2 branches missed.">        if (node.left != null) {</span>
+<span class="nc" id="L252">            node.left.parent = node;</span>
         }
 
-<span class="fc" id="L234">        node.parent = node2;</span>
-<span class="fc" id="L235">        node2.parent = p;</span>
-<span class="fc bfc" id="L236" title="All 2 branches covered.">        if (p == null) {</span>
-<span class="fc" id="L237">            root = (S) node2;</span>
+<span class="fc" id="L255">        node.parent = node2;</span>
+<span class="fc" id="L256">        node2.parent = p;</span>
+<span class="fc bfc" id="L257" title="All 2 branches covered.">        if (p == null) {</span>
+<span class="fc" id="L258">            root = (S) node2;</span>
         } else {
-<span class="pc bpc" id="L239" title="1 of 2 branches missed.">            if (p.left.equals(node)) {</span>
-<span class="nc" id="L240">                p.left = node2;</span>
+<span class="pc bpc" id="L260" title="1 of 2 branches missed.">            if (p.left.equals(node)) {</span>
+<span class="nc" id="L261">                p.left = node2;</span>
             } else {
-<span class="fc" id="L242">                p.right = node2;</span>
+<span class="fc" id="L263">                p.right = node2;</span>
             }
         }
 
-<span class="fc" id="L246">        return node2;</span>
+<span class="fc" id="L267">        return node2;</span>
     }
 
     /**
@@ -259,77 +280,88 @@ import java.util.Stack;
        B      C
      D   E
      &lt;/pre&gt;
-     @param node
-     @return
+     @param node top node of subtree
+     @return returns node that replaces node as result top of rotation
      */
     protected BinaryTreeNode&lt;T&gt; rotateLeft(BinaryTreeNode&lt;T&gt; node) {
-<span class="fc" id="L266">        BinaryTreeNode&lt;T&gt; node2 = node.right; //*</span>
-<span class="fc" id="L267">        BinaryTreeNode&lt;T&gt; p = node.parent;</span>
-<span class="fc" id="L268">        node.right = node2.left; //*</span>
-<span class="fc" id="L269">        node2.left = node;  //*</span>
-<span class="pc bpc" id="L270" title="1 of 2 branches missed.">        if (node.right != null) {</span>
-<span class="fc" id="L271">            node.right.parent = node;</span>
+<span class="fc" id="L287">        BinaryTreeNode&lt;T&gt; node2 = node.right; //*</span>
+<span class="fc" id="L288">        BinaryTreeNode&lt;T&gt; p = node.parent;</span>
+<span class="fc" id="L289">        node.right = node2.left; //*</span>
+<span class="fc" id="L290">        node2.left = node;  //*</span>
+<span class="pc bpc" id="L291" title="1 of 2 branches missed.">        if (node.right != null) {</span>
+<span class="fc" id="L292">            node.right.parent = node;</span>
         }
 
-<span class="fc" id="L274">        node.parent = node2;</span>
-<span class="fc" id="L275">        node2.parent = p;</span>
+<span class="fc" id="L295">        node.parent = node2;</span>
+<span class="fc" id="L296">        node2.parent = p;</span>
 
-<span class="pc bpc" id="L277" title="1 of 2 branches missed.">        if (p == null) {</span>
-<span class="fc" id="L278">            root = (S) node2;</span>
+<span class="pc bpc" id="L298" title="1 of 2 branches missed.">        if (p == null) {</span>
+<span class="fc" id="L299">            root = (S) node2;</span>
         } else {
-<span class="nc bnc" id="L280" title="All 2 branches missed.">            if (p.left.equals(node)) {</span>
-<span class="nc" id="L281">                p.left = node2;</span>
+<span class="nc bnc" id="L301" title="All 2 branches missed.">            if (p.left.equals(node)) {</span>
+<span class="nc" id="L302">                p.left = node2;</span>
             } else {
-<span class="nc" id="L283">                p.right = node2;</span>
+<span class="nc" id="L304">                p.right = node2;</span>
             }
         }
-<span class="fc" id="L286">        return node2;</span>
+<span class="fc" id="L307">        return node2;</span>
     }
 
     /**
+     * traverse the tree in in-order and return the list of nodes.
+     * in-order is the pattern left subtree, root of subtree, right subtree
      * return data from in-order traversal of tree.
-     * @return
+     * @return list of nodes in in-order
      */
     public List&lt;T&gt; inOrderTraversal() {
-<span class="fc" id="L294">        List&lt;T&gt; out = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L295">        BinaryTreeNode&lt;T&gt; node = root;</span>
-<span class="fc bfc" id="L296" title="All 2 branches covered.">        if (node == null) {</span>
-<span class="fc" id="L297">            return out;</span>
+<span class="fc" id="L317">        List&lt;T&gt; out = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L318">        BinaryTreeNode&lt;T&gt; node = root;</span>
+<span class="fc bfc" id="L319" title="All 2 branches covered.">        if (node == null) {</span>
+<span class="fc" id="L320">            return out;</span>
         }
-<span class="fc" id="L299">        Stack&lt;BinaryTreeNode&lt;T&gt;&gt; s = new Stack&lt;&gt;();</span>
-<span class="fc bfc" id="L300" title="All 4 branches covered.">        while (!s.isEmpty() || node != null) {</span>
-<span class="fc bfc" id="L301" title="All 2 branches covered.">            if (node != null) {</span>
-<span class="fc" id="L302">                s.push(node);</span>
-<span class="fc" id="L303">                node = node.left;</span>
+<span class="fc" id="L322">        Stack&lt;BinaryTreeNode&lt;T&gt;&gt; s = new Stack&lt;&gt;();</span>
+<span class="fc bfc" id="L323" title="All 4 branches covered.">        while (!s.isEmpty() || node != null) {</span>
+<span class="fc bfc" id="L324" title="All 2 branches covered.">            if (node != null) {</span>
+<span class="fc" id="L325">                s.push(node);</span>
+<span class="fc" id="L326">                node = node.left;</span>
             } else {
-<span class="fc" id="L305">                node = s.pop();</span>
-<span class="fc" id="L306">                out.add(node.data);</span>
-<span class="fc" id="L307">                node = node.right;</span>
+<span class="fc" id="L328">                node = s.pop();</span>
+<span class="fc" id="L329">                out.add(node.data);</span>
+<span class="fc" id="L330">                node = node.right;</span>
             }
         }
-<span class="fc" id="L310">        return out;</span>
+<span class="fc" id="L333">        return out;</span>
     }
 
+    /**
+     * update node.n in node
+     * @param node node to be updates
+     */
     protected void updateN(BinaryTreeNode&lt;T&gt; node) {
-<span class="fc bfc" id="L314" title="All 2 branches covered.">        if (node == null) return;</span>
-<span class="fc" id="L315">        node.n = 1;</span>
-<span class="fc bfc" id="L316" title="All 2 branches covered.">        if (node.left != null) {</span>
-<span class="fc" id="L317">            node.n += node.left.n;</span>
+<span class="fc bfc" id="L341" title="All 2 branches covered.">        if (node == null) return;</span>
+<span class="fc" id="L342">        node.n = 1;</span>
+<span class="fc bfc" id="L343" title="All 2 branches covered.">        if (node.left != null) {</span>
+<span class="fc" id="L344">            node.n += node.left.n;</span>
         }
-<span class="fc bfc" id="L319" title="All 2 branches covered.">        if (node.right != null) {</span>
-<span class="fc" id="L320">            node.n += node.right.n;</span>
+<span class="fc bfc" id="L346" title="All 2 branches covered.">        if (node.right != null) {</span>
+<span class="fc" id="L347">            node.n += node.right.n;</span>
         }
-<span class="fc" id="L322">    }</span>
+<span class="fc" id="L349">    }</span>
 
+    /**
+     * update node.n and the n variable of all of ints ancestors
+     * @param node the child node of the nodes to update, including update
+     *              of node
+     */
     protected void updateNAndAncestors(BinaryTreeNode&lt;T&gt; node) {
-<span class="pc bpc" id="L325" title="1 of 2 branches missed.">        if (node == null) return;</span>
-<span class="fc" id="L326">        updateN(node);</span>
-<span class="fc" id="L327">        BinaryTreeNode&lt;T&gt; parent = node.parent;</span>
-<span class="fc bfc" id="L328" title="All 2 branches covered.">        while (parent != null) {</span>
-<span class="fc" id="L329">            updateN(parent);</span>
-<span class="fc" id="L330">            parent = parent.parent;</span>
+<span class="pc bpc" id="L357" title="1 of 2 branches missed.">        if (node == null) return;</span>
+<span class="fc" id="L358">        updateN(node);</span>
+<span class="fc" id="L359">        BinaryTreeNode&lt;T&gt; parent = node.parent;</span>
+<span class="fc bfc" id="L360" title="All 2 branches covered.">        while (parent != null) {</span>
+<span class="fc" id="L361">            updateN(parent);</span>
+<span class="fc" id="L362">            parent = parent.parent;</span>
         }
-<span class="fc" id="L332">    }</span>
+<span class="fc" id="L364">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

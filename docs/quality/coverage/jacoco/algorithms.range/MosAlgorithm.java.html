@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MosAlgorthm.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.range</a> &gt; <span class="el_source">MosAlgorthm.java</span></div><h1>MosAlgorthm.java</h1><pre class="source lang-java linenums">package algorithms.range;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MosAlgorithm.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.range</a> &gt; <span class="el_source">MosAlgorithm.java</span></div><h1>MosAlgorithm.java</h1><pre class="source lang-java linenums">package algorithms.range;
 
 import java.util.*;
 
@@ -6,7 +6,7 @@ import java.util.*;
  * an algorithm used to process many queries of a static array (no modifications).
  *
  */
-<span class="nc" id="L9">public class MosAlgorthm {</span>
+<span class="nc" id="L9">public class MosAlgorithm {</span>
 
     /**
      * calculates the sum of all range queries of array 'a'.
@@ -99,6 +99,8 @@ import java.util.*;
      and adapted from
          https://cp-algorithms.com/data_structures/sqrt_decomposition.html#mos-algorithm
      &lt;/pre&gt;
+     Note, can use a faster algorithm from SegmentTreeFreq called query() which has r.t.c.
+     of O((N+Q)*log(N)).
      * @param a array of integers
      * @param q array of queries of indexes into array 'a' as inclusive query ranges.
      * @return frequency maps for each query range are returned.
@@ -109,13 +111,13 @@ import java.util.*;
         //
         // List&lt;Map&lt;Integer, Integer&gt;&gt; takes more space but is more usable.
 
-<span class="fc" id="L112">        List&lt;Map&lt;Integer, Integer&gt;&gt; out = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L114">        List&lt;Map&lt;Integer, Integer&gt;&gt; out = new ArrayList&lt;&gt;();</span>
 
-<span class="fc" id="L114">        int n = a.length;</span>
+<span class="fc" id="L116">        int n = a.length;</span>
 
-<span class="fc" id="L116">        int blockSize = (int)Math.ceil(Math.sqrt(n));</span>
+<span class="fc" id="L118">        int blockSize = (int)Math.ceil(Math.sqrt(n));</span>
 
-<span class="fc" id="L118">        Arrays.sort(q, new Comparator&lt;int[]&gt;(){</span>
+<span class="fc" id="L120">        Arrays.sort(q, new Comparator&lt;int[]&gt;(){</span>
             public int compare(int[]x, int[] y) {
                 if ((x[0] / blockSize) != (y[0] / blockSize)) {
                     return x[0] - y[0];
@@ -128,47 +130,47 @@ import java.util.*;
             }
         });
 
-<span class="fc" id="L131">        int currL = 0;</span>
-<span class="fc" id="L132">        int currR = -1;</span>
-<span class="fc" id="L133">        long currSum = 0;</span>
+<span class="fc" id="L133">        int currL = 0;</span>
+<span class="fc" id="L134">        int currR = -1;</span>
+<span class="fc" id="L135">        long currSum = 0;</span>
         int qL, qR;
 
-<span class="fc" id="L136">        Map&lt;Integer, Integer&gt; freqMap = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L138">        Map&lt;Integer, Integer&gt; freqMap = new HashMap&lt;&gt;();</span>
 
-<span class="fc bfc" id="L138" title="All 2 branches covered.">        for (int i = 0; i &lt; q.length; i++) {</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">        for (int i = 0; i &lt; q.length; i++) {</span>
             // qL and qR values of current range
-<span class="fc" id="L140">            qL = q[i][0];</span>
-<span class="fc" id="L141">            qR = q[i][1];</span>
-<span class="fc bfc" id="L142" title="All 2 branches covered.">            while (currL &gt; qL) {</span>
-<span class="fc" id="L143">                currL--;</span>
-<span class="fc" id="L144">                freqMap.put(a[currL], freqMap.getOrDefault(a[currL], 0) + 1);</span>
+<span class="fc" id="L142">            qL = q[i][0];</span>
+<span class="fc" id="L143">            qR = q[i][1];</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">            while (currL &gt; qL) {</span>
+<span class="fc" id="L145">                currL--;</span>
+<span class="fc" id="L146">                freqMap.put(a[currL], freqMap.getOrDefault(a[currL], 0) + 1);</span>
             }
-<span class="fc bfc" id="L146" title="All 2 branches covered.">            while (currR &lt; qR) {</span>
-<span class="fc" id="L147">                currR++;</span>
-<span class="fc" id="L148">                freqMap.put(a[currR], freqMap.getOrDefault(a[currR], 0) + 1);</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">            while (currR &lt; qR) {</span>
+<span class="fc" id="L149">                currR++;</span>
+<span class="fc" id="L150">                freqMap.put(a[currR], freqMap.getOrDefault(a[currR], 0) + 1);</span>
             }
-<span class="fc bfc" id="L150" title="All 2 branches covered.">            while (currR &gt; qR) {</span>
-<span class="fc" id="L151">                freqMap.put(a[currR], freqMap.getOrDefault(a[currR], 0) - 1);</span>
-<span class="fc" id="L152">                currR--;</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">            while (currR &gt; qR) {</span>
+<span class="fc" id="L153">                freqMap.put(a[currR], freqMap.getOrDefault(a[currR], 0) - 1);</span>
+<span class="fc" id="L154">                currR--;</span>
             }
-<span class="fc bfc" id="L154" title="All 2 branches covered.">            while (currL &lt; qL) {</span>
-<span class="fc" id="L155">                freqMap.put(a[currL], freqMap.getOrDefault(a[currL], 0) - 1);</span>
-<span class="fc" id="L156">                currL++;</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">            while (currL &lt; qL) {</span>
+<span class="fc" id="L157">                freqMap.put(a[currL], freqMap.getOrDefault(a[currL], 0) - 1);</span>
+<span class="fc" id="L158">                currL++;</span>
             }
             //O(nUnique from a[minQ] to a[maxQ])
-<span class="fc" id="L159">            out.add(writeMap(freqMap));</span>
+<span class="fc" id="L161">            out.add(writeMap(freqMap));</span>
         }
-<span class="fc" id="L161">        return out;</span>
+<span class="fc" id="L163">        return out;</span>
     }
 
     private static Map&lt;Integer, Integer&gt; writeMap(Map&lt;Integer, Integer&gt; freqMap) {
-<span class="fc" id="L165">        Map&lt;Integer, Integer&gt; out = new HashMap&lt;&gt;();</span>
-<span class="fc bfc" id="L166" title="All 2 branches covered.">        for (Map.Entry&lt;Integer, Integer&gt; entry : freqMap.entrySet()){</span>
-<span class="fc bfc" id="L167" title="All 2 branches covered.">            if (entry.getValue() != 0) {</span>
-<span class="fc" id="L168">                out.put(entry.getKey(), entry.getValue());</span>
+<span class="fc" id="L167">        Map&lt;Integer, Integer&gt; out = new HashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">        for (Map.Entry&lt;Integer, Integer&gt; entry : freqMap.entrySet()){</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">            if (entry.getValue() != 0) {</span>
+<span class="fc" id="L170">                out.put(entry.getKey(), entry.getValue());</span>
             }
-<span class="fc" id="L170">        }</span>
-<span class="fc" id="L171">        return out;</span>
+<span class="fc" id="L172">        }</span>
+<span class="fc" id="L173">        return out;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

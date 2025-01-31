@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ManhattanDistMST.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.msts</a> &gt; <span class="el_source">ManhattanDistMST.java</span></div><h1>ManhattanDistMST.java</h1><pre class="source lang-java linenums">package algorithms.msts;
+
+import algorithms.disjointSets.UnionFind;
+
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+/**
+ * Given a set of points, find the subset of &quot;edges&quot; that connect all points
+ * resulting in a total sum of weights that is minimum.
+ * The weights are the calculated Manhattan distance between the points.
+ * The r.t.c. of this algorithm is O(n*log(n)).
+ *
+ * A detailed explanation of the algorithm can be found in
+ * https://cp-algorithms.com/geometry/manhattan-distance.html
+ */
+<span class="pc" id="L18">public class ManhattanDistMST {</span>
+
+    // implementing a Node instead of using a long[] so that the Set hash function finds
+    // same data to be equivalent.
+    protected static class Node {
+        final long[] weightIJ;
+        public Node(long weight, int i, int j) {
+            weightIJ = new long[]{weight, i, j};
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof Node)) return false;
+            return Arrays.equals(((Node)obj).weightIJ, weightIJ);
+        }
+
+        @Override
+        public int hashCode() {
+            return Arrays.hashCode(weightIJ);
+        }
+    }
+
+    /**
+     * calculate the manhattan based MST for the set of data points ps which are
+     * rows of x, y coordinates as integers.
+     * r.t.c. is O(n*log(n)).
+     * @param ps
+     * @return the MST as rows of {edge start index, edge end index, manhattan dist of edge}
+     * where index is index of ps (hence represent a point).
+     */
+    public static List&lt;long[]&gt; manhattanMST(int[][] ps) {
+<span class="fc" id="L49">        int n = ps.length;</span>
+<span class="fc" id="L50">        UnionFind uf = new UnionFind(n);</span>
+        // Node has weight, and indexes of coordinates
+<span class="fc" id="L52">        List&lt;Node&gt; edges = new ArrayList&lt;&gt;(manhattanMSTEdges(ps));</span>
+<span class="fc" id="L53">        Collections.sort(edges, (o1, o2) -&gt; {return Long.compare(o1.weightIJ[0], o2.weightIJ[0]);});</span>
+<span class="fc" id="L54">        List&lt;long[]&gt; out = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">        for (Node edge : edges) {</span>
+<span class="fc" id="L56">            int i = (int) edge.weightIJ[1];</span>
+<span class="fc" id="L57">            int j = (int) edge.weightIJ[2];</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">            if (uf.find(i) != uf.find(j)) {</span>
+<span class="fc" id="L59">                uf.union(i, j);</span>
+<span class="fc" id="L60">                out.add(new long[]{i, j, edge.weightIJ[0]});</span>
+            }
+<span class="fc" id="L62">        }</span>
+<span class="pc bnc" id="L63" title="All 2 branches missed.">        assert(out.size() == n-1);</span>
+<span class="fc" id="L64">        return out;</span>
+    }
+
+    /**
+     * given an array of points where each row is a 2-dimensional point, find
+     * the disjoint edges.
+     * r.t.c. is O(n*log(n)).
+     &lt;pre&gt;
+     reference:
+     code was adapted from
+     https://ebi-fly13.github.io/Library/graph/manhattan_mst.hpp.html
+     The repository uses creative commons zero v.10 universal license https://github.com/ebi-fly13/Library/blob/main/LICENSE
+
+     &lt;/pre&gt;
+     * @param ps array of rows where a row is the x and y coordinates of a point
+     * @return a set of nodes holding the weights and edge indexes of ps.
+     */
+    protected static Set&lt;Node&gt; manhattanMSTEdges(int[][] ps) {
+
+<span class="fc" id="L83">        int n = ps.length;</span>
+
+<span class="fc" id="L85">        List&lt;Integer&gt; ids = IntStream.range(0, n).boxed()</span>
+<span class="fc" id="L86">                .collect(Collectors.toCollection(ArrayList::new));</span>
+
+        // each element length is 3.  1st=, 2nd=, 3rd=
+<span class="fc" id="L89">        Set&lt;Node&gt; edges = new HashSet&lt;&gt;();</span>
+
+<span class="fc bfc" id="L91" title="All 2 branches covered.">        for (int s = 0; s &lt; 2; s++) {</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">            for (int t = 0; t &lt; 2; t++) {</span>
+
+<span class="fc" id="L94">                Collections.sort(ids, (i, j) -&gt; {</span>
+<span class="fc" id="L95">                    return Integer.compare(</span>
+<span class="fc" id="L96">                            (ps[i][0] + ps[i][1]), (ps[j][0] + ps[j][1])</span>
+                    );
+                });
+
+                // using negative keys to make descending order
+<span class="fc" id="L101">                TreeMap&lt;Integer, Integer&gt; sweep = new TreeMap&lt;&gt;();</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">                for (int i : ids) {</span>
+
+<span class="fc" id="L104">                    Set&lt;Map.Entry&lt;Integer, Integer&gt;&gt; rm = new HashSet&lt;&gt;();</span>
+                    for (Map.Entry&lt;Integer, Integer&gt; entry
+<span class="fc bfc" id="L106" title="All 2 branches covered.">                            : sweep.tailMap(-ps[i][1], true).entrySet()) {</span>
+
+<span class="fc" id="L108">                        rm.add(entry);</span>
+
+<span class="fc" id="L110">                        int j = entry.getValue();</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">                        if (ps[i][0] - ps[j][0] &lt; ps[i][1] - ps[j][1]) break;</span>
+
+<span class="fc" id="L113">                        edges.add(new Node(</span>
+<span class="fc" id="L114">                                Math.abs(ps[i][1] - ps[j][1]) + Math.abs(ps[i][0] - ps[j][0]),</span>
+                                i, j));
+<span class="fc" id="L116">                    }</span>
+
+<span class="fc bfc" id="L118" title="All 2 branches covered.">                    for (Map.Entry&lt;Integer, Integer&gt; entry : rm) {</span>
+<span class="fc" id="L119">                        sweep.remove(entry.getKey(), entry.getValue());</span>
+<span class="fc" id="L120">                    }</span>
+
+<span class="fc" id="L122">                    sweep.put(-ps[i][1], i);</span>
+<span class="fc" id="L123">                }// end i from ids</span>
+
+                // swap all of x with all of y
+<span class="fc bfc" id="L126" title="All 2 branches covered.">                for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L127">                    ps[i][0] ^= ps[i][1];</span>
+<span class="fc" id="L128">                    ps[i][1] ^= ps[i][0];</span>
+<span class="fc" id="L129">                    ps[i][0] ^= ps[i][1];</span>
+                }
+            }// end t
+            // mult x by -1
+<span class="fc bfc" id="L133" title="All 2 branches covered.">            for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L134">                ps[i][0] *= -1;</span>
+            }
+        }
+
+<span class="fc" id="L138">        return edges;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

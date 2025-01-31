@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SegmentTree.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.trees</a> &gt; <span class="el_source">SegmentTree.java</span></div><h1>SegmentTree.java</h1><pre class="source lang-java linenums">package algorithms.trees;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * a heap-like data structure for intervals.
@@ -17,19 +19,18 @@ import java.util.Arrays;
  */
 public class SegmentTree {
 
-    // M holds indices
     protected final long[] tree;
     protected final int n;
 
-<span class="fc" id="L24">    public SegmentTree(int[] a) {</span>
+<span class="fc" id="L25">    public SegmentTree(int[] a) {</span>
 
-<span class="fc" id="L26">        n = a.length;</span>
-<span class="fc" id="L27">        this.tree = new long[2*n];</span>
+<span class="fc" id="L27">        n = a.length;</span>
+<span class="fc" id="L28">        this.tree = new long[2*n];</span>
 
-<span class="fc" id="L29">        build(a, 1, 0, n-1);</span>
+<span class="fc" id="L30">        build(a, 1, 0, n-1);</span>
 
         //System.out.printf(&quot;tree=%s\n&quot;, Arrays.toString(tree));
-<span class="fc" id="L32">    }</span>
+<span class="fc" id="L33">    }</span>
 
     /*
     with 1-based indexing:
@@ -46,80 +47,86 @@ public class SegmentTree {
      */
 
     protected void build(int[] a, int tIdx, int treeL, int treeR) {
-<span class="fc bfc" id="L49" title="All 2 branches covered.">        if (treeL == treeR) {</span>
-<span class="fc" id="L50">            tree[tIdx] = a[treeL];</span>
-<span class="fc" id="L51">            return;</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        if (treeL == treeR) {</span>
+<span class="fc" id="L51">            tree[tIdx] = a[treeL];</span>
+<span class="fc" id="L52">            return;</span>
         }
-<span class="fc" id="L53">        int mid = (treeL+treeR)/2;</span>
+<span class="fc" id="L54">        int mid = (treeL+treeR)/2;</span>
         //int tLeftChild = 2*idx;
         //int tRightChild = iLeftChild + 1;
-<span class="fc" id="L56">        int tLeftChild = tIdx + 1;</span>
-<span class="fc" id="L57">        int tRightChild = tIdx + (2 * (mid - treeL + 1));</span>
+<span class="fc" id="L57">        int tLeftChild = tIdx + 1;</span>
+<span class="fc" id="L58">        int tRightChild = tIdx + (2 * (mid - treeL + 1));</span>
         // this is tRightChild = tIdx + treeR - treeL + 2
 
-<span class="fc" id="L60">        build(a,tLeftChild, treeL, mid);</span>
+<span class="fc" id="L61">        build(a,tLeftChild, treeL, mid);</span>
 
-<span class="fc" id="L62">        build(a,tRightChild, mid + 1, treeR);</span>
+<span class="fc" id="L63">        build(a,tRightChild, mid + 1, treeR);</span>
 
-<span class="fc" id="L64">        tree[tIdx] = tree[tLeftChild] + tree[tRightChild];</span>
-<span class="fc" id="L65">    }</span>
+<span class="fc" id="L65">        tree[tIdx] = tree[tLeftChild] + tree[tRightChild];</span>
+<span class="fc" id="L66">    }</span>
 
     /**
      * return the sum from a[i0] to a[i1], inclusive.
      * @param i0
      * @param i1
-     * @return
+     * @return sum of range[i0,i1]
      */
     public long sum(int i0, int i1) {
-<span class="fc" id="L74">        long s = sum(1, 0, n-1, i0, i1);</span>
-<span class="fc" id="L75">        return s;</span>
+<span class="fc" id="L75">        long s = sum(1, 0, n-1, i0, i1);</span>
+<span class="fc" id="L76">        return s;</span>
     }
 
     protected long sum(int tIdx, int treeL, int treeR, int qL, int qR) {
-<span class="fc bfc" id="L79" title="All 2 branches covered.">        if (qL &gt; qR) {</span>
-<span class="fc" id="L80">            return 0;</span>
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">        if (tIdx &lt; 1) {</span>
+<span class="nc" id="L81">            throw new IllegalArgumentException(&quot;tIdx must be &gt;= 1&quot;);</span>
+        }
+<span class="fc bfc" id="L83" title="All 2 branches covered.">        if (qL &gt; qR) {</span>
+<span class="fc" id="L84">            return 0;</span>
         }
 
-<span class="fc bfc" id="L83" title="All 4 branches covered.">        if (treeL == qL &amp;&amp; treeR == qR) {</span>
-<span class="fc" id="L84">            return tree[tIdx];</span>
+<span class="fc bfc" id="L87" title="All 4 branches covered.">        if (treeL == qL &amp;&amp; treeR == qR) {</span>
+<span class="fc" id="L88">            return tree[tIdx];</span>
         }
 
-<span class="fc" id="L87">        int mid = (treeL + treeR)/2;</span>
+<span class="fc" id="L91">        int mid = (treeL + treeR)/2;</span>
         //int tLeftChild = 2*tIdx;
         //int tRightChild = tLeftChild + 1;
-<span class="fc" id="L90">        int tLeftChild = tIdx + 1;</span>
-<span class="fc" id="L91">        int tRightChild = tIdx + (2 * (mid - treeL + 1));</span>
+<span class="fc" id="L94">        int tLeftChild = tIdx + 1;</span>
+<span class="fc" id="L95">        int tRightChild = tIdx + (2 * (mid - treeL + 1));</span>
         // this is tRightChild = tIdx + treeR - treeL + 2
 
-<span class="fc" id="L94">        return sum(tLeftChild, treeL, mid, qL, Math.min(qR, mid))</span>
-<span class="fc" id="L95">                + sum(tRightChild, mid + 1, treeR, Math.max(qL, mid+1), qR);</span>
+<span class="fc" id="L98">        return sum(tLeftChild, treeL, mid, qL, Math.min(qR, mid))</span>
+<span class="fc" id="L99">                + sum(tRightChild, mid + 1, treeR, Math.max(qL, mid+1), qR);</span>
     }
 
     public void updateSet(int i, int newVal) {
-<span class="fc" id="L99">        updateSet(1, 0, n-1, i, newVal);</span>
+<span class="fc" id="L103">        updateSet(1, 0, n-1, i, newVal);</span>
         //System.out.printf(&quot;*tree=%s\n&quot;, Arrays.toString(tree));
-<span class="fc" id="L101">    }</span>
+<span class="fc" id="L105">    }</span>
 
     protected void updateSet(int tIdx, int treeL, int treeR, int pos, int newVal) {
-<span class="fc bfc" id="L104" title="All 2 branches covered.">        if (treeL == treeR) {</span>
-<span class="fc" id="L105">            tree[tIdx] = newVal;</span>
-<span class="fc" id="L106">            return;</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">        if (tIdx &lt; 1) {</span>
+<span class="nc" id="L109">            throw new IllegalArgumentException(&quot;tIdx must be &gt;= 1&quot;);</span>
+        }
+<span class="fc bfc" id="L111" title="All 2 branches covered.">        if (treeL == treeR) {</span>
+<span class="fc" id="L112">            tree[tIdx] = newVal;</span>
+<span class="fc" id="L113">            return;</span>
         }
 
-<span class="fc" id="L109">        int mid = (treeL + treeR)/2;</span>
+<span class="fc" id="L116">        int mid = (treeL + treeR)/2;</span>
         //int tLeftChild = 2*idx;
         //int tRightChild = iLeftChild + 1;
-<span class="fc" id="L112">        int tLeftChild = tIdx + 1;</span>
-<span class="fc" id="L113">        int tRightChild = tIdx + (2 * (mid - treeL + 1));</span>
+<span class="fc" id="L119">        int tLeftChild = tIdx + 1;</span>
+<span class="fc" id="L120">        int tRightChild = tIdx + (2 * (mid - treeL + 1));</span>
         // this is tRightChild = tIdx + treeR - treeL + 2
 
-<span class="fc bfc" id="L116" title="All 2 branches covered.">        if (pos &lt;= mid) {</span>
-<span class="fc" id="L117">            updateSet(tLeftChild, treeL, mid, pos, newVal);</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">        if (pos &lt;= mid) {</span>
+<span class="fc" id="L124">            updateSet(tLeftChild, treeL, mid, pos, newVal);</span>
         } else {
-<span class="fc" id="L119">            updateSet(tRightChild, mid+1, treeR, pos, newVal);</span>
+<span class="fc" id="L126">            updateSet(tRightChild, mid+1, treeR, pos, newVal);</span>
         }
 
-<span class="fc" id="L122">        tree[tIdx] = tree[tLeftChild] + tree[tRightChild];</span>
-<span class="fc" id="L123">    }</span>
+<span class="fc" id="L129">        tree[tIdx] = tree[tLeftChild] + tree[tRightChild];</span>
+<span class="fc" id="L130">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
