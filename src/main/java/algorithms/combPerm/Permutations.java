@@ -50,7 +50,7 @@ public class Permutations {
         //output(A)
         outPermutations[oc] = Arrays.copyOf(set, n);
         oc++;
-        
+
         /*
         procedure recursive(k : integer, A : array of any):
             if k = 0 then {
@@ -69,7 +69,7 @@ public class Permutations {
                         swap(A[0], A[k-1])
                     end if
                 end if
-            end for        
+            end for
         */
 
         nIter0 = 0;
@@ -261,28 +261,35 @@ public class Permutations {
 
     public static List<int[]> recursivePermute(int[] a) {
         int n = a.length;
-        int[] tmp = new int[n];
         List<int[]> out = new ArrayList<>();
-        int[] chosen = new int[n];
-
-        r(a, out, tmp, 0, chosen);
+        r(n, a, out);
         return out;
     }
 
-    private static void r(int[] a, List<int[]> out, int[] tmp, int iTmp, int[] chosen) {
-        if (iTmp == a.length) {
-            out.add(Arrays.copyOf(tmp, tmp.length));
+    private static void r(int k, int[] a, List<int[]> out) {
+        if (k == 0) {
+            out.add(Arrays.copyOf(a, a.length));
             return;
         }
-        for (int i = 0; i < a.length; ++i) {
-            if (chosen[i] != 0) continue;
-
-            chosen[i] = 1;
-            tmp[iTmp] = a[i];
-            r(a, out, tmp, iTmp+1, chosen);
-
-            // backtrack:
-            chosen[i] = 0;
+        int i = k - 1;
+        for (int c = 0; c <= i; ++c) {
+            r(i, a, out);
+            if (c == i) break;
+            if ((i&1) == 0) {
+                // swap 0, i
+                if (i != 0) {
+                    a[0] ^= a[i];
+                    a[i] ^= a[0];
+                    a[0] ^= a[i];
+                }
+            } else {
+                // swap c, i
+                if (c != i) {
+                    a[c] ^= a[i];
+                    a[i] ^= a[c];
+                    a[c] ^= a[i];
+                }
+            }
         }
     }
 }

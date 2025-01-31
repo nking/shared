@@ -1,5 +1,6 @@
 package algorithms.combPerm;
 
+import algorithms.misc.MiscMath0;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 
@@ -15,59 +16,6 @@ public class PermutationsTest extends TestCase {
     
     public PermutationsTest(String testName) {
         super(testName);
-    }
-
-    protected void swap(int[] a, int i, int j) {
-        if (a[i] == a[j]) return;
-        a[i] ^= a[j];
-        a[j] ^= a[i];
-        a[i] ^= a[j];
-    }
-    public void testPermute() {
-
-        int i, j;
-
-        /*
-        Arrays.sort(out, (o1,o2)-> {
-            for (int k  = 0; k < n; ++k) {
-                int c = Integer.compare(o1[k], o2[k]);
-                if (c != 0) return c;
-            }
-            // arrive here only for identical matrices
-            return Integer.compare(o1[0], o2[0]);
-        });
-        */
-
-        // public void permute(int[] set, int[][] outPermutations) {
-    
-        int[] set = new int[]{1, 2, 3};
-        int[][] outPermutations = new int[6][];
-        for (i = 0; i < outPermutations.length; ++i) {
-            outPermutations[i] = new int[set.length];
-        }
-        
-        int[][] expected = new int[6][];
-        expected[0] = new int[]{1, 2, 3};
-        expected[1] = new int[]{1, 3, 2};
-        expected[2] = new int[]{2, 1, 3};
-        expected[3] = new int[]{2, 3, 1};
-        expected[4] = new int[]{3, 1, 2};
-        expected[5] = new int[]{3, 2, 1};
-        
-        Permutations.permute(set, outPermutations);
-        
-        TIntSet found = new TIntHashSet();
-        int[] ej, pi;
-        for (i = 0; i < expected.length; ++i) {
-            pi = outPermutations[i];
-            for (j = 0; j < expected.length; ++j) {
-                ej = expected[j];
-                if (Arrays.equals(ej, pi)) {
-                    found.add(j);
-                }
-            }
-        }
-        assertEquals(6, found.size());
     }
 
     public void test3() {
@@ -114,33 +62,78 @@ public class PermutationsTest extends TestCase {
         assertEquals(0, expected.size());
     }
 
-    public void _testR() {
-        int[] m = new int[]{1,2,3};
-        r(m.length, m);
-    }
+    public void testRecursiveRandom() {
+        long seed = System.nanoTime();
+        System.out.printf("seed=%d\n", seed);
+        Random rand = new Random(seed);
 
-    protected void r(int mIdx, int[] m) {
-        if (mIdx == 0) {
-            //System.out.printf("%s\n", Arrays.toString(m));
-            return;
-        }
-        for (int i = 0; i < mIdx; ++i) {
-            r(mIdx-1, m);
-            int j = mIdx - 1;
-            if (i < j) {
-                if ((mIdx&1)!=1) { // even
-                    m[i]      ^= m[j];
-                    m[j] ^= m[i];
-                    m[i]      ^= m[j];
-                } else {//odd
-                    if (0 != j) {
-                        m[0]      ^= m[j];
-                        m[j] ^= m[0];
-                        m[0]      ^= m[j];
-                    }
+        int nTests = 3;
+        for (int nTest = 0; nTest < nTests; ++nTest) {
+            int n = 1 + rand.nextInt(7);
+            int[] a = new int[n];
+            for (int i = 0; i < n; ++i) {
+                a[i] = rand.nextInt(1_000_000);
+            }
+            long nExp = MiscMath0.factorial(n);
+            List<int[]> p = Permutations.recursivePermute(a);
+            assertEquals(nExp, p.size());
+
+            // redraw a uniquely
+            Set<Integer> in = new HashSet<>();
+            int i = 0;
+            while (i < n) {
+                int j = rand.nextInt(1_000_000);
+                if (!in.contains(j)) {
+                    a[i++] = j;
+                    in.add(j);
                 }
             }
+            int[] b = Arrays.copyOf(a, n);
+            Arrays.sort(b);
+            p = Permutations.recursivePermute(a);
+            assertEquals(nExp, p.size());
+            Set<String> unique = new HashSet<>();
+            for (int[] pi : p) {
+                unique.add(Arrays.toString(pi));
+                Arrays.sort(pi);
+                assertTrue(Arrays.equals(b, pi));
+            }
+            assertEquals(nExp, unique.size());
         }
     }
-    
+
+    public void testNonRecursiveRandom() {
+        long seed = System.nanoTime();
+        System.out.printf("seed=%d\n", seed);
+        Random rand = new Random(seed);
+
+        int nTests = 3;
+        for (int nTest = 0; nTest < nTests; ++nTest) {
+            int n = 1 + rand.nextInt(7);
+            int[] a = new int[n];
+            //draw a uniquely
+            Set<Integer> in = new HashSet<>();
+            int i = 0;
+            while (i < n) {
+                int j = rand.nextInt(1_000_000);
+                if (!in.contains(j)) {
+                    a[i++] = j;
+                    in.add(j);
+                }
+            }
+            int[] b = Arrays.copyOf(a, n);
+            Arrays.sort(b);
+            long nExp = MiscMath0.factorial(n);
+            int[][] out = new int[(int)nExp][n];
+            Permutations.permute(a, out);
+
+            Set<String> unique = new HashSet<>();
+            for (int[] pi : out) {
+                unique.add(Arrays.toString(pi));
+                Arrays.sort(pi);
+                assertTrue(Arrays.equals(b, pi));
+            }
+            assertEquals(nExp, unique.size());
+        }
+    }
 }
