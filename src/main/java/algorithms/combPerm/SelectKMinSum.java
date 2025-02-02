@@ -17,12 +17,13 @@ public class SelectKMinSum {
      * the choices is minimized.
      *
      * The problem uses dynamic programming and a power set iteration pattern to solve
-     * with a runtime complexity of O(k*n*2^(k)).
+     * with a runtime complexity of O(k*n*(2^k)).
      *
      * The use of dynamic programming quickly becomes faster than a brute force C(n,k) comparison
-     * of all possible combinations of k selections from n elements for n>10.
+     * of all possible combinations of k selections from n elements for n GT 10.
      *
-     * @param kByNChoices a data array with k rows and n columns.
+     * @param kByNChoices a data array with k rows and n columns. one item from each
+        row must be picked.
      * @return the minimum sum of selecting exactly one item from each row.
      */
     public static long selectKMinSum(int[][] kByNChoices) {
@@ -45,24 +46,25 @@ public class SelectKMinSum {
                 for (int iK = 0; iK < k; iK++) {
 
                     // use s only if it includes iK
-                    if ((s&(1<<iK)) != 0) {
-                        // difference in set bits between s and iK.  this is a candidate previous
-                        // set to add to that does not include iK
-                        int sInclude = s^(1<<iK);
+                    if ((s&(1<<iK)) == 0) continue;
 
-                        // too large (too many bits) for sequential approach from 0 to i:
-                        if (Integer.bitCount(sInclude) > i) continue;
+                    // difference in set bits between s and iK.  this is a candidate previous
+                    // set to add to that does not include iK
+                    int sPrev = s^(1<<iK);
 
-                        // include current selection by including previous and adding to it.
-                        // exclude by not changing (above we already set to previous without
-                        // adding current)
-                        long includePlusCurr = tabPrev[sInclude] != sentinel ?
-                                tabPrev[sInclude] + kByNChoices[iK][i] : kByNChoices[iK][i];
+                    // too large (too many bits) for sequential approach from 0 to i:
+                    if (Integer.bitCount(sPrev) > i) continue;
 
-                        if (tabCurr[s] == sentinel || includePlusCurr <= tabCurr[s]) {
-                            tabCurr[s] = includePlusCurr;
-                        }
+                    // include current selection by including previous and adding to it.
+                    // exclude by not changing (above we already set to previous without
+                    // adding current)
+                    long prevPlusCurr = tabPrev[sPrev] != sentinel ?
+                            tabPrev[sPrev] + kByNChoices[iK][i] : kByNChoices[iK][i];
+
+                    if (tabCurr[s] == sentinel || prevPlusCurr <= tabCurr[s]) {
+                        tabCurr[s] = prevPlusCurr;
                     }
+                    
                 } // end loop over iK
             } // end loop over s
             tabPrev = tabCurr;
