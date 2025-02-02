@@ -1,19 +1,19 @@
 package algorithms.combPerm;
 
 /**
- * given an array and a constraint that each bin sum must be less that
+ * given an array and a constraint that each bin sum must be less than
  * or equal to capacity, find the minimum number of bins to place each
  * element in the array.
- */
-public class BinPacking {
+	 */
+	public class BinPacking {
 
     /**
       given an array and a constraint that each bin sum must be less that
       or equal to capacity, find the minimum number of bins to place each
       element in the array.
      The algorithm uses dynamic programming and a bitstring power set pattern to solve w/ a
-     r.t.c. of O(n*log(n)) which is much better than trying all permutations for n!.
-     The s.c. is O(n*log(n)).
+     r.t.c. of O(n*2^n) which is much better than trying all permutations for n!.
+     The s.c. is O(n).
      <pre>
      The initial problem is adapted from Competitve Programmer's Handbook by Antti Laaksonen
       chapt 10.5.
@@ -30,7 +30,7 @@ public class BinPacking {
         // tab[S]:  S enumerates all subsets of size n as a bitstring, with set bits being
         //     the indexes of weights which are present in the calculation.
         // tab[S][0]: column 0 of each row holds the number of bins used for tab[s].
-        // tab[S][1]: column 1 of each row holds the summed weight of the last elevator not
+        // tab[S][1]: column 1 of each row holds the summed weight of the last bin not
         //            yet filled for this set S.
         int[][] tab = new int[1<<n][2];
         tab[0][0] = n+1;//1; // init with infeasible value
@@ -69,7 +69,7 @@ public class BinPacking {
                     ++tmpIncl[0];
                     tmpIncl[1] = weights[i];
                 }
-                // assign to S the best of current or candidate + current weight
+                // assign to S the best of current and candidate + current weight
                 if ((tmpIncl[0] == tab[s][0] && tmpIncl[1] < tab[s][1]) || (tmpIncl[0] < tab[s][0])) {
                     tab[s][0] = tmpIncl[0];
                     tab[s][1] = tmpIncl[1];
