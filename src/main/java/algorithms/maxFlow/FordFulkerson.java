@@ -2,30 +2,75 @@ package algorithms.maxFlow;
 
 import java.util.*;
 
+/**
+ * a class holding an implementation of the Ford-Fulkerson method with
+ * ability to provide other implmentations.
+ *
+ * The Ford-Fulkerson method is a greedy solution to the maximum flow problem
+ * of a flow network.
+ *
+ * A flow network is a graph whose edges have a capacity
+ * and each edge receives a flow.  The sum of flow into a node must equal the sum
+ * of flow out of a node unless the node is a source or sink.
+ *
+ * The max flow of a flow network is a state of the network that obtains the max
+ * possible flow rate.
+ */
 public class FordFulkerson {
 
+    /**
+     * the graph with edges holding the remaining amount of flow that the edge can hold
+     * (the reduced capacity due to flow having been push through the edge.  the flow that
+     * was push through the edge is stored in revG).
+     * The amount of flow the edge can hold is decreased from capacity as flow moves
+     * out of it.
+     * the map key is the start node of an edge, the value is a map with key = stop node of an
+     * edge, value = amount of flow the edge can handle (reduced capacity).
+     */
     private Map<Integer, Map<Integer, Integer>> remG;
 
     /**
-     * reverse g tracks the edge flow, but in opposite direction.
+     * reverse g tracks the edge flow, but in opposite direction for the edge.
+     * the map key is the stop node of an edge, the value is a map with key = start node of an
+     * edge, value = amount of flow through the edge.
      */
     protected Map<Integer, Map<Integer, Integer>> revG;
 
+    /**
+     * the the source node of the flow network
+     */
     protected final int src;
 
+    /**
+     * the sink node of the flow network.
+     */
     protected final int sink;
 
+    /**
+     * number of vertices in the flow networkd
+     */
     protected final int nVertices;
+
+    /**
+     * number of edges in the flow network.
+     */
     protected final int nEdges;
 
+    /**
+     * flag indicating whether the max flow has been solved.
+     */
     protected boolean finished = false;
+
+    /**
+     * the amount of flow pushed through the system, maximized.
+     */
     protected long maxFlow = -1;
 
     /**
      * constructor for the max flow algorithm.
      * @param g graph with nodes numbered from 0 to nVertices - 1.  the network
-     *          should not have any anti-parallel edges, that is for an edge u->v
-     *          there should be no edge v-> u
+     *          should not have any anti-parallel edges, that is for an edge u to v
+     *          there should be no edge v to u
      *          for a pair(u,v) of vertices.
      * @param nVertices the number of vertices in the graph
      * @param src
@@ -37,7 +82,6 @@ public class FordFulkerson {
         this.sink = sink;
         this.nVertices = nVertices;
 
-        // init maps
         this.remG = new HashMap<>();
         this.revG = new HashMap<>();
         int nEdges = 0;
@@ -58,6 +102,10 @@ public class FordFulkerson {
         this.nEdges = nEdges;
     }
 
+    /**
+     * calculate the maximum flow that can be push through the system.
+     * @return the maximum flow that can be push through the system.
+     */
     public long maxFlow() {
         if (finished) return maxFlow;
 
@@ -118,11 +166,22 @@ public class FordFulkerson {
         }
     }
 
+    /**
+     * find an augmenting path using the Edmonds-Karp algorithm.
+     * @param visited an array that will be used internally to track visited nodes.  must be of
+     *                length nVertices.
+     * @param prev an array that will be used internally to track the parents of a node.
+     *             must be of length nVertices.
+     * @return the flow found for the path composed in prev array.  the value will be 0 when
+     * no augmenting path is found in the graph remG.
+     */
     protected int findAugPathEK(int[] visited, int[] prev) {
         Arrays.fill(visited, 0);
         Arrays.fill(prev, -1);
 
-        // use BFS to find first path to reach dest sink
+        // use BFS to find first path to reach destination sink.
+        // for each edge, store the minimum remaining edge capacity
+        // of the edge itself and the it's on path.
 
         //queue key = idx, minflow
         Queue<int[]> q = new ArrayDeque<>();
@@ -156,17 +215,19 @@ public class FordFulkerson {
         return 0;
     }
 
+    /*
     protected int findAugPathDFS(int[] visited, int[] prev, Map<Integer, Map<Integer, Integer>> g) {
         throw new UnsupportedOperationException("not implemented");
     }
 
     protected int findAugPathDFSScaling(int[] visited, int[] prev, Map<Integer, Map<Integer, Integer>> g) {
         throw new UnsupportedOperationException("not implemented");
-    }
+    }*/
 
     /**
-     * the graph weighted by the remaining capacity for flow.  when there is no path without
+     * get the graph  with edges that hold remaining capacity for flow.  when there is no path without
      * a 0 weight in it, the graph flow is maximum.
+     * @return the graph  with edges that hold remaining capacity for flow
      */
     public Map<Integer, Map<Integer, Integer>> getRemG() {
         return remG;

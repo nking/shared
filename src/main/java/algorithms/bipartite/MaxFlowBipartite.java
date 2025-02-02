@@ -11,15 +11,16 @@ import java.util.*;
 public class MaxFlowBipartite {
 
     /**
-     * find a perfect matching of the graph given by edges, and if outVertexCover is not null,
-     * calculate the minimum vertex cover.
+     * find a perfect matching of the graph given by edges.  if outVertexCover is not null,
+     * the method also calculate the minimum vertex cover and places it in outVertexCover.
      * @param edges array of edge endpoints.  e.g. edges[0] = {1, 4} for edge between node 1 and 4.
+     * @param nVertices the number of vertices in the graph
      * @param outVertexCover if not null, the minimum vertex cover is also calculated and returned
      *                       in this set.  WARNING: the minimum vertex cover is in a work in progress.
      *                       A quick greedy method is implemented temporarily.
      *                       NOTE that independent set can be constructed from the complement of the minimum
      *                       vertex cover.
-     * @return the maximum size perfect matching of left and right nodes of the bipartite graph.
+     * @return a maximum size perfect matching of left and right nodes of the bipartite graph.
      * If the return is null, a perfect matching was not possible.
      */
     public static Map<Integer, Integer> pairsAndMinimumVertexCover(int[][] edges, int nVertices,
@@ -116,7 +117,7 @@ public class MaxFlowBipartite {
 
         for each node in matched, calc the degree and store it as node, degree in an array.
         sort the array in desc order by degree.
-        for each node in the list, remove all adjacent from the outVertexCover
+        for each node in the list, remove all adjacent from the outVertexCover.
         if there are not nMatchings left when done, this greedy approach is not a good solution.
         If the matching is small enough, exhaustive methods are possible.
          */
