@@ -51,27 +51,6 @@ public class Permutations {
         outPermutations[oc] = Arrays.copyOf(set, n);
         oc++;
 
-        /*
-        procedure recursive(k : integer, A : array of any):
-            if k = 0 then {
-                output(A)
-                return;
-            }
-            // Recursively call once for each k
-            for i := 0; i < k; i += 1 do
-                recursive(k - 1, A)
-                // avoid swap when i==k-1
-                if (i < k - 1)
-                    // swap choice dependent on parity of k
-                    if k is even then
-                        swap(A[i], A[k-1])
-                    else
-                        swap(A[0], A[k-1])
-                    end if
-                end if
-            end for
-        */
-
         nIter0 = 0;
 
         int i = 0;
