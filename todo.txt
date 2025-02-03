@@ -1,3 +1,11 @@
+-- update to use junit 5
+   -- also add org.junit.vintage junit-vintage-engine
+   -- find compatible jacoco library, preferably a lib jar rather
+      than an install for computing platform.
+   -- update ant plugins for the changes:
+      https://blog.jetbrains.com/idea/2020/08/migrating-from-junit-4-to-junit-5/
+      https://ant.apache.org/manual/Tasks/junitlauncher.html
+
 -- add roofline notes to vec8prod
     https://docs.nersc.gov/tools/performance/roofline/
 
