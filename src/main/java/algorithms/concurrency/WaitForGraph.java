@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * class for checking a wait for graph of processes waiting on resources.
+ *
  * NOTE: this class is not thread-safe.  Its a toy model.
  */
 public class WaitForGraph {
@@ -21,66 +23,75 @@ public class WaitForGraph {
 
     /**
      * add a resource allocation to the graph (internally, also removes it from process wait map).
-     * @param processID
-     * @param resourceID
+     * @param processId the process id
+     * @param resourceId the resource id
      */
-    public void addAlloc(int processID, int resourceID) {
-        //int currProcID = resProcAllocMap.get(resourceID);
-        resProcAllocMap.put(resourceID, processID);
-        if (procResWaitMap.containsKey(processID)) {
-            procResWaitMap.get(processID).remove(resourceID);
+    public void addAlloc(int processId, int resourceId) {
+        //int currProcID = resProcAllocMap.get(resourceId);
+        resProcAllocMap.put(resourceId, processId);
+        if (procResWaitMap.containsKey(processId)) {
+            procResWaitMap.get(processId).remove(resourceId);
         }
     }
+    
     protected void addRequest(int processID, int resourceID) {
         procResWaitMap.putIfAbsent(processID, new HashSet<>());
         procResWaitMap.get(processID).add(resourceID);
     }
 
-    public boolean addRequestIfCannotDeadlock(int processID, int resourceID) {
-        if (cannotDeadlock(processID, resourceID)) {
-            addRequest(processID, resourceID);
+    /**
+     * add a request to the wait-for-graph if the request cannot deadlock, else return false without
+     * adding the request.
+     * @param processId
+     * @param resourceId
+     * @return true if the request was added.
+     */
+    public boolean addRequestIfCannotDeadlock(int processId, int resourceId) {
+        if (cannotDeadlock(processId, resourceId)) {
+            addRequest(processId, resourceId);
             return true;
         }
         return false;
     }
 
     /**
-     * if requesting resourceID for process processID cannot create a deadlock, return true.
-     * Note that if the resource is already held by processID, this method will return false.
-     * @param processID
-     * @param resourceID
-     * @return
+     * determine whether a request for a resource can deadlock.
+     * @param processId
+     * @param resourceId
+     * @return whether the request would lead to a deadlock in the wait-for-graph.
      */
-    public boolean cannotDeadlock(int processID, int resourceID) {
+    public boolean cannotDeadlock(int processId, int resourceId) {
 
         Set<Integer> visitedP = new HashSet<>();
-        visitedP.add(processID);
+        visitedP.add(processId);
 
-        Set<Integer> cycle = new HashSet<Integer>();
-        cycle.add(processID);
-
-        boolean hasCycle = hasCycle(resourceID, visitedP, cycle);
+        boolean hasCycle = hasCycle(resourceId, visitedP);
         return !hasCycle;
     }
 
-    protected boolean hasCycle(int resourceID, Set<Integer> visitedP, Set<Integer> cycle) {
+    /**
+     * determine if there is a cycle in the wait for graph.
+     * @param resourceId resource if
+     * @param visitedP visited map of process ids
+     * @return true if a cycle is found.
+     */
+    protected boolean hasCycle(int resourceId, Set<Integer> visitedP) {
 
-        if (!resProcAllocMap.containsKey(resourceID)) {
+        if (!resProcAllocMap.containsKey(resourceId)) {
             return false;
         }
-        int processID = resProcAllocMap.get(resourceID);
+        int processID = resProcAllocMap.get(resourceId);
 
-        if (cycle.contains(processID)) {
+        if (visitedP.contains(processID)) {
             return true;
         }
 
-        if (visitedP.contains(processID) || !procResWaitMap.containsKey(processID)) {
+        if (!procResWaitMap.containsKey(processID)) {
             return false;
         }
 
         for (int resID : procResWaitMap.get(processID)) {
-            Set<Integer> cycle2 = new HashSet<>(cycle);
-            if (hasCycle(resID, visitedP, cycle2)) {
+            if (hasCycle(resID, visitedP)) {
                 return true;
             }
         }

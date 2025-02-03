@@ -1,9 +1,16 @@
 package algorithms.concurrency.diningPhilosophers;
 
+import java.security.MessageDigest;
+
 public class WithMessagePassing extends AbstractDiningPhilosophers {
 
-    public WithMessagePassing(int n, int thinkTimeMsec, String label) {
-        super(n, thinkTimeMsec, label);
+    /**
+     * constructor
+     * @param n number of diners
+     * @param thinkTimeMsec the time to think between trying to eat
+     */
+    public WithMessagePassing(int n, int thinkTimeMsec) {
+        super(n, thinkTimeMsec, MessageDigest.class.getSimpleName());
         throw new UnsupportedOperationException("not yet implemented");
     }
 

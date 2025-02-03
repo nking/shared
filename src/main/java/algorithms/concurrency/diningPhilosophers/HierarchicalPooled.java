@@ -5,6 +5,11 @@ import java.util.concurrent.Executors;
 
 public class HierarchicalPooled extends Hierarchical {
 
+    /**
+     * constructor
+     * @param n number of diners
+     * @param thinkTimeMsec the time to think between trying to eat
+     */
     public HierarchicalPooled(int n, int thinkTimeMsec) {
         super(n, thinkTimeMsec, HierarchicalPooled.class.getSimpleName());
     }

@@ -5,6 +5,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * a toy model close to sequential for timing comparisons.
+ * All odd numbered diners eat then all even numbered diners eat.
  */
 public class EvenOdd extends AbstractDiningPhilosophers {
     ReentrantLock eatLock = new ReentrantLock();
@@ -12,6 +13,12 @@ public class EvenOdd extends AbstractDiningPhilosophers {
     // needed for the alternating first last diner when n is an odd number
     int nEvenIter = 0;
 
+    /**
+     * constructor for dining philospher's abstract
+     * @param n number of diners
+     * @param thinkTimeMsec the time to think between trying to eat
+     * @param label a name of the implementation useful in debugging
+     */
     public EvenOdd(int n, int thinkTimeMsec) {
         super(n, thinkTimeMsec, EvenOdd.class.getSimpleName());
     }
