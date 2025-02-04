@@ -101,6 +101,10 @@ public final class PermutationsWithAwait {
         return (nCurrent.compareTo(nPermutations) == -1);
     }
 
+    /**
+     * get a debug array of the number of permutations, nCurrent.
+     * @return a debug array holding the number of permutations, nCurrent
+     */
     String[] getCounts() {
         return new String[]{nPermutations.toString(), nCurrent.toString()};
     }

@@ -12,7 +12,7 @@ package algorithms.combPerm;
       or equal to capacity, find the minimum number of bins to place each
       element in the array.
      The algorithm uses dynamic programming and a bitstring power set pattern to solve w/ a
-     r.t.c. of O(n*2^n) which is much better than trying all permutations for n!.
+     r.t.c. of O(n*(2^n)) which is much better than trying all permutations for n!.
      The s.c. is O(n).
      <pre>
      The initial problem is adapted from Competitve Programmer's Handbook by Antti Laaksonen
@@ -22,7 +22,8 @@ package algorithms.combPerm;
      </pre>
      * @param weights array of weights.   each weight must be .LEQ. capacity.
      * @param capacity weight capacity for each bin
-     * @return
+     * @return the minimum number of bins to place each element in the
+     * array.
      */
     public static int minNumberOfBins(int[] weights, int capacity) {
         int n = weights.length;

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 /**
+ * calculates permutations of an array
  *
  * @author nichole
  */
@@ -87,6 +88,16 @@ public class Permutations {
         }
     }
 
+    /**
+     * find minimum element in a[lo:hi] inclusive that has value greater than srch.
+     * @param a array
+     * @param srch the value to search for next larger value of
+     *             in a[lo:hi]
+     * @param lo low index of range to search
+     * @param hi high index (inclusive) of range to search.
+     * @return the index of the
+     * minimum element in a[lo:hi] inclusive that has value greater than srch
+     */
     static int findSuccessor(int[] a, int srch, int lo, int hi) {
         int sIdx = lo;
         for (int i = lo + 1; i <= hi; i++){
@@ -170,6 +181,11 @@ public class Permutations {
         return out;
     }
 
+    /**
+     * find the next permutation of a which is lexicographically larger than array a.
+     * @param a array
+     * @return the next permutation of a which is lexicographically larger than array a.
+     */
     public static boolean findNextLexicographically(int[] a) {
         int n = a.length;
         // find largest index i for which there is a larger value at a[i+1]
@@ -207,6 +223,11 @@ public class Permutations {
         return true;
     }
 
+    /**
+     * find the permutation of 'a' which is lexicographically the next smaller than array a.
+     * @param a array
+     * @return the permutation of a which is lexicographically the next smaller than array a.
+     */
     public static boolean findPrevLexicographically(int[] a) {
         int n = a.length;
         int i = n-1;
@@ -238,6 +259,14 @@ public class Permutations {
         return true;
     }
 
+    protected static int nIter2 = 0;
+
+    /**
+     * calculate all permutations of array 'a'.
+     * r.t.c is O(n!).
+     * @param a
+     * @return all permutations of array 'a'
+     */
     public static List<int[]> recursivePermute(int[] a) {
         int n = a.length;
         List<int[]> out = new ArrayList<>();
@@ -246,6 +275,7 @@ public class Permutations {
     }
 
     private static void r(int k, int[] a, List<int[]> out) {
+        ++nIter2;
         if (k == 0) {
             out.add(Arrays.copyOf(a, a.length));
             return;

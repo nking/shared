@@ -67,7 +67,7 @@ public class PermutationsTest extends TestCase {
         System.out.printf("seed=%d\n", seed);
         Random rand = new Random(seed);
 
-        int nTests = 3;
+        int nTests = 10;
         for (int nTest = 0; nTest < nTests; ++nTest) {
             int n = 1 + rand.nextInt(7);
             int[] a = new int[n];
@@ -90,7 +90,11 @@ public class PermutationsTest extends TestCase {
             }
             int[] b = Arrays.copyOf(a, n);
             Arrays.sort(b);
+            Permutations.nIter2 = 0;
             p = Permutations.recursivePermute(a);
+
+            //System.out.printf("n=%d, nIter=%d, n!=%d\n", a.length, Permutations.nIter2, MiscMath0.factorial(n));
+
             assertEquals(nExp, p.size());
             Set<String> unique = new HashSet<>();
             for (int[] pi : p) {

@@ -5,6 +5,9 @@ import gnu.trove.set.hash.TIntHashSet;
 
 import java.util.Arrays;
 
+/**
+ * class to calculate subsequences of an array
+ */
 public class SubsequenceChooser {
 
     private int outIdx = 0;
@@ -12,6 +15,13 @@ public class SubsequenceChooser {
     public SubsequenceChooser() {
     }
 
+    /**
+     * calculate all subsequences of size k from size a.
+     * the r.t.c. is O(n!/((n-k)!)).
+     * @param a array
+     * @param k subsequence size
+     * @return the subsequences of size k of a
+     */
     public int[][] calcSubSequences(int[] a, int k) {
         int n = a.length;
         if (n < 1) {
@@ -23,13 +33,13 @@ public class SubsequenceChooser {
         if (k > n) {
             throw new IllegalArgumentException("k must be less than or equal to n");
         }
-        // n!/(n-k)!
-        long nnk = MiscMath0.computeNDivNMinusK(n, k);
-        if (nnk > Integer.MAX_VALUE) {
+        // n!/(n-k)! number of subsequences
+        long npk = MiscMath0.computeNDivNMinusK(n, k);
+        if (npk > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("the number of combinations is larger than max length of an array," +
                     "so this algorithm needs to be adjusted to return one element at a time");
         }
-        int np = (int)nnk;
+        int np = (int)npk;
         int[][] out = new int[np][k];
         this.outIdx = 0;
 
@@ -38,7 +48,9 @@ public class SubsequenceChooser {
         return out;
     }
 
+    int nIter = 0;
     private void recurseSeq(int[] a, int[] s, int i, int[][] out, TIntHashSet drawn) {
+        ++nIter;
         if (i >= s.length) {
             out[outIdx] = Arrays.copyOf(s, s.length);
             ++outIdx;
@@ -46,11 +58,11 @@ public class SubsequenceChooser {
         }
 
         for (int j = 0; j < a.length; ++j) {
-            if (drawn.contains(a[j])) continue;
+            if (drawn.contains(j)) continue;
             s[i] = a[j];
-            drawn.add(a[j]);
+            drawn.add(j);
             recurseSeq(a, s, i+1, out, drawn);
-            drawn.remove(a[j]);
+            drawn.remove(j);
         }
     }
 }

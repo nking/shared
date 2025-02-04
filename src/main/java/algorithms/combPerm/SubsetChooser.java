@@ -153,7 +153,7 @@ public class SubsetChooser {
      * of indexes and returns the number of values placed in the subset.
      * Returns a -1 when there are no more subsets to return;
      @param outputIndexes
-     @return
+     @return bitstring for next subset
      */
     public int getNextSubset(int[] outputIndexes) {
 
@@ -171,9 +171,9 @@ public class SubsetChooser {
     }
     
     /**
-     *
+     * get the bitstring for the next subset
      @param outputIndexes
-     @return
+     @return bitstring for next subset
      */
     protected int getNextSubsetBigInteger(int[] outputIndexes) {
 
@@ -193,10 +193,19 @@ public class SubsetChooser {
         return nValues;
     }
 
+    /**
+     * returns true if there is a next subset, that is, not done
+     * with subsets
+     * @return true if there is another subset.
+     */
     public boolean hasNext() {
         return (count < np);
     }
 
+    /**
+     * returns the total number of subsets to expect.
+     * @return total number of subsets to expect
+     */
     public long getNp() {
         return np;
     }
@@ -206,7 +215,7 @@ public class SubsetChooser {
      * of indexes and returns the number of values placed in the subset.
      * Returns a -1 when there are no more subsets to return;
      @param outputIndexes
-     @return
+     @return bitstring of the next subset
      */
     protected int getNextSubset64(int[] outputIndexes) {
 
@@ -227,8 +236,8 @@ public class SubsetChooser {
     }
     
     /**
-     *
-     @return
+     * gets bitstring of the next subset
+     @return bistring of the next subset
      */
     public long getNextSubset64Bitstring() {
 
@@ -244,8 +253,9 @@ public class SubsetChooser {
     }
 
     /**
-     @param x0
-     @return
+     * calculates bitstring of next subset
+     @param x0 current set bitstring
+     @return bitstring of next subset
      */
     private long nextSubset64(long x0) {
 
@@ -263,8 +273,9 @@ public class SubsetChooser {
     }
 
     /**
-     @param x0
-     @return
+     * calculates bitstring of next subset
+     @param x0 current set bitstring
+     @return bitstring of next subset
      */
     private BigInteger nextSubsetBigInteger(BigInteger x0) {
 
@@ -282,9 +293,9 @@ public class SubsetChooser {
     }
 
     /**
-     *
+     * populate the array selected with the next subset
      @param selected
-     @return
+     @return the number of set bits in selected
      */
     protected int select64(int[] selected) {
 
@@ -316,9 +327,9 @@ public class SubsetChooser {
     }
 
     /**
-     *
+     * populate the array selected with the next subset
      @param selected
-     @return
+     @return the number of set bits in selected
      */
     protected int selectBigInteger(int[] selected) {
 
