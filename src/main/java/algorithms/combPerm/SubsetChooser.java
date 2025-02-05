@@ -1,7 +1,10 @@
 package algorithms.combPerm;
 
 import algorithms.misc.MiscMath0;
+import gnu.trove.set.hash.TIntHashSet;
+
 import java.math.BigInteger;
+import java.util.*;
 
 /**
 Class to iterate over every combination of sub-sequences within n objects in an 
@@ -358,5 +361,72 @@ public class SubsetChooser {
         }
 
         return nOneBits;
+    }
+
+    /**
+     * calculate all subsequences of size k from size a.
+     * the r.t.c. on the order of O(n!/(k!*(n-k)!)
+     * @param a array
+     * @param k subsequence size
+     * @return the subsequences of size k of a
+     */
+    public static List<int[]> calcSubSets(int[] a, int k) {
+        int n = a.length;
+        if (n < 1) {
+            throw new IllegalArgumentException("n must be larger than 0");
+        }
+        if (k < 1) {
+            throw new IllegalArgumentException("k must be larger than 0");
+        }
+        if (k > n) {
+            throw new IllegalArgumentException("k must be less than or equal to n");
+        }
+        // n!/(k!(n-k)!) number of subsequences
+        long nck = MiscMath0.computeNDivKTimesNMinusK(n, k);
+        if (nck > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("the number of combinations is larger than max length of an array," +
+                    "so this algorithm needs to be adjusted to return one element at a time");
+        }
+        List<int[]> out = new ArrayList<>();
+
+        // memo holds the first index of a subset.
+        // when DFS has completed for the first index, it's stored in memo to avoid repeating the work
+        Set<Integer> memo = new HashSet<>();
+
+        nIter = 0;
+        recurseSet(a, new int[k], 0, 0, out, memo, new HashSet<>());
+
+        return out;
+    }
+
+    static int nIter = 0;
+    private static void recurseSet(int[] a, int[] s, int sIdx, int iIdx, List<int[]> out, Set<Integer> memo,
+                                   Set<Integer> drawn) {
+        ++nIter;
+        if (sIdx == s.length || iIdx == a.length) {
+            if (drawn.size() == s.length) {
+                out.add(Arrays.copyOf(s, s.length));
+            }
+            return;
+        }
+
+        if (memo.contains(iIdx)) {
+            return;
+        }
+
+        // include i:
+        drawn.add(iIdx);
+        s[sIdx] = a[iIdx];
+        recurseSet(a, s, sIdx + 1, iIdx + 1, out, memo, drawn);
+
+        // exclude i
+        drawn.remove(iIdx);
+        recurseSet(a, s, sIdx, iIdx + 1, out, memo, drawn);
+
+        if (sIdx == 0) {
+            // store in memo after returned from DFS for the first index of s
+            memo.add(iIdx);
+        }
+
     }
 }
