@@ -1,4 +1,4 @@
-package algorithms.correlation;
+package algorithms.statistics;
 
 import algorithms.matrix.MatrixUtil;
 import algorithms.misc.MiscMath0;

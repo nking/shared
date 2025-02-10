@@ -1,12 +1,10 @@
-package algorithms.correlation;
+package algorithms.statistics;
 
-import algorithms.correlation.UnivariateDistance.DCor;
-import algorithms.correlation.UnivariateDistance.DCov;
+import algorithms.statistics.UnivariateDistance.DCor;
+import algorithms.statistics.UnivariateDistance.DCov;
 import algorithms.matrix.MatrixUtil;
 import algorithms.misc.Shuffle;
-import algorithms.statistics.Gamma;
-import algorithms.statistics.GammaCDF;
-import algorithms.statistics.MultivariateUniformDistribution;
+
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 

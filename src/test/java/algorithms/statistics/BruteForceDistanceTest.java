@@ -1,6 +1,7 @@
-package algorithms.correlation;
+package algorithms.statistics;
 
-import algorithms.correlation.BruteForceDistance.DCOV;
+import algorithms.statistics.BruteForceDistance;
+import algorithms.statistics.BruteForceDistance.DCOV;
 import algorithms.matrix.MatrixUtil;
 import java.util.logging.Logger;
 import junit.framework.TestCase;
@@ -45,7 +46,7 @@ public class BruteForceDistanceTest extends TestCase {
         a = MatrixUtil.transpose(a);
         b = MatrixUtil.transpose(b);
                 
-        dc = BruteForceDistance.correlation1(a, b);
+        dc = algorithms.statistics.BruteForceDistance.correlation1(a, b);
 
         System.out.println("dCor:" + dc.toString());
         

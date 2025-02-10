@@ -1,6 +1,5 @@
 package algorithms.statistics;
 
-import algorithms.correlation.BruteForce;
 import algorithms.matrix.MatrixUtil;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -9,8 +8,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import algorithms.util.FormatArray;
-import gnu.trove.set.TDoubleSet;
-import gnu.trove.set.hash.TDoubleHashSet;
 import junit.framework.TestCase;
 import no.uib.cipr.matrix.*;
 

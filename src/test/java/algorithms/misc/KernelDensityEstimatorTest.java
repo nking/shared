@@ -1,6 +1,5 @@
 package algorithms.misc;
 
-import algorithms.correlation.UnivariateDistance;
 import algorithms.imageProcessing.FFTUtil;
 import algorithms.matrix.MatrixUtil;
 import algorithms.statistics.SMCFileReader;
@@ -8,14 +7,9 @@ import algorithms.statistics.Standardization;
 import algorithms.statistics.UnivariateNormalDistribution;
 import algorithms.util.FormatArray;
 import algorithms.util.PolygonAndPointPlotter;
-import gnu.trove.list.TDoubleList;
-import gnu.trove.list.array.TDoubleArrayList;
-import gnu.trove.list.array.TIntArrayList;
 import junit.framework.TestCase;
-import thirdparty.ca.uol.aig.fftpack.Complex1D;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Random;

@@ -1,4 +1,4 @@
-package algorithms.correlation;
+package algorithms.statistics;
 
 import algorithms.matrix.MatrixUtil;
 
@@ -135,44 +135,5 @@ public class BruteForce {
         
         return cov;
     }
-    
-    /**
-     * calculate the covariance matrix for a using simplest brute force method
-     * Cov_a = (1/n) a^T * a for 'a' being zero-mean centered (that is, subtract the mean
-     * of each column from each column).
-     * The covariance matrix is also known as auto-covariance matrix, 
-     * dispersion matrix, variance matrix, and the variance–covariance matrix.
-     @param a an mxn matrix of data with the dimensions being rows
-     * and the datum number being columns.  NOTE that a must be "zero mean" centered.
-     * <pre>
-     * e.g.  a[0] = new double[]{10,  9}
-     *       a[1] = new double[]{99,  100}
-     *       a[2] = new double[]{1000, 900}
-     * </pre>
-     @return the covariance matrix as a double array of size [a[0].length][a[0].length]
-     */
-    public static double[][] covariance2(double[][] a) {
-        
-        double[][] cov = MatrixUtil.createATransposedTimesA(a);
 
-        int i, j;
-        int n = a[0].length;
-        double invN2 = 1./((double)n - 1.);
-        invN2 *= invN2;
-        MatrixUtil.multiply(cov, invN2);
-
-        /*
-        System.out.printf("bf cov=\n");
-        for ( i = 0; i < cov.length; ++i) {
-            for ( j = 0; j < cov[i].length; ++j) {
-                System.out.printf("%11.3e  ", cov[i][j]);
-            }
-            System.out.printf("\n");
-        }
-        System.out.flush();
-        */
-
-        return cov;
-    }
-   
 }

@@ -2,6 +2,8 @@ package algorithms.concurrency.diningPhilosophers;
 
 import java.security.MessageDigest;
 
+//TODO: consider exchanger
+
 public class WithMessagePassing extends AbstractDiningPhilosophers {
 
     /**

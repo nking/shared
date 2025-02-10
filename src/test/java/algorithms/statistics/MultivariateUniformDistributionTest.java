@@ -1,6 +1,5 @@
 package algorithms.statistics;
 
-import algorithms.correlation.UnivariateDistance;
 import algorithms.matrix.MatrixUtil;
 import algorithms.misc.Histogram;
 import algorithms.misc.HistogramHolder;

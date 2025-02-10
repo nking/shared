@@ -1,6 +1,7 @@
 
-package algorithms.misc;
+package algorithms.statistics;
 
+import algorithms.misc.Complex;
 import no.uib.cipr.matrix.NotConvergedException;
 
 /**

@@ -33,7 +33,7 @@ int[] sortedIdxs
   NOTE: for a more efficient version of merge-sort that uses an auxiliary array
   to hold intermediate partial sorting, and uses insertion sort for the
   shortest segments in the divide and conquer pattern, see
-  algorithms.correlation.UnivariateDistance._sortCheck().
+  algorithms.statistics.UnivariateDistance._sortCheck().
 
  * @author nichole
  */

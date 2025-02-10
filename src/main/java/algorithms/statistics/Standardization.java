@@ -312,4 +312,22 @@ public class Standardization {
         }
         return out;
     }
+
+    /**
+     * calculate the mean and subtract it from each value in the array.
+     @param data
+     @return
+     */
+    public static double[] zeroCenterMean(double[] data) {
+        int n = data.length;
+
+        double[] out = Arrays.copyOf(data, n);
+
+        double mean = MiscMath0.calcMean(data);
+
+        for (int j = 0; j < n; ++j) {
+            out[j] -= mean;
+        }
+        return out;
+    }
 }

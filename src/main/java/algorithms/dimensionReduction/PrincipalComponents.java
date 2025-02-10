@@ -1,11 +1,8 @@
 package algorithms.dimensionReduction;
 
-import algorithms.correlation.BruteForce;
 import algorithms.matrix.MatrixUtil;
 import java.util.Arrays;
 
-import algorithms.statistics.Covariance;
-import algorithms.statistics.Standardization;
 import algorithms.util.FormatArray;
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.NotConvergedException;

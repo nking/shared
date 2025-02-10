@@ -1,7 +1,7 @@
 package algorithms.dimensionReduction;
 
-import algorithms.correlation.BruteForce;
-import algorithms.correlation.MultivariateDistance;
+import algorithms.statistics.BruteForce;
+import algorithms.statistics.MultivariateDistance;
 import algorithms.dimensionReduction.PrincipalComponents.PCAStats;
 import algorithms.matrix.MatrixUtil;
 import algorithms.statistics.Standardization;
@@ -17,7 +17,6 @@ import java.util.regex.Pattern;
 import junit.framework.TestCase;
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.EVD;
-import no.uib.cipr.matrix.NotConvergedException;
 
 /**
  *

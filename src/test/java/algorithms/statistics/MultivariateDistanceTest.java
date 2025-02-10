@@ -2,6 +2,8 @@ package algorithms.correlation;
 
 import algorithms.matrix.MatrixUtil;
 import java.security.SecureRandom;
+
+import algorithms.statistics.MultivariateDistance;
 import junit.framework.TestCase;
 
 public class MultivariateDistanceTest extends TestCase {
@@ -174,10 +176,10 @@ public class MultivariateDistanceTest extends TestCase {
                 nSample, k, nIter, alpha);
             System.out.flush();
             
-            dcov[n] = MultivariateDistance.efficientDCov(x, y, k, rand);
+            dcov[n] = algorithms.statistics.MultivariateDistance.efficientDCov(x, y, k, rand);
             //estimator should converge to 0 for all k
             
-            indep1 = MultivariateDistance.areIndependent1(x, y, k, nIter, alpha, rand);
+            indep1 = algorithms.statistics.MultivariateDistance.areIndependent1(x, y, k, nIter, alpha, rand);
             indep2 = MultivariateDistance.areIndependent2(x, y, k, alpha, rand);
             
             System.out.printf("cov=%.4e indep=(%b, %b)\n", dcov[n], indep1, indep2);
@@ -257,24 +259,24 @@ public class MultivariateDistanceTest extends TestCase {
                 nSample, k, nIter, alpha);
             System.out.flush();
             
-            dcov[n] = MultivariateDistance.efficientDCov(x, y, k, rand);
+            dcov[n] = algorithms.statistics.MultivariateDistance.efficientDCov(x, y, k, rand);
             //estimator should converge to 0 for all k
             System.out.printf("cov=%.4e\n", dcov[n]);
             System.out.flush();
             
             x2 = MatrixUtil.copySubMatrix(x, 0, x.length-1, 0, 1);
             y2 = MatrixUtil.copySubMatrix(y, 0, y.length-1, 0, 1);
-            indep1 = MultivariateDistance.areIndependent1(x2, y2, k, nIter, alpha, rand);
-            indep2 = MultivariateDistance.areIndependent2(x2, y2, k, alpha, rand);
+            indep1 = algorithms.statistics.MultivariateDistance.areIndependent1(x2, y2, k, nIter, alpha, rand);
+            indep2 = algorithms.statistics.MultivariateDistance.areIndependent2(x2, y2, k, alpha, rand);
                         
             System.out.printf("  [*, 0:1] indep=(%b, %b)\n", indep1, indep2);
             System.out.flush();
             
-            indep3 = MultivariateDistance.areIndependent1(x, y, k, nIter, alpha, rand);
+            indep3 = algorithms.statistics.MultivariateDistance.areIndependent1(x, y, k, nIter, alpha, rand);
             
             //the authors note that the assymptotic dependence test, i.e. areIndependent2
             //   has less power for low dimensional dependency in high dimensional data
-            indep4 = MultivariateDistance.areIndependent2(x, y, k, alpha, rand);
+            indep4 = algorithms.statistics.MultivariateDistance.areIndependent2(x, y, k, alpha, rand);
             
             System.out.printf("  [*,*] indep=(%b, %b)\n", indep3, indep4);
             System.out.flush();

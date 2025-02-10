@@ -1,12 +1,9 @@
 package algorithms.statistics;
 
-import algorithms.correlation.BruteForce;
 import algorithms.matrix.MatrixUtil;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.Arrays;
 
-import algorithms.misc.MiscMath0;
 import no.uib.cipr.matrix.*;
 
 /**

@@ -1,6 +1,6 @@
-package algorithms.misc;
+package algorithms.statistics;
 
-import algorithms.util.FormatArray;
+import algorithms.misc.Complex;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -22,10 +22,10 @@ public class PolynomialRootSolverTest extends TestCase {
     public void test00() throws IOException {
         //[4, 3, 2, 1] for 4*x^3 + 3*x^2 + 2*x + 1 = 0.
         //-3(p^2) + 4p - 1 => [-3, 4, -1]
-        Complex[] a = PolynomialRootSolver.solveUsingMPSolve(new double[]{-3, 4, -1});
+        Complex[] a = algorithms.statistics.PolynomialRootSolver.solveUsingMPSolve(new double[]{-3, 4, -1});
 
         //$6 * (p^4) - 14 * (p^3) + 10*p^2 - 2p = 0$
-        Complex[] b = PolynomialRootSolver.solveUsingMPSolve(new double[]{6, -4, +10, -2});
+        Complex[] b = algorithms.statistics.PolynomialRootSolver.solveUsingMPSolve(new double[]{6, -4, +10, -2});
 
         int w = 1;
     }
@@ -46,9 +46,9 @@ public class PolynomialRootSolverTest extends TestCase {
             array([-1.+1.j, -1.-1.j,  1.+0.j])
         */
      
-        assertTrue(Arrays.equals(new int[]{0, 1, 3}, PolynomialRootSolver.nonzero(coeffs, tol)));
+        assertTrue(Arrays.equals(new int[]{0, 1, 3}, algorithms.statistics.PolynomialRootSolver.nonzero(coeffs, tol)));
         
-        Complex[] roots = PolynomialRootSolver.solveUsingCompanionMatrix(coeffs);
+        Complex[] roots = algorithms.statistics.PolynomialRootSolver.solveUsingCompanionMatrix(coeffs);
         assertEquals(expectedC.size(), roots.length);
         
         double diff0, diff1;
@@ -70,7 +70,7 @@ public class PolynomialRootSolverTest extends TestCase {
         }
         assertEquals(0, u);
         
-        double[] realRoots = PolynomialRootSolver.solveForRealUsingCompanionMatrix(coeffs, tol);
+        double[] realRoots = algorithms.statistics.PolynomialRootSolver.solveForRealUsingCompanionMatrix(coeffs, tol);
         assertEquals(expected.length, realRoots.length);
         
         for (int i = 0; i < expected.length; ++i) {

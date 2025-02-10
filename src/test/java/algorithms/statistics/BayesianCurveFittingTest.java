@@ -1,6 +1,5 @@
 package algorithms.statistics;
 
-import algorithms.correlation.BruteForce;
 import algorithms.matrix.MatrixUtil;
 import algorithms.util.FormatArray;
 import junit.framework.TestCase;
