@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BruteForceDistance.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.correlation</a> &gt; <span class="el_source">BruteForceDistance.java</span></div><h1>BruteForceDistance.java</h1><pre class="source lang-java linenums">package algorithms.correlation;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BruteForceDistance.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.statistics</a> &gt; <span class="el_source">BruteForceDistance.java</span></div><h1>BruteForceDistance.java</h1><pre class="source lang-java linenums">package algorithms.statistics;
 
 import algorithms.matrix.MatrixUtil;
 import java.util.Arrays;
@@ -28,11 +28,11 @@ import java.util.logging.Logger;
 <span class="fc" id="L28">    }</span>
         
     /**
-     * euclidean distance matrix
+     * calc euclidean distance matrix
      * (ported from https://blogs.sas.com/content/iml/2018/04/04/distance-correlation.html
      * 
-     @param a
-     @return 
+     @param a matrix where rows are samples of data and columns are variables (a.k.a. features)
+     @return the euclidean distance matrix
      */
     public static double[][] distanceMatrix(double[][] a) {
 <span class="fc" id="L38">        int n = a.length;</span>
@@ -229,12 +229,24 @@ import java.util.logging.Logger;
     }
     
     /**
-     *
+     class holding intermediate and final results of the distance covaraince algorithm.
      */
     public static class DCOV {
+        /**
+         * dist cov, squared
+         */
         double dCovSq;
+        /**
+         * distance variance of x, squared
+         */
         double dVarXSq;
-        double dVarYSq;                
+        /**
+         distance variance of y, squared
+         */
+        double dVarYSq;
+        /**
+         * correlation, squared
+         */
         double corSq;
         @Override
         public String toString() {

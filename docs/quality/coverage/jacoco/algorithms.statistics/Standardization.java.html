@@ -312,5 +312,23 @@ import java.util.Arrays;
         }
 <span class="fc" id="L313">        return out;</span>
     }
+
+    /**
+     * calculate the mean and subtract it from each value in the array.
+     @param data
+     @return
+     */
+    public static double[] zeroCenterMean(double[] data) {
+<span class="fc" id="L322">        int n = data.length;</span>
+
+<span class="fc" id="L324">        double[] out = Arrays.copyOf(data, n);</span>
+
+<span class="fc" id="L326">        double mean = MiscMath0.calcMean(data);</span>
+
+<span class="fc bfc" id="L328" title="All 2 branches covered.">        for (int j = 0; j &lt; n; ++j) {</span>
+<span class="fc" id="L329">            out[j] -= mean;</span>
+        }
+<span class="fc" id="L331">        return out;</span>
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

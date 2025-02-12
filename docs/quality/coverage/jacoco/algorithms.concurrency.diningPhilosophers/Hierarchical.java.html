@@ -5,64 +5,110 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * class implementing the hierarchical solution.
+ * each diner attempts to eat by choosing the lowest order fork
+ * from their 2 choices, and if cannot obtain it, puts it down
+ * and tries again.
+ * if obtains the lower numbered fork, tries to obtain the higher
+ * number and if fails, puts both forks down and tries again,
+ * else if succeeds, eats, then puts both forks down.
+ *
+ * there is no interprocess communication between diner's (they're busy
+ * thinking is the metaphor).
+ */
 public class Hierarchical extends AbstractDiningPhilosophers {
     protected ReentrantLock[] forkLocks;
 
+    /**
+     * constructor
+     * @param n number of diners
+     * @param thinkTimeMsec the time to think between trying to eat
+     */
     public Hierarchical(int n, int thinkTimeMsec) {
-<span class="fc" id="L12">        super(n, thinkTimeMsec, Hierarchical.class.getSimpleName());</span>
+<span class="fc" id="L29">        super(n, thinkTimeMsec, Hierarchical.class.getSimpleName());</span>
 
-<span class="fc" id="L14">        this.forkLocks = new ReentrantLock[n];</span>
-<span class="fc bfc" id="L15" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L16">            forkLocks[i] = new ReentrantLock();</span>
+<span class="fc" id="L31">        this.forkLocks = new ReentrantLock[n];</span>
+<span class="fc bfc" id="L32" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L33">            forkLocks[i] = new ReentrantLock();</span>
         }
-<span class="fc" id="L18">    }</span>
+<span class="fc" id="L35">    }</span>
 
+    /**
+     * constructor
+     * @param n number of diners
+     * @param thinkTimeMsec the time to think between trying to eat
+     * @param label a name of the implementation useful in debugging
+     */
     public Hierarchical(int n, int thinkTimeMsec, String label) {
-<span class="fc" id="L21">        super(n, thinkTimeMsec, label);</span>
+<span class="fc" id="L44">        super(n, thinkTimeMsec, label);</span>
 
-<span class="fc" id="L23">        this.forkLocks = new ReentrantLock[n];</span>
-<span class="fc bfc" id="L24" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L25">            forkLocks[i] = new ReentrantLock(true);</span>
+<span class="fc" id="L46">        this.forkLocks = new ReentrantLock[n];</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L48">            forkLocks[i] = new ReentrantLock(true);</span>
         }
-<span class="fc" id="L27">    }</span>
+<span class="fc" id="L50">    }</span>
 
     //   0   1   2
     // 2  0    1   2
+
+    /**
+     * get lower numbered fork for diner i
+     * @param i number of diner
+     * @return lower numbered fork
+     */
     protected ReentrantLock getLowerFork(int i) {
-<span class="fc bfc" id="L32" title="All 2 branches covered.">        if (i == 0) {</span>
-<span class="fc" id="L33">            return forkLocks[0];</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        if (i == 0) {</span>
+<span class="fc" id="L62">            return forkLocks[0];</span>
         }
-<span class="fc" id="L35">        return forkLocks[i - 1];</span>
+<span class="fc" id="L64">        return forkLocks[i - 1];</span>
     }
 
+    /**
+     * get higher numbered fork for diner 'i'
+     * @param i diner number
+     * @return the higher numbered fork of diner 'i'
+     */
     protected ReentrantLock getHigherFork(int i) {
-<span class="fc bfc" id="L39" title="All 2 branches covered.">        if (i == 0) {</span>
-<span class="fc" id="L40">            return forkLocks[n - 1];</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        if (i == 0) {</span>
+<span class="fc" id="L74">            return forkLocks[n - 1];</span>
         }
-<span class="fc" id="L42">        return forkLocks[i];</span>
+<span class="fc" id="L76">        return forkLocks[i];</span>
     }
 
+    /**
+     * begin dining of all diners
+     * @param bitesPer the number of bites to put on each diner's plate
+     * @param timeoutSec the timeout for waiting to start eating
+     * @throws InterruptedException thrown if a thread is interrupted
+     */
     public void dine(int bitesPer, int timeoutSec) throws InterruptedException {
 
-<span class="fc" id="L47">        initDine(bitesPer);</span>
+<span class="fc" id="L87">        initDine(bitesPer);</span>
 
         // start all threads.
         // each tries to obtain low number fork, high number fork, eat, release forks. think
-<span class="fc" id="L51">        List&lt;Thread&gt; threadList = new ArrayList&lt;&gt;();</span>
-<span class="fc bfc" id="L52" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L53">            Thread thr = new Thread(eat(i, timeoutSec));</span>
-<span class="fc" id="L54">            threadList.add(thr);</span>
-<span class="fc" id="L55">            thr.start();</span>
+<span class="fc" id="L91">        List&lt;Thread&gt; threadList = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L93">            Thread thr = new Thread(eat(i, timeoutSec));</span>
+<span class="fc" id="L94">            threadList.add(thr);</span>
+<span class="fc" id="L95">            thr.start();</span>
         }
-<span class="fc bfc" id="L57" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L58">            threadList.get(i).join();</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L98">            threadList.get(i).join();</span>
         }
 
-<span class="fc" id="L61">        closeDine();</span>
-<span class="fc" id="L62">    }//end dine</span>
+<span class="fc" id="L101">        closeDine();</span>
+<span class="fc" id="L102">    }//end dine</span>
 
+    /**
+     * a runnable implementing eat for diner 'i'
+     * @param i
+     * @param timeoutSec
+     * @return
+     */
     protected Runnable eat(int i, int timeoutSec) {
-<span class="fc" id="L65">        return new Runnable() {</span>
+<span class="fc" id="L111">        return new Runnable() {</span>
             @Override
             public void run() {
                 while (bites.containsKey(i)) {
@@ -87,7 +133,7 @@ public class Hierarchical extends AbstractDiningPhilosophers {
                         }
                         if (getHigherFork(i).isHeldByCurrentThread()) {
                             getHigherFork(i).unlock();
-                            try {
+                            try {// think after eating
                                 Thread.sleep(thinkTimeMilliSec);
                             } catch (InterruptedException e) {
                                 Thread.currentThread().interrupt();

@@ -101,8 +101,12 @@ public final class PermutationsWithAwait {
 <span class="fc bfc" id="L101" title="All 2 branches covered.">        return (nCurrent.compareTo(nPermutations) == -1);</span>
     }
 
+    /**
+     * get a debug array of the number of permutations, nCurrent.
+     * @return a debug array holding the number of permutations, nCurrent
+     */
     String[] getCounts() {
-<span class="nc" id="L105">        return new String[]{nPermutations.toString(), nCurrent.toString()};</span>
+<span class="nc" id="L109">        return new String[]{nPermutations.toString(), nCurrent.toString()};</span>
     }
     
     /**
@@ -114,25 +118,25 @@ public final class PermutationsWithAwait {
      */
     public boolean getNext(int[] out) throws InterruptedException {
 
-<span class="pc bpc" id="L117" title="1 of 2 branches missed.">        if (out.length != x.length) {</span>
-<span class="nc" id="L118">            throw new IllegalArgumentException(&quot;out.length must equal original set.length given to constructor&quot;);</span>
+<span class="pc bpc" id="L121" title="1 of 2 branches missed.">        if (out.length != x.length) {</span>
+<span class="nc" id="L122">            throw new IllegalArgumentException(&quot;out.length must equal original set.length given to constructor&quot;);</span>
         }
 
-<span class="fc bfc" id="L121" title="All 2 branches covered.">        if (nCurrent.compareTo(nPermutations) == -1) {</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">        if (nCurrent.compareTo(nPermutations) == -1) {</span>
 
             //availableItem.tryAcquire(1, TimeUnit.SECONDS);
-<span class="fc" id="L124">            availableItem.acquire();</span>
+<span class="fc" id="L128">            availableItem.acquire();</span>
 
-<span class="fc" id="L126">            System.arraycopy(x, 0, out, 0, out.length);</span>
+<span class="fc" id="L130">            System.arraycopy(x, 0, out, 0, out.length);</span>
 
-<span class="fc" id="L128">            nCurrent = nCurrent.add(BigInteger.ONE);</span>
+<span class="fc" id="L132">            nCurrent = nCurrent.add(BigInteger.ONE);</span>
 
-<span class="fc" id="L130">            computationLock.release();</span>
+<span class="fc" id="L134">            computationLock.release();</span>
 
-<span class="fc" id="L132">            return true;</span>
+<span class="fc" id="L136">            return true;</span>
         }
 
-<span class="fc" id="L135">        return false;</span>
+<span class="fc" id="L139">        return false;</span>
     }
     
     private class Permuter implements Runnable {

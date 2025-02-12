@@ -2,174 +2,235 @@
 
 import java.util.*;
 
+/**
+ * a class holding an implementation of the Ford-Fulkerson method with
+ * ability to provide other implmentations.
+ *
+ * The Ford-Fulkerson method is a greedy solution to the maximum flow problem
+ * of a flow network.
+ *
+ * A flow network is a graph whose edges have a capacity
+ * and each edge receives a flow.  The sum of flow into a node must equal the sum
+ * of flow out of a node unless the node is a source or sink.
+ *
+ * The max flow of a flow network is a state of the network that obtains the max
+ * possible flow rate.
+ */
 public class FordFulkerson {
 
+    /**
+     * the graph with edges holding the remaining amount of flow that the edge can hold
+     * (the reduced capacity due to flow having been push through the edge.  the flow that
+     * was push through the edge is stored in revG).
+     * The amount of flow the edge can hold is decreased from capacity as flow moves
+     * out of it.
+     * the map key is the start node of an edge, the value is a map with key = stop node of an
+     * edge, value = amount of flow the edge can handle (reduced capacity).
+     */
     private Map&lt;Integer, Map&lt;Integer, Integer&gt;&gt; remG;
 
     /**
-     * reverse g tracks the edge flow, but in opposite direction.
+     * reverse g tracks the edge flow, but in opposite direction for the edge.
+     * the map key is the stop node of an edge, the value is a map with key = start node of an
+     * edge, value = amount of flow through the edge.
      */
     protected Map&lt;Integer, Map&lt;Integer, Integer&gt;&gt; revG;
 
+    /**
+     * the the source node of the flow network
+     */
     protected final int src;
 
+    /**
+     * the sink node of the flow network.
+     */
     protected final int sink;
 
+    /**
+     * number of vertices in the flow networkd
+     */
     protected final int nVertices;
+
+    /**
+     * number of edges in the flow network.
+     */
     protected final int nEdges;
 
-<span class="fc" id="L21">    protected boolean finished = false;</span>
-<span class="fc" id="L22">    protected long maxFlow = -1;</span>
+    /**
+     * flag indicating whether the max flow has been solved.
+     */
+<span class="fc" id="L62">    protected boolean finished = false;</span>
+
+    /**
+     * the amount of flow pushed through the system, maximized.
+     */
+<span class="fc" id="L67">    protected long maxFlow = -1;</span>
 
     /**
      * constructor for the max flow algorithm.
      * @param g graph with nodes numbered from 0 to nVertices - 1.  the network
-     *          should not have any anti-parallel edges, that is for an edge u-&gt;v
-     *          there should be no edge v-&gt; u
+     *          should not have any anti-parallel edges, that is for an edge u to v
+     *          there should be no edge v to u
      *          for a pair(u,v) of vertices.
      * @param nVertices the number of vertices in the graph
      * @param src
      * @param sink
      */
     public FordFulkerson(Map&lt;Integer, Map&lt;Integer, Integer&gt;&gt; g, int nVertices, int src,
-<span class="fc" id="L35">                       int sink) {</span>
-<span class="fc" id="L36">        this.src = src;</span>
-<span class="fc" id="L37">        this.sink = sink;</span>
-<span class="fc" id="L38">        this.nVertices = nVertices;</span>
+<span class="fc" id="L80">                       int sink) {</span>
+<span class="fc" id="L81">        this.src = src;</span>
+<span class="fc" id="L82">        this.sink = sink;</span>
+<span class="fc" id="L83">        this.nVertices = nVertices;</span>
 
-        // init maps
-<span class="fc" id="L41">        this.remG = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L42">        this.revG = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L43">        int nEdges = 0;</span>
-<span class="fc bfc" id="L44" title="All 2 branches covered.">        for (Map.Entry&lt;Integer, Map&lt;Integer, Integer&gt;&gt; entry : g.entrySet()) {</span>
-<span class="fc" id="L45">            int u = entry.getKey();</span>
-<span class="fc" id="L46">            getRemG().putIfAbsent(u, new HashMap&lt;&gt;());</span>
-<span class="fc bfc" id="L47" title="All 2 branches covered.">            for (Map.Entry&lt;Integer, Integer&gt; entry1 : entry.getValue().entrySet()) {</span>
-<span class="fc" id="L48">                int v = entry1.getKey();</span>
-<span class="fc" id="L49">                int cap = entry1.getValue();</span>
+<span class="fc" id="L85">        this.remG = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L86">        this.revG = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L87">        int nEdges = 0;</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">        for (Map.Entry&lt;Integer, Map&lt;Integer, Integer&gt;&gt; entry : g.entrySet()) {</span>
+<span class="fc" id="L89">            int u = entry.getKey();</span>
+<span class="fc" id="L90">            getRemG().putIfAbsent(u, new HashMap&lt;&gt;());</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">            for (Map.Entry&lt;Integer, Integer&gt; entry1 : entry.getValue().entrySet()) {</span>
+<span class="fc" id="L92">                int v = entry1.getKey();</span>
+<span class="fc" id="L93">                int cap = entry1.getValue();</span>
 
-<span class="fc" id="L51">                getRemG().get(u).put(v, cap);</span>
+<span class="fc" id="L95">                getRemG().get(u).put(v, cap);</span>
 
-<span class="fc" id="L53">                revG.putIfAbsent(v, new HashMap&lt;&gt;());</span>
-<span class="fc" id="L54">                revG.get(v).put(u, 0);</span>
-<span class="fc" id="L55">                ++nEdges;</span>
-<span class="fc" id="L56">            }</span>
-<span class="fc" id="L57">        }</span>
-<span class="fc" id="L58">        this.nEdges = nEdges;</span>
-<span class="fc" id="L59">    }</span>
+<span class="fc" id="L97">                revG.putIfAbsent(v, new HashMap&lt;&gt;());</span>
+<span class="fc" id="L98">                revG.get(v).put(u, 0);</span>
+<span class="fc" id="L99">                ++nEdges;</span>
+<span class="fc" id="L100">            }</span>
+<span class="fc" id="L101">        }</span>
+<span class="fc" id="L102">        this.nEdges = nEdges;</span>
+<span class="fc" id="L103">    }</span>
 
+    /**
+     * calculate the maximum flow that can be push through the system.
+     * @return the maximum flow that can be push through the system.
+     */
     public long maxFlow() {
-<span class="pc bpc" id="L62" title="1 of 2 branches missed.">        if (finished) return maxFlow;</span>
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">        if (finished) return maxFlow;</span>
 
-<span class="fc" id="L64">        int[] visited = new int[nVertices];</span>
-<span class="fc" id="L65">        int[] prev = new int[nVertices];</span>
+<span class="fc" id="L112">        int[] visited = new int[nVertices];</span>
+<span class="fc" id="L113">        int[] prev = new int[nVertices];</span>
 
-<span class="fc" id="L67">        long flowSum = 0;</span>
+<span class="fc" id="L115">        long flowSum = 0;</span>
 
-<span class="fc" id="L69">        long nIterMax = nVertices * nEdges;</span>
-<span class="fc" id="L70">        int nIter = 0;</span>
-<span class="pc bpc" id="L71" title="1 of 2 branches missed.">        while (nIter &lt; nIterMax) {</span>
+<span class="fc" id="L117">        long nIterMax = nVertices * nEdges;</span>
+<span class="fc" id="L118">        int nIter = 0;</span>
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">        while (nIter &lt; nIterMax) {</span>
             // find an augmenting flow
-<span class="fc" id="L73">            int flow = findAugPathEK(visited, prev);</span>
+<span class="fc" id="L121">            int flow = findAugPathEK(visited, prev);</span>
 
             //printDebug(String.format(&quot;\nfound flow=%d, prev=%s&quot;, flow,
             //        Arrays.toString(prev)));
 
-<span class="fc bfc" id="L78" title="All 2 branches covered.">            if (flow == 0) {</span>
-<span class="fc" id="L79">                break;</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">            if (flow == 0) {</span>
+<span class="fc" id="L127">                break;</span>
             }
 
-<span class="fc" id="L82">            flowSum += flow;</span>
+<span class="fc" id="L130">            flowSum += flow;</span>
 
             // augment the path in prev from sink to src
-<span class="fc" id="L85">            int v = sink;</span>
-<span class="fc" id="L86">            int u = prev[v];</span>
-<span class="fc bfc" id="L87" title="All 2 branches covered.">            while (v != src) {</span>
+<span class="fc" id="L133">            int v = sink;</span>
+<span class="fc" id="L134">            int u = prev[v];</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">            while (v != src) {</span>
 
                 // subtract flow from u,v
-<span class="fc" id="L90">                getRemG().get(u).put(v, getRemG().get(u).get(v) - flow);</span>
+<span class="fc" id="L138">                getRemG().get(u).put(v, getRemG().get(u).get(v) - flow);</span>
 
                 //and store in v,u
-<span class="fc" id="L93">                revG.get(v).put(u, revG.get(v).get(u) + flow);</span>
+<span class="fc" id="L141">                revG.get(v).put(u, revG.get(v).get(u) + flow);</span>
 
-<span class="fc" id="L95">                v = u;</span>
-<span class="fc" id="L96">                u = prev[v];</span>
+<span class="fc" id="L143">                v = u;</span>
+<span class="fc" id="L144">                u = prev[v];</span>
             }
 
             //printDebug(&quot;augmented path:&quot;);
 
-<span class="fc" id="L101">            ++nIter;</span>
-<span class="fc" id="L102">        };</span>
-<span class="fc" id="L103">        this.finished = true;</span>
-<span class="fc" id="L104">        this.maxFlow = flowSum;</span>
-<span class="fc" id="L105">        return maxFlow;</span>
+<span class="fc" id="L149">            ++nIter;</span>
+<span class="fc" id="L150">        };</span>
+<span class="fc" id="L151">        this.finished = true;</span>
+<span class="fc" id="L152">        this.maxFlow = flowSum;</span>
+<span class="fc" id="L153">        return maxFlow;</span>
     }
 
     private void printDebug(String label) {
-<span class="nc" id="L109">        System.out.println(label);</span>
-<span class="nc bnc" id="L110" title="All 2 branches missed.">        for (Map.Entry&lt;Integer, Map&lt;Integer, Integer&gt;&gt; entry: getRemG().entrySet()) {</span>
-<span class="nc" id="L111">            int u = entry.getKey();</span>
-<span class="nc bnc" id="L112" title="All 2 branches missed.">            for (Map.Entry&lt;Integer, Integer&gt; entryVW : entry.getValue().entrySet()) {</span>
-<span class="nc" id="L113">                int v = entryVW.getKey();</span>
-<span class="nc" id="L114">                int rem = entryVW.getValue();</span>
-<span class="nc" id="L115">                int flow = revG.get(v).get(u);</span>
-<span class="nc" id="L116">                System.out.printf(&quot;(%2d, %2d) : %3d, %3d\n&quot;, u, v, rem, flow);</span>
-<span class="nc" id="L117">            }</span>
-<span class="nc" id="L118">        }</span>
-<span class="nc" id="L119">    }</span>
+<span class="nc" id="L157">        System.out.println(label);</span>
+<span class="nc bnc" id="L158" title="All 2 branches missed.">        for (Map.Entry&lt;Integer, Map&lt;Integer, Integer&gt;&gt; entry: getRemG().entrySet()) {</span>
+<span class="nc" id="L159">            int u = entry.getKey();</span>
+<span class="nc bnc" id="L160" title="All 2 branches missed.">            for (Map.Entry&lt;Integer, Integer&gt; entryVW : entry.getValue().entrySet()) {</span>
+<span class="nc" id="L161">                int v = entryVW.getKey();</span>
+<span class="nc" id="L162">                int rem = entryVW.getValue();</span>
+<span class="nc" id="L163">                int flow = revG.get(v).get(u);</span>
+<span class="nc" id="L164">                System.out.printf(&quot;(%2d, %2d) : %3d, %3d\n&quot;, u, v, rem, flow);</span>
+<span class="nc" id="L165">            }</span>
+<span class="nc" id="L166">        }</span>
+<span class="nc" id="L167">    }</span>
 
+    /**
+     * find an augmenting path using the Edmonds-Karp algorithm.
+     * @param visited an array that will be used internally to track visited nodes.  must be of
+     *                length nVertices.
+     * @param prev an array that will be used internally to track the parents of a node.
+     *             must be of length nVertices.
+     * @return the flow found for the path composed in prev array.  the value will be 0 when
+     * no augmenting path is found in the graph remG.
+     */
     protected int findAugPathEK(int[] visited, int[] prev) {
-<span class="fc" id="L122">        Arrays.fill(visited, 0);</span>
-<span class="fc" id="L123">        Arrays.fill(prev, -1);</span>
+<span class="fc" id="L179">        Arrays.fill(visited, 0);</span>
+<span class="fc" id="L180">        Arrays.fill(prev, -1);</span>
 
-        // use BFS to find first path to reach dest sink
+        // use BFS to find first path to reach destination sink.
+        // for each edge, store the minimum remaining edge capacity
+        // of the edge itself and the it's on path.
 
         //queue key = idx, minflow
-<span class="fc" id="L128">        Queue&lt;int[]&gt; q = new ArrayDeque&lt;&gt;();</span>
-<span class="fc" id="L129">        q.offer(new int[]{src, Integer.MAX_VALUE});</span>
+<span class="fc" id="L187">        Queue&lt;int[]&gt; q = new ArrayDeque&lt;&gt;();</span>
+<span class="fc" id="L188">        q.offer(new int[]{src, Integer.MAX_VALUE});</span>
 
-<span class="fc bfc" id="L131" title="All 2 branches covered.">        while (!q.isEmpty()) {</span>
-<span class="fc" id="L132">            int[] idxMF = q.poll();</span>
-<span class="fc bfc" id="L133" title="All 2 branches covered.">            if (idxMF[0] == sink) {</span>
-<span class="fc" id="L134">                return idxMF[1];</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">        while (!q.isEmpty()) {</span>
+<span class="fc" id="L191">            int[] idxMF = q.poll();</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">            if (idxMF[0] == sink) {</span>
+<span class="fc" id="L193">                return idxMF[1];</span>
             }
 
-<span class="pc bpc" id="L137" title="1 of 2 branches missed.">            if (!getRemG().containsKey(idxMF[0])) continue;</span>
+<span class="pc bpc" id="L196" title="1 of 2 branches missed.">            if (!getRemG().containsKey(idxMF[0])) continue;</span>
 
-<span class="fc bfc" id="L139" title="All 2 branches covered.">            for (Map.Entry&lt;Integer, Integer&gt; entry : getRemG().get(idxMF[0]).entrySet()) {</span>
-<span class="fc" id="L140">                int w = entry.getValue();</span>
-<span class="pc bpc" id="L141" title="1 of 2 branches missed.">                if (w &lt; 0) {</span>
-<span class="nc" id="L142">                    throw new IllegalStateException(&quot;error in alg.  remainder graph has neg weight&quot;);</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">            for (Map.Entry&lt;Integer, Integer&gt; entry : getRemG().get(idxMF[0]).entrySet()) {</span>
+<span class="fc" id="L199">                int w = entry.getValue();</span>
+<span class="pc bpc" id="L200" title="1 of 2 branches missed.">                if (w &lt; 0) {</span>
+<span class="nc" id="L201">                    throw new IllegalStateException(&quot;error in alg.  remainder graph has neg weight&quot;);</span>
                 }
-<span class="fc bfc" id="L144" title="All 2 branches covered.">                if (w == 0) continue;</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">                if (w == 0) continue;</span>
 
-<span class="fc" id="L146">                int v = entry.getKey();</span>
-<span class="fc bfc" id="L147" title="All 2 branches covered.">                if (visited[v] != 0) continue;</span>
+<span class="fc" id="L205">                int v = entry.getKey();</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">                if (visited[v] != 0) continue;</span>
 
-<span class="fc" id="L149">                prev[v] = idxMF[0];</span>
-<span class="fc" id="L150">                visited[v] = 1;</span>
+<span class="fc" id="L208">                prev[v] = idxMF[0];</span>
+<span class="fc" id="L209">                visited[v] = 1;</span>
 
-<span class="fc" id="L152">                q.offer(new int[]{v, Math.min(idxMF[1], w)});</span>
-<span class="fc" id="L153">            }</span>
-<span class="fc" id="L154">        }</span>
+<span class="fc" id="L211">                q.offer(new int[]{v, Math.min(idxMF[1], w)});</span>
+<span class="fc" id="L212">            }</span>
+<span class="fc" id="L213">        }</span>
         // didn't find an augmenting path
-<span class="fc" id="L156">        return 0;</span>
+<span class="fc" id="L215">        return 0;</span>
     }
 
+    /*
     protected int findAugPathDFS(int[] visited, int[] prev, Map&lt;Integer, Map&lt;Integer, Integer&gt;&gt; g) {
-<span class="nc" id="L160">        throw new UnsupportedOperationException(&quot;not implemented&quot;);</span>
+        throw new UnsupportedOperationException(&quot;not implemented&quot;);
     }
 
     protected int findAugPathDFSScaling(int[] visited, int[] prev, Map&lt;Integer, Map&lt;Integer, Integer&gt;&gt; g) {
-<span class="nc" id="L164">        throw new UnsupportedOperationException(&quot;not implemented&quot;);</span>
-    }
+        throw new UnsupportedOperationException(&quot;not implemented&quot;);
+    }*/
 
     /**
-     * the graph weighted by the remaining capacity for flow.  when there is no path without
+     * get the graph  with edges that hold remaining capacity for flow.  when there is no path without
      * a 0 weight in it, the graph flow is maximum.
+     * @return the graph  with edges that hold remaining capacity for flow
      */
     public Map&lt;Integer, Map&lt;Integer, Integer&gt;&gt; getRemG() {
-<span class="fc" id="L172">        return remG;</span>
+<span class="fc" id="L233">        return remG;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

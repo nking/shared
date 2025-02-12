@@ -661,13 +661,14 @@ import java.util.logging.Logger;
 <span class="nc" id="L661">    }</span>
 
     /**
-     *
-     @param yConst
-     @param mu
-     @param sigma
-     @param k
-     @param x
-     @return
+      calculate Preconditioner Modified Residual with respect to k as
+     resid = dydk/d2ydkdk;
+     @param yConst constant factor used in dydk = (yConst/sigma) * ( f1 * df2dk + f2 * df1dk )
+     @param mu location parameter of GEV distribution
+     @param sigma scale parameter of GEV distribution
+     @param k shape parameter of GEV distribution
+     @param x the quantile of the distribution
+     @return precondition modified residual with respect to k: dydk/d2ydkdk
      */
     public static double calculatePreconditionerModifiedResidualK(double yConst, double mu, double sigma, double k, double x) {
 
@@ -677,13 +678,13 @@ import java.util.logging.Logger;
         // k component to residuals = d(1,1) * (&amp;#8706;/&amp;#8706;k)
         //       where d(1,1) is 1./(&amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;k&amp;#8706;k), that is 1./(&amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;k&amp;#8706;k)
 
-<span class="nc" id="L680">        double dydk = DerivGEV.derivWRTK(yConst, mu, sigma, k, x);</span>
+<span class="nc" id="L681">        double dydk = DerivGEV.derivWRTK(yConst, mu, sigma, k, x);</span>
 
-<span class="nc" id="L682">        Double d2ydkdk = estimateDY2DKDK(yConst, mu, sigma, k, x, dydk);</span>
+<span class="nc" id="L683">        Double d2ydkdk = estimateDY2DKDK(yConst, mu, sigma, k, x, dydk);</span>
 
-<span class="nc" id="L684">        double resid = dydk/d2ydkdk;</span>
+<span class="nc" id="L685">        double resid = dydk/d2ydkdk;</span>
 
-<span class="nc" id="L686">        return resid;</span>
+<span class="nc" id="L687">        return resid;</span>
     }
 
     /**
@@ -701,11 +702,11 @@ import java.util.logging.Logger;
      */
     public static double estimateDY2DKDK(double yConst, double mu, double sigma, double k, double x) {
 
-<span class="nc" id="L704">        double dydk = DerivGEV.derivWRTK(yConst, mu, sigma, k, x);</span>
+<span class="nc" id="L705">        double dydk = DerivGEV.derivWRTK(yConst, mu, sigma, k, x);</span>
 
-<span class="nc" id="L706">        double d = estimateDY2DKDK(yConst, mu, sigma, k, x, dydk);</span>
+<span class="nc" id="L707">        double d = estimateDY2DKDK(yConst, mu, sigma, k, x, dydk);</span>
 
-<span class="nc" id="L708">        return d;</span>
+<span class="nc" id="L709">        return d;</span>
     }
 
     /**
@@ -724,17 +725,17 @@ import java.util.logging.Logger;
      */
     public static double estimateDY2DKDK(double yConst, double mu, double sigma, double k, double x, double dydk) {
 
-<span class="nc" id="L727">        double factor = 0.0001f;</span>
+<span class="nc" id="L728">        double factor = 0.0001f;</span>
 
-<span class="nc" id="L729">        double delta = k*factor;</span>
+<span class="nc" id="L730">        double delta = k*factor;</span>
 
-<span class="nc" id="L731">        double dydk_0 = DerivGEV.derivWRTK(yConst, mu, sigma, (k - delta), x);</span>
+<span class="nc" id="L732">        double dydk_0 = DerivGEV.derivWRTK(yConst, mu, sigma, (k - delta), x);</span>
 
-<span class="nc" id="L733">        double dydk_2 = DerivGEV.derivWRTK(yConst, mu, sigma, (k + delta), x);</span>
+<span class="nc" id="L734">        double dydk_2 = DerivGEV.derivWRTK(yConst, mu, sigma, (k + delta), x);</span>
 
-<span class="nc" id="L735">        double d = estimateDerivUsingDelta(dydk_0, dydk, dydk_2, delta);</span>
+<span class="nc" id="L736">        double d = estimateDerivUsingDelta(dydk_0, dydk, dydk_2, delta);</span>
 
-<span class="nc" id="L737">        return d;</span>
+<span class="nc" id="L738">        return d;</span>
     }
 
     /**
@@ -755,17 +756,17 @@ import java.util.logging.Logger;
 
         // &amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;k&amp;#8706;sigma
 
-<span class="nc" id="L758">        double factor = 0.0001f;</span>
+<span class="nc" id="L759">        double factor = 0.0001f;</span>
 
-<span class="nc" id="L760">        double delta = (sigma*factor);</span>
+<span class="nc" id="L761">        double delta = (sigma*factor);</span>
 
-<span class="nc" id="L762">        double dydk_0 = DerivGEV.derivWRTK(yConst, mu, (sigma - delta), k, x);</span>
+<span class="nc" id="L763">        double dydk_0 = DerivGEV.derivWRTK(yConst, mu, (sigma - delta), k, x);</span>
 
-<span class="nc" id="L764">        double dydk_2 = DerivGEV.derivWRTK(yConst, mu, (sigma + delta), k, x);</span>
+<span class="nc" id="L765">        double dydk_2 = DerivGEV.derivWRTK(yConst, mu, (sigma + delta), k, x);</span>
 
-<span class="nc" id="L766">        double d = estimateDerivUsingDelta(dydk_0, dydk, dydk_2, delta);</span>
+<span class="nc" id="L767">        double d = estimateDerivUsingDelta(dydk_0, dydk, dydk_2, delta);</span>
 
-<span class="nc" id="L768">        return d;</span>
+<span class="nc" id="L769">        return d;</span>
     }
 
     /**
@@ -786,17 +787,17 @@ import java.util.logging.Logger;
 
         // &amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;k&amp;#8706;mu
 
-<span class="nc" id="L789">        double factor = 0.0001f;</span>
+<span class="nc" id="L790">        double factor = 0.0001f;</span>
 
-<span class="nc" id="L791">        double delta = mu*factor;</span>
+<span class="nc" id="L792">        double delta = mu*factor;</span>
 
-<span class="nc" id="L793">        double dydk_0 = DerivGEV.derivWRTK(yConst, (mu - delta), sigma, k, x);</span>
+<span class="nc" id="L794">        double dydk_0 = DerivGEV.derivWRTK(yConst, (mu - delta), sigma, k, x);</span>
 
-<span class="nc" id="L795">        double dydk_2 = DerivGEV.derivWRTK(yConst, (mu + delta), sigma, k, x);</span>
+<span class="nc" id="L796">        double dydk_2 = DerivGEV.derivWRTK(yConst, (mu + delta), sigma, k, x);</span>
 
-<span class="nc" id="L797">        double d = estimateDerivUsingDelta(dydk_0, dydk, dydk_2, delta);</span>
+<span class="nc" id="L798">        double d = estimateDerivUsingDelta(dydk_0, dydk, dydk_2, delta);</span>
 
-<span class="nc" id="L799">        return d;</span>
+<span class="nc" id="L800">        return d;</span>
     }
 
     /**
@@ -817,17 +818,17 @@ import java.util.logging.Logger;
 
         // &amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;sigma&amp;#8706;sigma = estimate as (dyds_2 - dyds)/ds
 
-<span class="nc" id="L820">        double factor = 0.0001f;</span>
+<span class="nc" id="L821">        double factor = 0.0001f;</span>
 
-<span class="nc" id="L822">        double delta = sigma*factor;</span>
+<span class="nc" id="L823">        double delta = sigma*factor;</span>
 
-<span class="nc" id="L824">        double dyds_0 = DerivGEV.derivWRTSigma(yConst, mu, (sigma - delta), k, x);</span>
+<span class="nc" id="L825">        double dyds_0 = DerivGEV.derivWRTSigma(yConst, mu, (sigma - delta), k, x);</span>
 
-<span class="nc" id="L826">        double dyds_2 = DerivGEV.derivWRTSigma(yConst, mu, (sigma + delta), k, x);</span>
+<span class="nc" id="L827">        double dyds_2 = DerivGEV.derivWRTSigma(yConst, mu, (sigma + delta), k, x);</span>
 
-<span class="nc" id="L828">        double d = estimateDerivUsingDelta(dyds_0, dydsigma, dyds_2, delta);</span>
+<span class="nc" id="L829">        double d = estimateDerivUsingDelta(dyds_0, dydsigma, dyds_2, delta);</span>
 
-<span class="nc" id="L830">        return d;</span>
+<span class="nc" id="L831">        return d;</span>
     }
 
     /**
@@ -849,17 +850,17 @@ import java.util.logging.Logger;
 
         // &amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;mu&amp;#8706;mu
 
-<span class="nc" id="L852">        double factor = 0.0001f;</span>
+<span class="nc" id="L853">        double factor = 0.0001f;</span>
 
-<span class="nc" id="L854">        double delta = mu*factor;</span>
+<span class="nc" id="L855">        double delta = mu*factor;</span>
 
-<span class="nc" id="L856">        double dydm_0 = DerivGEV.derivWRTMu(yConst, (mu - delta), sigma, k, x);</span>
+<span class="nc" id="L857">        double dydm_0 = DerivGEV.derivWRTMu(yConst, (mu - delta), sigma, k, x);</span>
 
-<span class="nc" id="L858">        double dydm_2 = DerivGEV.derivWRTMu(yConst, (mu + delta), sigma, k, x);</span>
+<span class="nc" id="L859">        double dydm_2 = DerivGEV.derivWRTMu(yConst, (mu + delta), sigma, k, x);</span>
 
-<span class="nc" id="L860">        double d = estimateDerivUsingDelta(dydm_0, dydmu, dydm_2, delta);</span>
+<span class="nc" id="L861">        double d = estimateDerivUsingDelta(dydm_0, dydmu, dydm_2, delta);</span>
 
-<span class="nc" id="L862">        return d;</span>
+<span class="nc" id="L863">        return d;</span>
     }
 
     /**
@@ -882,17 +883,17 @@ import java.util.logging.Logger;
 
         // &amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;mu&amp;#8706;k
 
-<span class="nc" id="L885">        double factor = 0.0001f;</span>
+<span class="nc" id="L886">        double factor = 0.0001f;</span>
 
-<span class="nc" id="L887">        double delta = k*factor;</span>
+<span class="nc" id="L888">        double delta = k*factor;</span>
 
-<span class="nc" id="L889">        double dydm_0 = DerivGEV.derivWRTMu(yConst, mu, sigma, (k - delta), x);</span>
+<span class="nc" id="L890">        double dydm_0 = DerivGEV.derivWRTMu(yConst, mu, sigma, (k - delta), x);</span>
 
-<span class="nc" id="L891">        double dydm_2 = DerivGEV.derivWRTMu(yConst, mu, sigma, (k + delta), x);</span>
+<span class="nc" id="L892">        double dydm_2 = DerivGEV.derivWRTMu(yConst, mu, sigma, (k + delta), x);</span>
 
-<span class="nc" id="L893">        double d = estimateDerivUsingDelta(dydm_0, dydmu, dydm_2, delta);</span>
+<span class="nc" id="L894">        double d = estimateDerivUsingDelta(dydm_0, dydmu, dydm_2, delta);</span>
 
-<span class="nc" id="L895">        return d;</span>
+<span class="nc" id="L896">        return d;</span>
     }
 
     /**
@@ -915,17 +916,17 @@ import java.util.logging.Logger;
 
         // &amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;mu&amp;#8706;sigma
 
-<span class="nc" id="L918">        double factor = 0.0001f;</span>
+<span class="nc" id="L919">        double factor = 0.0001f;</span>
 
-<span class="nc" id="L920">        double delta = sigma*factor;</span>
+<span class="nc" id="L921">        double delta = sigma*factor;</span>
 
-<span class="nc" id="L922">        double dydm_0 = DerivGEV.derivWRTMu(yConst, mu, (sigma - delta), k, x);</span>
+<span class="nc" id="L923">        double dydm_0 = DerivGEV.derivWRTMu(yConst, mu, (sigma - delta), k, x);</span>
 
-<span class="nc" id="L924">        double dydm_2 = DerivGEV.derivWRTMu(yConst, mu, (sigma + delta), k, x);</span>
+<span class="nc" id="L925">        double dydm_2 = DerivGEV.derivWRTMu(yConst, mu, (sigma + delta), k, x);</span>
 
-<span class="nc" id="L926">        double d = estimateDerivUsingDelta(dydm_0, dydmu, dydm_2, delta);</span>
+<span class="nc" id="L927">        double d = estimateDerivUsingDelta(dydm_0, dydmu, dydm_2, delta);</span>
 
-<span class="nc" id="L928">        return d;</span>
+<span class="nc" id="L929">        return d;</span>
     }
 
     /**
@@ -948,17 +949,17 @@ import java.util.logging.Logger;
 
         // &amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;sigma&amp;#8706;k = estimate as (dy2_ds_dk - dyds)/dk
 
-<span class="nc" id="L951">        double factor = 0.0001f;</span>
+<span class="nc" id="L952">        double factor = 0.0001f;</span>
 
-<span class="nc" id="L953">        double delta = (k*factor);</span>
+<span class="nc" id="L954">        double delta = (k*factor);</span>
 
-<span class="nc" id="L955">        double dydk_0 = DerivGEV.derivWRTSigma(yConst, mu, sigma, (k - delta), x);</span>
+<span class="nc" id="L956">        double dydk_0 = DerivGEV.derivWRTSigma(yConst, mu, sigma, (k - delta), x);</span>
 
-<span class="nc" id="L957">        double dydk_2 = DerivGEV.derivWRTSigma(yConst, mu, sigma, (k + delta), x);</span>
+<span class="nc" id="L958">        double dydk_2 = DerivGEV.derivWRTSigma(yConst, mu, sigma, (k + delta), x);</span>
 
-<span class="nc" id="L959">        double d = estimateDerivUsingDelta(dydk_0, dydsigma, dydk_2, delta);</span>
+<span class="nc" id="L960">        double d = estimateDerivUsingDelta(dydk_0, dydsigma, dydk_2, delta);</span>
 
-<span class="nc" id="L961">        return d;</span>
+<span class="nc" id="L962">        return d;</span>
     }
 
     /**
@@ -981,27 +982,27 @@ import java.util.logging.Logger;
 
         // &amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;sigma&amp;#8706;mu = estimate as (dy2_ds_dk - dyds)/dk
 
-<span class="nc" id="L984">        double factor = 0.0001f;</span>
+<span class="nc" id="L985">        double factor = 0.0001f;</span>
 
-<span class="nc" id="L986">        double delta = (sigma*factor);</span>
+<span class="nc" id="L987">        double delta = (sigma*factor);</span>
 
-<span class="nc" id="L988">        double dyds_0 = DerivGEV.derivWRTSigma(yConst, (mu - delta), sigma, k, x);</span>
+<span class="nc" id="L989">        double dyds_0 = DerivGEV.derivWRTSigma(yConst, (mu - delta), sigma, k, x);</span>
 
-<span class="nc" id="L990">        double dyds_2 = DerivGEV.derivWRTSigma(yConst, (mu + delta), sigma, k, x);</span>
+<span class="nc" id="L991">        double dyds_2 = DerivGEV.derivWRTSigma(yConst, (mu + delta), sigma, k, x);</span>
 
-<span class="nc" id="L992">        double d = estimateDerivUsingDelta(dyds_0, dydsigma, dyds_2, delta);</span>
+<span class="nc" id="L993">        double d = estimateDerivUsingDelta(dyds_0, dydsigma, dyds_2, delta);</span>
 
-<span class="nc" id="L994">        return d;</span>
+<span class="nc" id="L995">        return d;</span>
     }
 
     /**
-     *
-     @param yConst
-     @param mu
-     @param sigma
-     @param k
-     @param x
-     @return
+     calculate Preconditioner Modified Residual with respect to sigma
+     @param yConst constant factor used in dydk = (yConst/sigma) * ( f1 * df2dsigma + f2 * df1dsigma )
+     @param mu location parameter of GEV distribution
+     @param sigma scale parameter of GEV distribution
+     @param k shape parameter of GEV distribution
+     @param x the quantile of the distribution
+     @return precondition modified residual with respect to sigma
      */
     public static double calculatePreconditionerModifiedResidualSigma(
         double yConst, double mu, double sigma, double k, double x) {
@@ -1013,39 +1014,39 @@ import java.util.logging.Logger;
         //       where d(2,2) is ( 1./ ( (&amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;sigma&amp;#8706;sigma) - (&amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;sigma&amp;#8706;k)*( 1/(&amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;k&amp;#8706;k, that is &amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;k&amp;#8706;k) ) * (&amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;k&amp;#8706;sigma) ) )
 
         // &amp;#8706;/&amp;#8706;sigma
-<span class="nc" id="L1016">        double dyds = DerivGEV.derivWRTSigma(yConst, mu, sigma, k, x);</span>
+<span class="nc" id="L1017">        double dyds = DerivGEV.derivWRTSigma(yConst, mu, sigma, k, x);</span>
 
         // &amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;sigma&amp;#8706;sigma
-<span class="nc" id="L1019">        double d2ydsds = estimateDY2DSigmaDSigma(yConst, mu, sigma, k, x, dyds);</span>
+<span class="nc" id="L1020">        double d2ydsds = estimateDY2DSigmaDSigma(yConst, mu, sigma, k, x, dyds);</span>
 
 
         // (&amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;sigma&amp;#8706;k) = estimate as (dydsigma_1 - dydsigma)/dsigma
-<span class="nc" id="L1023">        double d2ydsdk = estimateDY2DSigmaDK(yConst, mu, sigma, k, x, dyds);</span>
+<span class="nc" id="L1024">        double d2ydsdk = estimateDY2DSigmaDK(yConst, mu, sigma, k, x, dyds);</span>
 
         // &amp;#8706;/&amp;#8706;k
-<span class="nc" id="L1026">        double dydk = DerivGEV.derivWRTK(yConst, mu, sigma, k, x);</span>
+<span class="nc" id="L1027">        double dydk = DerivGEV.derivWRTK(yConst, mu, sigma, k, x);</span>
 
         // &amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;k&amp;#8706;k, that is &amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;k&amp;#8706;k
-<span class="nc" id="L1029">        double d2ydkdk = estimateDY2DKDK(yConst, mu, sigma, k, x, dydk);</span>
+<span class="nc" id="L1030">        double d2ydkdk = estimateDY2DKDK(yConst, mu, sigma, k, x, dydk);</span>
 
         // &amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;k&amp;#8706;sigma
-<span class="nc" id="L1032">        double d2ydkds = estimateDY2DKDSigma(yConst, mu, sigma, k, x, dydk);</span>
+<span class="nc" id="L1033">        double d2ydkds = estimateDY2DKDSigma(yConst, mu, sigma, k, x, dydk);</span>
 
-<span class="nc" id="L1034">        double modification = d2ydsds - (d2ydsdk / d2ydkdk) * d2ydkds;</span>
+<span class="nc" id="L1035">        double modification = d2ydsds - (d2ydsdk / d2ydkdk) * d2ydkds;</span>
 
-<span class="nc" id="L1036">        double resid = dyds / modification;</span>
+<span class="nc" id="L1037">        double resid = dyds / modification;</span>
 
-<span class="nc" id="L1038">        return resid;</span>
+<span class="nc" id="L1039">        return resid;</span>
     }
 
     /**
-     *
-     @param yConst
-     @param mu
-     @param sigma
-     @param k
-     @param x
-     @return
+     calculate Preconditioner Modified Residual with respect to mu
+     @param yConst constant factor used in dydk = (yConst/sigma) * ( f1 * df2dmu + f2 * df1dmu )
+     @param mu location parameter of GEV distribution
+     @param sigma scale parameter of GEV distribution
+     @param k shape parameter of GEV distribution
+     @param x the quantile of the distribution
+     @return precondition modified residual with respect to mu
      */
     public static double calculatePreconditionerModifiedResidualMu(double yConst, double mu, double sigma, double k, double x) {
 
@@ -1076,45 +1077,45 @@ import java.util.logging.Logger;
         */
 
         // &amp;#8706;/&amp;#8706;mu
-<span class="nc" id="L1079">        double dydmu = DerivGEV.derivWRTMu(yConst, mu, sigma, k, x);</span>
+<span class="nc" id="L1080">        double dydmu = DerivGEV.derivWRTMu(yConst, mu, sigma, k, x);</span>
 
         // &amp;#8706;/&amp;#8706;sigma
-<span class="nc" id="L1082">        double dyds = DerivGEV.derivWRTSigma(yConst, mu, sigma, k, x);</span>
+<span class="nc" id="L1083">        double dyds = DerivGEV.derivWRTSigma(yConst, mu, sigma, k, x);</span>
 
         // &amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;sigma&amp;#8706;sigma
-<span class="nc" id="L1085">        double d2ydsds = estimateDY2DSigmaDSigma(yConst, mu, sigma, k, x, dyds);</span>
+<span class="nc" id="L1086">        double d2ydsds = estimateDY2DSigmaDSigma(yConst, mu, sigma, k, x, dyds);</span>
 
-<span class="nc bnc" id="L1087" title="All 2 branches missed.">        if (d2ydsds == 0) {</span>
-<span class="nc" id="L1088">            return 0;</span>
+<span class="nc bnc" id="L1088" title="All 2 branches missed.">        if (d2ydsds == 0) {</span>
+<span class="nc" id="L1089">            return 0;</span>
         }
 
 
         // &amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;mu&amp;#8706;mu
-<span class="nc" id="L1093">        double d2ydmdm = estimateDY2DMuDMu(yConst, mu, sigma, k, x, dydmu);</span>
+<span class="nc" id="L1094">        double d2ydmdm = estimateDY2DMuDMu(yConst, mu, sigma, k, x, dydmu);</span>
 
         // &amp;#8706;/&amp;#8706;k
-<span class="nc" id="L1096">        double dydk = DerivGEV.derivWRTK(yConst, mu, sigma, k, x);</span>
+<span class="nc" id="L1097">        double dydk = DerivGEV.derivWRTK(yConst, mu, sigma, k, x);</span>
 
         double pt1;
 
         // &amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;mu&amp;#8706;k
-<span class="nc" id="L1101">        double d2ydmdk = estimateDY2DMuDK(yConst, mu, sigma, k, x, dydmu);</span>
+<span class="nc" id="L1102">        double d2ydmdk = estimateDY2DMuDK(yConst, mu, sigma, k, x, dydmu);</span>
 
         // &amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;k&amp;#8706;k, that is &amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;k&amp;#8706;k
-<span class="nc" id="L1104">        double d2ydkdk = estimateDY2DKDK(yConst, mu, sigma, k, x, dydk);</span>
+<span class="nc" id="L1105">        double d2ydkdk = estimateDY2DKDK(yConst, mu, sigma, k, x, dydk);</span>
 
         // &amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;k&amp;#8706;mu
-<span class="nc" id="L1107">        double d2ydkdm = estimateDY2DKDMu(yConst, mu, sigma, k, x, dydk);</span>
+<span class="nc" id="L1108">        double d2ydkdm = estimateDY2DKDMu(yConst, mu, sigma, k, x, dydk);</span>
 
-<span class="nc" id="L1109">        pt1 = d2ydmdm - (d2ydmdk*d2ydkdm / d2ydkdk);</span>
+<span class="nc" id="L1110">        pt1 = d2ydmdm - (d2ydmdk*d2ydkdm / d2ydkdk);</span>
 
         // (&amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;sigma&amp;#8706;k) = estimate as (dydsigma_1 - dydsigma)/dsigma
-<span class="nc" id="L1112">        double d2ydsdk = estimateDY2DSigmaDK(yConst, mu, sigma, k, x, dyds);</span>
+<span class="nc" id="L1113">        double d2ydsdk = estimateDY2DSigmaDK(yConst, mu, sigma, k, x, dyds);</span>
 
-<span class="nc" id="L1114">        double d2ydmds = estimateDY2DMuDSigma(yConst, mu, sigma, k, x, dydmu);</span>
+<span class="nc" id="L1115">        double d2ydmds = estimateDY2DMuDSigma(yConst, mu, sigma, k, x, dydmu);</span>
 
         // &amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;sigma&amp;#8706;mu
-<span class="nc" id="L1117">        double d2ydsdm = estimateDY2DSigmaDMu(yConst, mu, sigma, k, x, dyds);</span>
+<span class="nc" id="L1118">        double d2ydsdm = estimateDY2DSigmaDMu(yConst, mu, sigma, k, x, dyds);</span>
 
         // d(3,3) = 1./( (pt1) - ( &amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;mu&amp;#8706;sigma * pt2_1 * &amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;sigma&amp;#8706;mu ))
         //
@@ -1123,26 +1124,26 @@ import java.util.logging.Logger;
 
         double pt2, pt2_1;
 
-<span class="nc bnc" id="L1126" title="All 2 branches missed.">        if (d2ydmds == 0) {</span>
-<span class="nc" id="L1127">            pt2 = 0;</span>
-<span class="nc" id="L1128">            pt2_1 = 0;</span>
+<span class="nc bnc" id="L1127" title="All 2 branches missed.">        if (d2ydmds == 0) {</span>
+<span class="nc" id="L1128">            pt2 = 0;</span>
+<span class="nc" id="L1129">            pt2_1 = 0;</span>
         } else {
 
             // &amp;#8706;&lt;sup&gt;2&lt;/sup&gt;/&amp;#8706;k&amp;#8706;sigma
-<span class="nc" id="L1132">            double d2ydkds = estimateDY2DKDSigma(yConst, mu, sigma, k, x, dydk);</span>
+<span class="nc" id="L1133">            double d2ydkds = estimateDY2DKDSigma(yConst, mu, sigma, k, x, dydk);</span>
 
-<span class="nc" id="L1134">            pt2_1 = d2ydsds - (d2ydsdk * d2ydkds / d2ydkdk);</span>
+<span class="nc" id="L1135">            pt2_1 = d2ydsds - (d2ydsdk * d2ydkds / d2ydkdk);</span>
 
-<span class="nc" id="L1136">            pt2_1 = 1./pt2_1;</span>
+<span class="nc" id="L1137">            pt2_1 = 1./pt2_1;</span>
 
-<span class="nc" id="L1138">            pt2 = d2ydmds * pt2_1 * d2ydsdm;</span>
+<span class="nc" id="L1139">            pt2 = d2ydmds * pt2_1 * d2ydsdm;</span>
         }
 
-<span class="nc" id="L1141">        double modification = pt1 - pt2;</span>
+<span class="nc" id="L1142">        double modification = pt1 - pt2;</span>
 
-<span class="nc" id="L1143">        double resid = dydmu/modification;</span>
+<span class="nc" id="L1144">        double resid = dydmu/modification;</span>
 
-<span class="nc" id="L1145">        return resid;</span>
+<span class="nc" id="L1146">        return resid;</span>
     }
 
     /**
@@ -1158,11 +1159,11 @@ import java.util.logging.Logger;
     public static Double chiSqSum(final double mu, final double sigma, final double k, final double[] x,
         final double[] normalizedY, final double[] normalizedYErr) {
 
-<span class="nc" id="L1161">        double[] yGEV = GeneralizedExtremeValue.generateNormalizedCurve(x, mu, sigma, k);</span>
-<span class="nc bnc" id="L1162" title="All 2 branches missed.">        if (yGEV == null) {</span>
-<span class="nc" id="L1163">            return null;</span>
+<span class="nc" id="L1162">        double[] yGEV = GeneralizedExtremeValue.generateNormalizedCurve(x, mu, sigma, k);</span>
+<span class="nc bnc" id="L1163" title="All 2 branches missed.">        if (yGEV == null) {</span>
+<span class="nc" id="L1164">            return null;</span>
         }
-<span class="nc" id="L1165">        return chiSqSum(yGEV, normalizedY, normalizedYErr);</span>
+<span class="nc" id="L1166">        return chiSqSum(yGEV, normalizedY, normalizedYErr);</span>
     }
 
     /**
@@ -1175,7 +1176,7 @@ import java.util.logging.Logger;
      @return
      */
     public static double chiSqSum(double[] normalizedYGEV, double[] normalizedY, double[] normalizedYErr) {
-<span class="nc" id="L1178">        return chiSqSum(normalizedYGEV, normalizedY, normalizedYErr, 0, normalizedY.length);</span>
+<span class="nc" id="L1179">        return chiSqSum(normalizedYGEV, normalizedY, normalizedYErr, 0, normalizedY.length);</span>
     }
 
 
@@ -1193,12 +1194,12 @@ import java.util.logging.Logger;
      */
     public static double chiSqSum(double[] normalizedYGEV, double[] normalizedY, double[] normalizedYErr,
         int startIdx, int stopIdx) {
-<span class="nc" id="L1196">        double chiSqSum = 0.0f;</span>
-<span class="nc bnc" id="L1197" title="All 2 branches missed.">        for (int ii = startIdx; ii &lt; stopIdx; ii++) {</span>
-<span class="nc" id="L1198">            double z = (normalizedYGEV[ii] - normalizedY[ii]);</span>
-<span class="nc" id="L1199">            chiSqSum += z*z*normalizedYErr[ii];</span>
+<span class="nc" id="L1197">        double chiSqSum = 0.0f;</span>
+<span class="nc bnc" id="L1198" title="All 2 branches missed.">        for (int ii = startIdx; ii &lt; stopIdx; ii++) {</span>
+<span class="nc" id="L1199">            double z = (normalizedYGEV[ii] - normalizedY[ii]);</span>
+<span class="nc" id="L1200">            chiSqSum += z*z*normalizedYErr[ii];</span>
         }
-<span class="nc" id="L1201">        return chiSqSum;</span>
+<span class="nc" id="L1202">        return chiSqSum;</span>
     }
 
     /**
@@ -1217,16 +1218,16 @@ import java.util.logging.Logger;
      */
     public static double secondDerivKDerivMu(double yConst, double mu, double sigma, double k, double x) {
 
-<span class="nc" id="L1220">        double z = 1. + k *( (x-mu)/sigma );</span>
+<span class="nc" id="L1221">        double z = 1. + k *( (x-mu)/sigma );</span>
 
         //double f1 = Math.exp( -1.*Math.pow(z, -1./k) );
         //double f2 = Math.pow(z, (-1. - (1./k)) );
 
         double a, f1, f2, df1dmu, df2dmu;
         
-<span class="nc" id="L1227">        double dzdmu = -1. * k/sigma;</span>
+<span class="nc" id="L1228">        double dzdmu = -1. * k/sigma;</span>
         
-<span class="nc bnc" id="L1229" title="All 2 branches missed.">        boolean zIsNegative = (z &lt; 0);</span>
+<span class="nc bnc" id="L1230" title="All 2 branches missed.">        boolean zIsNegative = (z &lt; 0);</span>
         // When z is negative, need to use alternative methods for exponentiation:
         // For z^(g/h)
         // For the complex exponentiation operator, that is complex bases, 
@@ -1234,80 +1235,80 @@ import java.util.logging.Logger;
         //    the principal value is
         //        (-1)^(g/h) * ((1./z)^(g/h))
 
-<span class="nc bnc" id="L1237" title="All 2 branches missed.">        if (zIsNegative) {</span>
-<span class="nc" id="L1238">            double invNegZ = -1.0*(1.0/z);</span>
-<span class="nc" id="L1239">            double neg1Pow = -1.0; // TODO:  revisit this</span>
-<span class="nc" id="L1240">            a = -1. * neg1Pow * Math.pow(invNegZ, (-1./k));</span>
-<span class="nc" id="L1241">            f1 = Math.exp( a );</span>
-<span class="nc" id="L1242">            f2 = neg1Pow * Math.pow(invNegZ, (-1. - (1./k)) );</span>
+<span class="nc bnc" id="L1238" title="All 2 branches missed.">        if (zIsNegative) {</span>
+<span class="nc" id="L1239">            double invNegZ = -1.0*(1.0/z);</span>
+<span class="nc" id="L1240">            double neg1Pow = -1.0; // TODO:  revisit this</span>
+<span class="nc" id="L1241">            a = -1. * neg1Pow * Math.pow(invNegZ, (-1./k));</span>
+<span class="nc" id="L1242">            f1 = Math.exp( a );</span>
+<span class="nc" id="L1243">            f2 = neg1Pow * Math.pow(invNegZ, (-1. - (1./k)) );</span>
             
             //(-1-(1/k)) * z^(-2-(1/k)) * dzdmu
-<span class="nc" id="L1245">            df2dmu = neg1Pow * (-1. - (1./k)) * Math.pow(invNegZ, (-2. - (1./k)) ) * dzdmu;</span>
+<span class="nc" id="L1246">            df2dmu = neg1Pow * (-1. - (1./k)) * Math.pow(invNegZ, (-2. - (1./k)) ) * dzdmu;</span>
 
             //f1 * (1/k) * z^(-1 - (1/k)) * dzdsigma
-<span class="nc" id="L1248">            df1dmu =  f1 * neg1Pow * (1./k) * Math.pow(invNegZ, -1. - (1./k)) * dzdmu;</span>
-<span class="nc" id="L1249">        } else {</span>
-<span class="nc" id="L1250">            a = -1.*Math.pow(z, (-1./k));</span>
-<span class="nc" id="L1251">            f1 = Math.exp( a );</span>
-<span class="nc" id="L1252">            f2 = Math.pow(z, (-1. - (1./k)) );</span>
+<span class="nc" id="L1249">            df1dmu =  f1 * neg1Pow * (1./k) * Math.pow(invNegZ, -1. - (1./k)) * dzdmu;</span>
+<span class="nc" id="L1250">        } else {</span>
+<span class="nc" id="L1251">            a = -1.*Math.pow(z, (-1./k));</span>
+<span class="nc" id="L1252">            f1 = Math.exp( a );</span>
+<span class="nc" id="L1253">            f2 = Math.pow(z, (-1. - (1./k)) );</span>
           
             //(-1-(1/k)) * z^(-2-(1/k)) * dzdmu
-<span class="nc" id="L1255">            df2dmu = (-1. - (1./k)) * Math.pow(z, (-2. - (1./k)) ) * dzdmu;</span>
+<span class="nc" id="L1256">            df2dmu = (-1. - (1./k)) * Math.pow(z, (-2. - (1./k)) ) * dzdmu;</span>
 
             //f1 * (1/k) * z^(-1 - (1/k)) * dzdsigma
-<span class="nc" id="L1258">            df1dmu =  f1 * (1./k) * Math.pow(z, -1. - (1./k)) * dzdmu;</span>
+<span class="nc" id="L1259">            df1dmu =  f1 * (1./k) * Math.pow(z, -1. - (1./k)) * dzdmu;</span>
         }
         
-<span class="nc" id="L1261">        double deltaK = 0.0001f;</span>
-<span class="nc" id="L1262">        double deltaMu = 0.0001f;</span>
-<span class="nc" id="L1263">        double k_1 = k + deltaK;</span>
-<span class="nc" id="L1264">        double mu_1 = mu + deltaMu;</span>
-<span class="nc" id="L1265">        double z_1 = 1. + k_1 *( (x-mu)/sigma );</span>
-<span class="nc" id="L1266">        double z_1_1 = 1. + k_1 *( (x-mu_1)/sigma );</span>
+<span class="nc" id="L1262">        double deltaK = 0.0001f;</span>
+<span class="nc" id="L1263">        double deltaMu = 0.0001f;</span>
+<span class="nc" id="L1264">        double k_1 = k + deltaK;</span>
+<span class="nc" id="L1265">        double mu_1 = mu + deltaMu;</span>
+<span class="nc" id="L1266">        double z_1 = 1. + k_1 *( (x-mu)/sigma );</span>
+<span class="nc" id="L1267">        double z_1_1 = 1. + k_1 *( (x-mu_1)/sigma );</span>
 
         double a_1, f2_1;
-<span class="nc bnc" id="L1269" title="All 2 branches missed.">        if (z_1 &lt; 0) {</span>
-<span class="nc" id="L1270">            double invNegZ = -1.0*(1.0/z_1);</span>
-<span class="nc" id="L1271">            double neg1Pow = -1.0; // TODO:  revisit this</span>
-<span class="nc" id="L1272">            a_1 = -1. * neg1Pow * Math.pow(invNegZ, (-1./k_1));</span>
-<span class="nc" id="L1273">            f2_1 = neg1Pow * Math.pow(invNegZ, (-1. - (1./k_1)) );</span>
-<span class="nc" id="L1274">        } else {</span>
-<span class="nc" id="L1275">            a_1 = -1. * Math.pow(z_1, (-1./k_1));</span>
-<span class="nc" id="L1276">            f2_1 = Math.pow(z_1, (-1. - (1./k_1)) );</span>
+<span class="nc bnc" id="L1270" title="All 2 branches missed.">        if (z_1 &lt; 0) {</span>
+<span class="nc" id="L1271">            double invNegZ = -1.0*(1.0/z_1);</span>
+<span class="nc" id="L1272">            double neg1Pow = -1.0; // TODO:  revisit this</span>
+<span class="nc" id="L1273">            a_1 = -1. * neg1Pow * Math.pow(invNegZ, (-1./k_1));</span>
+<span class="nc" id="L1274">            f2_1 = neg1Pow * Math.pow(invNegZ, (-1. - (1./k_1)) );</span>
+<span class="nc" id="L1275">        } else {</span>
+<span class="nc" id="L1276">            a_1 = -1. * Math.pow(z_1, (-1./k_1));</span>
+<span class="nc" id="L1277">            f2_1 = Math.pow(z_1, (-1. - (1./k_1)) );</span>
         }
         
         double a_1_1, f2_1_1;
-<span class="nc bnc" id="L1280" title="All 2 branches missed.">        if (z_1_1 &lt; 0) {</span>
-<span class="nc" id="L1281">            double invNegZ = -1.0*(1.0/z_1_1);</span>
-<span class="nc" id="L1282">            double neg1Pow = -1.0; // TODO:  revisit this</span>
-<span class="nc" id="L1283">            a_1_1 = -1. * neg1Pow * Math.pow(invNegZ, (-1.f/k_1));</span>
-<span class="nc" id="L1284">            f2_1_1 = neg1Pow * Math.pow(invNegZ, (-1. - (1./k_1)) );</span>
-<span class="nc" id="L1285">        } else {</span>
-<span class="nc" id="L1286">            a_1_1 = -1. * Math.pow(z_1_1, (-1.f/k_1));</span>
-<span class="nc" id="L1287">            f2_1_1 = Math.pow(z_1_1, (-1. - (1./k_1)) );</span>
+<span class="nc bnc" id="L1281" title="All 2 branches missed.">        if (z_1_1 &lt; 0) {</span>
+<span class="nc" id="L1282">            double invNegZ = -1.0*(1.0/z_1_1);</span>
+<span class="nc" id="L1283">            double neg1Pow = -1.0; // TODO:  revisit this</span>
+<span class="nc" id="L1284">            a_1_1 = -1. * neg1Pow * Math.pow(invNegZ, (-1.f/k_1));</span>
+<span class="nc" id="L1285">            f2_1_1 = neg1Pow * Math.pow(invNegZ, (-1. - (1./k_1)) );</span>
+<span class="nc" id="L1286">        } else {</span>
+<span class="nc" id="L1287">            a_1_1 = -1. * Math.pow(z_1_1, (-1.f/k_1));</span>
+<span class="nc" id="L1288">            f2_1_1 = Math.pow(z_1_1, (-1. - (1./k_1)) );</span>
         }
         
-<span class="nc" id="L1290">        double f1_1 = Math.exp( a_1 );</span>
-<span class="nc" id="L1291">        double df1dk = (Math.exp( a_1 ) - f1)/deltaK;</span>
-<span class="nc" id="L1292">        double df1dk_1 = (Math.exp( a_1_1 ) - f1_1)/deltaK;</span>
-<span class="nc" id="L1293">        double df2dk = (f2_1 - f2)/deltaK;</span>
-<span class="nc" id="L1294">        double df2dk_1 = (f2_1_1 - f2_1)/deltaK;</span>
+<span class="nc" id="L1291">        double f1_1 = Math.exp( a_1 );</span>
+<span class="nc" id="L1292">        double df1dk = (Math.exp( a_1 ) - f1)/deltaK;</span>
+<span class="nc" id="L1293">        double df1dk_1 = (Math.exp( a_1_1 ) - f1_1)/deltaK;</span>
+<span class="nc" id="L1294">        double df2dk = (f2_1 - f2)/deltaK;</span>
+<span class="nc" id="L1295">        double df2dk_1 = (f2_1_1 - f2_1)/deltaK;</span>
 
 
         //pt1_0 = ∂/∂mu( df2dk )  the derivative involves potential log(negative number) so work around:
-<span class="nc" id="L1298">        double pt1_0 = (df2dk_1 - df2dk)/deltaMu;</span>
+<span class="nc" id="L1299">        double pt1_0 = (df2dk_1 - df2dk)/deltaMu;</span>
 
         // pt2_0 = ∂/∂mu( df1dk ) the derivative involves potential log(negative number) so work around:
-<span class="nc" id="L1301">        double pt2_0 = (df1dk_1 - df1dk)/deltaMu;</span>
+<span class="nc" id="L1302">        double pt2_0 = (df1dk_1 - df1dk)/deltaMu;</span>
 
 
-<span class="nc" id="L1304">        double pt2 = f2 * pt2_0 + df1dk * df2dmu;</span>
+<span class="nc" id="L1305">        double pt2 = f2 * pt2_0 + df1dk * df2dmu;</span>
 
-<span class="nc" id="L1306">        double pt1 = (f1 * pt1_0) + (df2dk * df1dmu);</span>
+<span class="nc" id="L1307">        double pt1 = (f1 * pt1_0) + (df2dk * df1dmu);</span>
 
-<span class="nc" id="L1308">        double d2fdkdmu = (yConst/sigma) * (pt1 + pt2);</span>
+<span class="nc" id="L1309">        double d2fdkdmu = (yConst/sigma) * (pt1 + pt2);</span>
 
-<span class="nc" id="L1310">        return d2fdkdmu;</span>
+<span class="nc" id="L1311">        return d2fdkdmu;</span>
     }
 
     /*

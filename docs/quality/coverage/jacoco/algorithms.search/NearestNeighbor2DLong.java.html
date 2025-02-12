@@ -365,7 +365,7 @@ public class NearestNeighbor2DLong {
                 (dp2 &lt;= closestDistPlusTol)) {
 <span class="fc" id="L366">                closestIndexes.add(predecessor);</span>
             }
-<span class="fc bfc" id="L368" title="All 4 branches covered.">            if ((successor != -1) &amp;&amp;</span>
+<span class="pc bpc" id="L368" title="1 of 4 branches missed.">            if ((successor != -1) &amp;&amp;</span>
                 (ds2 &lt;= closestDistPlusTol)) {
 <span class="fc" id="L370">                closestIndexes.add(successor);</span>
             }
@@ -445,14 +445,14 @@ public class NearestNeighbor2DLong {
 <span class="fc" id="L445">                    goal = (int)Math.ceil(closestDistPlusTol);</span>
 <span class="fc" id="L446">                    yLow = estimateLowBound(y, goal); </span>
                 }
-<span class="fc bfc" id="L448" title="All 4 branches covered.">                if ((p2 != -1) &amp;&amp; dp2 &lt;= closestDistPlusTol) {</span>
+<span class="pc bpc" id="L448" title="1 of 4 branches missed.">                if ((p2 != -1) &amp;&amp; dp2 &lt;= closestDistPlusTol) {</span>
 <span class="fc" id="L449">                    closestIndexes.add(p2);</span>
                 }
 <span class="fc bfc" id="L451" title="All 4 branches covered.">                if ((s2 != -1) &amp;&amp; ds2 &lt;= closestDistPlusTol) {</span>
 <span class="fc" id="L452">                    closestIndexes.add(s2);</span>
                 }
 <span class="fc bfc" id="L454" title="All 2 branches covered.">            } else if (dMin &lt;= closestDistPlusTol) {</span>
-<span class="pc bpc" id="L455" title="1 of 4 branches missed.">                if ((p2 != -1) &amp;&amp; dp2 &lt;= closestDistPlusTol) {</span>
+<span class="fc bfc" id="L455" title="All 4 branches covered.">                if ((p2 != -1) &amp;&amp; dp2 &lt;= closestDistPlusTol) {</span>
 <span class="fc" id="L456">                    closestIndexes.add(p2);</span>
                 }
 <span class="fc bfc" id="L458" title="All 4 branches covered.">                if ((s2 != -1) &amp;&amp; ds2 &lt;= closestDistPlusTol) {</span>
@@ -476,8 +476,8 @@ public class NearestNeighbor2DLong {
         //System.out.println(&quot;p=&quot; + p2 + &quot; s=&quot; + s2);
         
         // successor searches to higher bounds
-<span class="fc bfc" id="L479" title="All 2 branches covered.">        if (successor == -1) {</span>
-<span class="fc" id="L480">            yCurrent = Integer.MAX_VALUE;</span>
+<span class="pc bpc" id="L479" title="1 of 2 branches missed.">        if (successor == -1) {</span>
+<span class="nc" id="L480">            yCurrent = Integer.MAX_VALUE;</span>
         } else {
 <span class="fc" id="L482">            int sr = getRow(successor);</span>
 <span class="fc bfc" id="L483" title="All 2 branches covered.">            if (sr &gt; y) {</span>
@@ -825,8 +825,8 @@ public class NearestNeighbor2DLong {
 <span class="fc" id="L825">        }</span>
         
         // successor searches to higher bounds
-<span class="fc bfc" id="L828" title="All 2 branches covered.">        if (successor == -1) {</span>
-<span class="fc" id="L829">            yCurrent = Integer.MAX_VALUE;</span>
+<span class="pc bpc" id="L828" title="1 of 2 branches missed.">        if (successor == -1) {</span>
+<span class="nc" id="L829">            yCurrent = Integer.MAX_VALUE;</span>
         } else {
 <span class="fc" id="L831">            int sr = getRow(successor);</span>
 <span class="fc bfc" id="L832" title="All 2 branches covered.">            if (sr &gt; y) {</span>

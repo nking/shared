@@ -14,35 +14,54 @@ public abstract class AbstractDiningPhilosophers {
 
 <span class="fc" id="L15">    Map&lt;Integer, Integer&gt; bites = new HashMap&lt;&gt;();</span>
 
-<span class="fc" id="L17">    public AbstractDiningPhilosophers(int n, int thinkTimeMsec, String label) {</span>
-<span class="pc bpc" id="L18" title="1 of 2 branches missed.">        if (n &lt; 1) {</span>
-<span class="nc" id="L19">            throw new IllegalArgumentException(&quot;n must be positive integer, &gt; 0&quot;);</span>
+    /**
+     * constructor
+     * @param n number of diners
+     * @param thinkTimeMsec the time to think between trying to eat
+     * @param label a name of the implementation useful in debugging
+     */
+<span class="fc" id="L23">    public AbstractDiningPhilosophers(int n, int thinkTimeMsec, String label) {</span>
+<span class="pc bpc" id="L24" title="1 of 2 branches missed.">        if (n &lt; 1) {</span>
+<span class="nc" id="L25">            throw new IllegalArgumentException(&quot;n must be positive integer, &gt; 0&quot;);</span>
         }
-<span class="fc" id="L21">        this.thinkTimeMilliSec = thinkTimeMsec;</span>
-<span class="fc" id="L22">        this.n = n;</span>
-<span class="fc bfc" id="L23" title="All 2 branches covered.">        this.nIsOdd = (n &amp; 1) != 0;</span>
-<span class="fc" id="L24">        this.impl = label;</span>
+<span class="fc" id="L27">        this.thinkTimeMilliSec = thinkTimeMsec;</span>
+<span class="fc" id="L28">        this.n = n;</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">        this.nIsOdd = (n &amp; 1) != 0;</span>
+<span class="fc" id="L30">        this.impl = label;</span>
 
-<span class="fc bfc" id="L26" title="All 2 branches covered.">        int nEven = nIsOdd ? (n / 2) + 1 : n / 2;</span>
-<span class="fc" id="L27">        int nOdd = n / 2;</span>
-<span class="fc" id="L28">        System.out.printf(&quot;%s] init %d diners.  %d odd, %d even\n&quot;, impl, n, nOdd, nEven);</span>
-<span class="fc" id="L29">    }</span>
+<span class="fc bfc" id="L32" title="All 2 branches covered.">        int nEven = nIsOdd ? (n / 2) + 1 : n / 2;</span>
+<span class="fc" id="L33">        int nOdd = n / 2;</span>
+<span class="fc" id="L34">        System.out.printf(&quot;%s] init %d diners.  %d odd, %d even\n&quot;, impl, n, nOdd, nEven);</span>
+<span class="fc" id="L35">    }</span>
 
+    /**
+     * initialize the plates of the diners to hold this many bites
+     * @param bitesPer the number of bites to put on each diner's plate.
+     */
     public void initDine(int bitesPer) {
-<span class="fc" id="L32">        beginDine = System.nanoTime();</span>
+<span class="fc" id="L42">        beginDine = System.nanoTime();</span>
 
-<span class="fc" id="L34">        bites.clear();</span>
-<span class="fc bfc" id="L35" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L36">            bites.put(i, bitesPer);</span>
+<span class="fc" id="L44">        bites.clear();</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L46">            bites.put(i, bitesPer);</span>
         }
-<span class="fc" id="L38">    }</span>
+<span class="fc" id="L48">    }</span>
 
+    /**
+     * mark the end of dining and print a time statement.
+     */
     public void closeDine() {
-<span class="fc" id="L41">        endDine = System.nanoTime();</span>
-<span class="fc" id="L42">        double time = (endDine - beginDine) * 1E-6;//time in ns * (1E-9 sec/ns) * (1 msec)/1E-3sec</span>
-<span class="fc" id="L43">        System.out.printf(&quot;%20s] n=%7d, %10.2f msec\n&quot;, impl, n, time);</span>
-<span class="fc" id="L44">    }</span>
+<span class="fc" id="L54">        endDine = System.nanoTime();</span>
+<span class="fc" id="L55">        double time = (endDine - beginDine) * 1E-6;//time in ns * (1E-9 sec/ns) * (1 msec)/1E-3sec</span>
+<span class="fc" id="L56">        System.out.printf(&quot;%20s] n=%7d, %10.2f msec\n&quot;, impl, n, time);</span>
+<span class="fc" id="L57">    }</span>
 
+    /**
+     * begin dining and timer
+     * @param bites
+     * @param timeoutSec
+     * @throws InterruptedException
+     */
     public abstract void dine(int bites, int timeoutSec) throws InterruptedException;
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

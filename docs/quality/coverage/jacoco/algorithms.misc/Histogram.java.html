@@ -409,7 +409,7 @@ import java.util.logging.Logger;
 <span class="fc" id="L409">        float xmax = MiscMath0.roundUpByLargestPower((float)minMax[1]);</span>
 <span class="fc" id="L410">        float xmin = MiscMath0.roundDownByLargestPower((float)minMax[0]);</span>
         // xmax &gt; 1 and xmin is between 0 and 1, round xmin down
-<span class="pc bpc" id="L412" title="3 of 6 branches missed.">        if ((xmax &gt; 1) &amp;&amp; (xmin &gt; 0) &amp;&amp; (xmin &lt; 1.0)) {</span>
+<span class="pc bpc" id="L412" title="2 of 6 branches missed.">        if ((xmax &gt; 1) &amp;&amp; (xmin &gt; 0) &amp;&amp; (xmin &lt; 1.0)) {</span>
 <span class="fc" id="L413">            xmin = 0;</span>
         }
         

@@ -5,29 +5,34 @@ import java.util.concurrent.Executors;
 
 public class HierarchicalPooled extends Hierarchical {
 
+    /**
+     * constructor
+     * @param n number of diners
+     * @param thinkTimeMsec the time to think between trying to eat
+     */
     public HierarchicalPooled(int n, int thinkTimeMsec) {
-<span class="fc" id="L9">        super(n, thinkTimeMsec, HierarchicalPooled.class.getSimpleName());</span>
-<span class="fc" id="L10">    }</span>
+<span class="fc" id="L14">        super(n, thinkTimeMsec, HierarchicalPooled.class.getSimpleName());</span>
+<span class="fc" id="L15">    }</span>
 
     @Override
     public void dine(int bitesPer, int timeoutSec) throws InterruptedException {
-<span class="fc" id="L14">        initDine(bitesPer);</span>
+<span class="fc" id="L19">        initDine(bitesPer);</span>
 
-<span class="fc" id="L16">        ExecutorService exec = null;</span>
+<span class="fc" id="L21">        ExecutorService exec = null;</span>
         try {
-<span class="fc" id="L18">            exec = Executors.newFixedThreadPool(10);</span>
-<span class="fc bfc" id="L19" title="All 2 branches covered.">            for (int i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L20">                exec.submit(eat(i, timeoutSec));</span>
+<span class="fc" id="L23">            exec = Executors.newFixedThreadPool(10);</span>
+<span class="fc bfc" id="L24" title="All 2 branches covered.">            for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L25">                exec.submit(eat(i, timeoutSec));</span>
                 //exec.execute(eat(i, timeoutSec));
             }
         } finally {
-<span class="pc bpc" id="L24" title="2 of 4 branches missed.">            if (exec != null &amp;&amp; !exec.isShutdown()) {</span>
+<span class="pc bpc" id="L29" title="2 of 4 branches missed.">            if (exec != null &amp;&amp; !exec.isShutdown()) {</span>
                 //exec. awaitTermination((n/2)*timeoutSec, TimeUnit. SECONDS);
-<span class="fc" id="L26">                exec.shutdownNow();</span>
+<span class="fc" id="L31">                exec.shutdownNow();</span>
             }
         }
 
-<span class="fc" id="L30">        closeDine();</span>
-<span class="fc" id="L31">    }</span>
+<span class="fc" id="L35">        closeDine();</span>
+<span class="fc" id="L36">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

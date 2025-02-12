@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Util.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.statistics</a> &gt; <span class="el_source">Util.java</span></div><h1>Util.java</h1><pre class="source lang-java linenums">package algorithms.statistics;
+
+<span class="nc" id="L3">public class Util {</span>
+
+    /**
+     * given data points x and y representing a two dimensional
+     * dataset, calculate the moments array.
+     * The moments array is the sum of the followng combined terms:
+     &lt;pre&gt;
+     x    y    x^2    x^3    x^4    xy    yx^2  = moments
+     0    1    2      3       4     5     6     = indexes in output
+     &lt;/pre&gt;
+     * @param x array of 1st dimension of data
+     * @param y array of 2nd dimension of data
+     * @return moments
+     &lt;pre&gt;
+           x    y    x^2    x^3    x^4    xy    yx^2  = moments
+           0    1    2      3       4     5     6     = indexes in output
+     &lt;/pre&gt;
+     */
+    public static double[] caldc2DMomentsX2Y4(double[] x, double[] y) {
+<span class="nc bnc" id="L22" title="All 2 branches missed.">        if (x.length != y.length) {</span>
+<span class="nc" id="L23">            throw new IllegalArgumentException(&quot;x and y must be same length&quot;);</span>
+        }
+<span class="nc" id="L25">        int n = x.length;</span>
+        // 0    1    2      3       4     5     6
+        //x    y    x^2    x^3    x^4    xy    yx^2
+<span class="nc" id="L28">        double[] moments = new double[7];</span>
+<span class="nc bnc" id="L29" title="All 2 branches missed.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="nc" id="L30">            moments[0] += x[i];</span>
+<span class="nc" id="L31">            moments[1] += y[i];</span>
+<span class="nc" id="L32">            moments[2] += x[i] * x[i];</span>
+<span class="nc" id="L33">            moments[3] += moments[2] * x[i];</span>
+<span class="nc" id="L34">            moments[4] += moments[3] * x[i];</span>
+<span class="nc" id="L35">            moments[5] += x[i] * y[i];</span>
+<span class="nc" id="L36">            moments[6] += y[i] * x[i] * x[i];</span>
+        }
+<span class="nc" id="L38">        return moments;</span>
+    }
+
+    /**
+     * given data points x and y representing a two dimensional
+     * dataset, calculate the moments array.
+     * The moments array is the sum of the followng combined terms:
+     &lt;pre&gt;
+     x    y    x^2    y^2    xy   = moments
+     0    1    2      3       4   = indexes in output
+     &lt;/pre&gt;
+     * @param x array of 1st dimension of data
+     * @param y array of 2nd dimension of data
+     * @return moments
+    &lt;pre&gt;
+    x    y    x^2    y^2    xy   = moments
+    0    1    2      3       4   = indexes in output
+    &lt;/pre&gt;
+     */
+    public static double[] caldc2DMomentsX2Y2(double[] x, double[] y) {
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">        if (x.length != y.length) {</span>
+<span class="nc" id="L59">            throw new IllegalArgumentException(&quot;x and y must be same length&quot;);</span>
+        }
+<span class="fc" id="L61">        int n = x.length;</span>
+        //x    y    x^2    y^2    xy   = moments
+        //0    1    2      3       4   = indexes in output
+<span class="fc" id="L64">        double[] moments = new double[5];</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L66">            moments[0] += x[i];</span>
+<span class="fc" id="L67">            moments[1] += y[i];</span>
+<span class="fc" id="L68">            moments[2] += x[i] * x[i];</span>
+<span class="fc" id="L69">            moments[3] += y[i] * y[i];</span>
+<span class="fc" id="L70">            moments[4] += x[i] * y[i];</span>
+        }
+<span class="fc" id="L72">        return moments;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

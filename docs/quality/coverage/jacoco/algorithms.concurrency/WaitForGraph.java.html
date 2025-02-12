@@ -6,13 +6,15 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * class for checking a wait for graph of processes waiting on resources.
+ *
  * NOTE: this class is not thread-safe.  Its a toy model.
  */
-<span class="fc" id="L11">public class WaitForGraph {</span>
+<span class="fc" id="L13">public class WaitForGraph {</span>
     // key = process ID, value = set of resource IDs
-<span class="fc" id="L13">    Map&lt;Integer, Set&lt;Integer&gt;&gt; procResWaitMap = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L15">    Map&lt;Integer, Set&lt;Integer&gt;&gt; procResWaitMap = new HashMap&lt;&gt;();</span>
     // key = resource ID, value = process ID... is a 1-1 mapping reverse of procResWaitMap
-<span class="fc" id="L15">    Map&lt;Integer, Integer&gt; resProcAllocMap = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L17">    Map&lt;Integer, Integer&gt; resProcAllocMap = new HashMap&lt;&gt;();</span>
 
     // for reverse lookup
 
@@ -21,71 +23,80 @@ import java.util.Set;
 
     /**
      * add a resource allocation to the graph (internally, also removes it from process wait map).
-     * @param processID
-     * @param resourceID
+     * @param processId the process id
+     * @param resourceId the resource id
      */
-    public void addAlloc(int processID, int resourceID) {
-        //int currProcID = resProcAllocMap.get(resourceID);
-<span class="fc" id="L29">        resProcAllocMap.put(resourceID, processID);</span>
-<span class="pc bpc" id="L30" title="1 of 2 branches missed.">        if (procResWaitMap.containsKey(processID)) {</span>
-<span class="nc" id="L31">            procResWaitMap.get(processID).remove(resourceID);</span>
+    public void addAlloc(int processId, int resourceId) {
+        //int currProcID = resProcAllocMap.get(resourceId);
+<span class="fc" id="L31">        resProcAllocMap.put(resourceId, processId);</span>
+<span class="pc bpc" id="L32" title="1 of 2 branches missed.">        if (procResWaitMap.containsKey(processId)) {</span>
+<span class="nc" id="L33">            procResWaitMap.get(processId).remove(resourceId);</span>
         }
-<span class="fc" id="L33">    }</span>
+<span class="fc" id="L35">    }</span>
+    
     protected void addRequest(int processID, int resourceID) {
-<span class="fc" id="L35">        procResWaitMap.putIfAbsent(processID, new HashSet&lt;&gt;());</span>
-<span class="fc" id="L36">        procResWaitMap.get(processID).add(resourceID);</span>
-<span class="fc" id="L37">    }</span>
+<span class="fc" id="L38">        procResWaitMap.putIfAbsent(processID, new HashSet&lt;&gt;());</span>
+<span class="fc" id="L39">        procResWaitMap.get(processID).add(resourceID);</span>
+<span class="fc" id="L40">    }</span>
 
-    public boolean addRequestIfCannotDeadlock(int processID, int resourceID) {
-<span class="fc bfc" id="L40" title="All 2 branches covered.">        if (cannotDeadlock(processID, resourceID)) {</span>
-<span class="fc" id="L41">            addRequest(processID, resourceID);</span>
-<span class="fc" id="L42">            return true;</span>
+    /**
+     * add a request to the wait-for-graph if the request cannot deadlock, else return false without
+     * adding the request.
+     * @param processId
+     * @param resourceId
+     * @return true if the request was added.
+     */
+    public boolean addRequestIfCannotDeadlock(int processId, int resourceId) {
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        if (cannotDeadlock(processId, resourceId)) {</span>
+<span class="fc" id="L51">            addRequest(processId, resourceId);</span>
+<span class="fc" id="L52">            return true;</span>
         }
-<span class="fc" id="L44">        return false;</span>
+<span class="fc" id="L54">        return false;</span>
     }
 
     /**
-     * if requesting resourceID for process processID cannot create a deadlock, return true.
-     * Note that if the resource is already held by processID, this method will return false.
-     * @param processID
-     * @param resourceID
-     * @return
+     * determine whether a request for a resource can deadlock.
+     * @param processId
+     * @param resourceId
+     * @return whether the request would lead to a deadlock in the wait-for-graph.
      */
-    public boolean cannotDeadlock(int processID, int resourceID) {
+    public boolean cannotDeadlock(int processId, int resourceId) {
 
-<span class="fc" id="L56">        Set&lt;Integer&gt; visitedP = new HashSet&lt;&gt;();</span>
-<span class="fc" id="L57">        visitedP.add(processID);</span>
+<span class="fc" id="L65">        Set&lt;Integer&gt; visitedP = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L66">        visitedP.add(processId);</span>
 
-<span class="fc" id="L59">        Set&lt;Integer&gt; cycle = new HashSet&lt;Integer&gt;();</span>
-<span class="fc" id="L60">        cycle.add(processID);</span>
-
-<span class="fc" id="L62">        boolean hasCycle = hasCycle(resourceID, visitedP, cycle);</span>
-<span class="fc bfc" id="L63" title="All 2 branches covered.">        return !hasCycle;</span>
+<span class="fc" id="L68">        boolean hasCycle = hasCycle(resourceId, visitedP);</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">        return !hasCycle;</span>
     }
 
-    protected boolean hasCycle(int resourceID, Set&lt;Integer&gt; visitedP, Set&lt;Integer&gt; cycle) {
+    /**
+     * determine if there is a cycle in the wait for graph.
+     * @param resourceId resource if
+     * @param visitedP visited map of process ids
+     * @return true if a cycle is found.
+     */
+    protected boolean hasCycle(int resourceId, Set&lt;Integer&gt; visitedP) {
 
-<span class="fc bfc" id="L68" title="All 2 branches covered.">        if (!resProcAllocMap.containsKey(resourceID)) {</span>
-<span class="fc" id="L69">            return false;</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">        if (!resProcAllocMap.containsKey(resourceId)) {</span>
+<span class="fc" id="L81">            return false;</span>
         }
-<span class="fc" id="L71">        int processID = resProcAllocMap.get(resourceID);</span>
+<span class="fc" id="L83">        int processID = resProcAllocMap.get(resourceId);</span>
 
-<span class="fc bfc" id="L73" title="All 2 branches covered.">        if (cycle.contains(processID)) {</span>
-<span class="fc" id="L74">            return true;</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">        if (visitedP.contains(processID)) {</span>
+<span class="fc" id="L86">            return true;</span>
         }
 
-<span class="pc bpc" id="L77" title="1 of 4 branches missed.">        if (visitedP.contains(processID) || !procResWaitMap.containsKey(processID)) {</span>
-<span class="fc" id="L78">            return false;</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        if (!procResWaitMap.containsKey(processID)) {</span>
+<span class="fc" id="L90">            return false;</span>
         }
 
-<span class="pc bpc" id="L81" title="1 of 2 branches missed.">        for (int resID : procResWaitMap.get(processID)) {</span>
-<span class="fc" id="L82">            Set&lt;Integer&gt; cycle2 = new HashSet&lt;&gt;(cycle);</span>
-<span class="pc bpc" id="L83" title="1 of 2 branches missed.">            if (hasCycle(resID, visitedP, cycle2)) {</span>
-<span class="fc" id="L84">                return true;</span>
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">        for (int resID : procResWaitMap.get(processID)) {</span>
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">            if (hasCycle(resID, visitedP)) {</span>
+<span class="fc" id="L95">                return true;</span>
             }
-<span class="nc" id="L86">        }</span>
+<span class="nc" id="L97">        }</span>
 
-<span class="nc" id="L88">        return false;</span>
+<span class="nc" id="L99">        return false;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

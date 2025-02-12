@@ -5,42 +5,49 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * a toy model close to sequential for timing comparisons.
+ * All odd numbered diners eat then all even numbered diners eat.
  */
 public class EvenOdd extends AbstractDiningPhilosophers {
-<span class="fc" id="L10">    ReentrantLock eatLock = new ReentrantLock();</span>
+<span class="fc" id="L11">    ReentrantLock eatLock = new ReentrantLock();</span>
 
     // needed for the alternating first last diner when n is an odd number
-<span class="fc" id="L13">    int nEvenIter = 0;</span>
+<span class="fc" id="L14">    int nEvenIter = 0;</span>
 
+    /**
+     * constructor for dining philospher's abstract
+     * @param n number of diners
+     * @param thinkTimeMsec the time to think between trying to eat
+     * @param label a name of the implementation useful in debugging
+     */
     public EvenOdd(int n, int thinkTimeMsec) {
-<span class="fc" id="L16">        super(n, thinkTimeMsec, EvenOdd.class.getSimpleName());</span>
-<span class="fc" id="L17">    }</span>
+<span class="fc" id="L23">        super(n, thinkTimeMsec, EvenOdd.class.getSimpleName());</span>
+<span class="fc" id="L24">    }</span>
 
     public void dine(int bitesPer, int timeoutSec) throws InterruptedException {
 
-<span class="fc" id="L21">        initDine(bitesPer);</span>
+<span class="fc" id="L28">        initDine(bitesPer);</span>
 
-<span class="fc" id="L23">        Thread thrE = new Thread(groupEat(0, timeoutSec));</span>
-<span class="fc" id="L24">        Thread thrO = new Thread(groupEat(1, timeoutSec));</span>
-<span class="fc" id="L25">        thrE.start();</span>
-<span class="fc" id="L26">        thrO.start();</span>
-<span class="fc" id="L27">        thrE.join();</span>
-<span class="fc" id="L28">        thrO.join();</span>
+<span class="fc" id="L30">        Thread thrE = new Thread(groupEat(0, timeoutSec));</span>
+<span class="fc" id="L31">        Thread thrO = new Thread(groupEat(1, timeoutSec));</span>
+<span class="fc" id="L32">        thrE.start();</span>
+<span class="fc" id="L33">        thrO.start();</span>
+<span class="fc" id="L34">        thrE.join();</span>
+<span class="fc" id="L35">        thrO.join();</span>
 
-<span class="fc" id="L30">        closeDine();</span>
-<span class="fc" id="L31">    }//end dine</span>
+<span class="fc" id="L37">        closeDine();</span>
+<span class="fc" id="L38">    }//end dine</span>
 
     protected boolean foodOnPlates(int evenOdd) {
-<span class="fc bfc" id="L34" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="fc bfc" id="L35" title="All 4 branches covered.">            if ((i &amp; 1) == evenOdd &amp;&amp; bites.containsKey(i)) {</span>
-<span class="fc" id="L36">                return true;</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc bfc" id="L42" title="All 4 branches covered.">            if ((i &amp; 1) == evenOdd &amp;&amp; bites.containsKey(i)) {</span>
+<span class="fc" id="L43">                return true;</span>
             }
         }
-<span class="fc" id="L39">        return false;</span>
+<span class="fc" id="L46">        return false;</span>
     }
 
     protected Runnable groupEat(int evenOdd, int timeOut) {
-<span class="fc" id="L43">        return new Runnable() {</span>
+<span class="fc" id="L50">        return new Runnable() {</span>
             public void run() {
                 while (foodOnPlates(evenOdd)) {
                     try {

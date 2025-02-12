@@ -221,7 +221,7 @@ public class XFastTrieLong&lt;S extends XFastTrieNodeLong&lt;T&gt;, T&gt;
 <span class="fc" id="L221">		u.child[next] = u.child[prev] = null;</span>
 <span class="fc" id="L222">		S w = u;</span>
 		// 3 - delete nodes on path to u
-<span class="pc bpc" id="L224" title="1 of 6 branches missed.">		while (w != r &amp;&amp; w.child[left] == null &amp;&amp; w.child[right] == null) {</span>
+<span class="fc bfc" id="L224" title="All 6 branches covered.">		while (w != r &amp;&amp; w.child[left] == null &amp;&amp; w.child[right] == null) {</span>
 <span class="fc bfc" id="L225" title="All 2 branches covered.">			if (w == w.parent.child[left]) {</span>
 <span class="fc" id="L226">				w.parent.child[left] = null;</span>
             } else { // u == u.parent.child[right] 
@@ -233,7 +233,7 @@ public class XFastTrieLong&lt;S extends XFastTrieNodeLong&lt;T&gt;, T&gt;
 		}
 		// 4 - update jump pointers
 <span class="fc bfc" id="L235" title="All 2 branches covered.">		w.jump = (w.child[left] == null) ? succ : pred;</span>
-<span class="pc bpc" id="L236" title="1 of 2 branches missed.">		w = (w.parent != null) ? (S)w.parent : null;</span>
+<span class="fc bfc" id="L236" title="All 2 branches covered.">		w = (w.parent != null) ? (S)w.parent : null;</span>
 <span class="fc bfc" id="L237" title="All 2 branches covered.">		while (w != null) {</span>
 <span class="fc bfc" id="L238" title="All 2 branches covered.">			if (w.jump == u)</span>
 <span class="fc bfc" id="L239" title="All 2 branches covered.">				w.jump = (w.child[left] == null) ? succ : pred;</span>

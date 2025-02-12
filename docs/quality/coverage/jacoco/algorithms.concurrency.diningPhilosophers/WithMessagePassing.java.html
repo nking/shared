@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WithMessagePassing.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.concurrency.diningPhilosophers</a> &gt; <span class="el_source">WithMessagePassing.java</span></div><h1>WithMessagePassing.java</h1><pre class="source lang-java linenums">package algorithms.concurrency.diningPhilosophers;
 
+import java.security.MessageDigest;
+
+//TODO: consider exchanger
+
 public class WithMessagePassing extends AbstractDiningPhilosophers {
 
-    public WithMessagePassing(int n, int thinkTimeMsec, String label) {
-<span class="nc" id="L6">        super(n, thinkTimeMsec, label);</span>
-<span class="nc" id="L7">        throw new UnsupportedOperationException(&quot;not yet implemented&quot;);</span>
+    /**
+     * constructor
+     * @param n number of diners
+     * @param thinkTimeMsec the time to think between trying to eat
+     */
+    public WithMessagePassing(int n, int thinkTimeMsec) {
+<span class="nc" id="L15">        super(n, thinkTimeMsec, MessageDigest.class.getSimpleName());</span>
+<span class="nc" id="L16">        throw new UnsupportedOperationException(&quot;not yet implemented&quot;);</span>
     }
 
     @Override
     public void dine(int bites, int timeoutSec) {
-<span class="nc" id="L12">        throw new UnsupportedOperationException(&quot;not yet implemented&quot;);</span>
+<span class="nc" id="L21">        throw new UnsupportedOperationException(&quot;not yet implemented&quot;);</span>
     }
 
     /*

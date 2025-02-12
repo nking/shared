@@ -2879,8 +2879,8 @@ public final strictfp class DoubleDouble implements Serializable, Comparable, Cl
         // Get the precision. (The number of significant digits required
         // for an accurate representation of this number). 
 <span class="fc" id="L2881">        int precision = (int)(105 * DIGITS_PER_BIT[radix]);</span>
-<span class="pc bpc" id="L2882" title="3 of 4 branches missed.">        if (maxPrecision &gt; 0 &amp;&amp; maxPrecision &lt; precision) {</span>
-<span class="nc" id="L2883">            precision = maxPrecision;</span>
+<span class="pc bpc" id="L2882" title="1 of 4 branches missed.">        if (maxPrecision &gt; 0 &amp;&amp; maxPrecision &lt; precision) {</span>
+<span class="fc" id="L2883">            precision = maxPrecision;</span>
         }
 
         // Get the raw digit representation.

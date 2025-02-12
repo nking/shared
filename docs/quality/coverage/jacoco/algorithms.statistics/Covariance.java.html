@@ -1,13 +1,181 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Covariance.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.statistics</a> &gt; <span class="el_source">Covariance.java</span></div><h1>Covariance.java</h1><pre class="source lang-java linenums">package algorithms.statistics;
 
-import algorithms.correlation.MultivariateDistance;
 import algorithms.matrix.MatrixUtil;
 
+import java.util.Arrays;
+
 /**
+ * class holding methods for covariance and correlations.
+ *
+ * NOTE: see MultivariateDistance for fast distance covariance.
  *
  * @author nichole
  */
-<span class="nc" id="L10">public class Covariance {</span>
+<span class="nc" id="L14">public class Covariance {</span>
+
+    /**
+     * enumeration of data preparation.
+     * @param UNCENTERED: the data have had no transformations
+     * @param MEAN_CENTERED : the data have had their means subtracted
+     * @param UNIT_STAND_MEAN0_STD1 the data have had their means subtracted then were divided
+     *                              by their standard deviations
+     */
+    public static enum STAND_TYPE {
+        UNCENTERED,
+        MEAN_CENTERED,
+        UNIT_STAND_MEAN0_STD1
+    }
+
+    /**
+     * calculating Pearson correlation as
+     * (E(X*Y) - E(X)*E(Y))/ sqrt((E[X^2] - E[X]^2)*(E[Y^2] - E[Y]^2))
+     * @param x 1st dimension points of xy dataset.  the points do not need to be mean centered.
+     * @param y 2nd dimension points of xy dataset.  the points do not need to be mean centered.
+     * @return the Pearson correlation.
+     */
+    public static double correlationPearson(double[] x, double[] y) {
+<span class="pc bpc" id="L37" title="1 of 2 branches missed.">        if (x.length != y.length) {</span>
+<span class="nc" id="L38">            throw new IllegalArgumentException(&quot;x and y must be same length&quot;);</span>
+        }
+<span class="fc" id="L40">        int n = x.length;</span>
+
+<span class="fc" id="L42">        double[] moments = Util.caldc2DMomentsX2Y2(x, y);</span>
+
+        // divide by n to make them averages:
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        for (int i = 0; i &lt; moments.length; ++i) {</span>
+<span class="fc" id="L46">            moments[i] /= n;</span>
+        }
+
+        /*
+        = (avg( moment[xy]) - avg(moment[x])*avg(moment[y]))
+           / (sqrt(
+              avg(moment[x^2] - (moment[x]*moment[x]))
+              * avg(moment[y^2] - (moment[y]*moment[y]) )
+             ))
+        */
+        //x    y    x^2    y^2    xy   = moments
+        //0    1    2      3       4   = indexes in output
+
+<span class="fc" id="L59">        double rxy = (moments[4] - moments[0] * moments[1]) /</span>
+<span class="fc" id="L60">                (Math.sqrt(moments[2] - moments[0] * moments[0])</span>
+<span class="fc" id="L61">                * Math.sqrt(moments[3] - moments[1] * moments[1]) );</span>
+
+<span class="fc" id="L63">        return rxy;</span>
+    }
+
+    /**
+     * calculate the sample correlation of the xy dataset given the type of standardiation that
+     * has been performed on them.
+     @param x 1st dimension points of xy dataset.  the points do not need to be mean centered.
+     @param y 2nd dimension points of xy dataset.  the points do not need to be mean centered.
+     @return the Pearson correlation.
+     @param type type of dataprocessing already performed on the data.  if type is null, it is
+     assigned UNCENTERED.
+     * @return the sample correlation
+     */
+    public static double correlationSample(double[] x, double[] y, STAND_TYPE type) {
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">        if (x.length != y.length) {</span>
+<span class="nc" id="L78">            throw new IllegalArgumentException(&quot;x and y must be same length&quot;);</span>
+        }
+<span class="fc" id="L80">        int n = x.length;</span>
+
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">        if (type == null) {</span>
+<span class="nc" id="L83">            type = STAND_TYPE.UNCENTERED;</span>
+        }
+
+        //x    y    x^2    y^2    xy   = moments
+        //0    1    2      3       4   = indexes in output
+<span class="fc" id="L88">        double[] moments = Util.caldc2DMomentsX2Y2(x, y);</span>
+
+<span class="pc bpc" id="L90" title="1 of 4 branches missed.">        switch (type) {</span>
+            case UNCENTERED: {
+<span class="fc" id="L92">                return  (n * moments[4] - moments[0] * moments[1])</span>
+                        / (
+<span class="fc" id="L94">                        Math.sqrt(n*moments[2] - moments[0] * moments[0])</span>
+<span class="fc" id="L95">                        * Math.sqrt(n*moments[3] - moments[1] * moments[1])</span>
+                );
+            }
+            case MEAN_CENTERED: {
+<span class="fc" id="L99">                return moments[4]/(Math.sqrt(moments[2]) * Math.sqrt(moments[3]));</span>
+            }
+            case UNIT_STAND_MEAN0_STD1: {
+<span class="fc" id="L102">                return (1/(n-1)) * (moments[0] * moments[1]);</span>
+            }
+        }
+<span class="nc" id="L105">        throw new IllegalArgumentException(&quot;error in alg&quot;);</span>
+    }
+
+    /**
+     * calculate the sample covariance of the xy dataset given the type of standardiation that
+     * has been performed on them.
+     @param x 1st dimension points of xy dataset.  the points do not need to be mean centered.
+     @param y 2nd dimension points of xy dataset.  the points do not need to be mean centered.
+     @return the sample covariance.
+     @param type type of dataprocessing already performed on the data.  if type is null, it is
+     assigned UNCENTERED.
+      * @return the sample covariance.
+     &lt;pre&gt;
+     if type==UNCENTERED, it calculates the covarianve using brute force method .
+     if type==MEAN_CENTERED, uses the sum of moments to calculate result quickly.
+    if type==UNIT_STAND_MEAN0_STD1, uses the sum of mements, but the returned value is
+    actually the correlation.  To transform that number to covariance with respect to the
+    original dataset reference frame, multiply this result by the standard deviation of
+    x and the standard deviation of x.
+    &lt;/pre&gt;
+     */
+    public static double covarianceSample(double[] x, double[] y, STAND_TYPE type) {
+<span class="pc bpc" id="L127" title="1 of 2 branches missed.">        if (x.length != y.length) {</span>
+<span class="nc" id="L128">            throw new IllegalArgumentException(&quot;x and y must be same length&quot;);</span>
+        }
+<span class="fc" id="L130">        int n = x.length;</span>
+
+<span class="pc bpc" id="L132" title="1 of 2 branches missed.">        if (type == null) {</span>
+<span class="nc" id="L133">            type = STAND_TYPE.UNCENTERED;</span>
+        }
+
+<span class="fc" id="L136">        double[] meanX = new double[1];</span>
+<span class="fc" id="L137">        double[] meanY = new double[1];</span>
+<span class="fc" id="L138">        double[] stdX = new double[]{1};</span>
+<span class="fc" id="L139">        double[] stdY = new double[]{1};</span>
+
+<span class="fc bfc" id="L141" title="All 3 branches covered.">        switch (type) {</span>
+            case UNCENTERED: {
+<span class="fc" id="L143">                double[][] a = new double[n][];</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">                for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L145">                    a[i] = new double[]{x[i], y[i]};</span>
+                }
+<span class="fc" id="L147">                double[][] cov = BruteForce.covariance(a);</span>
+<span class="fc" id="L148">                return cov[0][1];</span>
+            }
+            case MEAN_CENTERED: {
+<span class="fc" id="L151">                double[] moments = Util.caldc2DMomentsX2Y2(x, y);</span>
+                //    Cov(X, Y) = (1 / (n - 1)) * Σ ( (Xi - mean(X)) / std(X) ) * ( (Yi - mean(Y)) / std(Y) )
+<span class="fc" id="L153">                double cov = (1./(n - 1.)) * moments[4];</span>
+
+                /* agrees with _cov[0][1]
+                double[][] a = new double[n][];
+                for (int i = 0; i &lt; n; ++i) {
+                    a[i] = new double[]{x[i], y[i]};
+                }
+                double[][] _cov = BruteForce.covariance(a);*/
+
+<span class="fc" id="L162">                return cov;</span>
+            }
+            default : break;
+            // no processing needed for unit_stanc...
+        }
+
+        //x    y    x^2    y^2    xy   = moments
+        //0    1    2      3       4   = indexes in output
+<span class="fc" id="L170">        double[] moments = Util.caldc2DMomentsX2Y2(x, y);</span>
+
+        //    Cov(X, Y) = (1 / (n - 1)) * Σ ( (Xi - mean(X)) / std(X) ) * ( (Yi - mean(Y)) / std(Y) )
+
+        // needs to be multiplied by stddev(x)*stdev(y) to transform to original data reference frame
+<span class="fc" id="L175">        double cor = (1./(n - 1.)) * moments[4];</span>
+
+<span class="fc" id="L177">        return cor;</span>
+    }
 
     /**
      * calculate the sample mean of x as (1/(n-1)) * X^T*X
@@ -20,14 +188,14 @@ import algorithms.matrix.MatrixUtil;
 
         //NOTE: same result as BruteForce.covariance
 
-<span class="nc bnc" id="L23" title="All 2 branches missed.">        if (!isZeroCentered) {</span>
-<span class="nc" id="L24">            x = Standardization.zeroCenterMean(x);</span>
+<span class="nc bnc" id="L191" title="All 2 branches missed.">        if (!isZeroCentered) {</span>
+<span class="nc" id="L192">            x = Standardization.zeroCenterMean(x);</span>
         }
 
-<span class="nc" id="L27">        double[][] s = MatrixUtil.createATransposedTimesA(x);</span>
-<span class="nc" id="L28">        MatrixUtil.multiply(s, 1./(x.length - 1));</span>
+<span class="nc" id="L195">        double[][] s = MatrixUtil.createATransposedTimesA(x);</span>
+<span class="nc" id="L196">        MatrixUtil.multiply(s, 1./(x.length - 1));</span>
 
-<span class="nc" id="L30">        return s;</span>
+<span class="nc" id="L198">        return s;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

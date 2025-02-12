@@ -1,12 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MultivariateDistance.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.correlation</a> &gt; <span class="el_source">MultivariateDistance.java</span></div><h1>MultivariateDistance.java</h1><pre class="source lang-java linenums">package algorithms.correlation;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MultivariateDistance.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.statistics</a> &gt; <span class="el_source">MultivariateDistance.java</span></div><h1>MultivariateDistance.java</h1><pre class="source lang-java linenums">package algorithms.statistics;
 
-import algorithms.correlation.UnivariateDistance.DCor;
-import algorithms.correlation.UnivariateDistance.DCov;
+import algorithms.statistics.UnivariateDistance.DCor;
+import algorithms.statistics.UnivariateDistance.DCov;
 import algorithms.matrix.MatrixUtil;
 import algorithms.misc.Shuffle;
-import algorithms.statistics.Gamma;
-import algorithms.statistics.GammaCDF;
-import algorithms.statistics.MultivariateUniformDistribution;
+
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
@@ -20,7 +18,7 @@ import java.security.SecureRandom;
  * 
  * @author nichole
  */
-<span class="nc" id="L23">public class MultivariateDistance {</span>
+<span class="nc" id="L21">public class MultivariateDistance {</span>
     
     /**
      * calculate the distance covariance using the average of 
@@ -54,11 +52,11 @@ import java.security.SecureRandom;
      */
     public static double efficientDCov(double[][] x, double[][] y, int k) throws NoSuchAlgorithmException {
         
-<span class="nc" id="L57">        SecureRandom rand = SecureRandom.getInstanceStrong();</span>
-<span class="nc" id="L58">        long seed = System.nanoTime();</span>
+<span class="nc" id="L55">        SecureRandom rand = SecureRandom.getInstanceStrong();</span>
+<span class="nc" id="L56">        long seed = System.nanoTime();</span>
         //System.out.println(&quot;SEED=&quot; + seed);
-<span class="nc" id="L60">        rand.setSeed(seed);</span>
-<span class="nc" id="L61">        return efficientDCov(x, y, k, rand);</span>
+<span class="nc" id="L58">        rand.setSeed(seed);</span>
+<span class="nc" id="L59">        return efficientDCov(x, y, k, rand);</span>
     }
     
     /**
@@ -94,34 +92,34 @@ import java.security.SecureRandom;
     public static double efficientDCov(double[][] x, double[][] y, int k,
         SecureRandom rand) {
         
-<span class="pc bpc" id="L97" title="1 of 2 branches missed.">        if (k &lt; 1) {</span>
-<span class="nc" id="L98">            throw new IllegalArgumentException(&quot;k must be a positive number grater than 0&quot;);</span>
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">        if (k &lt; 1) {</span>
+<span class="nc" id="L96">            throw new IllegalArgumentException(&quot;k must be a positive number grater than 0&quot;);</span>
         }
         // number of columns in X is p
         // number of columns in Y is q.
-<span class="fc" id="L102">        int p = x[0].length;</span>
-<span class="fc" id="L103">        int q = y[0].length;</span>
+<span class="fc" id="L100">        int p = x[0].length;</span>
+<span class="fc" id="L101">        int q = y[0].length;</span>
         
-<span class="fc" id="L105">        double CpCq = _calcCapitalC(p) * _calcCapitalC(q);</span>
+<span class="fc" id="L103">        double CpCq = _calcCapitalC(p) * _calcCapitalC(q);</span>
         
         double[] u, v, xu, yv;
         DCov dcov;
-<span class="fc" id="L109">        double meanT = 0;</span>
-<span class="fc bfc" id="L110" title="All 2 branches covered.">        for (int i = 0; i &lt; k; ++i) {</span>
-<span class="fc" id="L111">            u = MultivariateUniformDistribution.generateOnUnitStandardNSphere(p, rand);</span>
-<span class="fc" id="L112">            v = MultivariateUniformDistribution.generateOnUnitStandardNSphere(q, rand);</span>
+<span class="fc" id="L107">        double meanT = 0;</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">        for (int i = 0; i &lt; k; ++i) {</span>
+<span class="fc" id="L109">            u = MultivariateUniformDistribution.generateOnUnitStandardNSphere(p, rand);</span>
+<span class="fc" id="L110">            v = MultivariateUniformDistribution.generateOnUnitStandardNSphere(q, rand);</span>
             
             // x * u^T = nX1
-<span class="fc" id="L115">            xu = MatrixUtil.multiplyMatrixByColumnVector(x, u);</span>
-<span class="fc" id="L116">            yv = MatrixUtil.multiplyMatrixByColumnVector(y, v);</span>
+<span class="fc" id="L113">            xu = MatrixUtil.multiplyMatrixByColumnVector(x, u);</span>
+<span class="fc" id="L114">            yv = MatrixUtil.multiplyMatrixByColumnVector(y, v);</span>
             
-<span class="fc" id="L118">            dcov = UnivariateDistance.fastDCov(xu, yv);</span>
+<span class="fc" id="L116">            dcov = UnivariateDistance.fastDCov(xu, yv);</span>
             
-<span class="fc" id="L120">            meanT += dcov.covsq;</span>
+<span class="fc" id="L118">            meanT += dcov.covsq;</span>
         }
-<span class="fc" id="L122">        meanT *= CpCq/(double)k;</span>
+<span class="fc" id="L120">        meanT *= CpCq/(double)k;</span>
         
-<span class="fc" id="L124">        return meanT;</span>
+<span class="fc" id="L122">        return meanT;</span>
     }
 
     /**
@@ -162,22 +160,22 @@ import java.security.SecureRandom;
      * correlation values furthest from 0 are the most strongly correlated if any.
      */
     public static double[][] fastDCor(double[][] x1, double[][] x2) {
-<span class="fc" id="L165">        double[][] dCor = MatrixUtil.zeros(x1[0].length, x2[0].length);</span>
-<span class="fc" id="L166">        double[] tmp1 = new double[x2.length];</span>
-<span class="fc" id="L167">        double[] tmp2 = new double[x2.length];</span>
+<span class="fc" id="L163">        double[][] dCor = MatrixUtil.zeros(x1[0].length, x2[0].length);</span>
+<span class="fc" id="L164">        double[] tmp1 = new double[x2.length];</span>
+<span class="fc" id="L165">        double[] tmp2 = new double[x2.length];</span>
         int i, j, k;
-<span class="fc bfc" id="L169" title="All 2 branches covered.">        for (i = 0; i &lt; x1[0].length; ++i) {</span>
-<span class="fc bfc" id="L170" title="All 2 branches covered.">            for (j = 0; j &lt; x2[0].length; ++j) {</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">        for (i = 0; i &lt; x1[0].length; ++i) {</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">            for (j = 0; j &lt; x2[0].length; ++j) {</span>
                 // copy each column vector to calculate correlation
-<span class="fc bfc" id="L172" title="All 2 branches covered.">                for (k = 0; k &lt; x2.length; ++k) {</span>
-<span class="fc" id="L173">                    tmp1[k] = x2[k][j];</span>
-<span class="fc" id="L174">                    tmp2[k] = x1[k][i];</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">                for (k = 0; k &lt; x2.length; ++k) {</span>
+<span class="fc" id="L171">                    tmp1[k] = x2[k][j];</span>
+<span class="fc" id="L172">                    tmp2[k] = x1[k][i];</span>
                 }
                 // fast dcor runtime is O(n*log_2(n))
-<span class="fc" id="L177">                dCor[i][j] = Math.sqrt(UnivariateDistance.fastDCor(tmp1, tmp2).corSq);</span>
+<span class="fc" id="L175">                dCor[i][j] = Math.sqrt(UnivariateDistance.fastDCor(tmp1, tmp2).corSq);</span>
             }
         }
-<span class="fc" id="L180">        return dCor;</span>
+<span class="fc" id="L178">        return dCor;</span>
     }
     
     /**
@@ -205,12 +203,12 @@ import java.security.SecureRandom;
     public static boolean areIndependent1(double[][] x, double[][] y, 
         int k, int nIterations, double alpha) throws NoSuchAlgorithmException {
            
-<span class="nc" id="L208">        SecureRandom rand = SecureRandom.getInstanceStrong();</span>
-<span class="nc" id="L209">        long seed = System.nanoTime();</span>
+<span class="nc" id="L206">        SecureRandom rand = SecureRandom.getInstanceStrong();</span>
+<span class="nc" id="L207">        long seed = System.nanoTime();</span>
         //System.out.println(&quot;SEED=&quot; + seed);
-<span class="nc" id="L211">        rand.setSeed(seed);</span>
+<span class="nc" id="L209">        rand.setSeed(seed);</span>
         
-<span class="nc" id="L213">        return areIndependent1(x, y, k, nIterations, alpha, rand);</span>
+<span class="nc" id="L211">        return areIndependent1(x, y, k, nIterations, alpha, rand);</span>
     }
     
     /**
@@ -239,46 +237,46 @@ import java.security.SecureRandom;
     public static boolean areIndependent1(double[][] x, double[][] y, 
         int k, int nIterations, double alpha, SecureRandom rand) {
         
-<span class="pc bpc" id="L242" title="1 of 2 branches missed.">        if (nIterations &lt; 2) {</span>
-<span class="nc" id="L243">            throw new IllegalArgumentException(&quot;nIterations should be &gt; 1&quot;);</span>
+<span class="pc bpc" id="L240" title="1 of 2 branches missed.">        if (nIterations &lt; 2) {</span>
+<span class="nc" id="L241">            throw new IllegalArgumentException(&quot;nIterations should be &gt; 1&quot;);</span>
         }
         
-<span class="fc" id="L246">        int p = x.length;</span>
-<span class="fc" id="L247">        int q = y.length;</span>
+<span class="fc" id="L244">        int p = x.length;</span>
+<span class="fc" id="L245">        int q = y.length;</span>
         
         int i, j;
         
         double[][] y2;
 
-<span class="fc" id="L253">        double t = efficientDCov(x, y, k, rand);</span>
+<span class="fc" id="L251">        double t = efficientDCov(x, y, k, rand);</span>
         double t2;
-<span class="fc" id="L255">        double s = 0;</span>
+<span class="fc" id="L253">        double s = 0;</span>
         
-<span class="fc bfc" id="L257" title="All 2 branches covered.">        for (i = 0; i &lt; nIterations; ++i) {</span>
+<span class="fc bfc" id="L255" title="All 2 branches covered.">        for (i = 0; i &lt; nIterations; ++i) {</span>
             
             // permute each column of a copy of y
-<span class="fc" id="L260">            y2 = MatrixUtil.transpose(y);</span>
-<span class="fc bfc" id="L261" title="All 2 branches covered.">            for (j = 0; j &lt; y2.length; ++j) {</span>
-<span class="fc" id="L262">                Shuffle.fisherYates(y2[j], rand);</span>
+<span class="fc" id="L258">            y2 = MatrixUtil.transpose(y);</span>
+<span class="fc bfc" id="L259" title="All 2 branches covered.">            for (j = 0; j &lt; y2.length; ++j) {</span>
+<span class="fc" id="L260">                Shuffle.fisherYates(y2[j], rand);</span>
             }
-<span class="fc" id="L264">            y2 = MatrixUtil.transpose(y2);</span>
+<span class="fc" id="L262">            y2 = MatrixUtil.transpose(y2);</span>
             
-<span class="fc" id="L266">            t2 = efficientDCov(x, y2, k, rand);</span>
+<span class="fc" id="L264">            t2 = efficientDCov(x, y2, k, rand);</span>
             
             // t2 should have cov ~ 0
             // if dependent, t &gt; 0
-<span class="fc" id="L270">            System.out.printf(&quot;   t=%.4e, t2=%.4e\n&quot;, t, t2);</span>
-<span class="fc bfc" id="L271" title="All 2 branches covered.">            if (t &gt; t2) {</span>
-<span class="fc" id="L272">                s++;</span>
+<span class="fc" id="L268">            System.out.printf(&quot;   t=%.4e, t2=%.4e\n&quot;, t, t2);</span>
+<span class="fc bfc" id="L269" title="All 2 branches covered.">            if (t &gt; t2) {</span>
+<span class="fc" id="L270">                s++;</span>
             }
         }
         
-<span class="fc" id="L276">        s = (1. + s)/(1. + nIterations);</span>
+<span class="fc" id="L274">        s = (1. + s)/(1. + nIterations);</span>
         
-<span class="fc" id="L278">        System.out.printf(&quot;t=%.4e, s=%.4e,  1.-alpha=%.4e\n&quot;, t, s, 1.-alpha);</span>
-<span class="fc" id="L279">        System.out.flush();</span>
+<span class="fc" id="L276">        System.out.printf(&quot;t=%.4e, s=%.4e,  1.-alpha=%.4e\n&quot;, t, s, 1.-alpha);</span>
+<span class="fc" id="L277">        System.out.flush();</span>
         //reject the independence hypothesis (H0) when s is smaller than critical level α (which is 1-α in this case).
-<span class="fc bfc" id="L281" title="All 2 branches covered.">        return (s &lt; (1.-alpha));</span>
+<span class="fc bfc" id="L279" title="All 2 branches covered.">        return (s &lt; (1.-alpha));</span>
     }
         
     /**
@@ -309,12 +307,12 @@ import java.security.SecureRandom;
     public static boolean areIndependent2(double[][] x, double[][] y, 
         int k, double alpha) throws NoSuchAlgorithmException {
         
-<span class="nc" id="L312">        SecureRandom rand = SecureRandom.getInstanceStrong();</span>
-<span class="nc" id="L313">        long seed = System.nanoTime();</span>
+<span class="nc" id="L310">        SecureRandom rand = SecureRandom.getInstanceStrong();</span>
+<span class="nc" id="L311">        long seed = System.nanoTime();</span>
         //System.out.println(&quot;SEED=&quot; + seed);
-<span class="nc" id="L315">        rand.setSeed(seed);</span>
+<span class="nc" id="L313">        rand.setSeed(seed);</span>
         
-<span class="nc" id="L317">        return areIndependent2(x, y, k, alpha, rand);</span>
+<span class="nc" id="L315">        return areIndependent2(x, y, k, alpha, rand);</span>
     }
     
     /**
@@ -346,19 +344,19 @@ import java.security.SecureRandom;
     public static boolean areIndependent2(double[][] x, double[][] y, 
         int k, double alpha, SecureRandom rand) {
         
-<span class="pc bpc" id="L349" title="1 of 2 branches missed.">        if (x.length != y.length) {</span>
-<span class="nc" id="L350">            throw new IllegalArgumentException(&quot;x.lenght must equal y.length&quot;);</span>
+<span class="pc bpc" id="L347" title="1 of 2 branches missed.">        if (x.length != y.length) {</span>
+<span class="nc" id="L348">            throw new IllegalArgumentException(&quot;x.lenght must equal y.length&quot;);</span>
         }
            
         // number of columns in X is p
         // number of columns in Y is q.
-<span class="fc" id="L355">        int p = x[0].length;</span>
-<span class="fc" id="L356">        int q = y[0].length;</span>
+<span class="fc" id="L353">        int p = x[0].length;</span>
+<span class="fc" id="L354">        int q = y[0].length;</span>
         
-<span class="fc" id="L358">        int n = x.length;</span>
+<span class="fc" id="L356">        int n = x.length;</span>
         
-<span class="fc" id="L360">        double Cp = _calcCapitalC(p);</span>
-<span class="fc" id="L361">        double Cq = _calcCapitalC(q);   </span>
+<span class="fc" id="L358">        double Cp = _calcCapitalC(p);</span>
+<span class="fc" id="L359">        double Cq = _calcCapitalC(q);   </span>
         
         double[] u, v, xu, yv, uPrime, vPrime, xuPrime, yvPrime;
         DCor dcor;
@@ -373,30 +371,30 @@ import java.security.SecureRandom;
         // txx = ==&gt; Ω_X(k) = C_p^2 * Ω(u_k*X, u_k_prime*X) &lt;====
         // tyy = ==&gt; Ω_Y(k) = C_q^2 * Ω(v_k*Y, v_k_prime*Y) &lt;====
         
-<span class="fc" id="L376">        double txy = 0;</span>
-<span class="fc" id="L377">        double sxxyy = 0;</span>
-<span class="fc" id="L378">        double s2 = 0;</span>
-<span class="fc" id="L379">        double s3 = 0;</span>
-<span class="fc" id="L380">        double txx = 0;</span>
-<span class="fc" id="L381">        double tyy = 0;</span>
+<span class="fc" id="L374">        double txy = 0;</span>
+<span class="fc" id="L375">        double sxxyy = 0;</span>
+<span class="fc" id="L376">        double s2 = 0;</span>
+<span class="fc" id="L377">        double s3 = 0;</span>
+<span class="fc" id="L378">        double txx = 0;</span>
+<span class="fc" id="L379">        double tyy = 0;</span>
         
-<span class="fc" id="L383">        double dcorsq = 0;</span>
+<span class="fc" id="L381">        double dcorsq = 0;</span>
         
-<span class="fc bfc" id="L385" title="All 2 branches covered.">        for (i = 0; i &lt; k; ++i) {</span>
-<span class="fc" id="L386">            u = MultivariateUniformDistribution.generateOnUnitStandardNSphere(p, rand);</span>
-<span class="fc" id="L387">            v = MultivariateUniformDistribution.generateOnUnitStandardNSphere(q, rand);</span>
+<span class="fc bfc" id="L383" title="All 2 branches covered.">        for (i = 0; i &lt; k; ++i) {</span>
+<span class="fc" id="L384">            u = MultivariateUniformDistribution.generateOnUnitStandardNSphere(p, rand);</span>
+<span class="fc" id="L385">            v = MultivariateUniformDistribution.generateOnUnitStandardNSphere(q, rand);</span>
             
             // x * u^T = nX1
-<span class="fc" id="L390">            xu = MatrixUtil.multiplyMatrixByColumnVector(x, u);</span>
-<span class="fc" id="L391">            yv = MatrixUtil.multiplyMatrixByColumnVector(y, v);</span>
+<span class="fc" id="L388">            xu = MatrixUtil.multiplyMatrixByColumnVector(x, u);</span>
+<span class="fc" id="L389">            yv = MatrixUtil.multiplyMatrixByColumnVector(y, v);</span>
             
-<span class="fc" id="L393">            dcor = UnivariateDistance.fastDCor(xu, yv);</span>
-<span class="fc" id="L394">            dcorsq += dcor.corSq;</span>
+<span class="fc" id="L391">            dcor = UnivariateDistance.fastDCor(xu, yv);</span>
+<span class="fc" id="L392">            dcorsq += dcor.corSq;</span>
             
-<span class="fc" id="L396">            uPrime = MultivariateUniformDistribution.generateOnUnitStandardNSphere(p, rand);</span>
-<span class="fc" id="L397">            vPrime = MultivariateUniformDistribution.generateOnUnitStandardNSphere(q, rand);</span>
-<span class="fc" id="L398">            xuPrime = MatrixUtil.multiplyMatrixByColumnVector(x, uPrime);</span>
-<span class="fc" id="L399">            yvPrime = MatrixUtil.multiplyMatrixByColumnVector(y, vPrime);</span>
+<span class="fc" id="L394">            uPrime = MultivariateUniformDistribution.generateOnUnitStandardNSphere(p, rand);</span>
+<span class="fc" id="L395">            vPrime = MultivariateUniformDistribution.generateOnUnitStandardNSphere(q, rand);</span>
+<span class="fc" id="L396">            xuPrime = MatrixUtil.multiplyMatrixByColumnVector(x, uPrime);</span>
+<span class="fc" id="L397">            yvPrime = MatrixUtil.multiplyMatrixByColumnVector(y, vPrime);</span>
             
             // txy = Ω(k) = C_p * C_q * Ω(u_k*X, v_k*Y)
             // sxxyy = S_{n,1}(k) = (C_p * C_q)^2 * Ω(u_k*X, u_k*X) * * Ω(v_k*Y, v_k*Y)
@@ -405,51 +403,51 @@ import java.security.SecureRandom;
             // txx = ==&gt; Ω_X(k) = C_p^2 * Ω(u_k*X, u_k_prime*X) &lt;====
             // tyy = ==&gt; Ω_Y(k) = C_q^2 * Ω(v_k*Y, v_k_prime*Y) &lt;====  
             
-<span class="fc" id="L408">            txy += (dcor.covXYSq.covsq);</span>
-<span class="fc" id="L409">            sxxyy += (dcor.covXXSq.covsq * dcor.covYYSq.covsq);</span>
-<span class="fc" id="L410">            s2 += dcor.covXYSq.aDotDot;</span>
-<span class="fc" id="L411">            s3 += dcor.covXYSq.bDotDot;</span>
+<span class="fc" id="L406">            txy += (dcor.covXYSq.covsq);</span>
+<span class="fc" id="L407">            sxxyy += (dcor.covXXSq.covsq * dcor.covYYSq.covsq);</span>
+<span class="fc" id="L408">            s2 += dcor.covXYSq.aDotDot;</span>
+<span class="fc" id="L409">            s3 += dcor.covXYSq.bDotDot;</span>
             
-<span class="fc" id="L413">            dcov = UnivariateDistance.fastDCov(xu, xuPrime);</span>
-<span class="fc" id="L414">            txx += dcov.covsq;</span>
-<span class="fc" id="L415">            dcov = UnivariateDistance.fastDCov(yv, yvPrime);</span>
-<span class="fc" id="L416">            tyy += dcov.covsq;</span>
+<span class="fc" id="L411">            dcov = UnivariateDistance.fastDCov(xu, xuPrime);</span>
+<span class="fc" id="L412">            txx += dcov.covsq;</span>
+<span class="fc" id="L413">            dcov = UnivariateDistance.fastDCov(yv, yvPrime);</span>
+<span class="fc" id="L414">            tyy += dcov.covsq;</span>
         }
         
-<span class="fc" id="L419">        double invK = 1./k;</span>
+<span class="fc" id="L417">        double invK = 1./k;</span>
         
-<span class="fc" id="L421">        txy *= Cp*Cq;</span>
-<span class="fc" id="L422">        sxxyy *= Math.pow(Cp*Cq, 2.);</span>
-<span class="fc" id="L423">        s2 *= (Cp/((double)(n*(n-1.))));</span>
-<span class="fc" id="L424">        s3 *= (Cq/((double)(n*(n-1.))));</span>
-<span class="fc" id="L425">        txx *= Cp*Cp;</span>
-<span class="fc" id="L426">        tyy *= Cq*Cq;</span>
+<span class="fc" id="L419">        txy *= Cp*Cq;</span>
+<span class="fc" id="L420">        sxxyy *= Math.pow(Cp*Cq, 2.);</span>
+<span class="fc" id="L421">        s2 *= (Cp/((double)(n*(n-1.))));</span>
+<span class="fc" id="L422">        s3 *= (Cq/((double)(n*(n-1.))));</span>
+<span class="fc" id="L423">        txx *= Cp*Cp;</span>
+<span class="fc" id="L424">        tyy *= Cq*Cq;</span>
         
-<span class="fc" id="L428">        txy *= invK;</span>
-<span class="fc" id="L429">        sxxyy *= invK;</span>
-<span class="fc" id="L430">        s2 *= invK;</span>
-<span class="fc" id="L431">        s3 *= invK;</span>
-<span class="fc" id="L432">        txx *= invK;</span>
-<span class="fc" id="L433">        tyy *= invK;</span>
+<span class="fc" id="L426">        txy *= invK;</span>
+<span class="fc" id="L427">        sxxyy *= invK;</span>
+<span class="fc" id="L428">        s2 *= invK;</span>
+<span class="fc" id="L429">        s3 *= invK;</span>
+<span class="fc" id="L430">        txx *= invK;</span>
+<span class="fc" id="L431">        tyy *= invK;</span>
         
-<span class="fc" id="L435">        System.out.printf(&quot;   k=%d txy=%.4e sxxyy=%.4e s2=%.4e s3=%.4e txx=%.4e tyy=%.4e\n&quot;, </span>
-<span class="fc" id="L436">            k, txy, sxxyy, s2, s3, txx, tyy);</span>
+<span class="fc" id="L433">        System.out.printf(&quot;   k=%d txy=%.4e sxxyy=%.4e s2=%.4e s3=%.4e txx=%.4e tyy=%.4e\n&quot;, </span>
+<span class="fc" id="L434">            k, txy, sxxyy, s2, s3, txx, tyy);</span>
         
-<span class="fc" id="L438">        double numer = s2 * s3;</span>
-<span class="fc" id="L439">        double denom = ((k-1.)/(double)k) * txx * tyy;</span>
-<span class="fc" id="L440">        denom += sxxyy/(double)k;</span>
-<span class="fc" id="L441">        denom *= 2.;</span>
+<span class="fc" id="L436">        double numer = s2 * s3;</span>
+<span class="fc" id="L437">        double denom = ((k-1.)/(double)k) * txx * tyy;</span>
+<span class="fc" id="L438">        denom += sxxyy/(double)k;</span>
+<span class="fc" id="L439">        denom *= 2.;</span>
         
   // temporary fudge that may be introducing a Type III error.  alphaT seems too large, so exploring the normalization of denom first:
-<span class="fc" id="L444">  denom *= k;</span>
+<span class="fc" id="L442">  denom *= k;</span>
   
-<span class="fc" id="L446">        System.out.printf(&quot;   =&gt;numer=%4e : s2=%.4e s3=%.4e\n&quot;, numer, s2, s3);</span>
-<span class="fc" id="L447">        System.out.printf(&quot;   =&gt;denom=%4e : 1st=%.4e 2nd=%.4e\n&quot;, denom, </span>
-<span class="fc" id="L448">            ((k-1.)/(double)k) * txx * tyy, sxxyy/(double)k);</span>
+<span class="fc" id="L444">        System.out.printf(&quot;   =&gt;numer=%4e : s2=%.4e s3=%.4e\n&quot;, numer, s2, s3);</span>
+<span class="fc" id="L445">        System.out.printf(&quot;   =&gt;denom=%4e : 1st=%.4e 2nd=%.4e\n&quot;, denom, </span>
+<span class="fc" id="L446">            ((k-1.)/(double)k) * txx * tyy, sxxyy/(double)k);</span>
         
         //NOTE: alphaT seems too large
-<span class="fc" id="L451">        double betaT = numer / denom;        </span>
-<span class="fc" id="L452">        double alphaT = numer * betaT;</span>
+<span class="fc" id="L449">        double betaT = numer / denom;        </span>
+<span class="fc" id="L450">        double alphaT = numer * betaT;</span>
         
         //double t = efficientDCov(x, y, k, rand);
         
@@ -460,23 +458,23 @@ import java.security.SecureRandom;
         
         //Reject independence (==H0) if n*t + s2*s3 &gt; Gamma(alphaT, betaT; 1 - alpha);
                 
-<span class="fc" id="L463">        double g = GammaCDF.inverseCdf(alphaT, betaT, 1. - alpha);</span>
+<span class="fc" id="L461">        double g = GammaCDF.inverseCdf(alphaT, betaT, 1. - alpha);</span>
         
-<span class="fc" id="L465">        System.out.printf(&quot;?? dcor=%.4e  dcorsq=%.4e  dcorsq/k=%.4e  n*dcorsq/k = %.4e,\n   gamma.inverseCDF(%.3e, %.3e, %.3e) = (%.3e)\n&quot;,</span>
-<span class="fc" id="L466">            Math.sqrt(dcorsq), dcorsq, dcorsq*invK, n*dcorsq*invK, </span>
-<span class="fc" id="L467">            alphaT, betaT, 1.-alpha, g);</span>
+<span class="fc" id="L463">        System.out.printf(&quot;?? dcor=%.4e  dcorsq=%.4e  dcorsq/k=%.4e  n*dcorsq/k = %.4e,\n   gamma.inverseCDF(%.3e, %.3e, %.3e) = (%.3e)\n&quot;,</span>
+<span class="fc" id="L464">            Math.sqrt(dcorsq), dcorsq, dcorsq*invK, n*dcorsq*invK, </span>
+<span class="fc" id="L465">            alphaT, betaT, 1.-alpha, g);</span>
         
-<span class="fc" id="L469">        double stat = n*(txy + s2*s3);        </span>
+<span class="fc" id="L467">        double stat = n*(txy + s2*s3);        </span>
         
-<span class="fc" id="L471">        System.out.printf(&quot;Cp=%.4e Cq=%.4e t=%.4e, n=%d k=%d s2=%.4e s3=%.4e\n   (stat=%.4e)  gamma.inverseCDF(%.3e, %.3e, %.3e) = (%.3e)\n&quot;,</span>
-<span class="fc" id="L472">            Cp, Cq, txy, n, k, s2, s3, stat, alphaT, betaT, 1.-alpha, g);</span>
-<span class="fc" id="L473">        System.out.flush();</span>
+<span class="fc" id="L469">        System.out.printf(&quot;Cp=%.4e Cq=%.4e t=%.4e, n=%d k=%d s2=%.4e s3=%.4e\n   (stat=%.4e)  gamma.inverseCDF(%.3e, %.3e, %.3e) = (%.3e)\n&quot;,</span>
+<span class="fc" id="L470">            Cp, Cq, txy, n, k, s2, s3, stat, alphaT, betaT, 1.-alpha, g);</span>
+<span class="fc" id="L471">        System.out.flush();</span>
         
         //if (stat &gt; g) {
-<span class="fc bfc" id="L476" title="All 2 branches covered.">        if (Math.sqrt(dcorsq) &gt; g) {</span>
-<span class="fc" id="L477">            return false;</span>
+<span class="fc bfc" id="L474" title="All 2 branches covered.">        if (Math.sqrt(dcorsq) &gt; g) {</span>
+<span class="fc" id="L475">            return false;</span>
         }
-<span class="fc" id="L479">        return true;        </span>
+<span class="fc" id="L477">        return true;        </span>
     }
     
     /**
@@ -485,10 +483,10 @@ import java.security.SecureRandom;
      @return
      */
     public static double _calcC(double a) {
-<span class="nc" id="L488">        double b = (a + 1.)/2.;</span>
-<span class="nc" id="L489">        double numer = Math.pow(Math.PI, b);</span>
-<span class="nc" id="L490">        double denom = Gamma.lanczosGamma9(b);</span>
-<span class="nc" id="L491">        return numer/denom;</span>
+<span class="nc" id="L486">        double b = (a + 1.)/2.;</span>
+<span class="nc" id="L487">        double numer = Math.pow(Math.PI, b);</span>
+<span class="nc" id="L488">        double denom = Gamma.lanczosGamma9(b);</span>
+<span class="nc" id="L489">        return numer/denom;</span>
     }
     
     /**
@@ -497,11 +495,11 @@ import java.security.SecureRandom;
      @return
      */
     public static double _calcCapitalC(double a) {
-<span class="fc" id="L500">        double b1 = (a + 1.)/2.;</span>
-<span class="fc" id="L501">        double b2 = a/2.;</span>
-<span class="fc" id="L502">        double numer = Math.sqrt(Math.PI) * Gamma.lanczosGamma9(b1);</span>
-<span class="fc" id="L503">        double denom = Gamma.lanczosGamma9(b2);</span>
-<span class="fc" id="L504">        return numer/denom;</span>
+<span class="fc" id="L498">        double b1 = (a + 1.)/2.;</span>
+<span class="fc" id="L499">        double b2 = a/2.;</span>
+<span class="fc" id="L500">        double numer = Math.sqrt(Math.PI) * Gamma.lanczosGamma9(b1);</span>
+<span class="fc" id="L501">        double denom = Gamma.lanczosGamma9(b2);</span>
+<span class="fc" id="L502">        return numer/denom;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

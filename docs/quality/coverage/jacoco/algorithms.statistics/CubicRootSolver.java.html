@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CubicRootSolver.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.statistics</a> &gt; <span class="el_source">CubicRootSolver.java</span></div><h1>CubicRootSolver.java</h1><pre class="source lang-java linenums">
+package algorithms.statistics;
+
+import algorithms.misc.Complex;
+import no.uib.cipr.matrix.NotConvergedException;
+
+/**
+ * cubic root methods
+ * @author nichole
+ */
+<span class="pc" id="L11">public class CubicRootSolver {</span>
+
+    /**
+     * tolerance used for real numbers to determine that they're
+     * significant above 0.  its overridden by local vaiables for some
+     * methods.
+     * TODO: consider allowing tolerance to be a method argument.
+     */
+    public final static double eps = 1e-7;
+
+    /**
+     * calculate the polynomial roots and return the real portion
+     @param r an array holding complex number coefficients of the polynomials.
+     e.g. a, b, c , d for the equation a*x^3 + b*x^2 + c*x + d = 0.
+     @return the real portion of the polynomial roots
+     */
+    public static double[] realNonZeroOnly(Complex[] r) {
+<span class="fc" id="L28">        int n = 0;</span>
+        int i;
+<span class="fc bfc" id="L30" title="All 2 branches covered.">        for (i = 0; i &lt; r.length;++i){</span>
+<span class="fc bfc" id="L31" title="All 4 branches covered.">            if ( (Math.abs(r[i].re()) &gt; eps) &amp;&amp; (Math.abs(r[i].im()) &lt; eps)) {</span>
+<span class="fc" id="L32">                n++;</span>
+            }
+        }
+<span class="fc" id="L35">        double[] out = new double[n];</span>
+<span class="fc" id="L36">        n = 0;</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        for (i = 0; i &lt; r.length;++i){</span>
+<span class="fc bfc" id="L38" title="All 4 branches covered.">            if ( (Math.abs(r[i].re()) &gt; eps) &amp;&amp; (Math.abs(r[i].im()) &lt; eps)) {</span>
+<span class="fc" id="L39">                out[n] = r[i].re();</span>
+<span class="fc" id="L40">                n++;</span>
+            }
+        }
+<span class="fc" id="L43">        return out;</span>
+    }
+    
+    /**
+     * solve for t given coefficients p and q using the depressed cubic root t^3 + p*t + q = 0.
+     * The given coefficients are transformed internally to those used by Pearson in 
+     * &quot;Handbook of Applied Mathematics&quot; which uses t^3 + (3q_p)*t + (2r_p) = 0.
+     * 
+     @param p0 coefficient p for the first order term.
+     @param q0 coefficient q for the zero order term.
+     @return returns the roots of the polynomial w/ the given depressed cubic parameters.
+     * NOTE that if an empty array is returned, one can use solveUsingGeneral
+     */
+    static Complex[] solveUsingDepressedCubic0(final double p0, final double q0) {
+                                
+        /*
+        given:
+           t^3 + p*t + q = 0.
+        Pearson &quot;handbook of applied mathematics&quot;:
+           t^3 + (3q_p)*t + (2r_p) = 0.
+           =&gt; q_p=p/3
+           =&gt; r_p=q/2
+           z^3 = r +- sqrt(r^2 + q^3)
+        */
+<span class="fc" id="L67">        final double q = p0/3.;</span>
+<span class="fc" id="L68">        final double r = q0/2.;</span>
+                
+<span class="fc" id="L70">        double r2q3 = r*r + q*q*q;</span>
+        
+        // z = ( r + math.sqrt(r2q3) )^(1./3.)
+        // y = ( r - math.sqrt(r2q3) )^(1./3.)
+<span class="fc" id="L74">        Complex z = new Complex(r2q3, 0);</span>
+<span class="fc" id="L75">        z = z.nthRoot(2);</span>
+<span class="fc" id="L76">        z = z.plus(r).nthRoot(3);</span>
+        
+<span class="fc" id="L78">        Complex y = new Complex(r2q3, 0);</span>
+<span class="fc" id="L79">        y = y.nthRoot(2).times(-1);</span>
+<span class="fc" id="L80">        y = y.plus(r).nthRoot(3);</span>
+        
+        // w = 0.5*(-1 + i*sqrt(3))
+<span class="fc" id="L83">        Complex w = new Complex(-0.5, 0.5*Math.sqrt(3));</span>
+<span class="fc" id="L84">        Complex w2 = new Complex(-0.5, -0.5*Math.sqrt(3));</span>
+        
+        // roots are 
+        // (-y - z), (-w*y -w2*z), (-w2*y -w*z)
+<span class="fc" id="L88">        Complex[] roots = new Complex[3];</span>
+<span class="fc" id="L89">        roots[0] = y.times(-1).minus(z);</span>
+<span class="fc" id="L90">        roots[1] = w.times(-1).minus(w2.times(z));</span>
+<span class="fc" id="L91">        roots[2] = w2.times(-1).times(y).minus(w.times(z));</span>
+        
+<span class="fc" id="L93">        return roots;</span>
+    }
+    
+    /**
+     * solve for t given coefficients p and q using the depressed cubic root t^3 + p*t + q = 0.
+     * following  
+     * https://www.mathemania.com/lesson/cardanos-formula-solving-cubic-equations/
+     * https://www.wikiwand.com/en/Cubic_equation#/google_vignette
+     * https://en.wikipedia.org/wiki/Cubic_equation#Reduction_to_a_depressed_cubic
+     * NOTE: only solving for the real, rational roots.
+     @param p coefficient p for the first order term.
+     @param q coefficient q for the zero order term.
+     @return returns the roots of the polynomial w/ the given depressed cubic parameters.
+     * NOTE that if an empty array is returned, one can use solveUsingGeneral
+     */
+    public static double[] solveUsingDepressedCubic(double p, double q) {
+
+<span class="fc" id="L110">        double eps = 1.e-10;</span>
+       
+<span class="fc" id="L112">        double discr = Math.pow(q/2., 2) + Math.pow(p/3., 3);</span>
+                
+        /*
+        TODO: handle characteristic 3 modifications.
+                
+        characteristic 3
+
+        When the coefficients belong to a field of characteristic 3, 
+        the results be modified because of the involved divisions by 3.
+        The main tool for modification is the fact that a multiple root is a 
+        common root of the polynomial and its formal derivative. 
+        In this characteristic, if the derivative is not a constant, 
+        it has a single root, being linear in characteristic 3. 
+        This allows computing the multiple root, and the third root can be 
+        deduced from the sum of the roots, which is provided by Vietas formulas.
+        In characteristic characteristic 3, the formula for a triple root involves a cube root.
+        */  
+        
+<span class="fc" id="L130">        System.out.println(&quot;discr=&quot; + discr);</span>
+                 
+<span class="fc bfc" id="L132" title="All 2 branches covered.">        if (Math.abs(discr) &lt; eps) {</span>
+            // discriminant is 0.  
+            //there are 3 real roots, not necessarily distinct (has a multiple root)
+<span class="fc bfc" id="L135" title="All 2 branches covered.">            if (Math.abs(p) &lt; eps) {</span>
+<span class="fc" id="L136">                return new double[]{0};</span>
+            }
+                       
+            // Vieta's formula, Viete's formula
+<span class="fc" id="L140">            double t1 = 3.*q/p;</span>
+<span class="fc" id="L141">            double t2 = -t1/2.;</span>
+<span class="fc" id="L142">            return new double[]{t1, t2};</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">        } else if (discr &gt; 0) {</span>
+            // cardano's formula.  valid for discriminant == 0 and &gt; 0
+            // one real root and 2 non-real
+      
+            //https://www.codeproject.com/Articles/798474/To-Solve-a-Cubic-Equation
+            /*double u = Math.pow(-q / 2.0 + Math.sqrt(discr), 1./3.0);
+            double v = Math.pow(-q / 2.0 - Math.sqrt(discr), 1./3.0);
+            
+            // still needs backsubstitution by the invoker of method to subtract a/3.0 from real components
+            Complex r1 = new Complex(u + v, 0);
+            
+            Complex r2 = new Complex(-(u + v)/2., (Math.sqrt(3.0) / 2.0) * (u - v));
+            
+            Complex r3 = new Complex(r2.re(), -r2.im());
+            */
+            
+<span class="fc" id="L159">            double pt2 = Math.sqrt(discr);</span>
+<span class="fc" id="L160">            double pt1 = -q/2.;</span>
+<span class="pc bpc" id="L161" title="1 of 4 branches missed.">            if ((pt1 + pt2) &lt; 0 || (pt1 - pt2) &lt; 0) {</span>
+                // stop here and let invoker use polynomial solver
+<span class="fc" id="L163">                return new double[]{};</span>
+            }
+<span class="fc" id="L165">            double t = Math.pow(pt1 + pt2, 1./3.) + Math.pow(pt1 - pt2, 1./3.);</span>
+<span class="fc" id="L166">            return new double[]{t};</span>
+            
+        } else {
+            // discriminant &lt; 0.  3 real distinct roots
+            // trigonometric solution
+            //https://www.wikiwand.com/en/Cubic_equation#/google_vignette
+<span class="pc bnc" id="L172" title="All 2 branches missed.">            assert(p &lt; 0);</span>
+            
+<span class="fc" id="L174">            double pt1 = 2.*Math.sqrt(-p/3);</span>
+<span class="fc" id="L175">            double pt2 = Math.acos(((3.*q)/(2.*p)) * Math.sqrt(-3./p));</span>
+<span class="fc" id="L176">            double tp3 = 2.*Math.PI/3.;</span>
+<span class="fc" id="L177">            double[] t = new double[3];</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">            for (int i = 0; i &lt; 3; ++i) {</span>
+<span class="fc" id="L179">                t[i] = pt1 * Math.cos((1./3.)*pt2 - (tp3*i)); ;</span>
+            }
+<span class="fc" id="L181">            return t;</span>
+            
+            /*
+            alternative implementation:
+            https://www.codeproject.com/Articles/798474/To-Solve-a-Cubic-Equation
+            double r = Math.sqrt(-p * p * p / 27.0);
+            double alpha = Math.atan(Math.sqrt(-discr) / -q * 2.0);
+            if (q &gt; 0) // if q &gt; 0 the angle becomes 2 *PI - alpha
+                alpha = 2.0 * Math.PI - alpha;
+
+           double x1 = Math.pow(r, 1./3.0) * (Math.cos((6.0 * Math.PI - alpha) / 3.0)
+	      + Math.cos(alpha / 3.0));// back substitution by invoker should: - a / 3.0;
+           double x2 = Math.pow(r, 1./3.0) * (Math.cos((2.0 * Math.PI + alpha) / 3.0)
+              + Math.cos((4.0 * Math.PI - alpha) / 3.0));// - a / 3.0;
+           double x3 = Math.pow(r, 1./3.0) * (Math.cos((4.0 * Math.PI + alpha) / 3.0)
+              + Math.cos((2.0 * Math.PI - alpha) / 3.0));// - a / 3.0;
+            */
+        }
+    }
+    
+    /**
+     * calculates coefficients for the reduced form of the cubic equation
+     * called the depressed cubic.
+     @param cubicCoeff
+     @return a, b, c, p, q.  returns null if cubicCoeff[0] = 0.
+     */
+    static double[] calcDepressedCubicCoefficients(double[] cubicCoeff) {
+<span class="pc bpc" id="L208" title="1 of 2 branches missed.">        if (cubicCoeff.length != 4) {</span>
+<span class="nc" id="L209">            throw new IllegalArgumentException(&quot;cubicCoeff must be length 4&quot;);</span>
+        }
+        
+<span class="fc" id="L212">        double a3 = cubicCoeff[0];</span>
+<span class="fc" id="L213">        double a2 = cubicCoeff[1];</span>
+<span class="fc" id="L214">        double a1 = cubicCoeff[2];</span>
+<span class="fc" id="L215">        double a0 = cubicCoeff[3];</span>
+                
+<span class="pc bpc" id="L217" title="1 of 2 branches missed.">        if (Math.abs(a3) &lt; eps) {</span>
+<span class="nc" id="L218">            return null;</span>
+        }
+        
+<span class="fc" id="L221">        double a = a2/a3;</span>
+<span class="fc" id="L222">        double b = a1/a3;</span>
+<span class="fc" id="L223">        double c = a0/a3;</span>
+                
+        // p = b - a^2/3
+        // q = (2*a^3/27) - (a*b/3) + c
+        
+<span class="fc" id="L228">        double p = b - a*a/3;</span>
+        
+<span class="fc" id="L230">        double q = (2.*a*a*a/27.) - (a*b/3.) + c;</span>
+        
+<span class="fc" id="L232">        return new double[]{a, b, c, p, q};</span>
+    }
+    
+    /**
+     * solve for the roots of the equation a*x^3 + b*x^2 + c*x + d = 0
+     * using the depressed cubic.  the method is given coefficients a, b, c, d. and then returns x.
+     * following 
+     * https://www.mathemania.com/lesson/cardanos-formula-solving-cubic-equations/
+     * https://en.wikipedia.org/wiki/Cubic_equation#Reduction_to_a_depressed_cubic
+     * NOTE: only solving for the real roots.
+     @param coeffs an array holding a, b, c , d for the equation 
+     * a*x^3 + b*x^2 + c*x + d = 0.
+     @return x as the roots of the cubic equation a*x^3 + b*x^2 + c*x + d = 0
+     * @throws no.uib.cipr.matrix.NotConvergedException
+     */
+    public static double[] solve(double[] coeffs) throws NotConvergedException {
+<span class="pc bpc" id="L248" title="1 of 2 branches missed.">        if (coeffs.length != 4) {</span>
+<span class="nc" id="L249">            throw new IllegalArgumentException(&quot;coeffs must be length 4&quot;);</span>
+        }
+                
+        /*
+        if (Math.abs(coeffs[0]) &lt; tol || Math.abs(coeffs[1]) &lt; tol) {
+            return solveUsingGeneral(coeffs);
+        }*/
+        
+<span class="fc" id="L257">        double[] dCoeffs = calcDepressedCubicCoefficients(coeffs);</span>
+<span class="pc bpc" id="L258" title="1 of 2 branches missed.">        if (dCoeffs == null) {</span>
+<span class="nc" id="L259">            double[] rr2 = solveUsingGeneral(coeffs);</span>
+<span class="nc" id="L260">            return rr2;</span>
+        }
+                
+<span class="fc" id="L263">        double a = dCoeffs[0];</span>
+<span class="fc" id="L264">        double b = dCoeffs[1];</span>
+<span class="fc" id="L265">        double c = dCoeffs[2];</span>
+<span class="fc" id="L266">        double p = dCoeffs[3];</span>
+<span class="fc" id="L267">        double q = dCoeffs[4];</span>
+        
+<span class="fc" id="L269">        double[] t = solveUsingDepressedCubic(p, q);</span>
+        
+<span class="pc bpc" id="L271" title="1 of 4 branches missed.">        if (t == null || t.length == 0) {</span>
+            //Complex[] rr = solveUsingDepressedCubic0(p, q);
+<span class="fc" id="L273">            double[] rr2 = solveUsingGeneral(coeffs);</span>
+<span class="fc" id="L274">            return rr2;</span>
+        }
+        
+<span class="fc" id="L277">        double[] x = new double[t.length];</span>
+<span class="fc bfc" id="L278" title="All 2 branches covered.">        for (int i = 0; i &lt; x.length; ++i) {</span>
+<span class="fc" id="L279">            x[i] = t[i] - a/3.;  // -coeffs[1]/(3.*coeffs[0])</span>
+        }
+        
+<span class="fc" id="L282">        return x;</span>
+    }
+    
+    /**
+     * solve for the roots of the equation a*x^3 + b*x^2 + c*x + d = 0
+     * using the general formula, given coefficients a, b, c, d. returns x.
+     * following
+     * https://www.wikiwand.com/en/Cubic_equation#/General_cubic_formula
+     @param coeffs an array holding a, b, c , d for the equation 
+     * a*x^3 + b*x^2 + c*x + d = 0.
+     @return x as the roots of the cubic equation a*x^3 + b*x^2 + c*x + d = 0
+     * @throws no.uib.cipr.matrix.NotConvergedException
+     */
+    public static double[] solveUsingGeneral(double[] coeffs) throws NotConvergedException {
+        
+        //https://www.wikiwand.com/en/Cubic_equation#/General_cubic_formula
+        
+<span class="pc bpc" id="L299" title="1 of 2 branches missed.">        if (coeffs.length != 4) {</span>
+<span class="nc" id="L300">            throw new IllegalArgumentException(&quot;coeffs must be length 4&quot;);</span>
+        }
+                        
+<span class="fc" id="L303">        double a = coeffs[0];</span>
+<span class="fc" id="L304">        double b = coeffs[1];</span>
+<span class="fc" id="L305">        double c = coeffs[2];</span>
+<span class="fc" id="L306">        double d = coeffs[3];</span>
+                
+        /*
+        TODO: handle characteristic 2 and 3 modifications
+                
+        characteristic 2 and 3
+        
+        When the coefficients belong to a field of characteristic 2 or 3, 
+        the results be modified because of the involved divisions by 2 and 3.
+        The main tool for modification is the fact that a multiple root is a 
+        common root of the polynomial and its formal derivative. 
+        In these characteristics, if the derivative is not a constant, 
+        it has a single root, being linear in characteristic 3, 
+        or the square of a linear polynomial in characteristic 2. 
+        This allows computing the multiple root, and the third root can be 
+        deduced from the sum of the roots, which is provided by Vietas formulas.
+        In characteristic 2, the formula for a double root involves a square root, 
+        and, in characteristic 3, the formula for a triple root involves a cube root.
+        */              
+        
+<span class="fc" id="L326">        double discr = 18.*a*b*c*d - 4*b*b*b*d + b*b*c*c - 4*a*c*c*c - 27.*a*a*d*d;</span>
+        
+<span class="pc bpc" id="L328" title="1 of 2 branches missed.">        if (Math.abs(discr) &lt; eps) {</span>
+            // discriminant is 0.  
+            //there are 3 real roots, not necessarily distinct (has a multiple root)
+            
+<span class="nc bnc" id="L332" title="All 2 branches missed.">            if (Math.abs(b*b - 3*a*c) &lt; 0) {</span>
+                // either b^2 = 3ac, triple root but all the same
+                
+<span class="nc" id="L335">                return new double[]{-b/(3.*a)};</span>
+                
+            } else {
+                // or b^2 != 3ac, double root
+                
+                // a double root
+<span class="nc" id="L341">                double x2 = (9.*a*d - b*c)/(2.*(b*b - 3.*a*c));</span>
+                
+                // a simple root
+<span class="nc" id="L344">                double x1 = (4.*a*b*c - 9.*a*a*d - b*b*b)/(a*(b*b - 3.*a*c));</span>
+                
+<span class="nc" id="L346">                return new double[]{x2, x1};</span>
+            }
+            
+        } else {
+            
+            /*
+            if (discr &lt; 0) {
+                // 3 distinct real roots
+                //use the depressed cubic which is the trigonometric solution
+                //then back substitution here
+                
+            } else {
+                // discriminant &gt; 0
+                // 1 real root
+            }  
+            */
+<span class="fc" id="L362">            double[] roots = PolynomialRootSolver.solveForRealUsingCompanionMatrix(</span>
+                coeffs, eps);
+            
+<span class="fc" id="L365">            return roots;</span>
+        }
+        
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

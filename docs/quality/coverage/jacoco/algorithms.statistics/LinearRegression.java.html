@@ -1,0 +1,644 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LinearRegression.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.statistics</a> &gt; <span class="el_source">LinearRegression.java</span></div><h1>LinearRegression.java</h1><pre class="source lang-java linenums">package algorithms.statistics;
+
+import algorithms.QuickSort;
+import algorithms.matrix.MatrixUtil;
+import algorithms.misc.MiscMath0;
+import algorithms.sort.MiscSorter;
+import algorithms.util.PairFloatArray;
+import algorithms.util.PairIntArray;
+import algorithms.util.PolygonAndPointPlotter;
+import no.uib.cipr.matrix.NotConvergedException;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.logging.Logger;
+
+/**
+ *
+ * @author nichole
+ */
+<span class="nc" id="L20">public class LinearRegression {</span>
+    
+<span class="nc" id="L22">    private Logger log = Logger.getLogger(this.getClass().getName());</span>
+    
+    /**
+    TODO: consider implementing Siegel Repeated Median estimator in this class too.
+
+     * calculate the Theil-Sen estimator for the set of points and return
+     * the yIntercept and slope that can be used to plot a line that is the
+     * linear regression of the x and y points.
+     * NOTE: a side effect of the method is that x and y become partially
+     * sorted.
+       https://en.wikipedia.org/wiki/Theil%E2%80%93Sen_estimator
+       In non-parametric statistics, the Theil–Sen estimator is a method for 
+       robustly fitting a line to sample points in the plane (simple linear 
+       regression) by choosing the median of the slopes of all lines through pairs of points. 
+       ...  This estimator can be computed efficiently, and is insensitive to outliers.
+     It can be significantly more accurate than non-robust simple linear regression
+     (least squares) for skewed and heteroskedastic data, and competes well against
+     least squares even for normally distributed data in terms of statistical power.[10]
+     It has been called &quot;the most popular nonparametric technique for estimating a linear trend&quot;.
+     @param x
+     @param y
+     @return array holding y-intercept and slope
+     */
+    public float[] calculateTheilSenEstimatorParams(int[] x, int[] y) {
+        
+<span class="nc" id="L47">        int n = x.length;</span>
+        
+        /*      
+        for 1000 points, for each possible pair w/ image 2 points,
+        the real solution would be looking for a match within 
+        2.5*stdev or 3 * stdev      
+        */
+        
+        /* linear regression w/ theil sen estimator:
+        http://en.wikipedia.org/wiki/Theil%E2%80%93Sen_estimator
+        
+        median m of the slopes (yj − yi)/(xj − xi) determined by all pairs of 
+        sample points. 
+        */
+<span class="nc" id="L61">        int count = 0;</span>
+<span class="nc" id="L62">        float[] s = new float[n*n];</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">        for (int i = 0; i &lt; n; i++) {</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">            for (int j = (i + 1); j &lt; n; j++) {</span>
+<span class="nc bnc" id="L65" title="All 4 branches missed.">                if ((i == j) || (x[j] - x[i]) == 0) {</span>
+<span class="nc" id="L66">                    continue;</span>
+                }
+<span class="nc" id="L68">                s[count] = (float)(y[j] - y[i])/((float)x[j] - x[i]);</span>
+<span class="nc" id="L69">                count++;</span>
+            }
+        }
+        
+<span class="nc" id="L73">        s = Arrays.copyOf(s, count);</span>
+<span class="nc" id="L74">        Arrays.sort(s);</span>
+<span class="nc" id="L75">        int idx = s.length/2;</span>
+        float median;
+<span class="nc bnc" id="L77" title="All 4 branches missed.">        if ((idx &amp; 1) == 0 &amp;&amp; idx &gt; 0) {</span>
+<span class="nc" id="L78">            median = (s[idx] + s[idx - 1])/2.f;</span>
+        } else {
+<span class="nc" id="L80">            median = s[idx];</span>
+        }
+        
+<span class="nc" id="L83">        log.fine(&quot;thiel sen beta=&quot; + median);</span>
+       
+        // find the y-intercept as the median of the values y[i] − median * x[i]
+<span class="nc" id="L86">        float[] s2 = new float[x.length];</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        for (int i = 0; i &lt; x.length; i++) {</span>
+<span class="nc" id="L88">            s2[i] = y[i] - median * x[i];</span>
+        }
+<span class="nc" id="L90">        QuickSort.sort(s2, x, y, 0, s2.length - 1);</span>
+<span class="nc" id="L91">        int medianIdx = s2.length/2;</span>
+        
+        /*
+           (y1 - y0)/(x1 - x0) = slope
+            y1 - y0 = slope*(x1 - x0);
+            y1 = y0 + slope*(x1 - x0);
+            y1 = (y0 - slope*x0) + slope*x1
+            y1 =  yIntercept     + slope*x1
+        */
+        
+<span class="nc" id="L101">        float yIntercept = y[medianIdx] - median * x[medianIdx];</span>
+        
+        //the estimation of yIntercept needs to be improved:
+        // TODO: correct this to calculate yIntercept from  median of yi − mxi
+<span class="nc" id="L105">        int np = 10;</span>
+<span class="nc bnc" id="L106" title="All 4 branches missed.">        while (((medianIdx - np) &lt; 0) || ((medianIdx + np) &gt; (x.length - 1))) {</span>
+<span class="nc" id="L107">            np--;</span>
+<span class="nc bnc" id="L108" title="All 4 branches missed.">            if (np &lt; 0 || np == 0) {</span>
+<span class="nc" id="L109">                break;</span>
+            }
+        }
+<span class="nc bnc" id="L112" title="All 2 branches missed.">        if (np &gt; 0) {</span>
+<span class="nc" id="L113">            float sum = 0;</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">            for (int j = (medianIdx - np); j &lt;= (medianIdx + np); j++) {</span>
+<span class="nc" id="L115">                sum += (y[j] - median * x[j]);</span>
+            }
+<span class="nc" id="L117">            yIntercept = sum/((float)(2*np + 1));</span>
+        }
+        
+<span class="nc" id="L120">        return new float[]{yIntercept, median};</span>
+    }
+
+    /**
+     * estimate the y-intercept and slope for the given x,y dataset
+     * The estimates are closed form.  r.t.c. is O(n).
+     * For a method more robust to outliers, see the Theil-Sen methods in this class.
+     &lt;pre&gt;
+     https://en.m.wikipedia.org/wiki/Simple_linear_regression
+     &lt;/pre&gt;
+     The r.t.c. is O(n).
+     * @param x array of x data points.
+     * @param y array of y data points
+     * @return array of {
+     * y-intercept,
+     * slope of the line fit,
+     * variance of the error (where error is y - yIntercept - slope*x),
+     * variance of the y-intercept, and variance of the slope
+     */
+    public static double[] simpleLinearRegression(double[] x, double[] y) {
+<span class="pc bpc" id="L140" title="1 of 2 branches missed.">        if (x.length != y.length) {</span>
+<span class="nc" id="L141">            throw new IllegalArgumentException(&quot;x and y must be same length&quot;);</span>
+        }
+<span class="fc" id="L143">        int n = x.length;</span>
+        //x    y    x^2    y^2    xy   = moments
+        //0    1    2      3       4   = indexes in output
+<span class="fc" id="L146">        double[] moments = Util.caldc2DMomentsX2Y2(x, y);</span>
+
+        // beta is slope
+<span class="fc" id="L149">        double slopeEst = (n * moments[4] - moments[0] * moments[1]) /</span>
+                (n * moments[2] - moments[0] * moments[0]);
+
+        // alpha is y intercept
+<span class="fc" id="L153">        double yInterEst = (1./n) * moments[1] - (slopeEst * moments[0]/ n);</span>
+
+<span class="fc" id="L155">        double varError = (1/(n*(n-2.))) *</span>
+                (n * moments[3] - moments[1]*moments[1] -
+                ((slopeEst*slopeEst)*(n * moments[2] - moments[0] * moments[0])));
+
+<span class="fc" id="L159">        double varSlopeEst = (n * varError) / (n * moments[2] - moments[0]*moments[0]);</span>
+
+<span class="fc" id="L161">        double varYInterEst = varSlopeEst * moments[2]/n;</span>
+
+        /*
+        {y-intercept, slope of the line fit,
+        variance of the error (where error is y - yIntercept - slope*x),
+        variance of the y-intercept, and variance of the slope
+         */
+<span class="fc" id="L168">        return new double[]{yInterEst, slopeEst, varError, varYInterEst, varSlopeEst};</span>
+    }
+
+    /**
+     * calculate simple linear regression using a design matrix approach.
+     &lt;pre&gt;
+     https://en.m.wikipedia.org/wiki/Design_matrix#Simple_linear_regression
+     &lt;/pre&gt;
+     The r.t.c. is O(n^3), dominated by the pseudoinverse.
+     * @param x matrix of size n x p where n is the number of samples and p is the number
+     *          of variables (a.k.a. features).
+     * @return an array of the intercept and slopes.  the array length withh be p + 1.
+     */
+    public static double[] linearRegression(double[] y, double[][] x) throws NotConvergedException {
+<span class="fc" id="L182">        int n = y.length;</span>
+<span class="pc bpc" id="L183" title="1 of 2 branches missed.">        if (x.length != n) {</span>
+<span class="nc" id="L184">            throw new IllegalArgumentException(&quot;x and y must be same lengths&quot;);</span>
+        }
+
+        /*
+        solves minimization problem:
+           argmin of sum_{i=1 to n}( (y_i - alpha - beta*x_i))^2 )
+
+              can find min estimates in the optimization eqn by setting derivs to 0
+
+           alpha_est = y_mean - (beta_est * x_mean)
+
+           beta_est = sum_{i=1 to n}( (x_i - x_mean) * (y_i - y_mean) )
+                       / sum_{i=1 to n}( (x_i - x_mean)^2)
+
+           those are efficient if x_mean and y_mean are known.
+
+           else a design matrix approach, similar to the design matrix for polynomial regressions.
+         */
+        /*
+        y = X * b + eps
+        (y - eps) = X*b
+        X^T*(y - eps) = X^T*X*b
+        (X^T*X)*^-1 * X^T*(y - eps) = b
+         */
+<span class="fc" id="L208">        int p = x[0].length;</span>
+<span class="fc" id="L209">        double[][] X = new double[n][p + 1];</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L211">            X[i][0] = 1;</span>
+<span class="fc" id="L212">            System.arraycopy(x[i], 0, X[i], 1, p);</span>
+        }
+
+<span class="fc" id="L215">        double[][] a = MatrixUtil.pseudoinverseFullColumnRank(X);</span>
+<span class="fc" id="L216">        double[] b = MatrixUtil.multiplyMatrixByColumnVector(a, y);</span>
+
+<span class="fc" id="L218">        return b;</span>
+    }
+
+    /**
+     * estimate the y-intercept and slope for the given x,y dataset where the means
+     * of the datasets are already known.
+     * The estimates are closed form.  r.t.c. is O(n).
+     * For a method more robust to outliers, see the Theil-Sen methods in this class.
+     &lt;pre&gt;
+     https://en.m.wikipedia.org/wiki/Simple_linear_regression
+     &lt;/pre&gt;
+     The r.t.c. is O(n).
+     * @param x array of x data points.
+     * @param y array of y data points
+     * @param meanX known mean of the x data
+     * @param meanY known mean of the y data
+     * @return array of y-intercept and slope of the line fit
+     */
+    public static double[] lineFit(double[] x, double[] y, double meanX, double meanY) {
+<span class="nc bnc" id="L237" title="All 2 branches missed.">        if (x.length != y.length) {</span>
+<span class="nc" id="L238">            throw new IllegalArgumentException(&quot;x and y must be same length&quot;);</span>
+        }
+<span class="nc" id="L240">        int n = x.length;;</span>
+        double dx, dy;
+<span class="nc" id="L242">        double a = 0;</span>
+<span class="nc" id="L243">        double b = 0;</span>
+<span class="nc bnc" id="L244" title="All 2 branches missed.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="nc" id="L245">            dx = x[i] - meanX;</span>
+<span class="nc" id="L246">            dy = y[i] - meanY;</span>
+<span class="nc" id="L247">            a += (dx * dy);</span>
+<span class="nc" id="L248">            b += (dx * dx);</span>
+        }
+        // beta estimate:
+<span class="nc" id="L251">        double slopeEst = a/b;</span>
+        // alpha estimate:
+<span class="nc" id="L253">        double yInterceptEst = meanY - (slopeEst * meanX);</span>
+<span class="nc" id="L254">        return new double[]{yInterceptEst, slopeEst};</span>
+    }
+
+    /**
+     * make a plot of the linear regression of arrays x and y.
+     * NOTE: a side effect of the method is that x and y become partially
+     * sorted.
+     @param x
+     @param y 
+     @return file name
+     */
+    public String plotTheLinearRegression(int[] x, int[] y) {
+                        
+<span class="nc" id="L267">        float[] tsbParams = calculateTheilSenEstimatorParams(x, y);</span>
+        
+<span class="nc" id="L269">        float yIntercept = tsbParams[0];</span>
+        
+<span class="nc" id="L271">        float slope = tsbParams[1];</span>
+        
+        /*
+        plot dx, dy
+        and plot a line generated from the yIntercept and median: yIntercept − median*x_i
+        */        
+<span class="nc" id="L277">        int xMin = MiscMath0.findMin(x);</span>
+<span class="nc" id="L278">        int xMax = MiscMath0.findMax(x);</span>
+<span class="nc" id="L279">        int len = xMax - xMin + 1;</span>
+<span class="nc" id="L280">        int[] tsbX = new int[len];</span>
+<span class="nc" id="L281">        int[] tsbY = new int[len];</span>
+<span class="nc" id="L282">        int count = 0;</span>
+<span class="nc bnc" id="L283" title="All 2 branches missed.">        for (int xCoord = xMin; xCoord &lt;= xMax; xCoord++) {</span>
+<span class="nc" id="L284">            float yCoord = yIntercept + slope * (float)xCoord;</span>
+<span class="nc" id="L285">            tsbX[count] = xCoord;</span>
+<span class="nc" id="L286">            tsbY[count] = Math.round(yCoord);</span>
+<span class="nc" id="L287">            count++;</span>
+        }
+        
+<span class="nc" id="L290">        int yMin = MiscMath0.findMin(y);</span>
+<span class="nc" id="L291">        int yMax = MiscMath0.findMax(y);</span>
+       
+        try {
+<span class="nc" id="L294">            PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();</span>
+<span class="nc" id="L295">            plotter.addPlot(</span>
+                xMin, xMax, yMin, yMax,
+                x, y, 
+                tsbX, tsbY,
+                &quot;X vs Y and thiel sen beta linear regression line&quot;);
+
+<span class="nc" id="L301">            return plotter.writeFile();</span>
+            
+<span class="nc" id="L303">        } catch(IOException e) {</span>
+            
+<span class="nc" id="L305">            log.severe(&quot;ERROR while trying to write plot: &quot; + e.getMessage());</span>
+        }
+<span class="nc" id="L307">        return &quot;&quot;;</span>
+    }
+    
+    /**
+     * calculate the theil sen estimator for the set of points and return
+     * the yIntercept and slope that can be used to plot a line that is the
+     * linear regression of the x and y points.
+     * NOTE: a side effect of the method is that x and y become partially
+     * sorted.
+     @param x
+     @param y
+     @return 
+     */
+    public float[] calculateTheilSenEstimatorParams(float[] x, float[] y) {
+        
+<span class="nc" id="L322">        int n = x.length;</span>
+        
+<span class="nc bnc" id="L324" title="All 2 branches missed.">        if (n &gt; 46340) {</span>
+<span class="nc" id="L325">            throw new IllegalArgumentException(&quot;x and y lengths must be &quot;</span>
+                + &quot;less than 46340 for indexing an array of size length*lnegth&quot;);
+        }
+        
+        /*      
+        for 1000 points, for each possible pair w/ image 2 points,
+        the real solution would be looking for a match within 
+        2.5*stdev or 3 * stdev      
+        */
+        
+        /* linear regression w/ theil sen estimator:
+        http://en.wikipedia.org/wiki/Theil%E2%80%93Sen_estimator
+        
+        median m of the slopes (yj − yi)/(xj − xi) determined by all pairs of 
+        sample points. 
+        */
+<span class="nc" id="L341">        int count = 0;</span>
+<span class="nc" id="L342">        float[] s = new float[n*n];</span>
+<span class="nc bnc" id="L343" title="All 2 branches missed.">        for (int i = 0; i &lt; n; i++) {</span>
+<span class="nc bnc" id="L344" title="All 2 branches missed.">            for (int j = (i + 1); j &lt; n; j++) {</span>
+<span class="nc bnc" id="L345" title="All 4 branches missed.">                if ((i == j) || (x[j] - x[i]) == 0) {</span>
+<span class="nc" id="L346">                    continue;</span>
+                }
+<span class="nc" id="L348">                s[count] = (y[j] - y[i])/(x[j] - x[i]);</span>
+<span class="nc" id="L349">                count++;</span>
+            }
+        }
+        
+<span class="nc bnc" id="L353" title="All 2 branches missed.">        if (count == 0) {</span>
+            // this can happen for vertical lines
+<span class="nc" id="L355">            return new float[]{Float.NaN, Float.MAX_VALUE};</span>
+        }
+        
+        float median;
+<span class="nc" id="L359">        s = Arrays.copyOf(s, count);</span>
+<span class="nc" id="L360">        Arrays.sort(s);</span>
+<span class="nc" id="L361">        int idx = s.length/2;</span>
+<span class="nc bnc" id="L362" title="All 4 branches missed.">        if ((idx &amp; 1) == 0 &amp;&amp; idx &gt; 0) {</span>
+<span class="nc" id="L363">            median = (s[idx] + s[idx - 1])/2.f;</span>
+        } else {
+<span class="nc" id="L365">            median = s[idx];</span>
+        }
+        
+<span class="nc" id="L368">        log.fine(&quot;thiel sen beta=&quot; + median);</span>
+       
+        // find the y-intercept as the median of the values 
+        //     y[i] − median * x[i]
+<span class="nc" id="L372">        float[] s2 = new float[x.length];</span>
+<span class="nc bnc" id="L373" title="All 2 branches missed.">        for (int i = 0; i &lt; x.length; i++) {</span>
+<span class="nc" id="L374">            s2[i] = y[i] - median * x[i];</span>
+        }
+<span class="nc" id="L376">        QuickSort.sort(s2, x, y, 0, s2.length - 1);</span>
+<span class="nc" id="L377">        int medianIdx = s2.length/2;</span>
+        
+        /*
+           (y1 - y0)/(x1 - x0) = slope
+            y1 - y0 = slope*(x1 - x0);
+            y1 = y0 + slope*(x1 - x0);
+            y1 = (y0 - slope*x0) + slope*x1
+            y1 =  yIntercept     + slope*x1
+        */
+        
+<span class="nc" id="L387">        float yIntercept = y[medianIdx] - median * x[medianIdx];</span>
+        
+        //the estimation of yIntercept needs to be improved:
+<span class="nc" id="L390">        int np = 10;</span>
+<span class="nc bnc" id="L391" title="All 4 branches missed.">        while (((medianIdx - np) &lt; 0) || ((medianIdx + np) &gt; (x.length - 1))) {</span>
+<span class="nc" id="L392">            np--;</span>
+<span class="nc bnc" id="L393" title="All 4 branches missed.">            if (np &lt; 0 || np == 0) {</span>
+<span class="nc" id="L394">                break;</span>
+            }
+        }
+<span class="nc bnc" id="L397" title="All 2 branches missed.">        if (np &gt; 0) {</span>
+<span class="nc" id="L398">            float sum = 0;</span>
+<span class="nc bnc" id="L399" title="All 2 branches missed.">            for (int j = (medianIdx - np); j &lt;= (medianIdx + np); j++) {</span>
+<span class="nc" id="L400">                sum += (y[j] - median * x[j]);</span>
+            }
+<span class="nc" id="L402">            yIntercept = sum/((float)(2*np + 1));</span>
+        }
+        
+<span class="nc" id="L405">        return new float[]{yIntercept, median};</span>
+    }
+    
+    /**
+     * calculate the theil sen estimator for the set of points and return
+     * the yIntercept and slope that can be used to plot a line that is the
+     * linear regression of the x and y points.
+     * NOTE: a side effect of the method is that x and y become partially
+     * sorted.
+     @param x
+     @param y
+     @return 
+     */
+    public double[] calculateTheilSenEstimatorParams(double[] x, double[] y) {
+        
+<span class="nc" id="L420">        int n = x.length;</span>
+        
+<span class="nc bnc" id="L422" title="All 2 branches missed.">        if (n &gt; 46340) {</span>
+<span class="nc" id="L423">            throw new IllegalArgumentException(&quot;x and y lengths must be &quot;</span>
+                + &quot;less than 46340 for indexing an array of size length*lnegth&quot;);
+        }
+        
+        /*      
+        for 1000 points, for each possible pair w/ image 2 points,
+        the real solution would be looking for a match within 
+        2.5*stdev or 3 * stdev      
+        */
+        
+        /* linear regression w/ theil sen estimator:
+        http://en.wikipedia.org/wiki/Theil%E2%80%93Sen_estimator
+        
+        median m of the slopes (yj − yi)/(xj − xi) determined by all pairs of 
+        sample points. 
+        */
+<span class="nc" id="L439">        int count = 0;</span>
+<span class="nc" id="L440">        double[] s = new double[n*n];</span>
+<span class="nc bnc" id="L441" title="All 2 branches missed.">        for (int i = 0; i &lt; n; i++) {</span>
+<span class="nc bnc" id="L442" title="All 2 branches missed.">            for (int j = (i + 1); j &lt; n; j++) {</span>
+<span class="nc bnc" id="L443" title="All 4 branches missed.">                if ((i == j) || (x[j] - x[i]) == 0) {</span>
+<span class="nc" id="L444">                    continue;</span>
+                }
+<span class="nc" id="L446">                s[count] = (y[j] - y[i])/(x[j] - x[i]);</span>
+<span class="nc" id="L447">                count++;</span>
+            }
+        }
+        
+<span class="nc bnc" id="L451" title="All 2 branches missed.">        if (count == 0) {</span>
+            // this can happen for vertical lines
+<span class="nc" id="L453">            return new double[]{Double.NaN, Double.MAX_VALUE};</span>
+        }
+        
+        double median;
+<span class="nc" id="L457">        s = Arrays.copyOf(s, count);</span>
+<span class="nc" id="L458">        Arrays.sort(s);</span>
+<span class="nc" id="L459">        int idx = s.length/2;</span>
+<span class="nc bnc" id="L460" title="All 4 branches missed.">        if ((idx &amp; 1) == 0 &amp;&amp; idx &gt; 0) {</span>
+<span class="nc" id="L461">            median = (s[idx] + s[idx - 1])/2.f;</span>
+        } else {
+<span class="nc" id="L463">            median = s[idx];</span>
+        }
+        
+<span class="nc" id="L466">        log.fine(&quot;thiel sen beta=&quot; + median);</span>
+       
+        // find the y-intercept as the median of the values 
+        //     y[i] − median * x[i]
+<span class="nc" id="L470">        double[] s2 = new double[x.length];</span>
+<span class="nc bnc" id="L471" title="All 2 branches missed.">        for (int i = 0; i &lt; x.length; i++) {</span>
+<span class="nc" id="L472">            s2[i] = y[i] - median * x[i];</span>
+        }
+<span class="nc" id="L474">        int[] idxs = MiscSorter.mergeSortIncreasing(s2);</span>
+        
+        //QuickSort.sort(s2, x, y, 0, s2.length - 1);
+<span class="nc" id="L477">        int medianIdx = s2.length/2;</span>
+        
+        /*
+           (y1 - y0)/(x1 - x0) = slope
+            y1 - y0 = slope*(x1 - x0);
+            y1 = y0 + slope*(x1 - x0);
+            y1 = (y0 - slope*x0) + slope*x1
+            y1 =  yIntercept     + slope*x1
+        */
+        
+<span class="nc" id="L487">        double yIntercept = y[idxs[medianIdx]] - median * x[idxs[medianIdx]];</span>
+        
+        //the estimation of yIntercept needs to be improved:
+<span class="nc" id="L490">        int np = 10;</span>
+<span class="nc bnc" id="L491" title="All 4 branches missed.">        while (((medianIdx - np) &lt; 0) || ((medianIdx + np) &gt; (x.length - 1))) {</span>
+<span class="nc" id="L492">            np--;</span>
+<span class="nc bnc" id="L493" title="All 4 branches missed.">            if (np &lt; 0 || np == 0) {</span>
+<span class="nc" id="L494">                break;</span>
+            }
+        }
+<span class="nc bnc" id="L497" title="All 2 branches missed.">        if (np &gt; 0) {</span>
+<span class="nc" id="L498">            double sum = 0;</span>
+<span class="nc bnc" id="L499" title="All 2 branches missed.">            for (int j = (medianIdx - np); j &lt;= (medianIdx + np); j++) {</span>
+<span class="nc" id="L500">                sum += (y[idxs[j]] - median * x[idxs[j]]);</span>
+            }
+<span class="nc" id="L502">            yIntercept = sum/(2.*np + 1.);</span>
+        }
+        
+<span class="nc" id="L505">        return new double[]{yIntercept, median};</span>
+    }
+    
+    /**
+     * calculate the theil sen estimator for the set of points and return
+     * the yIntercept and slope that can be used to plot a line that is the
+     * linear regression of the x and y points.
+     * NOTE: a side effect of the method is that x and y become partially
+     * sorted.
+     @param x
+     @param y
+     @return 
+     */
+    public float[] calculateTheilSenEstimatorMedian(float[] x, float[] y) {
+        
+<span class="nc" id="L520">        int n = x.length;</span>
+        
+        /*      
+        for 1000 points, for each possible pair w/ image 2 points,
+        the real solution would be looking for a match within 
+        2.5*stdev or 3 * stdev      
+        */
+        
+        /* linear regression w/ theil sen estimator:
+        http://en.wikipedia.org/wiki/Theil%E2%80%93Sen_estimator
+        
+        median m of the slopes (yj − yi)/(xj − xi) determined by all pairs of 
+        sample points. 
+        */
+<span class="nc" id="L534">        int count = 0;</span>
+<span class="nc" id="L535">        float[] s = new float[n*n];</span>
+<span class="nc bnc" id="L536" title="All 2 branches missed.">        for (int i = 0; i &lt; n; i++) {</span>
+<span class="nc bnc" id="L537" title="All 2 branches missed.">            for (int j = (i + 1); j &lt; n; j++) {</span>
+<span class="nc bnc" id="L538" title="All 4 branches missed.">                if ((i == j) || (x[j] - x[i]) == 0) {</span>
+<span class="nc" id="L539">                    continue;</span>
+                }
+<span class="nc" id="L541">                s[count] = (y[j] - y[i])/(x[j] - x[i]);</span>
+<span class="nc" id="L542">                count++;</span>
+            }
+        }
+        
+<span class="nc" id="L546">        s = Arrays.copyOf(s, count);</span>
+<span class="nc" id="L547">        Arrays.sort(s);</span>
+<span class="nc" id="L548">        int idx = s.length/2;</span>
+        float median;
+<span class="nc bnc" id="L550" title="All 4 branches missed.">        if ((idx &amp; 1) == 0 &amp;&amp; idx &gt; 0) {</span>
+<span class="nc" id="L551">            median = (s[idx] + s[idx - 1])/2.f;</span>
+        } else {
+<span class="nc" id="L553">            median = s[idx];</span>
+        }
+        
+<span class="nc" id="L556">        log.fine(&quot;thiel sen beta=&quot; + median);</span>
+       
+        // find the y-intercept as the median of the values y[i] − median * x[i]
+<span class="nc" id="L559">        float[] s2 = new float[x.length];</span>
+<span class="nc bnc" id="L560" title="All 2 branches missed.">        for (int i = 0; i &lt; x.length; i++) {</span>
+<span class="nc" id="L561">            s2[i] = y[i] - median * x[i];</span>
+        }
+<span class="nc" id="L563">        QuickSort.sort(s2, x, y, 0, s2.length - 1);</span>
+<span class="nc" id="L564">        int medianIdx = s2.length/2;</span>
+       
+<span class="nc" id="L566">        float xMedian = x[medianIdx];</span>
+<span class="nc" id="L567">        float yMedian = y[medianIdx];</span>
+        // improve the vlue over several points
+<span class="nc" id="L569">        int np = 10;</span>
+<span class="nc bnc" id="L570" title="All 4 branches missed.">        while (((medianIdx - np) &lt; 0) || ((medianIdx + np) &gt; (x.length - 1))) {</span>
+<span class="nc" id="L571">            np--;</span>
+<span class="nc bnc" id="L572" title="All 4 branches missed.">            if (np &lt; 0 || np == 0) {</span>
+<span class="nc" id="L573">                break;</span>
+            }
+        }
+<span class="nc bnc" id="L576" title="All 2 branches missed.">        if (np &gt; 0) {</span>
+<span class="nc" id="L577">            float sumX = 0;</span>
+<span class="nc" id="L578">            float sumY = 0;</span>
+<span class="nc bnc" id="L579" title="All 2 branches missed.">            for (int j = (medianIdx - np); j &lt;= (medianIdx + np); j++) {</span>
+<span class="nc" id="L580">                sumX += x[j];</span>
+<span class="nc" id="L581">                sumY += y[j];</span>
+            }
+<span class="nc" id="L583">            xMedian = sumX/((float)(2*np + 1));</span>
+<span class="nc" id="L584">            yMedian = sumY/((float)(2*np + 1));</span>
+        }
+        
+<span class="nc" id="L587">        return new float[]{xMedian, yMedian};</span>
+    }
+    
+    /**
+     * make a plot of the linear regression of arrays x and y.
+     * NOTE: a side effect of the method is that x and y become partially
+     * sorted.
+     @param x
+     @param y 
+     @param xMin 
+     @param xMax 
+     @param yMin 
+     @param yMax 
+     @return plot file name
+     */
+    public String plotTheLinearRegression(float[] x, float[] y, int xMin, int xMax, int yMin, int yMax) {
+                        
+<span class="nc" id="L604">        float[] tsbParams = calculateTheilSenEstimatorParams(x, y);</span>
+        
+<span class="nc" id="L606">        float yIntercept = tsbParams[0];</span>
+        
+<span class="nc" id="L608">        float slope = tsbParams[1];</span>
+        
+        /*
+        plot dx, dy
+        and plot a line generated from the yIntercept and median: yIntercept − median*x_i
+        */    
+<span class="nc" id="L614">        int len = xMax - xMin + 1;</span>
+<span class="nc" id="L615">        float[] tsbX = new float[len];</span>
+<span class="nc" id="L616">        float[] tsbY = new float[len];</span>
+<span class="nc" id="L617">        int count = 0;</span>
+<span class="nc bnc" id="L618" title="All 2 branches missed.">        for (int xCoord = xMin; xCoord &lt;= xMax; xCoord++) {</span>
+<span class="nc" id="L619">            float yCoord = yIntercept + slope * (float)xCoord;</span>
+<span class="nc" id="L620">            tsbX[count] = xCoord;</span>
+<span class="nc" id="L621">            tsbY[count] = yCoord;</span>
+<span class="nc" id="L622">            count++;</span>
+        }
+        
+        try {
+<span class="nc" id="L626">            PolygonAndPointPlotter plotter = new PolygonAndPointPlotter();</span>
+<span class="nc" id="L627">            plotter.addPlot(</span>
+                xMin, xMax, yMin, yMax,
+                x, y, 
+                tsbX, tsbY,
+                &quot;X vs Y and thiel sen beta linear regression line&quot;);
+
+<span class="nc" id="L633">            return plotter.writeFile();</span>
+            
+<span class="nc" id="L635">        } catch(IOException e) {</span>
+            
+<span class="nc" id="L637">            log.severe(&quot;ERROR while trying to write plot: &quot; + e.getMessage());</span>
+        }
+        
+<span class="nc" id="L640">        return &quot;&quot;;</span>
+    }
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

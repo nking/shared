@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PrincipalComponents.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.dimensionReduction</a> &gt; <span class="el_source">PrincipalComponents.java</span></div><h1>PrincipalComponents.java</h1><pre class="source lang-java linenums">package algorithms.dimensionReduction;
 
-import algorithms.correlation.BruteForce;
 import algorithms.matrix.MatrixUtil;
 import java.util.Arrays;
 
-import algorithms.statistics.Covariance;
-import algorithms.statistics.Standardization;
 import algorithms.util.FormatArray;
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.NotConvergedException;
@@ -55,7 +52,7 @@ import no.uib.cipr.matrix.SVD;
  * 
  * @author nichole
  */
-<span class="nc" id="L58">public class PrincipalComponents {</span>
+<span class="nc" id="L55">public class PrincipalComponents {</span>
 
     /**
      * calculate the principal components of the unit standardized data x
@@ -91,7 +88,7 @@ import no.uib.cipr.matrix.SVD;
      * @throws no.uib.cipr.matrix.NotConvergedException
      */
     public static PCAStats calcPrincipalComponents(double[][] x, int nComponents) throws NotConvergedException {
-<span class="fc" id="L94">        return calcPrincipalComponents(x, nComponents, false);</span>
+<span class="fc" id="L91">        return calcPrincipalComponents(x, nComponents, false);</span>
     }
 
     /**
@@ -174,10 +171,10 @@ import no.uib.cipr.matrix.SVD;
             X*V = U * D = principal components = projection of the data onto the principal axes
                and the coords of the newly transformed data are on row_0 for the first data point, etc.
         */
-<span class="fc" id="L177">        int n = x.length;</span>
-<span class="fc" id="L178">        int nDimensions = x[0].length;</span>
+<span class="fc" id="L174">        int n = x.length;</span>
+<span class="fc" id="L175">        int nDimensions = x[0].length;</span>
 
-<span class="fc" id="L180">        double eps = 1.e-15;</span>
+<span class="fc" id="L177">        double eps = 1.e-15;</span>
 
         // U is mxm
         // S is mxn
@@ -186,63 +183,63 @@ import no.uib.cipr.matrix.SVD;
         double[][] u;
         double[] s;
         double[][] vT;
-<span class="fc" id="L189">        SVD svd = SVD.factorize(new DenseMatrix(x));</span>
-<span class="fc" id="L190">        s = svd.getS();</span>
-<span class="fc" id="L191">        vT = MatrixUtil.convertToRowMajor(svd.getVt());</span>
-<span class="fc" id="L192">        u = MatrixUtil.convertToRowMajor(svd.getU());</span>
+<span class="fc" id="L186">        SVD svd = SVD.factorize(new DenseMatrix(x));</span>
+<span class="fc" id="L187">        s = svd.getS();</span>
+<span class="fc" id="L188">        vT = MatrixUtil.convertToRowMajor(svd.getVt());</span>
+<span class="fc" id="L189">        u = MatrixUtil.convertToRowMajor(svd.getU());</span>
 
         int i;
         int j;
-<span class="fc" id="L196">        int rank = 0;</span>
-<span class="fc bfc" id="L197" title="All 2 branches covered.">        for (i = 0; i &lt; s.length; ++i) {</span>
-<span class="pc bpc" id="L198" title="1 of 2 branches missed.">            if (Math.abs(s[i]) &gt; eps) {</span>
-<span class="fc" id="L199">                rank++;</span>
+<span class="fc" id="L193">        int rank = 0;</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">        for (i = 0; i &lt; s.length; ++i) {</span>
+<span class="pc bpc" id="L195" title="1 of 2 branches missed.">            if (Math.abs(s[i]) &gt; eps) {</span>
+<span class="fc" id="L196">                rank++;</span>
             }
         }
 
-<span class="fc" id="L203">        double[] eig = new double[rank];</span>
-<span class="fc" id="L204">        double sumEVTotal = 0;</span>
-<span class="fc" id="L205">        double sumSTotal = 0;</span>
-<span class="fc bfc" id="L206" title="All 2 branches covered.">        for (i = 0; i &lt; eig.length; ++i) {</span>
-<span class="fc" id="L207">            eig[i] = (s[i] * s[i])/((double)n - 1.);</span>
-<span class="fc" id="L208">            sumEVTotal += eig[i];</span>
-<span class="fc" id="L209">            sumSTotal += s[i];</span>
+<span class="fc" id="L200">        double[] eig = new double[rank];</span>
+<span class="fc" id="L201">        double sumEVTotal = 0;</span>
+<span class="fc" id="L202">        double sumSTotal = 0;</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">        for (i = 0; i &lt; eig.length; ++i) {</span>
+<span class="fc" id="L204">            eig[i] = (s[i] * s[i])/((double)n - 1.);</span>
+<span class="fc" id="L205">            sumEVTotal += eig[i];</span>
+<span class="fc" id="L206">            sumSTotal += s[i];</span>
         }
 
-<span class="fc" id="L212">        double[] fracs = new double[rank];</span>
-<span class="pc bpc" id="L213" title="1 of 2 branches missed.">        if (useEVProp) {</span>
-<span class="fc bfc" id="L214" title="All 2 branches covered.">            for (j = 0; j &lt; fracs.length; ++j) {</span>
-<span class="fc" id="L215">                fracs[j] = eig[j]/sumEVTotal;</span>
+<span class="fc" id="L209">        double[] fracs = new double[rank];</span>
+<span class="pc bpc" id="L210" title="1 of 2 branches missed.">        if (useEVProp) {</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">            for (j = 0; j &lt; fracs.length; ++j) {</span>
+<span class="fc" id="L212">                fracs[j] = eig[j]/sumEVTotal;</span>
             }
         } else {
-<span class="nc bnc" id="L218" title="All 2 branches missed.">            for (j = 0; j &lt; fracs.length; ++j) {</span>
-<span class="nc" id="L219">                fracs[j] = s[j]/sumSTotal;</span>
+<span class="nc bnc" id="L215" title="All 2 branches missed.">            for (j = 0; j &lt; fracs.length; ++j) {</span>
+<span class="nc" id="L216">                fracs[j] = s[j]/sumSTotal;</span>
             }
         }
 
         // find smallest diff between cumulative fraction and prop
 
-<span class="fc" id="L225">        double[] c = Arrays.copyOf(fracs, fracs.length);</span>
-<span class="fc" id="L226">        int idxM = 0;</span>
-<span class="fc" id="L227">        double diff = Math.abs(c[0] - prop);</span>
-<span class="fc" id="L228">        double min = diff;</span>
-<span class="fc bfc" id="L229" title="All 2 branches covered.">        for (j = 1; j &lt; c.length; ++j) {</span>
-<span class="fc" id="L230">            c[j] += c[j-1];</span>
-<span class="fc" id="L231">            diff = Math.abs(c[j] - prop);</span>
-<span class="fc bfc" id="L232" title="All 2 branches covered.">            if (diff &lt; min) {</span>
-<span class="fc" id="L233">                idxM = j;</span>
-<span class="fc" id="L234">                min = diff;</span>
+<span class="fc" id="L222">        double[] c = Arrays.copyOf(fracs, fracs.length);</span>
+<span class="fc" id="L223">        int idxM = 0;</span>
+<span class="fc" id="L224">        double diff = Math.abs(c[0] - prop);</span>
+<span class="fc" id="L225">        double min = diff;</span>
+<span class="fc bfc" id="L226" title="All 2 branches covered.">        for (j = 1; j &lt; c.length; ++j) {</span>
+<span class="fc" id="L227">            c[j] += c[j-1];</span>
+<span class="fc" id="L228">            diff = Math.abs(c[j] - prop);</span>
+<span class="fc bfc" id="L229" title="All 2 branches covered.">            if (diff &lt; min) {</span>
+<span class="fc" id="L230">                idxM = j;</span>
+<span class="fc" id="L231">                min = diff;</span>
             }
         }
-<span class="fc" id="L237">        int nComponents = idxM + 1;</span>
+<span class="fc" id="L234">        int nComponents = idxM + 1;</span>
 
-<span class="fc" id="L239">        System.out.printf(&quot;nComponents=%d\n&quot;, nComponents);</span>
-<span class="fc" id="L240">        System.out.printf(&quot;eig = %s\n&quot;, FormatArray.toString(eig, &quot;%.4e&quot;));</span>
-<span class="fc" id="L241">        System.out.printf(&quot;s = %s\n&quot;, FormatArray.toString(s, &quot;%.4e&quot;));</span>
-<span class="fc" id="L242">        System.out.printf(&quot;fractions (eig or s) of total = %s\n&quot;, FormatArray.toString(fracs, &quot;%.4e&quot;));</span>
-<span class="fc" id="L243">        System.out.printf(&quot;cumulative proportion=\n%s\n&quot;, FormatArray.toString(c, &quot;%.4e&quot;));</span>
+<span class="fc" id="L236">        System.out.printf(&quot;nComponents=%d\n&quot;, nComponents);</span>
+<span class="fc" id="L237">        System.out.printf(&quot;eig = %s\n&quot;, FormatArray.toString(eig, &quot;%.4e&quot;));</span>
+<span class="fc" id="L238">        System.out.printf(&quot;s = %s\n&quot;, FormatArray.toString(s, &quot;%.4e&quot;));</span>
+<span class="fc" id="L239">        System.out.printf(&quot;fractions (eig or s) of total = %s\n&quot;, FormatArray.toString(fracs, &quot;%.4e&quot;));</span>
+<span class="fc" id="L240">        System.out.printf(&quot;cumulative proportion=\n%s\n&quot;, FormatArray.toString(c, &quot;%.4e&quot;));</span>
 
-<span class="fc" id="L245">        return calcPrincipalComponents(x, nComponents, u, s, vT, eps);</span>
+<span class="fc" id="L242">        return calcPrincipalComponents(x, nComponents, u, s, vT, eps);</span>
     }
 
     /**
@@ -283,15 +280,15 @@ import no.uib.cipr.matrix.SVD;
      */
     public static PCAStats calcPrincipalComponents(double[][] x, int nComponents, boolean useCUR) throws NotConvergedException {
 
-<span class="fc" id="L286">        int n = x.length;</span>
-<span class="fc" id="L287">        int nDimensions = x[0].length;</span>
+<span class="fc" id="L283">        int n = x.length;</span>
+<span class="fc" id="L284">        int nDimensions = x[0].length;</span>
 
-<span class="pc bpc" id="L289" title="1 of 2 branches missed.">        if (nComponents &gt; nDimensions) {</span>
-<span class="nc" id="L290">            throw new IllegalArgumentException(&quot;x has &quot; + nDimensions + &quot; but &quot;</span>
+<span class="pc bpc" id="L286" title="1 of 2 branches missed.">        if (nComponents &gt; nDimensions) {</span>
+<span class="nc" id="L287">            throw new IllegalArgumentException(&quot;x has &quot; + nDimensions + &quot; but &quot;</span>
                     + &quot; nComponents principal components were requested.&quot;);
         }
 
-<span class="fc" id="L294">        double eps = 1.e-15;</span>
+<span class="fc" id="L291">        double eps = 1.e-15;</span>
 
         // U is mxm
         // S is mxn
@@ -300,30 +297,30 @@ import no.uib.cipr.matrix.SVD;
         double[][] u;
         double[] s;
         double[][] vT;
-<span class="fc bfc" id="L303" title="All 2 branches covered.">        if (!useCUR) {</span>
-<span class="fc" id="L304">            SVD svd = SVD.factorize(new DenseMatrix(x));</span>
-<span class="fc" id="L305">            s = svd.getS();</span>
-<span class="fc" id="L306">            vT = MatrixUtil.convertToRowMajor(svd.getVt());</span>
-<span class="fc" id="L307">            u = MatrixUtil.convertToRowMajor(svd.getU());</span>
-<span class="fc" id="L308">        } else {</span>
-<span class="fc" id="L309">            CURDecomposition.CUR cur = CURDecomposition.calculateDecomposition(x, nComponents);</span>
-<span class="fc" id="L310">            MatrixUtil.SVDProducts svd = cur.getApproximateSVD();</span>
-<span class="fc" id="L311">            s = svd.s;</span>
-<span class="fc" id="L312">            vT = svd.vT;</span>
-<span class="fc" id="L313">            u = svd.u;</span>
+<span class="fc bfc" id="L300" title="All 2 branches covered.">        if (!useCUR) {</span>
+<span class="fc" id="L301">            SVD svd = SVD.factorize(new DenseMatrix(x));</span>
+<span class="fc" id="L302">            s = svd.getS();</span>
+<span class="fc" id="L303">            vT = MatrixUtil.convertToRowMajor(svd.getVt());</span>
+<span class="fc" id="L304">            u = MatrixUtil.convertToRowMajor(svd.getU());</span>
+<span class="fc" id="L305">        } else {</span>
+<span class="fc" id="L306">            CURDecomposition.CUR cur = CURDecomposition.calculateDecomposition(x, nComponents);</span>
+<span class="fc" id="L307">            MatrixUtil.SVDProducts svd = cur.getApproximateSVD();</span>
+<span class="fc" id="L308">            s = svd.s;</span>
+<span class="fc" id="L309">            vT = svd.vT;</span>
+<span class="fc" id="L310">            u = svd.u;</span>
         }
 
-<span class="fc" id="L316">        return calcPrincipalComponents(x, nComponents, u, s, vT, eps);</span>
+<span class="fc" id="L313">        return calcPrincipalComponents(x, nComponents, u, s, vT, eps);</span>
     }
 
     private static PCAStats calcPrincipalComponents(double[][] x, int nComponents,
         double[][] u, double[] s, double[][] vT, double eps) {
 
-<span class="fc" id="L322">        int n = x.length;</span>
-<span class="fc" id="L323">        int nDimensions = x[0].length;</span>
+<span class="fc" id="L319">        int n = x.length;</span>
+<span class="fc" id="L320">        int nDimensions = x[0].length;</span>
 
-<span class="pc bpc" id="L325" title="1 of 2 branches missed.">        if (nComponents &gt; nDimensions) {</span>
-<span class="nc" id="L326">            throw new IllegalArgumentException(&quot;x has &quot; + nDimensions + &quot; but &quot;</span>
+<span class="pc bpc" id="L322" title="1 of 2 branches missed.">        if (nComponents &gt; nDimensions) {</span>
+<span class="nc" id="L323">            throw new IllegalArgumentException(&quot;x has &quot; + nDimensions + &quot; but &quot;</span>
                     + &quot; nComponents principal components were requested.&quot;);
         }
 
@@ -333,92 +330,92 @@ import no.uib.cipr.matrix.SVD;
 
         int i;
         int j;
-<span class="fc" id="L336">        int rank = 0;</span>
-<span class="fc bfc" id="L337" title="All 2 branches covered.">        for (i = 0; i &lt; s.length; ++i) {</span>
-<span class="pc bpc" id="L338" title="1 of 2 branches missed.">            if (Math.abs(s[i]) &gt; eps) {</span>
-<span class="fc" id="L339">                rank++;</span>
+<span class="fc" id="L333">        int rank = 0;</span>
+<span class="fc bfc" id="L334" title="All 2 branches covered.">        for (i = 0; i &lt; s.length; ++i) {</span>
+<span class="pc bpc" id="L335" title="1 of 2 branches missed.">            if (Math.abs(s[i]) &gt; eps) {</span>
+<span class="fc" id="L336">                rank++;</span>
             }
         }
 
-<span class="fc bfc" id="L343" title="All 2 branches covered.">        if (nComponents &gt; rank) {</span>
-<span class="fc" id="L344">            nComponents = rank;</span>
+<span class="fc bfc" id="L340" title="All 2 branches covered.">        if (nComponents &gt; rank) {</span>
+<span class="fc" id="L341">            nComponents = rank;</span>
         }
 
         // re-doing these for output stats
 
-<span class="fc" id="L349">        double sumEvTrunc = 0;</span>
-<span class="fc" id="L350">        double[] eig = new double[rank];</span>
-<span class="fc" id="L351">        double sumEVTotal = 0;</span>
-<span class="fc" id="L352">        double sumSTotal = 0;</span>
-<span class="fc bfc" id="L353" title="All 2 branches covered.">        for (i = 0; i &lt; eig.length; ++i) {</span>
-<span class="fc" id="L354">            eig[i] = (s[i] * s[i])/((double)n - 1.);</span>
-<span class="fc" id="L355">            sumEVTotal += eig[i];</span>
-<span class="fc" id="L356">            sumSTotal += s[i];</span>
-<span class="fc bfc" id="L357" title="All 2 branches covered.">            if (i &lt; nComponents) {</span>
-<span class="fc" id="L358">                sumEvTrunc = sumEVTotal;</span>
+<span class="fc" id="L346">        double sumEvTrunc = 0;</span>
+<span class="fc" id="L347">        double[] eig = new double[rank];</span>
+<span class="fc" id="L348">        double sumEVTotal = 0;</span>
+<span class="fc" id="L349">        double sumSTotal = 0;</span>
+<span class="fc bfc" id="L350" title="All 2 branches covered.">        for (i = 0; i &lt; eig.length; ++i) {</span>
+<span class="fc" id="L351">            eig[i] = (s[i] * s[i])/((double)n - 1.);</span>
+<span class="fc" id="L352">            sumEVTotal += eig[i];</span>
+<span class="fc" id="L353">            sumSTotal += s[i];</span>
+<span class="fc bfc" id="L354" title="All 2 branches covered.">            if (i &lt; nComponents) {</span>
+<span class="fc" id="L355">                sumEvTrunc = sumEVTotal;</span>
             }
         }
 
-<span class="fc" id="L362">        double[] eigFracs = new double[rank];</span>
-<span class="fc" id="L363">        double[] sFracs = new double[rank];</span>
-<span class="fc bfc" id="L364" title="All 2 branches covered.">        for (j = 0; j &lt; eig.length; ++j) {</span>
-<span class="fc" id="L365">            eigFracs[j] = eig[j]/sumEVTotal;</span>
-<span class="fc" id="L366">            sFracs[j] = s[j]/sumSTotal;</span>
+<span class="fc" id="L359">        double[] eigFracs = new double[rank];</span>
+<span class="fc" id="L360">        double[] sFracs = new double[rank];</span>
+<span class="fc bfc" id="L361" title="All 2 branches covered.">        for (j = 0; j &lt; eig.length; ++j) {</span>
+<span class="fc" id="L362">            eigFracs[j] = eig[j]/sumEVTotal;</span>
+<span class="fc" id="L363">            sFracs[j] = s[j]/sumSTotal;</span>
         }
         //residual fractional eigenvalue is 1-(sum_{i=0 to nComponents-1}(s[i]) / sum_{i=0 to n-1}(s[i]))
-<span class="fc" id="L369">        double residFracEigen = 1 - (sumEvTrunc/sumEVTotal);</span>
+<span class="fc" id="L366">        double residFracEigen = 1 - (sumEvTrunc/sumEVTotal);</span>
 
-<span class="fc" id="L371">        double[] cEig = Arrays.copyOf(eigFracs, eigFracs.length);</span>
-<span class="fc bfc" id="L372" title="All 2 branches covered.">        for (j = 1; j &lt; cEig.length; ++j) {</span>
-<span class="fc" id="L373">            cEig[j] += cEig[j-1];</span>
+<span class="fc" id="L368">        double[] cEig = Arrays.copyOf(eigFracs, eigFracs.length);</span>
+<span class="fc bfc" id="L369" title="All 2 branches covered.">        for (j = 1; j &lt; cEig.length; ++j) {</span>
+<span class="fc" id="L370">            cEig[j] += cEig[j-1];</span>
         }
-<span class="fc" id="L375">        double[] cSingular = Arrays.copyOf(sFracs, sFracs.length);</span>
-<span class="fc bfc" id="L376" title="All 2 branches covered.">        for (j = 1; j &lt; cSingular.length; ++j) {</span>
-<span class="fc" id="L377">            cSingular[j] += cSingular[j-1];</span>
+<span class="fc" id="L372">        double[] cSingular = Arrays.copyOf(sFracs, sFracs.length);</span>
+<span class="fc bfc" id="L373" title="All 2 branches covered.">        for (j = 1; j &lt; cSingular.length; ++j) {</span>
+<span class="fc" id="L374">            cSingular[j] += cSingular[j-1];</span>
         }
 
         // COLUMNS of v are the principal axes, a.k.a. principal directions
 
-<span class="fc" id="L382">        double[][] pA = MatrixUtil.copySubMatrix(vT, 0, nComponents - 1, 0, vT[0].length - 1);</span>
+<span class="fc" id="L379">        double[][] pA = MatrixUtil.copySubMatrix(vT, 0, nComponents - 1, 0, vT[0].length - 1);</span>
 
         // X*V = U * diag(s) = principal components
-<span class="fc" id="L385">        double[][] uP = MatrixUtil.zeros(u.length, nComponents);</span>
+<span class="fc" id="L382">        double[][] uP = MatrixUtil.zeros(u.length, nComponents);</span>
         // principal components for &quot;1 sigma&quot;.  if need 2 sigma, multiply pc by 2,...
-<span class="fc" id="L387">        double[][] pC = MatrixUtil.zeros(u.length, nComponents);</span>
-<span class="fc bfc" id="L388" title="All 2 branches covered.">        for (i = 0; i &lt; u.length; ++i) {</span>
-<span class="fc bfc" id="L389" title="All 2 branches covered.">            for (j = 0; j &lt; nComponents; ++j) {</span>
+<span class="fc" id="L384">        double[][] pC = MatrixUtil.zeros(u.length, nComponents);</span>
+<span class="fc bfc" id="L385" title="All 2 branches covered.">        for (i = 0; i &lt; u.length; ++i) {</span>
+<span class="fc bfc" id="L386" title="All 2 branches covered.">            for (j = 0; j &lt; nComponents; ++j) {</span>
                 // row u_i * diag(s[j])
-<span class="fc" id="L391">                pC[i][j] = u[i][j] * s[j];</span>
-<span class="fc" id="L392">                uP[i][j] = u[i][j];</span>
+<span class="fc" id="L388">                pC[i][j] = u[i][j] * s[j];</span>
+<span class="fc" id="L389">                uP[i][j] = u[i][j];</span>
             }
         }
         //checked, same as pC = U * diag(s)
         //double[][] xv = MatrixUtil.multiply(x, MatrixUtil.transpose(vT));
         //System.out.printf(&quot;xV=\n%s\n&quot;, FormatArray.toString(xv, &quot;%.4e&quot;));
 
-<span class="fc" id="L399">        PCAStats stats = new PCAStats();</span>
-<span class="fc" id="L400">        stats.nComponents = nComponents;</span>
-<span class="fc" id="L401">        stats.principalAxes = pA;</span>
-<span class="fc" id="L402">        stats.principalComponents = pC;</span>
-<span class="fc" id="L403">        stats.eigenValues = eig;</span>
-<span class="fc" id="L404">        stats.uP = uP;</span>
-<span class="fc" id="L405">        stats._s = Arrays.copyOf(s, s.length);</span>
-<span class="fc" id="L406">        stats.cumulativeProportion = cEig;</span>
+<span class="fc" id="L396">        PCAStats stats = new PCAStats();</span>
+<span class="fc" id="L397">        stats.nComponents = nComponents;</span>
+<span class="fc" id="L398">        stats.principalAxes = pA;</span>
+<span class="fc" id="L399">        stats.principalComponents = pC;</span>
+<span class="fc" id="L400">        stats.eigenValues = eig;</span>
+<span class="fc" id="L401">        stats.uP = uP;</span>
+<span class="fc" id="L402">        stats._s = Arrays.copyOf(s, s.length);</span>
+<span class="fc" id="L403">        stats.cumulativeProportion = cEig;</span>
 
-<span class="fc" id="L408">        double ssdP = 0;</span>
-<span class="fc bfc" id="L409" title="All 2 branches covered.">        for (j = nComponents; j &lt; eig.length; ++j) {</span>
-<span class="fc" id="L410">            ssdP += eig[j];</span>
+<span class="fc" id="L405">        double ssdP = 0;</span>
+<span class="fc bfc" id="L406" title="All 2 branches covered.">        for (j = nComponents; j &lt; eig.length; ++j) {</span>
+<span class="fc" id="L407">            ssdP += eig[j];</span>
         }
-<span class="fc" id="L412">        stats.ssdP = ssdP;</span>
-<span class="fc" id="L413">        stats.fractionVariance = (sumEVTotal - ssdP)/sumEVTotal;</span>
+<span class="fc" id="L409">        stats.ssdP = ssdP;</span>
+<span class="fc" id="L410">        stats.fractionVariance = (sumEVTotal - ssdP)/sumEVTotal;</span>
 
-<span class="fc" id="L415">        System.out.printf(&quot;ssd_p=%.5e\n&quot;, stats.ssdP);</span>
-<span class="fc" id="L416">        System.out.printf(&quot;fractionVariance=%.5e\n&quot;, stats.fractionVariance);</span>
-<span class="fc" id="L417">        System.out.printf(&quot;principal axes=\n%s\n&quot;, FormatArray.toString(pA, &quot;%.4e&quot;));</span>
-<span class="fc" id="L418">        System.out.printf(&quot;principal projections (=u_p*s)=\n%s\n&quot;, FormatArray.toString(pC, &quot;%.4e&quot;));</span>
-<span class="fc" id="L419">        System.out.flush();</span>
+<span class="fc" id="L412">        System.out.printf(&quot;ssd_p=%.5e\n&quot;, stats.ssdP);</span>
+<span class="fc" id="L413">        System.out.printf(&quot;fractionVariance=%.5e\n&quot;, stats.fractionVariance);</span>
+<span class="fc" id="L414">        System.out.printf(&quot;principal axes=\n%s\n&quot;, FormatArray.toString(pA, &quot;%.4e&quot;));</span>
+<span class="fc" id="L415">        System.out.printf(&quot;principal projections (=u_p*s)=\n%s\n&quot;, FormatArray.toString(pC, &quot;%.4e&quot;));</span>
+<span class="fc" id="L416">        System.out.flush();</span>
 
-<span class="fc" id="L421">        return stats;</span>
+<span class="fc" id="L418">        return stats;</span>
     }
 
     /**
@@ -443,16 +440,16 @@ import no.uib.cipr.matrix.SVD;
      */
     public static double[][] reconstruct(double[] m, PCAStats stats) {
 
-<span class="fc" id="L446">        int p = stats.nComponents;</span>
-<span class="fc" id="L447">        int k = stats._s.length;</span>
-<span class="fc" id="L448">        int n = stats.principalComponents.length;</span>
+<span class="fc" id="L443">        int p = stats.nComponents;</span>
+<span class="fc" id="L444">        int k = stats._s.length;</span>
+<span class="fc" id="L445">        int n = stats.principalComponents.length;</span>
 
-<span class="pc bpc" id="L450" title="1 of 2 branches missed.">        if (n != stats.uP.length) {</span>
-<span class="nc" id="L451">            throw new IllegalArgumentException(&quot;n must be stats.principalComponents.length which must be equal to &quot; +</span>
+<span class="pc bpc" id="L447" title="1 of 2 branches missed.">        if (n != stats.uP.length) {</span>
+<span class="nc" id="L448">            throw new IllegalArgumentException(&quot;n must be stats.principalComponents.length which must be equal to &quot; +</span>
                     &quot;stats.principalComponents.length&quot;);
         }
-<span class="pc bpc" id="L454" title="1 of 2 branches missed.">        if (k != m.length) {</span>
-<span class="nc" id="L455">            throw new IllegalArgumentException(&quot;m.length must equal k == stats.principalAxes.length&quot;);</span>
+<span class="pc bpc" id="L451" title="1 of 2 branches missed.">        if (k != m.length) {</span>
+<span class="nc" id="L452">            throw new IllegalArgumentException(&quot;m.length must equal k == stats.principalAxes.length&quot;);</span>
         }
 
         //U_p is stats.uP
@@ -474,16 +471,16 @@ import no.uib.cipr.matrix.SVD;
 
         // pC = SVD(X).U * diag(SVD(X).s) for first p cols of U
         // pA = first k rows of V^T
-<span class="fc" id="L477">        double[][] re = MatrixUtil.multiply(stats.principalComponents, stats.principalAxes);</span>
+<span class="fc" id="L474">        double[][] re = MatrixUtil.multiply(stats.principalComponents, stats.principalAxes);</span>
         //reconstructions = stats.principalComponents dot stats.pA + column means
         //    which is u_P * s dot pA
         //[n X p] * [p X k] = [n X k]
-<span class="fc bfc" id="L481" title="All 2 branches covered.">        for (i = 0; i &lt; re.length; ++i) {</span>
-<span class="fc bfc" id="L482" title="All 2 branches covered.">            for (j = 0; j &lt; re[i].length; ++j) {</span>
-<span class="fc" id="L483">                re[i][j] += m[j];</span>
+<span class="fc bfc" id="L478" title="All 2 branches covered.">        for (i = 0; i &lt; re.length; ++i) {</span>
+<span class="fc bfc" id="L479" title="All 2 branches covered.">            for (j = 0; j &lt; re[i].length; ++j) {</span>
+<span class="fc" id="L480">                re[i][j] += m[j];</span>
             }
         }
-<span class="fc" id="L486">        return re;</span>
+<span class="fc" id="L483">        return re;</span>
     }
     
     /**

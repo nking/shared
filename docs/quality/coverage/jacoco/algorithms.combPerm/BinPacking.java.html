@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BinPacking.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.combPerm</a> &gt; <span class="el_source">BinPacking.java</span></div><h1>BinPacking.java</h1><pre class="source lang-java linenums">package algorithms.combPerm;
 
 /**
- * given an array and a constraint that each bin sum must be less that
+ * given an array and a constraint that each bin sum must be less than
  * or equal to capacity, find the minimum number of bins to place each
  * element in the array.
- */
-<span class="nc" id="L8">public class BinPacking {</span>
+	 */
+<span class="nc" id="L8">	public class BinPacking {</span>
 
     /**
       given an array and a constraint that each bin sum must be less that
       or equal to capacity, find the minimum number of bins to place each
       element in the array.
      The algorithm uses dynamic programming and a bitstring power set pattern to solve w/ a
-     r.t.c. of O(n*log(n)) which is much better than trying all permutations for n!.
-     The s.c. is O(n*log(n)).
+     r.t.c. of O(n*(2^n)) which is much better than trying all permutations for n!.
+     The s.c. is O(n).
      &lt;pre&gt;
      The initial problem is adapted from Competitve Programmer's Handbook by Antti Laaksonen
       chapt 10.5.
@@ -22,61 +22,62 @@
      &lt;/pre&gt;
      * @param weights array of weights.   each weight must be .LEQ. capacity.
      * @param capacity weight capacity for each bin
-     * @return
+     * @return the minimum number of bins to place each element in the
+     * array.
      */
     public static int minNumberOfBins(int[] weights, int capacity) {
-<span class="fc" id="L28">        int n = weights.length;</span>
+<span class="fc" id="L29">        int n = weights.length;</span>
 
         // tab[S]:  S enumerates all subsets of size n as a bitstring, with set bits being
         //     the indexes of weights which are present in the calculation.
         // tab[S][0]: column 0 of each row holds the number of bins used for tab[s].
-        // tab[S][1]: column 1 of each row holds the summed weight of the last elevator not
+        // tab[S][1]: column 1 of each row holds the summed weight of the last bin not
         //            yet filled for this set S.
-<span class="fc" id="L35">        int[][] tab = new int[1&lt;&lt;n][2];</span>
-<span class="fc" id="L36">        tab[0][0] = n+1;//1; // init with infeasible value</span>
-<span class="fc" id="L37">        tab[0][1] = 0;</span>
+<span class="fc" id="L36">        int[][] tab = new int[1&lt;&lt;n][2];</span>
+<span class="fc" id="L37">        tab[0][0] = n+1;//1; // init with infeasible value</span>
+<span class="fc" id="L38">        tab[0][1] = 0;</span>
 
         // init for 1 bin with each weight
-<span class="fc bfc" id="L40" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
-<span class="fc" id="L41">            tab[1&lt;&lt;i][0] = 1;</span>
-<span class="fc" id="L42">            tab[1&lt;&lt;i][1] = weights[i];</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc" id="L42">            tab[1&lt;&lt;i][0] = 1;</span>
+<span class="fc" id="L43">            tab[1&lt;&lt;i][1] = weights[i];</span>
         }
 
-<span class="fc" id="L45">        int[] tmpIncl = new int[2];</span>
+<span class="fc" id="L46">        int[] tmpIncl = new int[2];</span>
 
         // we solve for each subset successively.  start at s=1 so that prev is already init s=0
-<span class="fc bfc" id="L48" title="All 2 branches covered.">        for (int s = 1; s &lt; (1&lt;&lt;n); ++s) {</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">        for (int s = 1; s &lt; (1&lt;&lt;n); ++s) {</span>
 
             // if not a power of 2, hasn't been initialized yet:
-<span class="fc bfc" id="L51" title="All 2 branches covered.">            if ((s &amp; (s-1)) != 0) {</span>
-<span class="fc" id="L52">                tab[s][0] = n + 1; // init with infeasible value</span>
-<span class="fc" id="L53">                tab[s][1] = 0;</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">            if ((s &amp; (s-1)) != 0) {</span>
+<span class="fc" id="L53">                tab[s][0] = n + 1; // init with infeasible value</span>
+<span class="fc" id="L54">                tab[s][1] = 0;</span>
             }
 
-<span class="fc bfc" id="L56" title="All 2 branches covered.">            for (int i = 0; i &lt; n; ++i) {</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">            for (int i = 0; i &lt; n; ++i) {</span>
 
-<span class="fc bfc" id="L58" title="All 2 branches covered.">                if ((s &amp; (1&lt;&lt;i)) == 0) continue;// skip if S doesn't includes i</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">                if ((s &amp; (1&lt;&lt;i)) == 0) continue;// skip if S doesn't includes i</span>
 
-<span class="fc" id="L60">                int incl = s ^ (1 &lt;&lt; i); // prev set is s minus i</span>
+<span class="fc" id="L61">                int incl = s ^ (1 &lt;&lt; i); // prev set is s minus i</span>
 
-<span class="fc bfc" id="L62" title="All 2 branches covered.">                if (i == incl) continue; // cannot add item to its own set which already has item</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">                if (i == incl) continue; // cannot add item to its own set which already has item</span>
 
-<span class="fc" id="L64">                System.arraycopy(tab[incl], 0, tmpIncl, 0, 2);</span>
+<span class="fc" id="L65">                System.arraycopy(tab[incl], 0, tmpIncl, 0, 2);</span>
 
-<span class="fc bfc" id="L66" title="All 2 branches covered.">                if (tmpIncl[1] + weights[i] &lt;= capacity) {// add to existing latest bin</span>
-<span class="fc" id="L67">                    tmpIncl[1] += weights[i];</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">                if (tmpIncl[1] + weights[i] &lt;= capacity) {// add to existing latest bin</span>
+<span class="fc" id="L68">                    tmpIncl[1] += weights[i];</span>
                 } else { // new bin
-<span class="fc" id="L69">                    ++tmpIncl[0];</span>
-<span class="fc" id="L70">                    tmpIncl[1] = weights[i];</span>
+<span class="fc" id="L70">                    ++tmpIncl[0];</span>
+<span class="fc" id="L71">                    tmpIncl[1] = weights[i];</span>
                 }
-                // assign to S the best of current or candidate + current weight
-<span class="fc bfc" id="L73" title="All 6 branches covered.">                if ((tmpIncl[0] == tab[s][0] &amp;&amp; tmpIncl[1] &lt; tab[s][1]) || (tmpIncl[0] &lt; tab[s][0])) {</span>
-<span class="fc" id="L74">                    tab[s][0] = tmpIncl[0];</span>
-<span class="fc" id="L75">                    tab[s][1] = tmpIncl[1];</span>
+                // assign to S the best of current and candidate + current weight
+<span class="fc bfc" id="L74" title="All 6 branches covered.">                if ((tmpIncl[0] == tab[s][0] &amp;&amp; tmpIncl[1] &lt; tab[s][1]) || (tmpIncl[0] &lt; tab[s][0])) {</span>
+<span class="fc" id="L75">                    tab[s][0] = tmpIncl[0];</span>
+<span class="fc" id="L76">                    tab[s][1] = tmpIncl[1];</span>
                 }
             }
         }
-<span class="fc" id="L79">        return tab[(1&lt;&lt;n)-1][0];</span>
+<span class="fc" id="L80">        return tab[(1&lt;&lt;n)-1][0];</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

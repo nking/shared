@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BruteForce.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.correlation</a> &gt; <span class="el_source">BruteForce.java</span></div><h1>BruteForce.java</h1><pre class="source lang-java linenums">package algorithms.correlation;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BruteForce.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.statistics</a> &gt; <span class="el_source">BruteForce.java</span></div><h1>BruteForce.java</h1><pre class="source lang-java linenums">package algorithms.statistics;
 
 import algorithms.matrix.MatrixUtil;
 
@@ -135,45 +135,6 @@ import algorithms.matrix.MatrixUtil;
         
 <span class="fc" id="L136">        return cov;</span>
     }
-    
-    /**
-     * calculate the covariance matrix for a using simplest brute force method
-     * Cov_a = (1/n) a^T * a for 'a' being zero-mean centered (that is, subtract the mean
-     * of each column from each column).
-     * The covariance matrix is also known as auto-covariance matrix, 
-     * dispersion matrix, variance matrix, and the variance–covariance matrix.
-     @param a an mxn matrix of data with the dimensions being rows
-     * and the datum number being columns.  NOTE that a must be &quot;zero mean&quot; centered.
-     * &lt;pre&gt;
-     * e.g.  a[0] = new double[]{10,  9}
-     *       a[1] = new double[]{99,  100}
-     *       a[2] = new double[]{1000, 900}
-     * &lt;/pre&gt;
-     @return the covariance matrix as a double array of size [a[0].length][a[0].length]
-     */
-    public static double[][] covariance2(double[][] a) {
-        
-<span class="fc" id="L156">        double[][] cov = MatrixUtil.createATransposedTimesA(a);</span>
 
-        int i, j;
-<span class="fc" id="L159">        int n = a[0].length;</span>
-<span class="fc" id="L160">        double invN2 = 1./((double)n - 1.);</span>
-<span class="fc" id="L161">        invN2 *= invN2;</span>
-<span class="fc" id="L162">        MatrixUtil.multiply(cov, invN2);</span>
-
-        /*
-        System.out.printf(&quot;bf cov=\n&quot;);
-        for ( i = 0; i &lt; cov.length; ++i) {
-            for ( j = 0; j &lt; cov[i].length; ++j) {
-                System.out.printf(&quot;%11.3e  &quot;, cov[i][j]);
-            }
-            System.out.printf(&quot;\n&quot;);
-        }
-        System.out.flush();
-        */
-
-<span class="fc" id="L175">        return cov;</span>
-    }
-   
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
