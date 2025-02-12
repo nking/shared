@@ -19,7 +19,7 @@ public class StronglyConnectedComponents3 {
 
     /**
      * given an DAG as an adjacency map, find strongly connected components and return
-     * them int outputComponets, and return the condensed DAG of those components in
+     * them in outputComponents, and return the condensed DAG of those components in
      * outputAdjMap.  Note that the condensed graph node numbers are the smallest vertexes
      * in their component.
      * r.t.c. is O(|V| + |E|).  s.c. is O(|V| + |E|)
@@ -71,6 +71,7 @@ public class StronglyConnectedComponents3 {
 
             dfs(u, adjMapRev, component);
 
+            // TODO: edit the DFS to return the min component to remove O(n) here
             int root = Collections.min(component); //O(n) at worst.
             //int root = component.get(0);
 
