@@ -8,7 +8,6 @@ algorithms.compGeometry.convexHull
 algorithms.concurrency
 algorithms.concurrency.diningPhilosophers
 algorithms.connected
-algorithms.correlation
 algorithms.dimensionReduction
 algorithms.disjointSets
 algorithms.encoding
