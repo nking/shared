@@ -661,13 +661,14 @@ public class DerivGEV {
     }
 
     /**
-     *
-     @param yConst
-     @param mu
-     @param sigma
-     @param k
-     @param x
-     @return
+      calculate Preconditioner Modified Residual with respect to k as
+     resid = dydk/d2ydkdk;
+     @param yConst constant factor used in dydk = (yConst/sigma) * ( f1 * df2dk + f2 * df1dk )
+     @param mu location parameter of GEV distribution
+     @param sigma scale parameter of GEV distribution
+     @param k shape parameter of GEV distribution
+     @param x the quantile of the distribution
+     @return precondition modified residual with respect to k: dydk/d2ydkdk
      */
     public static double calculatePreconditionerModifiedResidualK(double yConst, double mu, double sigma, double k, double x) {
 
@@ -995,13 +996,13 @@ public class DerivGEV {
     }
 
     /**
-     *
-     @param yConst
-     @param mu
-     @param sigma
-     @param k
-     @param x
-     @return
+     calculate Preconditioner Modified Residual with respect to sigma
+     @param yConst constant factor used in dydk = (yConst/sigma) * ( f1 * df2dsigma + f2 * df1dsigma )
+     @param mu location parameter of GEV distribution
+     @param sigma scale parameter of GEV distribution
+     @param k shape parameter of GEV distribution
+     @param x the quantile of the distribution
+     @return precondition modified residual with respect to sigma
      */
     public static double calculatePreconditionerModifiedResidualSigma(
         double yConst, double mu, double sigma, double k, double x) {
@@ -1039,13 +1040,13 @@ public class DerivGEV {
     }
 
     /**
-     *
-     @param yConst
-     @param mu
-     @param sigma
-     @param k
-     @param x
-     @return
+     calculate Preconditioner Modified Residual with respect to mu
+     @param yConst constant factor used in dydk = (yConst/sigma) * ( f1 * df2dmu + f2 * df1dmu )
+     @param mu location parameter of GEV distribution
+     @param sigma scale parameter of GEV distribution
+     @param k shape parameter of GEV distribution
+     @param x the quantile of the distribution
+     @return precondition modified residual with respect to mu
      */
     public static double calculatePreconditionerModifiedResidualMu(double yConst, double mu, double sigma, double k, double x) {
 

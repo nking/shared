@@ -28,11 +28,11 @@ public class BruteForceDistance {
     }
         
     /**
-     * euclidean distance matrix
+     * calc euclidean distance matrix
      * (ported from https://blogs.sas.com/content/iml/2018/04/04/distance-correlation.html
      * 
-     @param a
-     @return 
+     @param a matrix where rows are samples of data and columns are variables (a.k.a. features)
+     @return the euclidean distance matrix
      */
     public static double[][] distanceMatrix(double[][] a) {
         int n = a.length;
@@ -229,12 +229,24 @@ public class BruteForceDistance {
     }
     
     /**
-     *
+     class holding intermediate and final results of the distance covaraince algorithm.
      */
     public static class DCOV {
+        /**
+         * dist cov, squared
+         */
         double dCovSq;
+        /**
+         * distance variance of x, squared
+         */
         double dVarXSq;
-        double dVarYSq;                
+        /**
+         distance variance of y, squared
+         */
+        double dVarYSq;
+        /**
+         * correlation, squared
+         */
         double corSq;
         @Override
         public String toString() {

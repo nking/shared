@@ -11,14 +11,18 @@ import no.uib.cipr.matrix.NotConvergedException;
 public class CubicRootSolver {
 
     /**
-     *
+     * tolerance used for real numbers to determine that they're
+     * significant above 0.  its overridden by local vaiables for some
+     * methods.
+     * TODO: consider allowing tolerance to be a method argument.
      */
     public final static double eps = 1e-7;
 
     /**
-     *
-     @param r
-     @return
+     * calculate the polynomial roots and return the real portion
+     @param r an array holding complex number coefficients of the polynomials.
+     e.g. a, b, c , d for the equation a*x^3 + b*x^2 + c*x + d = 0.
+     @return the real portion of the polynomial roots
      */
     public static double[] realNonZeroOnly(Complex[] r) {
         int n = 0;
@@ -102,7 +106,7 @@ public class CubicRootSolver {
      * NOTE that if an empty array is returned, one can use solveUsingGeneral
      */
     public static double[] solveUsingDepressedCubic(double p, double q) {
-        
+
         double eps = 1.e-10;
        
         double discr = Math.pow(q/2., 2) + Math.pow(p/3., 3);

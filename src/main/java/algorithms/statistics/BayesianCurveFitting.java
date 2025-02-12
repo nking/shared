@@ -113,7 +113,7 @@ public class BayesianCurveFitting {
 
         // the mean is roughly similar to a slope term of yTrain/xTrain
         //[(m+1) X 1]
-        double[] mean = calcMean(priorMean, priorCov, s, phiXT, t, alpha, beta);
+        double[] mean = calcMean(priorMean, priorCov, s, phiXT, t, beta);
         log.log(java.util.logging.Level.FINE, String.format("mean=\n%s", FormatArray.toString(mean, "%.4f")));
 
         //[m+1 X m+1]
@@ -147,7 +147,7 @@ public class BayesianCurveFitting {
      * predict the labels given the model and x test data.
      @param fit model fit made from training data
      @param phiXTest x value feature matrix for which to predict target t values.
-     @return
+     @return predicted labels
      * @throws no.uib.cipr.matrix.NotConvergedException
      */
     public static ModelPrediction predict(ModelFit fit, double[][] phiXTest) throws NotConvergedException {
@@ -207,7 +207,7 @@ public class BayesianCurveFitting {
      * from a multivariate normal distribution based upon the model fit mean and covariance.
      @param fit model fit made from training data
      @param phiXTest x value feature matrix for which to predict target t values.
-     @param nSamples
+     @param nSamples the number of samples to draw randomly from a multivariate normal.
      @return nSamples predicted from random samples of the model at the points from phiXTest.
      * the return matrix size is [nSamples X phiXTest.length] so that each row is a sample
      * generated for phiXTest.
@@ -301,18 +301,18 @@ public class BayesianCurveFitting {
      * method fit().
      * </pre>
      *
-     @param priorMean
-     @param priorPrecision
+     @param priorMean mean of the prior
+     @param priorPrecision precision of the prior
+     where the precision is the reciprocal of the variance.
      @param s
      @param phiXT
-     @param alpha
      @param t
      @param beta
      @return size [(m+1)]
      * @throws no.uib.cipr.matrix.NotConvergedException
      */
     protected static double[] calcMean(final double[] priorMean, final double[][] priorPrecision,
-            final double[][] s, final double[][] phiXT, final double[] t,  final double alpha, final double beta) throws NotConvergedException {
+            final double[][] s, final double[][] phiXT, final double[] t,  final double beta) throws NotConvergedException {
 
         /*
         solve for mean as x in a*x=b

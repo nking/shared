@@ -9,9 +9,9 @@ public class Beta {
     /**
      * implemented as gamma(alpha)*gamma(beta)/gamma(alpha + beta)
      * 
-     @param alpha
-     @param beta
-     @return 
+     @param alpha alpha parameter
+     @param beta beta parameter
+     @return the value for beta(alpha, beta)
      */
     public static double beta(double alpha, double beta) {
         double ga = Gamma.lanczosGamma9(alpha);

@@ -171,7 +171,7 @@ public class Covariance {
 
         //    Cov(X, Y) = (1 / (n - 1)) * Σ ( (Xi - mean(X)) / std(X) ) * ( (Yi - mean(Y)) / std(Y) )
 
-        // needs to be multiplied by stddev(x)*stdev(y) to transform to origian data reference frame
+        // needs to be multiplied by stddev(x)*stdev(y) to transform to original data reference frame
         double cor = (1./(n - 1.)) * moments[4];
 
         return cor;
