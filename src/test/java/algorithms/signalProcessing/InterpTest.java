@@ -48,7 +48,7 @@ public class InterpTest extends TestCase {
         int outLength = (int)Math.ceil(scale * (float)values.length);
         
         float[] r = interp.linearInterp(
-            values, outLength, 0.f, 255.f);
+            values, outLength);//, 0.f, 255.f);
         
         assertEquals(outLength, r.length);
         
@@ -57,7 +57,7 @@ public class InterpTest extends TestCase {
         //System.out.println(Arrays.toString(r));
         
         float[] r2 = interp.linearInterp(
-            r, n, 0.f, 255.f);
+            r, n);//, 0.f, 255.f);
         
         assertEquals(n, r2.length);
         

@@ -92,7 +92,7 @@ public class Interp {
      @return
      */
     public float[] linearInterp(float[] input,
-        int outLength, float minValue, float maxValue) {
+        int outLength) {
 
         if (input == null) {
             throw new IllegalArgumentException("input cannot be null");
@@ -136,4 +136,5 @@ public class Interp {
 
         return output;
     }
+
 }

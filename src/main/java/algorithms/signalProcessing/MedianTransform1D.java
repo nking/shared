@@ -62,7 +62,7 @@ public class MedianTransform1D {
             if ((cJPlus1Ast.length & 1) == 1) {
                 int outLength = cJPlus1Ast.length/2;
                 cJPlus1 = interp.linearInterp(
-                    cJPlus1Ast, outLength, -256, 255);
+                    cJPlus1Ast, outLength);//, -256, 255);
             } else {
                 cJPlus1 = interp.bin(cJPlus1Ast, 2);
             }
@@ -112,7 +112,7 @@ public class MedianTransform1D {
             } else {
                 
                 cJPrime = interp.linearInterp(
-                    output, wJ.a.length, -256, 255);
+                    output, wJ.a.length);//, -256, 255);
             }
             
             output = Arrays.copyOf(cJPrime, cJPrime.length);
