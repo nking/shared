@@ -5706,6 +5706,18 @@ public class MatrixUtil {
         return c;
     }
 
+    public static int[][] convertDoubleToInt(double[][] a) {
+        int[][] c = new int[a.length][];
+        int i, j;
+        for (i = 0; i < a.length; ++i) {
+            c[i] = new int[a[0].length];
+            for (j = 0; j < a[0].length; ++j) {
+                c[i][j] = (int)Math.round(a[i][j]);
+            }
+        }
+        return c;
+    }
+
     /**
      *
      @param a

@@ -2126,4 +2126,21 @@ public class MatrixUtilTest extends TestCase {
         }*/
 
     }
+
+    public void testConvert() {
+        int[][] aI = new int[][]{{1,2,3}, {4,5,6}};
+        double[][] aD = new double[][]{{1,1.8,3}, {4,5,6.1}};
+
+        double[][] rI = MatrixUtil.convertIntToDouble(aI);
+        for (int i = 0; i < aI.length; ++i) {
+            for (int j = 0; j < aI[i].length; ++j) {
+                assertTrue(Math.abs(rI[i][j] - aI[i][j]) < 1E-11);
+            }
+        }
+
+        int[][] aD2 = MatrixUtil.convertDoubleToInt(aD);
+        for (int i = 0; i < aI.length; ++i) {
+            assertTrue(Arrays.equals(aI[i], aD2[i]));
+        }
+    }
 }
