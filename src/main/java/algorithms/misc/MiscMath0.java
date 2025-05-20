@@ -826,7 +826,7 @@ public class MiscMath0 {
      * and returns [median of absolute deviation, median, min, max].
      * To use the MAD as one uses standard deviation in determining outliers,
      * use stDev = k*MAD where k is a constant scale factor.  
-     * For gaussian k~1.4826.  Outliers are outside the range [median - 3*MAD, median + 3*MAD].
+     * For gaussian k~1.4826.  Outliers are outside the range [median - 3*k*MAD, median + 3*k*MAD].
      @param x
      @return an array holding the median of absolute deviation of x, 
      * the median, the min, and the max.
