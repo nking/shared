@@ -71,41 +71,41 @@ public class StronglyConnectedComponents3 {
 
 <span class="fc" id="L72">            dfs(u, adjMapRev, component);</span>
 
-<span class="fc" id="L74">            // TODO: edit the DFS to return the min component to remove O(n) here</span>
-            int root = Collections.min(component); //O(n) at worst.
+            // TODO: edit the DFS to return the min component to remove O(n) here
+<span class="fc" id="L75">            int root = Collections.min(component); //O(n) at worst.</span>
             //int root = component.get(0);
-<span class="fc" id="L77"></span>
-            outputComponents.put(root, component.stream().collect(Collectors.toSet()));
-<span class="fc bfc" id="L79" title="All 2 branches covered."></span>
-<span class="fc" id="L80">            for (int v : component) {</span>
+
+<span class="fc" id="L78">            outputComponents.put(root, component.stream().collect(Collectors.toSet()));</span>
+
+<span class="fc bfc" id="L80" title="All 2 branches covered.">            for (int v : component) {</span>
 <span class="fc" id="L81">                roots.put(v, root);</span>
 <span class="fc" id="L82">            }</span>
-        }
+<span class="fc" id="L83">        }</span>
 
-<span class="fc bfc" id="L85" title="All 2 branches covered.">        // add edges to condensation graph</span>
+        // add edges to condensation graph
 <span class="fc bfc" id="L86" title="All 2 branches covered.">        for (Map.Entry&lt;Integer, Collection&lt;Integer&gt;&gt;  entry : adjMap.entrySet()) {</span>
-<span class="fc" id="L87">            for (int v : entry.getValue()) {</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">            for (int v : entry.getValue()) {</span>
 <span class="fc" id="L88">                int pU = roots.get(entry.getKey());</span>
-<span class="fc bfc" id="L89" title="All 2 branches covered.">                int pV = roots.get(v);</span>
-<span class="fc" id="L90">                if (pU != pV) {</span>
+<span class="fc" id="L89">                int pV = roots.get(v);</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">                if (pU != pV) {</span>
 <span class="fc" id="L91">                    outputAdjMap.putIfAbsent(pU, new HashSet&lt;&gt;());</span>
-                    outputAdjMap.get(pU).add(pV);
-<span class="fc" id="L93">                }</span>
+<span class="fc" id="L92">                    outputAdjMap.get(pU).add(pV);</span>
+                }
 <span class="fc" id="L94">            }</span>
 <span class="fc" id="L95">        }</span>
-    }
+<span class="fc" id="L96">    }</span>
 
-<span class="fc" id="L98">    protected void dfs(int u, Map&lt;Integer, Collection&lt;Integer&gt;&gt; adjMap, List&lt;Integer&gt; output) {</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">        visited.add(u);</span>
+    protected void dfs(int u, Map&lt;Integer, Collection&lt;Integer&gt;&gt; adjMap, List&lt;Integer&gt; output) {
+<span class="fc" id="L99">        visited.add(u);</span>
 <span class="fc bfc" id="L100" title="All 2 branches covered.">        if (adjMap.containsKey(u)) {</span>
 <span class="fc bfc" id="L101" title="All 2 branches covered.">            for (int v : adjMap.get(u)) {</span>
-<span class="fc" id="L102">                if (!visited.contains(v)) {</span>
-                    dfs(v, adjMap, output);
-<span class="fc" id="L104">                }</span>
-            }
-<span class="fc" id="L106">        }</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">                if (!visited.contains(v)) {</span>
+<span class="fc" id="L103">                    dfs(v, adjMap, output);</span>
+                }
+<span class="fc" id="L105">            }</span>
+        }
 <span class="fc" id="L107">        output.add(u);</span>
-    }
+<span class="fc" id="L108">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Bilinear.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.signalProcessing</a> &gt; <span class="el_source">Bilinear.java</span></div><h1>Bilinear.java</h1><pre class="source lang-java linenums">package algorithms.signalProcessing;
+
+import algorithms.util.PairIntArray;
+
+<span class="nc" id="L5">public class Bilinear {</span>
+
+    public static PairIntArray upsample(PairIntArray data, int upsamplingFactor) {
+
+<span class="fc" id="L9">        PairIntArray out = new PairIntArray();</span>
+<span class="fc" id="L10">        float factor = (float)upsamplingFactor;</span>
+<span class="fc" id="L11">        out.add(data.getX(0), data.getY(0));</span>
+
+<span class="fc bfc" id="L13" title="All 2 branches covered.">        for (int i = 0; i &lt; data.getN(); i++) {</span>
+<span class="fc" id="L14">            int x0 = data.getX(i);</span>
+<span class="fc" id="L15">            int y0 = data.getY(i);</span>
+            int x1, y1;
+<span class="fc bfc" id="L17" title="All 2 branches covered.">            if (i + 1 == data.getN()) {</span>
+<span class="fc" id="L18">                x1 = data.getX(0);</span>
+<span class="fc" id="L19">                y1 = data.getY(0);</span>
+            } else {
+<span class="fc" id="L21">                x1 = data.getX(i + 1);</span>
+<span class="fc" id="L22">                y1 = data.getY(i + 1);</span>
+            }
+<span class="fc bfc" id="L24" title="All 2 branches covered.">            for (int j = 1; j &lt; upsamplingFactor; j++) {</span>
+<span class="fc" id="L25">                float t = (float) j / factor;</span>
+<span class="fc" id="L26">                float x = x0 + t * (x1 - x0);</span>
+<span class="fc" id="L27">                float y = y0 + t * (y1 - y0);</span>
+<span class="fc" id="L28">                out.add(Math.round(x), Math.round(y));</span>
+            }
+<span class="fc bfc" id="L30" title="All 2 branches covered.">            if (i &lt; data.getN() - 1) {</span>
+<span class="fc" id="L31">                out.add(x1, y1);</span>
+            }
+        }
+<span class="fc" id="L34">        return out;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

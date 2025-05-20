@@ -62,7 +62,7 @@ import java.util.List;
 <span class="fc bfc" id="L62" title="All 2 branches covered.">            if ((cJPlus1Ast.length &amp; 1) == 1) {</span>
 <span class="fc" id="L63">                int outLength = cJPlus1Ast.length/2;</span>
 <span class="fc" id="L64">                cJPlus1 = interp.linearInterp(</span>
-                    cJPlus1Ast, outLength, -256, 255);
+                    cJPlus1Ast, outLength);//, -256, 255);
 <span class="fc" id="L66">            } else {</span>
 <span class="fc" id="L67">                cJPlus1 = interp.bin(cJPlus1Ast, 2);</span>
             }
@@ -112,7 +112,7 @@ import java.util.List;
             } else {
                 
 <span class="fc" id="L114">                cJPrime = interp.linearInterp(</span>
-                    output, wJ.a.length, -256, 255);
+                    output, wJ.a.length);//, -256, 255);
             }
             
 <span class="fc" id="L118">            output = Arrays.copyOf(cJPrime, cJPrime.length);</span>

@@ -364,20 +364,20 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
         else {
 <span class="fc bfc" id="L365" title="All 2 branches covered.">            if (isRed(h.left))</span>
 <span class="fc" id="L366">                h = rotateRight(h);</span>
-<span class="fc bfc" id="L367" title="All 4 branches covered.">            if (key.compareTo(h.key) == 0 &amp;&amp; (h.right == null))</span>
+<span class="pc bpc" id="L367" title="1 of 4 branches missed.">            if (key.compareTo(h.key) == 0 &amp;&amp; (h.right == null))</span>
 <span class="fc" id="L368">                return null;</span>
-<span class="fc bfc" id="L369" title="All 4 branches covered.">            if (!isRed(h.right) &amp;&amp; !isRed(h.right.left))</span>
+<span class="pc bpc" id="L369" title="1 of 4 branches missed.">            if (!isRed(h.right) &amp;&amp; !isRed(h.right.left))</span>
 <span class="fc" id="L370">                h = moveRedRight(h);</span>
-<span class="fc bfc" id="L371" title="All 2 branches covered.">            if (key.compareTo(h.key) == 0) {</span>
-<span class="fc" id="L372">                RBNode x = min(h.right);</span>
+<span class="pc bpc" id="L371" title="1 of 2 branches missed.">            if (key.compareTo(h.key) == 0) {</span>
+<span class="nc" id="L372">                RBNode x = min(h.right);</span>
                 
-<span class="fc" id="L374">                h.key = x.key;</span>
-<span class="fc" id="L375">                h.val = x.val;</span>
+<span class="nc" id="L374">                h.key = x.key;</span>
+<span class="nc" id="L375">                h.val = x.val;</span>
                 
                 // h.val = get(h.right, min(h.right).key);
                 // h.key = min(h.right).key;
-<span class="fc" id="L379">                h.right = deleteMin(h.right);</span>
-<span class="fc" id="L380">            }</span>
+<span class="nc" id="L379">                h.right = deleteMin(h.right);</span>
+<span class="nc" id="L380">            }</span>
 <span class="fc" id="L381">            else h.right = delete(h.right, key);</span>
         }
 <span class="fc" id="L383">        return balance(h);</span>
