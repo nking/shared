@@ -1,5 +1,7 @@
 package algorithms.util;
 
+import algorithms.Rotate;
+
 import java.util.Arrays;
 
 /**
@@ -71,7 +73,13 @@ public class PairFloatArray {
     public int getN() {
         return n;
     }
-    
+
+    public void rotateLeft(int offset) {
+        Rotate r = new Rotate();
+        r.rotate(x, offset);
+        r.rotate(y, offset);
+    }
+
     /**
      *
      @param xPoint

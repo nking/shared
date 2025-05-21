@@ -577,7 +577,6 @@ public class LinesAndAnglesTest extends TestCase {
         double minDist = LinesAndAngles.minDistPointToLine(x1, y1,
                 x2,y2,x3,y3);
         assertTrue(Math.abs(expDist - minDist) < 1E-7);
-
     }
 
     public void testCalcAngle() {
