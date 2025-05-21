@@ -1,6 +1,7 @@
 package algorithms.compGeometry;
 
 import java.util.Arrays;
+import java.util.Random;
 import java.util.logging.Logger;
 import junit.framework.TestCase;
 
@@ -577,5 +578,45 @@ public class LinesAndAnglesTest extends TestCase {
                 x2,y2,x3,y3);
         assertTrue(Math.abs(expDist - minDist) < 1E-7);
 
+    }
+
+    public void testCalcAngle() {
+        long seed = System.nanoTime();
+        System.out.printf("seed = %d\n", seed);
+        Random rand = new Random(seed);
+
+        /*
+        P3:P1  sweeping clockwise to P3:P2
+              P1  P2
+                P3
+        */
+
+        final double x3 = 0.f;
+        final double y3 = 0.f;
+        final double x2 = 1.f;
+        final double y2 = 0.f;
+        int offsetX, offsetY;
+        double _x1, _y1, _x2, _y2, _x3, _y3, _angleR, angleR;
+
+        for (double angle = 0; angle < 360; angle+=1) {
+            offsetX = 0;//rand.nextInt(100);
+            offsetY = 0;//rand.nextInt(100);
+            _x3 = x3 + offsetX;
+            _y3 = y3 + offsetY;
+            _x2 = x2 + offsetX;
+            _y2 = y2 + offsetY;
+
+            _x1 = Math.cos(angle * Math.PI/180.) + offsetX;
+            _y1 = Math.sin(angle * Math.PI/180.) + offsetY;
+
+            _angleR = LinesAndAngles.calcAngle(_x1, _y1, _x2, _y2, _x3, _y3);
+            angleR = angle * Math.PI/180.;
+
+            if (angle > 180) {
+                _angleR += 2.*Math.PI;
+            }
+
+            assertTrue(Math.abs(angleR - _angleR) < 1E-6);
+        }
     }
 }

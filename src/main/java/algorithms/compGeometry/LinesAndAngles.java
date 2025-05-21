@@ -457,7 +457,7 @@ public class LinesAndAngles {
         double angleA = calcAngle(x1, y1, x2, y2, x3, y3);
 
         if (d > 0) {
-            angleA = 2. * Math.PI - angleA;
+            angleA = 2. * Math.PI + angleA;
         }
 
         return angleA;
@@ -486,22 +486,65 @@ public class LinesAndAngles {
     public static double calcAngle(int x1, int y1,
                                    int x2, int y2, int x3, int y3) {
 
-        // c
-        int d1d3 = distanceSqEucl(x1, y1, x3, y3);
+        return calcAngle((double)x1, (double)y1, (double)x2, (double)y2, (double)x3, (double)y3);
+    }
 
-        // b
-        int d2d3 = distanceSqEucl(x2, y2, x3, y3);
+    /**
+     * Calculate the angle of segment P3:P1 sweeping clockwise
+     * to segment P3:P2.
+     * <p>
+     * Internally, the method uses the law of cosines and
+     * the direction method.
+     * <pre>
+     *   P1     P2
+     *
+     *      P3
+     * </pre>
+     *
+     * @param x1
+     * @param y1
+     * @param x2
+     * @param y2
+     * @param x3
+     * @param y3
+     * @return angle between segment P1P3 and P2P3 in radians.
+     */
+    public static double calcAngle(float x1, float y1,
+                                   float x2, float y2, float x3, float y3) {
 
-        // a
-        int d1d2 = distanceSqEucl(x1, y1, x2, y2);
+        return calcAngle((double)x1, (double)y1, (double)x2, (double)y2, (double)x3, (double)y3);
+    }
 
-        //cosine A = (b^2 + c^2 - a^2)/2bc
-        double cosA = (d1d3 + d2d3 - d1d2)
-                / (2 * Math.sqrt((double) d1d3 * (double) d2d3));
-
-        double angleA = Math.acos(cosA);
-
-        return angleA;
+    /**
+     * Calculate the angle of segment P3:P1 sweeping clockwise
+     * to segment P3:P2.
+     * <p>
+     * Internally, the method uses the law of cosines and
+     * the direction method.
+     * <pre>
+     *   P1     P2
+     *
+     *      P3
+     * </pre>
+     *
+     * @param x1
+     * @param y1
+     * @param x2
+     * @param y2
+     * @param x3
+     * @param y3
+     * @return angle in radians
+     */
+    public static double calcAngle(double x1, double y1,
+                                   double x2, double y2, double x3, double y3) {
+        // subtract P3 from P1 and P2
+        double _p1x = x1 - x3;
+        double _p1y = y1 - y3;
+        double _p2x = x2 - x3;
+        double _p2y = y2 - y3;
+        double y = _p1y * _p2x - _p1x * _p2y; // cross product
+        double x = _p1x * _p2x + _p1y * _p2y; // dot product
+        return Math.atan2(y, x);
     }
 
     protected static int distanceSqEucl(int x1, int y1,
@@ -509,6 +552,20 @@ public class LinesAndAngles {
 
         int diffX = x1 - x2;
         int diffY = y1 - y2;
+        return (diffX * diffX + diffY * diffY);
+    }
+    protected static float distanceSqEucl(float x1, float y1,
+                                        float x2, float y2) {
+
+        float diffX = x1 - x2;
+        float diffY = y1 - y2;
+        return (diffX * diffX + diffY * diffY);
+    }
+    protected static double distanceSqEucl(double x1, double y1,
+                                        double x2, double y2) {
+
+        double diffX = x1 - x2;
+        double diffY = y1 - y2;
         return (diffX * diffX + diffY * diffY);
     }
 
