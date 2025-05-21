@@ -574,7 +574,7 @@ public class LinesAndAngles {
 
         double angleA = calcAngle(x1, y1, x2, y2, x3, y3);
 
-        if (d > 0 && angleA < (2.*Math.PI)) {
+        if ((d > 0) || (d == 0 && angleA < 0)) {
             angleA += (2. * Math.PI);
         }
 

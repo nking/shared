@@ -396,7 +396,17 @@ public class LinesAndAnglesTest extends TestCase {
 
         //System.out.println("a=" + angle + " expected=" + expected);
         assertTrue(Math.abs(angle - expected) < eps);
-        
+
+        x1=11.000000f;
+        y1=2.000000f;
+        x2=9.000000f;
+        y2=2.000000f;
+        x3=10.000000f;
+        y3=2.000000f;
+        expected = Math.PI;
+        angle = LinesAndAngles.calcClockwiseAngle(x1, y1,
+                x2, y2, x3, y3);
+        assertTrue(Math.abs(angle - expected) < eps);
     }
     
     public void testCalcPolarPerp() {
