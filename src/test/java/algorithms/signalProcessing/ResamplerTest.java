@@ -1,5 +1,6 @@
 package algorithms.signalProcessing;
 
+import algorithms.matrix.MatrixUtil;
 import algorithms.util.PairIntArray;
 import algorithms.util.PolygonAndPointPlotter;
 import junit.framework.TestCase;
@@ -11,28 +12,37 @@ public class ResamplerTest extends TestCase {
     public void testUpsample1() throws IOException {
         double[][] xy = getTriangle(7, 2, 1);
 
-        double[][] xy2 = CurveResampler.linearUpsample(xy, xy[0].length);
-        PolygonAndPointPlotter plot = new PolygonAndPointPlotter();
-        plot.addPlot(xy2[0], xy2[1], null, null, "upsample1");
-        plot.writeFile("upsample1");
+        double[][] xy2 = CurveResampler.resample(xy, xy[0].length);
+        assertEquals(xy[0].length, xy2[0].length);
+        for (int i = 0; i < xy[0].length; ++i) {
+            assertTrue(Math.abs(xy[0][i] - xy2[0][i]) < 1E-11);
+            assertTrue(Math.abs(xy[1][i] - xy2[1][i]) < 1E-11);
+        }
 
-        //TODO: assert they're the same.
+        float[][] xy3 = MatrixUtil.convertToFloat(xy);
+        float[][] xy4 = CurveResampler.resample(xy3, xy3[0].length);
+        assertEquals(xy3[0].length, xy3[0].length);
+        for (int i = 0; i < xy3[0].length; ++i) {
+            assertTrue(Math.abs(xy3[0][i] - xy4[0][i]) < 1E-9);
+            assertTrue(Math.abs(xy3[1][i] - xy4[1][i]) < 1E-9);
+        }
     }
 
     public void testDownsample1() throws IOException {
         double[][] xy = getTriangle(7, 2, 1);
 
-        double[][] xy2 = CurveResampler.linearDownsample(xy, xy[0].length-5);
+        double[][] xy2 = CurveResampler.resample(xy, xy[0].length-5);
         PolygonAndPointPlotter plot = new PolygonAndPointPlotter();
         plot.addPlot(xy2[0], xy2[1], null, null, "downsample1");
         plot.writeFile("downsample1");
+
     }
 
     public void testUpSample2() throws IOException {
         double[][] xy = getTriangle(7, 2, 1);
         int n1 = xy[0].length;
         int n2 = 30;
-        double[][] xyR = CurveResampler.linearUpsample(xy, n2);
+        double[][] xyR = CurveResampler.resample(xy, n2);
         PolygonAndPointPlotter plot = new PolygonAndPointPlotter();
         plot.addPlot(xyR[0], xyR[1], null, null, "resampled2");
         plot.writeFile("tri_resampled");
@@ -40,14 +50,19 @@ public class ResamplerTest extends TestCase {
         plot.addPlot(xy[0], xy[1], null, null, "triangle2");
         plot.writeFile("tri");
 
-        double[][] xyUpDown = CurveResampler.upDownSample(xy, n2);
+        double[][] xyUpDown = CurveResampler.resample(xyR, n1);
         plot = new PolygonAndPointPlotter();
         plot.addPlot(xyUpDown[0], xyUpDown[1], null, null, "up_down2");
         plot.writeFile("up_down2");
 
+        float[][] xyUpDown2 = CurveResampler.resample(MatrixUtil.convertToFloat(xyR), n1);
+        plot = new PolygonAndPointPlotter();
+        double[][] xyUpDown3 = MatrixUtil.convertToDouble(xyUpDown2);
+        plot.addPlot(xyUpDown3[0], xyUpDown3[1], null, null, "up_down2 float");
+        plot.writeFile("up_down2 float");
     }
 
-    public void _testResample() {
+    public void testResample3() {
         int n1 = 3;
         double[][] xy = new double[2][n1];
         for (int i = 0; i < n1; ++i) {
@@ -55,7 +70,7 @@ public class ResamplerTest extends TestCase {
             xy[1][i] = i;
         }
         double[][] expected = new double[][]{{0., 0.4, 0.8, 1.2, 1.6, 2.0}, {0., 0.4, 0.8, 1.2, 1.6, 2.0}};
-        double[][] xyOut = CurveResampler.linearUpsample(xy, 2*n1);
+        double[][] xyOut = CurveResampler.resample(xy, 2*n1);
         assertEquals(expected.length, xyOut.length);
         assertEquals(expected[0].length, xyOut[0].length);
         for (int i = 0; i < xyOut.length; ++i) {
@@ -65,7 +80,7 @@ public class ResamplerTest extends TestCase {
         }
     }
 
-    public void _testUpDownSample() {
+    public void testUpDownSample4() {
         int n1 = 12;
         int n2 = 16;
         //int lcm = 48;
@@ -74,33 +89,20 @@ public class ResamplerTest extends TestCase {
             xy[0][i] = i;
             xy[1][i] = i;
         }
-        double[][] xyOut = CurveResampler.upDownSample(xy, n2);
-        assertEquals(2, xyOut.length);
-        assertEquals(n2, xyOut[0].length);
+        double[][] up = CurveResampler.resample(xy, n2);
+        assertEquals(2, up.length);
+        assertEquals(n2, up[0].length);
+        double[][] upDown = CurveResampler.resample(up, n1);
+        assertEquals(2, upDown.length);
+        assertEquals(n1, upDown[0].length);
 
-        assertTrue(Math.abs(xyOut[0][0] - xy[0][0]) < 1E-11);
-        assertTrue(Math.abs(xyOut[1][0] - xy[1][0]) < 1E-11);
-
-        assertTrue(xyOut[0][n2-1] <= xy[0][n1-1]);
-        assertTrue(xyOut[1][n2-1] <= xy[1][n1-1]);
-
-        // increasing
-        double prev = -1;
-        for (int i = 0; i < n2; ++i) {
-            assertTrue(xyOut[0][i] > prev);
-            assertTrue(xyOut[1][i] > prev);
-            prev = xyOut[0][i];
-        }
-
-        double[][] xyOut2 = CurveResampler.upDownSample(xyOut, n1);
-        assertEquals(2, xyOut2.length);
-        assertEquals(n1, xyOut2[0].length);
-
+        int[][] xyInt = new int[2][n1];
         for (int i = 0; i < n1; ++i) {
-            assertTrue(Math.abs(xy[0][i] - xyOut2[0][i]) < 1E-9);
-            assertTrue(Math.abs(xy[1][i] - xyOut2[1][i]) < 1E-9);
+            xy[0][i] = i;
+            xy[1][i] = i;
         }
-
+        int[][] upInt = CurveResampler.resample(xyInt, n2);
+        int[][] upDownInt = CurveResampler.resample(upInt, n1);
     }
 
     protected double[][] getTriangle(int topY, int baseY, int leftX) {
