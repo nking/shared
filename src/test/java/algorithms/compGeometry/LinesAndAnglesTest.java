@@ -1,6 +1,5 @@
 package algorithms.compGeometry;
 
-import java.util.Arrays;
 import java.util.Random;
 import java.util.logging.Logger;
 import junit.framework.TestCase;
@@ -54,7 +53,7 @@ public class LinesAndAnglesTest extends TestCase {
         assertTrue(result == 7);
     }
     
-    public void testDirection() throws Exception {
+    public void testDirectionCCW() throws Exception {
         
         /*
          * 
@@ -71,7 +70,7 @@ public class LinesAndAnglesTest extends TestCase {
          *  0
          *   0  1  2  3  4  5  6  7  8  9  10
          * 
-         * direction of change from P1:P2 to P1:P3
+         * directionCCW of change from P1:P2 to P1:P3
          */
         
         float x2 = 10;
@@ -81,7 +80,7 @@ public class LinesAndAnglesTest extends TestCase {
         float x3 = 2;
         float y3 = 7;
         
-        double direction = LinesAndAngles.direction(x1, y1, x2, y2, x3, y3);
+        double direction = LinesAndAngles.directionCCW(x1, y1, x2, y2, x3, y3);
         
         assertTrue(direction > 0);
         
@@ -90,13 +89,44 @@ public class LinesAndAnglesTest extends TestCase {
         y3 = 10;
         x2 = 2;
         y2 = 7;
-        direction = LinesAndAngles.direction(x1, y1, x2, y2, x3, y3);
+        direction = LinesAndAngles.directionCCW(x1, y1, x2, y2, x3, y3);
         
         assertTrue(direction < 0);
 
     }
+
+    public void testLinesIntersect() {
+
+        /*
+                        x2,y2
+             x3,y3
+         x1,y1      x4,y4
+         */
+        float x1 = 1;
+        float y1 = 1;
+        float x2 = 5;
+        float y2 = 4;
+        float x3 = 2;
+        float y3 = 2;
+        float x4 = 3;
+        float y4 = 1;
+
+        boolean intersect = LinesAndAngles.linesIntersect(x1, y1, x2, y2, x3, y3, x4, y4);
+        assertTrue(intersect);
+
+        x3=5;
+        y3=5;
+        intersect = LinesAndAngles.linesIntersect(x1, y1, x2, y2, x3, y3, x4, y4);
+        assertTrue(intersect);
+
+        x3=6;
+        y3=5;
+        intersect = LinesAndAngles.linesIntersect(x1, y1, x2, y2, x3, y3, x4, y4);
+        assertFalse(intersect);
+
+    }
     
-    public void testDirection_int() throws Exception {
+    public void testDirection_CCW() throws Exception {
         
         /*
          * 
@@ -113,11 +143,11 @@ public class LinesAndAnglesTest extends TestCase {
          *  0
          *   0  1  2  3  4  5  6  7  8  9  10
          * 
-         * direction of change from P1:P2 to P1:P3
+         * directionCCW of change from P1:P2 to P1:P3
          */
         
         // CCW sweep of P1:P2 to P1:P3 gives negative number
-        int direction = LinesAndAngles.direction(
+        int direction = LinesAndAngles.directionCW(
             2, 4, 
             5, 1, 
             3, 7);
@@ -138,11 +168,11 @@ public class LinesAndAnglesTest extends TestCase {
          *  0
          *   0  1  2  3  4  5  6  7  8  9  10
          * 
-         * direction of change from P1:P2 to P1:P3
+         * directionCCW of change from P1:P2 to P1:P3
          */
         
         // CCW sweep of P1:P2 to P1:P3 gives negative number
-        direction = LinesAndAngles.direction(
+        direction = LinesAndAngles.directionCW(
             2, 4, 
             2, 1, 
             3, 7);
@@ -163,11 +193,11 @@ public class LinesAndAnglesTest extends TestCase {
          *  0
          *   0  1  2  3  4  5  6  7  8  9  10
          * 
-         * direction of change from P1:P2 to P1:P3
+         * directionCCW of change from P1:P2 to P1:P3
          */
         
-        // CCW sweep of P1:P2 to P1:P3 gives negative number
-        direction = LinesAndAngles.direction(
+        // CCW sweep of P1:P2 to P1:P3 gives positive number
+        direction = LinesAndAngles.directionCW(
             2, 4, 
             1, 2, 
             3, 7);
@@ -188,10 +218,10 @@ public class LinesAndAnglesTest extends TestCase {
          *  0
          *   0  1  2  3  4  5  6  7  8  9  10
          * 
-         * direction of change from P1:P2 to P1:P3
+         * directionCCW of change from P1:P2 to P1:P3
          */
         // CCW sweep of P1:P2 to P1:P3 gives positive number
-        direction = LinesAndAngles.direction(
+        direction = LinesAndAngles.directionCW(
             7, 5, 
             5, 1, 
             3, 7);
@@ -228,7 +258,7 @@ public class LinesAndAnglesTest extends TestCase {
     
     public void testCalcClockwiseAngle() {
         
-        int x1, y1, x2, y2, x3, y3;
+        float x1, y1, x2, y2, x3, y3;
         double angle, expected; 
         double eps = 0.001;
         
@@ -242,9 +272,9 @@ public class LinesAndAnglesTest extends TestCase {
         y3 = 0;
         x2 = 20;
         y2 = 10;
+        expected = Math.PI/2;
         angle = LinesAndAngles.calcClockwiseAngle(x1, y1, 
             x2, y2, x3, y3);
-        expected = Math.PI/2;
         //System.out.println("a=" + angle + " expected=" + expected);
         assertTrue(Math.abs(angle - expected) < eps);
         
@@ -258,9 +288,9 @@ public class LinesAndAnglesTest extends TestCase {
         y3 = 0;
         x2 = 20;
         y2 = 0;
+        expected = 3*Math.PI/4;
         angle = LinesAndAngles.calcClockwiseAngle(x1, y1, 
             x2, y2, x3, y3);
-        expected = 3*Math.PI/4;
         //System.out.println("a=" + angle + " expected=" + expected);
         assertTrue(Math.abs(angle - expected) < eps);
         
@@ -275,9 +305,10 @@ public class LinesAndAnglesTest extends TestCase {
         y3 = 10;
         x2 = 20;
         y2 = 0;
+        expected = Math.PI;
         angle = LinesAndAngles.calcClockwiseAngle(x1, y1, 
             x2, y2, x3, y3);
-        expected = Math.PI;
+
         //System.out.println("a=" + angle + " expected=" + expected);
         assertTrue(Math.abs(angle - expected) < eps);
         
@@ -292,9 +323,9 @@ public class LinesAndAnglesTest extends TestCase {
         y3 = 10;
         x2 = 10;
         y2 = 0;
+        expected = 5.*Math.PI/4.;
         angle = LinesAndAngles.calcClockwiseAngle(x1, y1, 
             x2, y2, x3, y3);
-        expected = 5.*Math.PI/4.;
         //System.out.println("a=" + angle + " expected=" + expected);
         assertTrue(Math.abs(angle - expected) < eps);
         
@@ -309,9 +340,9 @@ public class LinesAndAnglesTest extends TestCase {
         y3 = 10;
         x2 = 0;
         y2 = 0;
+        expected = 6.*Math.PI/4.;
         angle = LinesAndAngles.calcClockwiseAngle(x1, y1, 
             x2, y2, x3, y3);
-        expected = 6.*Math.PI/4.;
         //System.out.println("a=" + angle + " expected=" + expected);
         assertTrue(Math.abs(angle - expected) < eps);
         
@@ -325,9 +356,9 @@ public class LinesAndAnglesTest extends TestCase {
         y3 = 0;
         x2 = 0;
         y2 = 0;
+        expected = 6.*Math.PI/4.;
         angle = LinesAndAngles.calcClockwiseAngle(x1, y1, 
             x2, y2, x3, y3);
-        expected = 6.*Math.PI/4.;
         //System.out.println("a=" + angle + " expected=" + expected);
         assertTrue(Math.abs(angle - expected) < eps);
         
@@ -341,9 +372,28 @@ public class LinesAndAnglesTest extends TestCase {
         y3 = 10;
         x2 = 10;
         y2 = 10;
+        expected = 6.*Math.PI/4.;
         angle = LinesAndAngles.calcClockwiseAngle(x1, y1, 
             x2, y2, x3, y3);
-        expected = 6.*Math.PI/4.;
+
+        //System.out.println("a=" + angle + " expected=" + expected);
+        assertTrue(Math.abs(angle - expected) < eps);
+
+        /*
+              3
+                 2
+              1
+        */
+        x1 = 0;
+        y1 = 0;
+        x3 = 0;
+        y3 = 1;
+        x2 = 0 + (float)(Math.sqrt(2)/2.);
+        y2 = 1 - (float)(Math.sqrt(2)/2.);
+        expected = 7.*Math.PI/4.;
+        angle = LinesAndAngles.calcClockwiseAngle(x1, y1,
+                x2, y2, x3, y3);
+
         //System.out.println("a=" + angle + " expected=" + expected);
         assertTrue(Math.abs(angle - expected) < eps);
         

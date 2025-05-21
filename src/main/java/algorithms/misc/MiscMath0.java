@@ -2191,7 +2191,7 @@ public class MiscMath0 {
     public static boolean areColinear(double x1, double y1, double x2, double y2,
                                       double x3, double y3, double tol) {
         // designating (x1,y1) the origin, so subtracting it from the other points
-        // then calculate direction using the cross product.
+        // then calculate directionCCW using the cross product.
         x2 -= x1;
         x3 -= x1;
         y2 -= y1;

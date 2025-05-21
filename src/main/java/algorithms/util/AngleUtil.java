@@ -76,7 +76,7 @@ public class AngleUtil {
 
     /**
     calculates the polar theta in radians given x and y w.r.t. origin.  theta increases
-    * in value in a counter clockwise direction (CCW).  range of returned
+    * in value in a counter clockwise directionCCW (CCW).  range of returned
     * values is 0 to 2*pi.
 
      * @param x
@@ -120,7 +120,7 @@ public class AngleUtil {
 
     /**
     calculates the polar theta in radians given x and y w.r.t. origin.  theta increases
-    * in value in a clockwise direction (CW).
+    * in value in a clockwise directionCCW (CW).
 
      * @param x
      * @param y

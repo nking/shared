@@ -1035,7 +1035,7 @@ public class MiscellaneousCurveHelper {
 
     /**
      * given 3 counter-clockwise ordered points on a curve, calculate the angle 
-     * along the curve at the middle point, its direction is from p0 to p1.
+     * along the curve at the middle point, its directionCCW is from p0 to p1.
      * <pre>
      * For example:
      * 
@@ -1074,7 +1074,7 @@ public class MiscellaneousCurveHelper {
     
     /**
      * given 3 counter-clockwise ordered points on a curve, calculate the angle 
-     * tangent to the curve at the middle point - its direction follows
+     * tangent to the curve at the middle point - its directionCCW follows
      * the right hand rule.
      * <pre>
      * For example:
@@ -1107,7 +1107,7 @@ public class MiscellaneousCurveHelper {
     }
 
     /**
-     * given theta and the point (xp, yp), determine which direction and hence
+     * given theta and the point (xp, yp), determine which directionCCW and hence
      * polar angle (clockwise) is perpendicular away from the centroid.
      * The reference point (xm, ym) is the point from which theta was also
      * calculated, which is probably the point for kMaxIdx.  The points are also
@@ -1129,7 +1129,7 @@ public class MiscellaneousCurveHelper {
         /*
         rotate the point (xm, ym) around (xp, yp) 90 degrees and -90 degrees.
         The rotated point which is furthest from the centroid is the
-        direction of the vector pointing away from the centroid.
+        directionCCW of the vector pointing away from the centroid.
         */
 
         /*

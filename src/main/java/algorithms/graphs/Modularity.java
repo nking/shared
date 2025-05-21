@@ -124,7 +124,7 @@ public class Modularity {
             e[i] = new double[k];
         }
 
-        // count number of edges between communities using direction of edges
+        // count number of edges between communities using directionCCW of edges
         for (i = 0; i < layer.vertexComponents.length; ++i) {
             c1 = layer.vertexComponents[i];
             if (c1 == -1) {

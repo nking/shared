@@ -395,7 +395,7 @@ System.out.println("      g=" + AbstractGeometricMedianFunction.toString(g));
          */
         public double operator(double x, boolean isGradient) {
             
-            //return get_value(f(start + x*direction));
+            //return get_value(f(start + x*directionCCW));
             
             double[] v0 = Arrays.copyOf(direction, direction.length);
             MatrixUtil.multiply(v0, x);

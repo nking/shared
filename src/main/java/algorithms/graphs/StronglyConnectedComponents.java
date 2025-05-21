@@ -18,13 +18,13 @@ import java.util.logging.Logger;
  * its strongly connected components, in linear time (that is, Θ(V+E)).
  * 
  * A directed graph is called strongly connected if there is a path in each 
- * direction between each pair of vertices of the graph. That is, a path exists 
+ * directionCCW between each pair of vertices of the graph. That is, a path exists
  * from the first vertex in the pair to the second, and another path exists 
  * from the second vertex to the first. 
  * 
  * A pair of vertices u and v in a directed graph G that may not itself be 
  * strongly connected, are said to be strongly connected to each other if there 
- * is a path in each direction between them.
+ * is a path in each directionCCW between them.
  * 
  * Tarjan's strongly connected components algorithm traverses the graph once, 
  * using a stack in which the vertices are not removed unless found to be

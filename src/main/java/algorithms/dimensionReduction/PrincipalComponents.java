@@ -15,7 +15,7 @@ import no.uib.cipr.matrix.SVD;
  * 
  * from wikipedia:
  * The principal components of a collection of points in a real coordinate space 
- * are a sequence of p unit vectors, where the i-th vector is the direction of 
+ * are a sequence of p unit vectors, where the i-th vector is the directionCCW of
  * a line that best fits the data while being orthogonal to the first i-1 vectors. 
  * Here, a best-fitting line is defined as one that minimizes the average 
  * squared distance from the points to the line. These directions constitute an 
@@ -136,7 +136,7 @@ public class PrincipalComponents {
 
         /*
         minimal residual variance basis:
-           basis direction b.
+           basis directionCCW b.
            samples are vectors x_j where j = 0 to k
            sample mean m_s = (1/k) summation_over_j(x_j)
 

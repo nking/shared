@@ -2382,7 +2382,7 @@ public class CMAEvolutionStrategy implements java.io.Serializable {
          * <li>8: index of coordinate with smallest standard deviation
          * <li>1.5e-05 | respective standard deviation
          * <li>index of coordinate with smallest standard deviation: respective standard deviation
-         * <li>| 1.4e-05 standard deviation in smallest principal axis direction
+         * <li>| 1.4e-05 standard deviation in smallest principal axis directionCCW
          * <li> 5.6e-05 sigma
          * <li> 2.34 axisratio, ie. quotient between the standard deviations in largest an 
          * smallest principal axis directions, ie. square root of the quotient between largest 

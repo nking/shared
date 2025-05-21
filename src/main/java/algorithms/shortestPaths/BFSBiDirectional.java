@@ -5,7 +5,7 @@ import java.util.*;
 /**
  * perform Breadth First search bi-directionally from src to destination, a.k.a. 2-end BFS.
  *
- * Note that the search by one direction, then the other, was adapted from the book
+ * Note that the search by one directionCCW, then the other, was adapted from the book
  * "Cracking the Code Interview, 6th Ed. by Gayle Laakmann McDowell.
  *
  * Bi-directional BFS runtime complexity is O(b^(d/2)) where b is the branching factor and d is the distance from

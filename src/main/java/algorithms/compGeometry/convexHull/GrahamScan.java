@@ -446,7 +446,7 @@ public class GrahamScan {
                 nextToTopS = sIdxs.peekNext();
                 si = i;
 
-                // direction is the cross-product of
+                // directionCCW is the cross-product of
                 //   P[topS], P[si]
                 //      corrected to a center P[nextToTopS]
                 // the cross product is positive when P1 is CW from P2 w.r.t. the center

@@ -30,7 +30,7 @@ public class FordFulkerson {
     private Map<Integer, Map<Integer, Integer>> remG;
 
     /**
-     * reverse g tracks the edge flow, but in opposite direction for the edge.
+     * reverse g tracks the edge flow, but in opposite directionCCW for the edge.
      * the map key is the stop node of an edge, the value is a map with key = start node of an
      * edge, value = amount of flow through the edge.
      */

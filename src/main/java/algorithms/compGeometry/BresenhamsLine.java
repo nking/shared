@@ -102,7 +102,7 @@ public class BresenhamsLine {
         int dy2 = (dy << 1); // slope scaling factors to avoid floating
         int dx2 = (dx << 1); // point
  
-        int ix = x1 < x2 ? 1 : -1; // increment direction
+        int ix = x1 < x2 ? 1 : -1; // increment directionCCW
         int iy = y1 < y2 ? 1 : -1;
  
         if (dy <= dx) {

@@ -3084,7 +3084,7 @@ public class MatrixUtil {
            of photogrammetry, for example.
 
      </pre>
-     @param v direction vector
+     @param v directionCCW vector
      @param out output skew-symmetric matrix for v
      */
     public static void skewSymmetric(double[] v, double[][] out) {

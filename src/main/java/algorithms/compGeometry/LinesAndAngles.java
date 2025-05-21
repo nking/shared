@@ -21,12 +21,39 @@ public class LinesAndAngles {
     }
 
     /**
+     * calculate the directionCCW of change for the 2 vectors
+     * P1:P2 to P1:P3  returns negative when directionCCW is clockwise,
+     * else if zero the vectors are collinear, else if positive the
+     * directionCCW is counterclockwise.
+     * <pre>
+     *          p2
+     * p3      /
+     * \    /
+     * p1
+     * </pre>
+     *
+     * @param x1
+     * @param y1
+     * @param x2
+     * @param y2
+     * @param x3
+     * @param y3
+     * @return positive number for direction CCW, 0 for co-linear, negative for CW.
+     */
+    public static double directionCCW(float x1, float y1, float x2, float y2,
+                                      float x3, float y3) {
+        return directionCCW((double)x1, (double) y1, (double) x2, (double) y2,
+                (double) x3, (double) y3);
+    }
+
+    /**
      * calculate the direction of change for the 2 vectors
      * P1:P2 to P1:P3  returns negative when direction is clockwise,
      * else if zero the vectors are collinear, else if positive the
-     * direction is counterclockwise.
-     * <p>
-     * p2
+     * direction is counterclockwise (CCW).
+     * <pre>
+     * counter-clockwise:
+     *          p2
      * p3      /
      * \    /
      * p1
@@ -37,10 +64,10 @@ public class LinesAndAngles {
      * @param y2
      * @param x3
      * @param y3
-     * @return
+     * @return positive number for direction CCW, 0 for co-linear, negative for CW.
      */
-    public static double direction(float x1, float y1, float x2, float y2,
-                                   float x3, float y3) {
+    public static double directionCCW(double x1, double y1, double x2, double y2,
+                                      double x3, double y3) {
 
         double d = ((x2 - x1) * (y3 - y1)) - ((y2 - y1) * (x3 - x1));
 
@@ -48,22 +75,75 @@ public class LinesAndAngles {
     }
 
     /**
-     * calculate the direction of change for the 2 vectors
-     * P1:P2 to P1:P3  returns negative when direction is clockwise,
+     * calculate the directionCCW of change for the 2 vectors
+     * P1:P2 to P1:P3  returns negative when directionCCW is clockwise,
      * else if zero the vectors are collinear, else if positive the
-     * directions is counterclockwise.
-     * <p>
-     * p2
+     * directionCCW is counterclockwise (CCW).
+     * <pre>
+     *          p2
      * p3      /
      * \    /
      * p1
+     * </pre>
      *
+     * @param x1
+     * @param y1
+     * @param x2
+     * @param y2
+     * @param x3
+     * @param y3
+     * @return
+     */
+    public static double directionCW(double x1, double y1, double x2, double y2,
+                                      double x3, double y3) {
+
+        return -1. * directionCCW(x1, y1, x2, y2, x3, y3);
+    }
+
+    /**
+     * calculate the directionCCW of change for the 2 vectors
+     * P1:P2 to P1:P3  returns negative when directionCCW is clockwise,
+     * else if zero the vectors are collinear, else if positive the
+     * directionCCW is counterclockwise (CCW).
+     * <pre>
+     *          p2
+     * p3      /
+     * \    /
+     * p1
+     * </pre>
+     *
+     * @param x1
+     * @param y1
+     * @param x2
+     * @param y2
+     * @param x3
+     * @param y3
+     * @return
+     */
+    public static double directionCW(float x1, float y1, float x2, float y2,
+                                     float x3, float y3) {
+
+        return -1. * directionCCW(x1, y1, x2, y2, x3, y3);
+    }
+
+
+    /**
+     * calculate the directionCCW of change for the 2 vectors
+     * P1:P2 to P1:P3  returns negative when directionCCW is clockwise,
+     * else if zero the vectors are collinear, else if positive the
+     * directions is counterclockwise.
+     * <pre>
+     *          p2
+     * p3      /
+     * \    /
+     * p1
+     * </pre>
      * @param p1
      * @param p2
      * @param p3
      * @return
      */
-    public static <T extends PairInt> double direction(T p1, T p2, T p3) {
+    public static <T extends PairInt> double directionCCW(T p1, T p2, T p3) {
 
         int x1 = p1.getX();
         int y1 = p1.getY();
@@ -79,27 +159,25 @@ public class LinesAndAngles {
 
     /**
      * calculate the direction of change for the 2 vectors
-     * P1:P2 to P1:P3  returns negative when direction is clockwise,
+     * P1:P2 to P1:P3  returns negative when directionCCW is clockwise,
      * else if zero the vectors are collinear, else if positive the
      * directions is counterclockwise.
-     * <p>
-     * p2
+     * <pre>
+     *  counter-clockwise angle:
+     *          p2
      * p3      /
      * \    /
      * p1
-     *
+     *</pre>
      * @param p1
      * @param p2
      * @param p3
-     * @return
+     * @return positive number for direction CCW, 0 for co-linear, negative for CW.
      */
-    public static double direction(PairIntWithIndex p1, PairIntWithIndex p2,
-                                   PairIntWithIndex p3) {
+    public static double directionCCW(PairIntWithIndex p1, PairIntWithIndex p2,
+                                      PairIntWithIndex p3) {
 
-        double d = ((p2.getX() - p1.getX()) * (p3.getY() - p1.getY())) -
-                ((p2.getY() - p1.getY()) * (p3.getX() - p1.getX()));
-
-        return d;
+        return directionCCW(p1.getX(), p1.getY(), p2.getX(), p2.getY(), p3.getX(), p3.getY());
     }
 
     /**
@@ -163,10 +241,10 @@ public class LinesAndAngles {
          *   \    /
          *     p1
         */
-        int d1 = direction(x3, y3, x4, y4, x1, y1);
-        int d2 = direction(x3, y3, x4, y4, x2, y2);
-        int d3 = direction(x1, y1, x2, y2, x3, y3);
-        int d4 = direction(x1, y1, x2, y2, x4, y4);
+        int d1 = directionCW(x3, y3, x4, y4, x1, y1);
+        int d2 = directionCW(x3, y3, x4, y4, x2, y2);
+        int d3 = directionCW(x1, y1, x2, y2, x3, y3);
+        int d4 = directionCW(x1, y1, x2, y2, x4, y4);
 
         if (
                 (((d1 > 0) && (d2 < 0)) || ((d1 < 0) && (d2 > 0)))
@@ -188,14 +266,17 @@ public class LinesAndAngles {
 
     /**
      * calculate the direction of change for the 2 vectors
-     * P1:P2 to P1:P3  returns positive when direction is clockwise,
+     * P1:P2 to P1:P3.
+     * returns positive when direction is clockwise (CW),
      * else if zero the vectors are collinear, else if negative the
-     * direction is counterclockwise.
-     * <p>
-     * p2
+     * direction is counterclockwise (CCW).
+     * <pre>
+     *  counter-clockwise:
+     *          p2
      * p3      /
      * \    /
      * p1
+     * </pre>
      *
      * @param x1
      * @param y1
@@ -205,7 +286,7 @@ public class LinesAndAngles {
      * @param y3
      * @return
      */
-    public static int direction(int x1, int y1, int x2, int y2, int x3, int y3) {
+    public static int directionCW(int x1, int y1, int x2, int y2, int x3, int y3) {
 
         int x31 = x3 - x1;
         int y31 = y3 - y1;
@@ -285,10 +366,10 @@ public class LinesAndAngles {
     public static boolean linesIntersect(float x1, float y1,
                                          float x2, float y2, float x3, float y3, float x4, float y4) {
 
-        double d1 = -1 * direction(x3, y3, x4, y4, x1, y1);
-        double d2 = -1 * direction(x3, y3, x4, y4, x2, y2);
-        double d3 = -1 * direction(x1, y1, x2, y2, x3, y3);
-        double d4 = -1 * direction(x1, y1, x2, y2, x4, y4);
+        double d1 = -1 * directionCW(x3, y3, x4, y4, x1, y1);
+        double d2 = -1 * directionCW(x3, y3, x4, y4, x2, y2);
+        double d3 = -1 * directionCW(x1, y1, x2, y2, x3, y3);
+        double d4 = -1 * directionCW(x1, y1, x2, y2, x4, y4);
 
         if (
                 (((d1 > 0) && (d2 < 0)) || ((d1 < 0) && (d2 > 0)))
@@ -433,7 +514,7 @@ public class LinesAndAngles {
      * to segment P3:P2.
      * <p>
      * Internally, the method uses the law of cosines and
-     * the direction method.
+     * the directionCCW method.
      * <pre>
      *   P1     P2
      *
@@ -452,11 +533,83 @@ public class LinesAndAngles {
     public static double calcClockwiseAngle(int x1, int y1,
                                             int x2, int y2, int x3, int y3) {
 
-        double d = direction(x3, y3, x2, y2, x1, y1);
+        //P1:P2 to P1:P3
+        double d = directionCW(x3, y3, x2, y2, x1, y1);
 
         double angleA = calcAngle(x1, y1, x2, y2, x3, y3);
 
         if (d > 0) {
+            angleA += (2. * Math.PI);
+        }
+
+        return angleA;
+    }
+
+
+    /**
+     * Calculate the angle of segment P3:P1 sweeping clockwise
+     * to segment P3:P2.
+     * <p>
+     * Internally, the method uses the law of cosines and
+     * the directionCCW method.
+     * <pre>
+     *   P1     P2
+     *
+     *      P3
+     * </pre>
+     * NOTE that if given a single point, it will return NaN
+     *
+     * @param x1
+     * @param y1
+     * @param x2
+     * @param y2
+     * @param x3
+     * @param y3
+     * @return
+     */
+    public static double calcClockwiseAngle(float x1, float y1,
+                                            float x2, float y2, float x3, float y3) {
+
+        double d = directionCW(x3, y3, x2, y2, x1, y1);
+
+        double angleA = calcAngle(x1, y1, x2, y2, x3, y3);
+
+        if (d > 0 && angleA < (2.*Math.PI)) {
+            angleA += (2. * Math.PI);
+        }
+
+        return angleA;
+    }
+
+    /**
+     * Calculate the angle of segment P3:P1 sweeping clockwise
+     * to segment P3:P2.
+     * <p>
+     * Internally, the method uses the law of cosines and
+     * the directionCCW method.
+     * <pre>
+     *   P1     P2
+     *
+     *      P3
+     * </pre>
+     * NOTE that if given a single point, it will return NaN
+     *
+     * @param x1
+     * @param y1
+     * @param x2
+     * @param y2
+     * @param x3
+     * @param y3
+     * @return
+     */
+    public static double calcClockwiseAngle(double x1, double y1,
+                                            double x2, double y2, double x3, double y3) {
+
+        double d = directionCCW(x3, y3, x2, y2, x1, y1);
+
+        double angleA = calcAngle(x1, y1, x2, y2, x3, y3);
+
+        if (d > 0 && angleA < (2.*Math.PI)) {
             angleA = 2. * Math.PI + angleA;
         }
 
@@ -468,7 +621,7 @@ public class LinesAndAngles {
      * to segment P3:P2.
      * <p>
      * Internally, the method uses the law of cosines and
-     * the direction method.
+     * the directionCCW method.
      * <pre>
      *   P1     P2
      *
@@ -494,7 +647,7 @@ public class LinesAndAngles {
      * to segment P3:P2.
      * <p>
      * Internally, the method uses the law of cosines and
-     * the direction method.
+     * the directionCCW method.
      * <pre>
      *   P1     P2
      *
@@ -520,7 +673,7 @@ public class LinesAndAngles {
      * to segment P3:P2.
      * <p>
      * Internally, the method uses the law of cosines and
-     * the direction method.
+     * the directionCCW method.
      * <pre>
      *   P1     P2
      *

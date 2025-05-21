@@ -435,7 +435,7 @@ public class GeometricMedian {
      
      Marquardt also replaced the identity matrix I with the diagonal matrix 
      consisting of the elements of (DF(x_{t}))^T*(DF(x_{t})) to create
-     varied step sizes with direction (small gradient gets larger step).
+     varied step sizes with directionCCW (small gradient gets larger step).
      
      Improved Levenberg-Marquardt by Jia borrows some ideas from the simulated 
      annealing method (SA).   It interprets slow cooling as a slow decrease in 

@@ -30,7 +30,7 @@ public class GraphUtil {
     /**
      * create an adjacency list from the given graph knowing that the vertexes 
      * present are numbered 0 through number of vertexes-1.
-     * Note that even if more than one edge is present in the direction from 
+     * Note that even if more than one edge is present in the directionCCW from
      * vertex u to vertex v, only one is present in the adjacency list for that
      * directional edge in the returned adjacency list.
      * runtime complexity is O(|V| + |E|).
@@ -52,7 +52,7 @@ public class GraphUtil {
      * and might not be numbered from 0 to |V|-1.
      * runtime complexity is O((|V|*log_2(|V|( * |E|) which is longer 
      * due to a needed sort.
-     * Note that even if more than one edge is present in the direction from 
+     * Note that even if more than one edge is present in the directionCCW from
      * vertex u to vertex v, only one is present in the adjacency list for that
      * directional edge in the returned adjacency list.
      @param g

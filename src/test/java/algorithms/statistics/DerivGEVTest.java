@@ -208,7 +208,7 @@ public class DerivGEVTest extends TestCase {
             + "  d/dk/d2/dkdk at yMax=" + suggestedK[yMaxModelIdx]);
         // results show it's still the best approach to take the minChiSqSum solution from the min change in d/dk
         //    the problem with this approach is we are actually needing to know what deltaK to test chisqsum for
-        //    and the curve gives us d/dk modified by d2/dkdk as the suggested step in either direction that
+        //    and the curve gives us d/dk modified by d2/dkdk as the suggested step in either directionCCW that
         //    will create a change in the gev.
         //    the correct answer would test both + modified d/dk and - d/dk
         //  is the idx at position +1 past model y max always the best answer for d/dk?
