@@ -76,8 +76,8 @@ public class PairFloatArray {
 
     public void rotateLeft(int offset) {
         Rotate r = new Rotate();
-        r.rotate(x, offset);
-        r.rotate(y, offset);
+        r.rotate2(x, n, offset);
+        r.rotate2(y, n, offset);
     }
 
     /**

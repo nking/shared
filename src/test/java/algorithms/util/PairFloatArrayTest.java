@@ -144,4 +144,41 @@ public class PairFloatArrayTest extends TestCase {
             assertTrue(Math.abs(xy.getY(i) - xyF.getY(i)) < 0.001f);
         }
     }
+
+    public void testRotateLeft() {
+        PairFloatArray p = new PairFloatArray();
+        int n = 10;
+        int offset = 7;
+        for (int i = 0; i < n; ++i) {
+            p.add(i, i);
+        }
+        p.rotateLeft(offset);
+
+        for (int i = 0; i < n; ++i) {
+            int expected = (i + offset) % n;
+            assertEquals((float)expected, p.getX(i));
+            assertEquals((float)expected, p.getY(i));
+        }
+
+    }
+
+    public void testRotateLeft2() {
+        PairFloatArray p = new PairFloatArray();
+        int n = 10;
+        int offset = -7;
+        for (int i = 0; i < n; ++i) {
+            p.add(i, i);
+        }
+        p.rotateLeft(offset);
+
+        for (int i = 0; i < n; ++i) {
+            int expected = i + offset;
+            if (expected < 0) {
+                expected += n;
+            }
+            assertEquals((float)expected, p.getX(i));
+            assertEquals((float)expected, p.getY(i));
+        }
+
+    }
 }
