@@ -1,17 +1,7 @@
 package algorithms.signalProcessing;
 
-/**
- *
- * @author nichole
- */
 public class Interp {
-    
-    /**
-     *
-     @param input
-     @param binFactor
-     @return
-     */
+
     public float[] bin(float[] input, int binFactor) {
         
         if (input == null) {
@@ -82,7 +72,7 @@ public class Interp {
 
         return out;
     }
-  
+
     /**
      *
      @param input
