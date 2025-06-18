@@ -118,9 +118,9 @@ public class GrahamScanPairInt&lt;T extends PairInt&gt; {
 <span class="fc" id="L118">            T top = points.peek();</span>
 <span class="fc" id="L119">            T nextToTop = points.peekNext();</span>
 
-<span class="fc" id="L121">            double direction = LinesAndAngles.direction(nextToTop, top, input[i]);</span>
+<span class="fc" id="L121">            double direction = LinesAndAngles.directionCCW(nextToTop, top, input[i]);</span>
             
-            //double direction = LinesAndAngles.direction(
+            //double directionCCW = LinesAndAngles.directionCCW(
             //    nextToTopX, nextToTopY, topX, topY, xi, yi);
             
 <span class="fc bfc" id="L126" title="All 2 branches covered.">            while (direction &lt;= 0) {</span>
@@ -134,7 +134,7 @@ public class GrahamScanPairInt&lt;T extends PairInt&gt; {
 <span class="fc" id="L134">                top = points.peek();</span>
 <span class="fc" id="L135">                nextToTop = points.peekNext();</span>
                 
-<span class="fc" id="L137">                direction = LinesAndAngles.direction(nextToTop, top, input[i]);              </span>
+<span class="fc" id="L137">                direction = LinesAndAngles.directionCCW(nextToTop, top, input[i]);</span>
             }
 
 <span class="fc" id="L140">            points.push((T)input[i].copy());</span>
@@ -178,4 +178,4 @@ public class GrahamScanPairInt&lt;T extends PairInt&gt; {
     }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

@@ -231,17 +231,17 @@ adapted from http://algs4.cs.princeton.edu/92search/
 <span class="nc" id="L231">            x.val = val;</span>
 <span class="nc" id="L232">            return x;</span>
         }
-<span class="fc bfc" id="L234" title="All 2 branches covered.">        if (StdRandom.bernoulli(1.0 / (size(x) + 1.0))) {</span>
+<span class="pc bpc" id="L234" title="1 of 2 branches missed.">        if (StdRandom.bernoulli(1.0 / (size(x) + 1.0))) {</span>
 <span class="fc" id="L235">            return putRoot(x, key, val, replaced);</span>
         }
-<span class="pc bpc" id="L237" title="1 of 2 branches missed.">        if (cmp &lt; 0) {</span>
-<span class="fc" id="L238">            x.left  = put(x.left,  key, val, replaced);</span>
+<span class="nc bnc" id="L237" title="All 2 branches missed.">        if (cmp &lt; 0) {</span>
+<span class="nc" id="L238">            x.left  = put(x.left,  key, val, replaced);</span>
         } else {
 <span class="nc" id="L240">            x.right = put(x.right, key, val, replaced);</span>
         } 
         // (x.N)++;
-<span class="fc" id="L243">        fix(x);</span>
-<span class="fc" id="L244">        return x;</span>
+<span class="nc" id="L243">        fix(x);</span>
+<span class="nc" id="L244">        return x;</span>
     }
 
     private &lt;Value2 extends Comparable&lt;Value&gt;&gt; 
@@ -603,4 +603,4 @@ adapted from http://algs4.cs.princeton.edu/92search/
 <span class="nc" id="L603">    }</span>
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

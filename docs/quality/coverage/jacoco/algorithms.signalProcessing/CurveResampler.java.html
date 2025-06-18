@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CurveResampler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.signalProcessing</a> &gt; <span class="el_source">CurveResampler.java</span></div><h1>CurveResampler.java</h1><pre class="source lang-java linenums">package algorithms.signalProcessing;
+
+import algorithms.matrix.MatrixUtil;
+import algorithms.misc.NumberTheory;
+import algorithms.util.FormatArray;
+import org.apache.commons.math3.analysis.UnivariateFunction;
+import org.apache.commons.math3.analysis.interpolation.*;
+import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
+
+
+<span class="nc" id="L11">public class CurveResampler {</span>
+
+    public static int[][] resample(int[][] xy, int n2) {
+<span class="pc bpc" id="L14" title="1 of 2 branches missed.">        if (xy.length &lt; 2) {</span>
+<span class="nc" id="L15">            throw new IllegalArgumentException(&quot;xy length must be 2&quot;);</span>
+        }
+<span class="fc" id="L17">        double[][] xyD = MatrixUtil.convertIntToDouble(xy);</span>
+<span class="fc" id="L18">        double[][] r = resample(xyD, n2);</span>
+<span class="fc" id="L19">        return MatrixUtil.convertDoubleToInt(r);</span>
+    }
+
+    public static float[][] resample(float[][] xy, int n2) {
+<span class="pc bpc" id="L23" title="1 of 2 branches missed.">        if (xy.length &lt; 2) {</span>
+<span class="nc" id="L24">            throw new IllegalArgumentException(&quot;xy length must be 2&quot;);</span>
+        }
+<span class="fc" id="L26">        double[][] xyD = MatrixUtil.convertToDouble(xy);</span>
+<span class="fc" id="L27">        double[][] r = resample(xyD, n2);</span>
+<span class="fc" id="L28">        return MatrixUtil.convertToFloat(r);</span>
+    }
+
+    public static double[][] resample(double[][] xy, int n2) {
+<span class="pc bpc" id="L32" title="1 of 2 branches missed.">        if (xy.length &lt; 2) {</span>
+<span class="nc" id="L33">            throw new IllegalArgumentException(&quot;xy length must be 2&quot;);</span>
+        }
+
+<span class="fc" id="L36">        int n1 = xy[0].length;</span>
+<span class="fc" id="L37">        double[] xLine = new double[n1];</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">        for (int i = 0; i &lt; n1; ++i) {</span>
+<span class="fc" id="L39">            xLine[i] = i;</span>
+        }
+
+<span class="fc" id="L42">        double[] x2Line = new double[n2];</span>
+<span class="fc" id="L43">        double frac = (double) (n1 - 1.) / (double) (n2 - 1.);</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        for (int i = 0; i &lt; n2; ++i) {</span>
+<span class="fc" id="L45">            x2Line[i] = i * frac;</span>
+        }
+
+<span class="fc" id="L48">        SplineInterpolator interpolator = new SplineInterpolator();</span>
+<span class="fc" id="L49">        PolynomialSplineFunction xInterp = interpolator.interpolate(xLine, xy[0]);</span>
+<span class="fc" id="L50">        PolynomialSplineFunction yInterp = interpolator.interpolate(xLine, xy[1]);</span>
+
+<span class="fc" id="L52">        double[][] xy2 = new double[2][n2];</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">        for (int i = 0; i &lt; n2; i++) {</span>
+            // numerical resolution sometimes puts this over the limit of bounds of n1, even by amount as small as 1E-14.
+<span class="fc" id="L55">            double x2 = x2Line[i];</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">            if (x2 &gt; xInterp.getN()) {</span>
+<span class="fc" id="L57">                System.out.printf(&quot;warning: modifying x2=%f to &quot;, x2);</span>
+<span class="fc" id="L58">                x2 -= (x2 - xInterp.getN());</span>
+<span class="fc" id="L59">                System.out.printf(&quot;%f\n&quot;, x2);</span>
+            }
+<span class="fc" id="L61">            xy2[0][i] = xInterp.value(x2);</span>
+<span class="fc" id="L62">            xy2[1][i] = yInterp.value(x2);</span>
+        }
+<span class="fc" id="L64">        return xy2;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

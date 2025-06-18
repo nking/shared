@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PairFloatArray.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Jacoco Report</a> &gt; <a href="index.source.html" class="el_package">algorithms.util</a> &gt; <span class="el_source">PairFloatArray.java</span></div><h1>PairFloatArray.java</h1><pre class="source lang-java linenums">package algorithms.util;
 
+import algorithms.Rotate;
+
 import java.util.Arrays;
 
 /**
@@ -21,57 +23,63 @@ public class PairFloatArray {
     /**
      *
      */
-<span class="pc" id="L24">    protected float[] x = null;</span>
+<span class="pc" id="L26">    protected float[] x = null;</span>
     
     /**
      *
      */
-<span class="pc" id="L29">    protected float[] y = null;</span>
+<span class="pc" id="L31">    protected float[] y = null;</span>
     
     /**
      *
      */
-<span class="pc" id="L34">    protected int n = 0;</span>
+<span class="pc" id="L36">    protected int n = 0;</span>
     
     /**
      *
      @param capacity
      */
-<span class="fc" id="L40">    public PairFloatArray(int capacity) {</span>
+<span class="fc" id="L42">    public PairFloatArray(int capacity) {</span>
         
-<span class="fc" id="L42">        x = new float[capacity];</span>
+<span class="fc" id="L44">        x = new float[capacity];</span>
         
-<span class="fc" id="L44">        y = new float[capacity];</span>
-<span class="fc" id="L45">    }</span>
+<span class="fc" id="L46">        y = new float[capacity];</span>
+<span class="fc" id="L47">    }</span>
     
     /**
      *
      */
-<span class="fc" id="L50">    public PairFloatArray() {</span>
+<span class="fc" id="L52">    public PairFloatArray() {</span>
         
-<span class="fc" id="L52">        x = new float[10];</span>
+<span class="fc" id="L54">        x = new float[10];</span>
         
-<span class="fc" id="L54">        y = new float[10];</span>
-<span class="fc" id="L55">    }</span>
+<span class="fc" id="L56">        y = new float[10];</span>
+<span class="fc" id="L57">    }</span>
     
     /**
      *
      @param x
      @param y
      */
-<span class="nc" id="L62">    public PairFloatArray(float[] x, float[] y) {</span>
-<span class="nc" id="L63">        this.x = x;</span>
-<span class="nc" id="L64">        this.y = y;</span>
-<span class="nc" id="L65">    }</span>
+<span class="nc" id="L64">    public PairFloatArray(float[] x, float[] y) {</span>
+<span class="nc" id="L65">        this.x = x;</span>
+<span class="nc" id="L66">        this.y = y;</span>
+<span class="nc" id="L67">    }</span>
     
     /**
      *
      @return
      */
     public int getN() {
-<span class="fc" id="L72">        return n;</span>
+<span class="fc" id="L74">        return n;</span>
     }
-    
+
+    public void rotateLeft(int offset) {
+<span class="fc" id="L78">        Rotate r = new Rotate();</span>
+<span class="fc" id="L79">        r.rotate2(x, n, offset);</span>
+<span class="fc" id="L80">        r.rotate2(y, n, offset);</span>
+<span class="fc" id="L81">    }</span>
+
     /**
      *
      @param xPoint
@@ -79,13 +87,13 @@ public class PairFloatArray {
      */
     public void add(float xPoint, float yPoint) {
         
-<span class="fc" id="L82">        expandIfNeeded(n + 1);</span>
+<span class="fc" id="L90">        expandIfNeeded(n + 1);</span>
         
-<span class="fc" id="L84">        x[n] = xPoint;</span>
-<span class="fc" id="L85">        y[n] = yPoint;</span>
+<span class="fc" id="L92">        x[n] = xPoint;</span>
+<span class="fc" id="L93">        y[n] = yPoint;</span>
         
-<span class="fc" id="L87">        n++;</span>
-<span class="fc" id="L88">    }</span>
+<span class="fc" id="L95">        n++;</span>
+<span class="fc" id="L96">    }</span>
     
     /**
      *
@@ -95,15 +103,15 @@ public class PairFloatArray {
      */
     public void set(int index, float xPoint, float yPoint) {
         
-<span class="pc bpc" id="L98" title="1 of 2 branches missed.">        if (index &lt; 0) {</span>
-<span class="nc" id="L99">            throw new IllegalArgumentException(&quot;index is out of bounds of arrays&quot;);</span>
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">        if (index &lt; 0) {</span>
+<span class="nc" id="L107">            throw new IllegalArgumentException(&quot;index is out of bounds of arrays&quot;);</span>
         }
         
-<span class="fc" id="L102">        expandIfNeeded(index + 1);</span>
+<span class="fc" id="L110">        expandIfNeeded(index + 1);</span>
         
-<span class="fc" id="L104">        x[index] = xPoint;</span>
-<span class="fc" id="L105">        y[index] = yPoint;</span>
-<span class="fc" id="L106">    }</span>
+<span class="fc" id="L112">        x[index] = xPoint;</span>
+<span class="fc" id="L113">        y[index] = yPoint;</span>
+<span class="fc" id="L114">    }</span>
   
     /**
      *
@@ -111,10 +119,10 @@ public class PairFloatArray {
      @return
      */
     public float getX(int index) {
-<span class="pc bpc" id="L114" title="1 of 2 branches missed.">        if (index &gt; (n - 1)) {</span>
-<span class="nc" id="L115">            throw new IllegalArgumentException(&quot;index is out of range&quot;);</span>
+<span class="pc bpc" id="L122" title="1 of 2 branches missed.">        if (index &gt; (n - 1)) {</span>
+<span class="nc" id="L123">            throw new IllegalArgumentException(&quot;index is out of range&quot;);</span>
         }
-<span class="fc" id="L117">        return x[index];</span>
+<span class="fc" id="L125">        return x[index];</span>
     }
     
     /**
@@ -123,10 +131,10 @@ public class PairFloatArray {
      @return
      */
     public float getY(int index) {
-<span class="pc bpc" id="L126" title="1 of 2 branches missed.">        if (index &gt; (n - 1)) {</span>
-<span class="nc" id="L127">            throw new IllegalArgumentException(&quot;index is out of range&quot;);</span>
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">        if (index &gt; (n - 1)) {</span>
+<span class="nc" id="L135">            throw new IllegalArgumentException(&quot;index is out of range&quot;);</span>
         }
-<span class="fc" id="L129">        return y[index];</span>
+<span class="fc" id="L137">        return y[index];</span>
     }
     
     /**
@@ -134,7 +142,7 @@ public class PairFloatArray {
      @return
      */
     public float[] getX() {
-<span class="fc" id="L137">        return x;</span>
+<span class="fc" id="L145">        return x;</span>
     }
     
     /**
@@ -142,7 +150,7 @@ public class PairFloatArray {
      @return
      */
     public float[] getY() {
-<span class="fc" id="L145">        return y;</span>
+<span class="fc" id="L153">        return y;</span>
     }
     
     /**
@@ -151,19 +159,19 @@ public class PairFloatArray {
      */
     protected void expandIfNeeded(int nTotal) {
         
-<span class="fc bfc" id="L154" title="All 2 branches covered.">        if (nTotal &gt; x.length) {</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">        if (nTotal &gt; x.length) {</span>
             
-<span class="fc" id="L156">            int n2 = x.length + 10;</span>
+<span class="fc" id="L164">            int n2 = x.length + 10;</span>
             
-<span class="pc bpc" id="L158" title="1 of 2 branches missed.">            if (nTotal &gt; n2) {</span>
-<span class="nc" id="L159">                n2 = nTotal;</span>
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">            if (nTotal &gt; n2) {</span>
+<span class="nc" id="L167">                n2 = nTotal;</span>
             }
             
-<span class="fc" id="L162">            x = Arrays.copyOf(x, n2);</span>
+<span class="fc" id="L170">            x = Arrays.copyOf(x, n2);</span>
             
-<span class="fc" id="L164">            y = Arrays.copyOf(y, n2);</span>
+<span class="fc" id="L172">            y = Arrays.copyOf(y, n2);</span>
         }
-<span class="fc" id="L166">    }</span>
+<span class="fc" id="L174">    }</span>
     
     /**
      *
@@ -171,14 +179,14 @@ public class PairFloatArray {
      */
     public PairFloatArray copy() {
         
-<span class="fc" id="L174">        PairFloatArray clone = new PairFloatArray(n);</span>
+<span class="fc" id="L182">        PairFloatArray clone = new PairFloatArray(n);</span>
         
-<span class="fc" id="L176">        System.arraycopy(x, 0, clone.x, 0, n);</span>
-<span class="fc" id="L177">        System.arraycopy(y, 0, clone.y, 0, n);</span>
+<span class="fc" id="L184">        System.arraycopy(x, 0, clone.x, 0, n);</span>
+<span class="fc" id="L185">        System.arraycopy(y, 0, clone.y, 0, n);</span>
         
-<span class="fc" id="L179">        clone.n = n;</span>
+<span class="fc" id="L187">        clone.n = n;</span>
         
-<span class="fc" id="L181">        return clone;</span>
+<span class="fc" id="L189">        return clone;</span>
     }
     
     /**
@@ -188,54 +196,54 @@ public class PairFloatArray {
      */
     public void removeRange(int idxLo, int idxHi) {
         
-<span class="pc bpc" id="L191" title="2 of 4 branches missed.">        if ((idxLo &lt; 0) || (idxLo &gt; (n - 1))) {</span>
-<span class="nc" id="L192">            throw new IllegalArgumentException(&quot;idxLo is out of range&quot;);</span>
+<span class="pc bpc" id="L199" title="2 of 4 branches missed.">        if ((idxLo &lt; 0) || (idxLo &gt; (n - 1))) {</span>
+<span class="nc" id="L200">            throw new IllegalArgumentException(&quot;idxLo is out of range&quot;);</span>
         }
-<span class="pc bpc" id="L194" title="2 of 4 branches missed.">        if ((idxHi &lt; 0) || (idxHi &gt; (n - 1))) {</span>
-<span class="nc" id="L195">            throw new IllegalArgumentException(&quot;idxHi is out of range&quot;);</span>
+<span class="pc bpc" id="L202" title="2 of 4 branches missed.">        if ((idxHi &lt; 0) || (idxHi &gt; (n - 1))) {</span>
+<span class="nc" id="L203">            throw new IllegalArgumentException(&quot;idxHi is out of range&quot;);</span>
         }
-<span class="pc bpc" id="L197" title="1 of 2 branches missed.">        if (idxHi &lt; idxLo) {</span>
-<span class="nc" id="L198">            throw new IllegalArgumentException(&quot;idxHi has to be &gt;= idxLo&quot;);</span>
+<span class="pc bpc" id="L205" title="1 of 2 branches missed.">        if (idxHi &lt; idxLo) {</span>
+<span class="nc" id="L206">            throw new IllegalArgumentException(&quot;idxHi has to be &gt;= idxLo&quot;);</span>
         }
         
-<span class="fc" id="L201">        int nRemove = idxHi - idxLo + 1;</span>
+<span class="fc" id="L209">        int nRemove = idxHi - idxLo + 1;</span>
 
-<span class="fc" id="L203">        int moveIdx = idxHi + 1;</span>
-<span class="fc bfc" id="L204" title="All 2 branches covered.">        if (moveIdx &lt;= (n - 1)) {</span>
-<span class="fc bfc" id="L205" title="All 2 branches covered.">            for (int moveToIdx = idxLo; moveToIdx &lt; (n - nRemove); moveToIdx++) {</span>
-<span class="fc" id="L206">                x[moveToIdx] = x[moveIdx];</span>
-<span class="fc" id="L207">                y[moveToIdx] = y[moveIdx];</span>
-<span class="fc" id="L208">                moveIdx++;</span>
+<span class="fc" id="L211">        int moveIdx = idxHi + 1;</span>
+<span class="fc bfc" id="L212" title="All 2 branches covered.">        if (moveIdx &lt;= (n - 1)) {</span>
+<span class="fc bfc" id="L213" title="All 2 branches covered.">            for (int moveToIdx = idxLo; moveToIdx &lt; (n - nRemove); moveToIdx++) {</span>
+<span class="fc" id="L214">                x[moveToIdx] = x[moveIdx];</span>
+<span class="fc" id="L215">                y[moveToIdx] = y[moveIdx];</span>
+<span class="fc" id="L216">                moveIdx++;</span>
             }
         }
         
         // not necessary, but easier debugging to reset the last nRemove to 0
-<span class="fc bfc" id="L213" title="All 2 branches covered.">        for (int i = (n - nRemove); i &lt; n; i++) {</span>
-<span class="fc" id="L214">            x[i] = 0;</span>
-<span class="fc" id="L215">            y[i] = 0;</span>
+<span class="fc bfc" id="L221" title="All 2 branches covered.">        for (int i = (n - nRemove); i &lt; n; i++) {</span>
+<span class="fc" id="L222">            x[i] = 0;</span>
+<span class="fc" id="L223">            y[i] = 0;</span>
         }
         
-<span class="fc" id="L218">        n -= nRemove;</span>
-<span class="fc" id="L219">    }</span>
+<span class="fc" id="L226">        n -= nRemove;</span>
+<span class="fc" id="L227">    }</span>
     
     /**
      *
      @return
      */
     public PairIntArray toPairIntArray() {
-<span class="fc" id="L226">        PairIntArray out = new PairIntArray();</span>
-<span class="fc bfc" id="L227" title="All 2 branches covered.">        for (int i = 0; i &lt; n; i++) {</span>
-<span class="fc" id="L228">            out.add(Math.round(x[i]), Math.round(y[i]));</span>
+<span class="fc" id="L234">        PairIntArray out = new PairIntArray();</span>
+<span class="fc bfc" id="L235" title="All 2 branches covered.">        for (int i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L236">            out.add(Math.round(x[i]), Math.round(y[i]));</span>
         }
-<span class="fc" id="L230">        return out;</span>
+<span class="fc" id="L238">        return out;</span>
     }
     
     public String toString() {
-<span class="fc" id="L234">        StringBuilder sb = new StringBuilder();</span>
-<span class="fc bfc" id="L235" title="All 2 branches covered.">        for (int i = 0; i &lt; n; i++) {</span>
-<span class="fc" id="L236">            sb.append(&quot;x=&quot;).append(x[i]).append(&quot;y=&quot;).append(y[i]).append(&quot;\n&quot;);</span>
+<span class="fc" id="L242">        StringBuilder sb = new StringBuilder();</span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">        for (int i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L244">            sb.append(&quot;x=&quot;).append(x[i]).append(&quot;y=&quot;).append(y[i]).append(&quot;\n&quot;);</span>
         }
-<span class="fc" id="L238">        return sb.toString();</span>
+<span class="fc" id="L246">        return sb.toString();</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

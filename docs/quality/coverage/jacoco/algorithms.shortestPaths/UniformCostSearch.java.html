@@ -220,7 +220,7 @@ public class UniformCostSearch {
 <span class="fc" id="L220">                    nodes[v] = node;</span>
 <span class="fc" id="L221">                    predecessor[v] = u;</span>
 <span class="fc" id="L222">                } else {</span>
-<span class="fc bfc" id="L223" title="All 4 branches covered.">                    if (nodes[v] != null &amp;&amp; dist[v] &gt; dUPlusWUV) {</span>
+<span class="pc bpc" id="L223" title="1 of 4 branches missed.">                    if (nodes[v] != null &amp;&amp; dist[v] &gt; dUPlusWUV) {</span>
 <span class="fc" id="L224">                        log.log(logLevel, &quot;    decrease key to &quot; + dUPlusWUV);</span>
 <span class="fc" id="L225">                        dist[v] = dUPlusWUV;</span>
 <span class="fc" id="L226">                        predecessor[v] = u;</span>
@@ -403,4 +403,4 @@ public class UniformCostSearch {
 <span class="nc bnc" id="L403" title="All 2 branches missed.">        return (dest &lt; g.length);</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

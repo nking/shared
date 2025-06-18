@@ -349,7 +349,7 @@ import java.util.*;
 <span class="fc bfc" id="L349" title="All 2 branches covered.">        if (root.getData() == node2Val) {</span>
 <span class="fc" id="L350">            node2 = root;</span>
         }
-<span class="fc bfc" id="L352" title="All 6 branches covered.">        while (!q.isEmpty() &amp;&amp; (node1 == null || node2 == null)) {</span>
+<span class="pc bpc" id="L352" title="1 of 6 branches missed.">        while (!q.isEmpty() &amp;&amp; (node1 == null || node2 == null)) {</span>
 <span class="fc" id="L353">            root = q.poll();</span>
 <span class="fc" id="L354">            int level = depthMap.get(root);</span>
 <span class="fc bfc" id="L355" title="All 2 branches covered.">            for (NAryTreeNode ch : root.getChildren()) {</span>
@@ -413,7 +413,7 @@ import java.util.*;
 <span class="fc bfc" id="L413" title="All 2 branches covered.">        if (root.equals(node2)) {</span>
 <span class="fc" id="L414">            node2 = root;</span>
         }
-<span class="fc bfc" id="L416" title="All 6 branches covered.">        while (!q.isEmpty() &amp;&amp; !depthMap.containsKey(node1) || !depthMap.containsKey(node2)) {</span>
+<span class="pc bpc" id="L416" title="1 of 6 branches missed.">        while (!q.isEmpty() &amp;&amp; !depthMap.containsKey(node1) || !depthMap.containsKey(node2)) {</span>
 <span class="fc" id="L417">            root = q.poll();</span>
 <span class="fc" id="L418">            int level = depthMap.get(root);</span>
 <span class="fc bfc" id="L419" title="All 2 branches covered.">            for (NAryTreeNode ch : root.getChildren()) {</span>
@@ -445,4 +445,4 @@ import java.util.*;
     }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

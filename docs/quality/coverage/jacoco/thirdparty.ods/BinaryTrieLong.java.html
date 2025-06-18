@@ -203,7 +203,7 @@ public class BinaryTrieLong&lt;S extends BinaryTrieNode&lt;T&gt;, T&gt;
 <span class="fc bfc" id="L203" title="All 2 branches covered.">		while (v != null) {</span>
 <span class="fc bfc" id="L204" title="All 4 branches covered.">			if ((v.child[left] == null </span>
 	        	&amp;&amp; (v.jump == null ||
-<span class="fc bfc" id="L206" title="All 8 branches covered.">                it.longValue(v.jump.x) &gt; ix))</span>
+<span class="pc bpc" id="L206" title="1 of 8 branches missed.">                it.longValue(v.jump.x) &gt; ix))</span>
 			|| (v.child[right] == null 
 	    		&amp;&amp; (v.jump == null || 
 <span class="fc bfc" id="L209" title="All 2 branches covered.">                (v.jump.x != null &amp;&amp; it.longValue(v.jump.x) &lt; ix))</span>
@@ -611,4 +611,4 @@ public class BinaryTrieLong&lt;S extends BinaryTrieNode&lt;T&gt;, T&gt;
     }
     
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

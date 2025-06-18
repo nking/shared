@@ -2382,7 +2382,7 @@ Proceedings&lt;/I&gt;, pp. 296-305, Springer.
          * &lt;li&gt;8: index of coordinate with smallest standard deviation
          * &lt;li&gt;1.5e-05 | respective standard deviation
          * &lt;li&gt;index of coordinate with smallest standard deviation: respective standard deviation
-         * &lt;li&gt;| 1.4e-05 standard deviation in smallest principal axis direction
+         * &lt;li&gt;| 1.4e-05 standard deviation in smallest principal axis directionCCW
          * &lt;li&gt; 5.6e-05 sigma
          * &lt;li&gt; 2.34 axisratio, ie. quotient between the standard deviations in largest an 
          * smallest principal axis directions, ie. square root of the quotient between largest 
@@ -2739,7 +2739,7 @@ Proceedings&lt;/I&gt;, pp. 296-305, Springer.
                     &amp;&amp; countiter - citerlastwritten - 1 &lt; 2.*(countiter - countwritten + 1.) / (countwritten + 1.)
                     // allowed time is exhausted
                     &amp;&amp; timings.writedefaultfiles &gt; options.maxTimeFractionForWriteToDefaultFiles 
-<span class="fc bfc" id="L2742" title="All 2 branches covered.">                    * (System.currentTimeMillis() - timings.start)) </span>
+<span class="pc bpc" id="L2742" title="1 of 2 branches missed.">                    * (System.currentTimeMillis() - timings.start)) </span>
 <span class="fc" id="L2743">                return;</span>
         }
 
@@ -2841,4 +2841,4 @@ class IntDouble implements Comparator&lt;IntDouble&gt; {
 <span class="nc" id="L2841">        return false;</span>
     }
 } // IntDouble
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

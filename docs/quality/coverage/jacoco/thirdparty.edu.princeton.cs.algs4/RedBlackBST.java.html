@@ -307,7 +307,7 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
 <span class="pc bpc" id="L307" title="1 of 2 branches missed.">        if (isEmpty()) throw new NoSuchElementException(&quot;BST underflow&quot;);</span>
 
         // if both children of root are black, set root to red
-<span class="pc bpc" id="L310" title="1 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
+<span class="pc bpc" id="L310" title="2 of 4 branches missed.">        if (!isRed(root.left) &amp;&amp; !isRed(root.right))</span>
 <span class="fc" id="L311">            root.color = RED;</span>
 
 <span class="fc" id="L313">        root = deleteMax(root);</span>
@@ -364,20 +364,20 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
         else {
 <span class="fc bfc" id="L365" title="All 2 branches covered.">            if (isRed(h.left))</span>
 <span class="fc" id="L366">                h = rotateRight(h);</span>
-<span class="pc bpc" id="L367" title="1 of 4 branches missed.">            if (key.compareTo(h.key) == 0 &amp;&amp; (h.right == null))</span>
+<span class="fc bfc" id="L367" title="All 4 branches covered.">            if (key.compareTo(h.key) == 0 &amp;&amp; (h.right == null))</span>
 <span class="fc" id="L368">                return null;</span>
-<span class="pc bpc" id="L369" title="1 of 4 branches missed.">            if (!isRed(h.right) &amp;&amp; !isRed(h.right.left))</span>
+<span class="fc bfc" id="L369" title="All 4 branches covered.">            if (!isRed(h.right) &amp;&amp; !isRed(h.right.left))</span>
 <span class="fc" id="L370">                h = moveRedRight(h);</span>
-<span class="pc bpc" id="L371" title="1 of 2 branches missed.">            if (key.compareTo(h.key) == 0) {</span>
-<span class="nc" id="L372">                RBNode x = min(h.right);</span>
+<span class="fc bfc" id="L371" title="All 2 branches covered.">            if (key.compareTo(h.key) == 0) {</span>
+<span class="fc" id="L372">                RBNode x = min(h.right);</span>
                 
-<span class="nc" id="L374">                h.key = x.key;</span>
-<span class="nc" id="L375">                h.val = x.val;</span>
+<span class="fc" id="L374">                h.key = x.key;</span>
+<span class="fc" id="L375">                h.val = x.val;</span>
                 
                 // h.val = get(h.right, min(h.right).key);
                 // h.key = min(h.right).key;
-<span class="nc" id="L379">                h.right = deleteMin(h.right);</span>
-<span class="nc" id="L380">            }</span>
+<span class="fc" id="L379">                h.right = deleteMin(h.right);</span>
+<span class="fc" id="L380">            }</span>
 <span class="fc" id="L381">            else h.right = delete(h.right, key);</span>
         }
 <span class="fc" id="L383">        return balance(h);</span>
@@ -1084,4 +1084,4 @@ public class RedBlackBST&lt;Key extends Comparable&lt;Key&gt;, Value&gt; {
     }
     
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

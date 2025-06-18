@@ -1035,7 +1035,7 @@ import java.util.logging.Logger;
 
     /**
      * given 3 counter-clockwise ordered points on a curve, calculate the angle 
-     * along the curve at the middle point, its direction is from p0 to p1.
+     * along the curve at the middle point, its directionCCW is from p0 to p1.
      * &lt;pre&gt;
      * For example:
      * 
@@ -1074,7 +1074,7 @@ import java.util.logging.Logger;
     
     /**
      * given 3 counter-clockwise ordered points on a curve, calculate the angle 
-     * tangent to the curve at the middle point - its direction follows
+     * tangent to the curve at the middle point - its directionCCW follows
      * the right hand rule.
      * &lt;pre&gt;
      * For example:
@@ -1107,7 +1107,7 @@ import java.util.logging.Logger;
     }
 
     /**
-     * given theta and the point (xp, yp), determine which direction and hence
+     * given theta and the point (xp, yp), determine which directionCCW and hence
      * polar angle (clockwise) is perpendicular away from the centroid.
      * The reference point (xm, ym) is the point from which theta was also
      * calculated, which is probably the point for kMaxIdx.  The points are also
@@ -1129,7 +1129,7 @@ import java.util.logging.Logger;
         /*
         rotate the point (xm, ym) around (xp, yp) 90 degrees and -90 degrees.
         The rotated point which is furthest from the centroid is the
-        direction of the vector pointing away from the centroid.
+        directionCCW of the vector pointing away from the centroid.
         */
 
         /*
@@ -1264,4 +1264,4 @@ import java.util.logging.Logger;
 <span class="nc" id="L1264">        return circle;</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

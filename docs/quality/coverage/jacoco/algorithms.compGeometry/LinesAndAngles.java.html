@@ -21,12 +21,39 @@ import algorithms.util.PairInt;
     }
 
     /**
+     * calculate the directionCCW of change for the 2 vectors
+     * P1:P2 to P1:P3  returns negative when directionCCW is clockwise,
+     * else if zero the vectors are collinear, else if positive the
+     * directionCCW is counterclockwise.
+     * &lt;pre&gt;
+     *          p2
+     * p3      /
+     * \    /
+     * p1
+     * &lt;/pre&gt;
+     *
+     * @param x1
+     * @param y1
+     * @param x2
+     * @param y2
+     * @param x3
+     * @param y3
+     * @return positive number for direction CCW, 0 for co-linear, negative for CW.
+     */
+    public static double directionCCW(float x1, float y1, float x2, float y2,
+                                      float x3, float y3) {
+<span class="fc" id="L45">        return directionCCW((double)x1, (double) y1, (double) x2, (double) y2,</span>
+                (double) x3, (double) y3);
+    }
+
+    /**
      * calculate the direction of change for the 2 vectors
      * P1:P2 to P1:P3  returns negative when direction is clockwise,
      * else if zero the vectors are collinear, else if positive the
-     * direction is counterclockwise.
-     * &lt;p&gt;
-     * p2
+     * direction is counterclockwise (CCW).
+     * &lt;pre&gt;
+     * counter-clockwise:
+     *          p2
      * p3      /
      * \    /
      * p1
@@ -37,69 +64,120 @@ import algorithms.util.PairInt;
      * @param y2
      * @param x3
      * @param y3
-     * @return
+     * @return positive number for direction CCW, 0 for co-linear, negative for CW.
      */
-    public static double direction(float x1, float y1, float x2, float y2,
-                                   float x3, float y3) {
+    public static double directionCCW(double x1, double y1, double x2, double y2,
+                                      double x3, double y3) {
 
-<span class="fc" id="L45">        double d = ((x2 - x1) * (y3 - y1)) - ((y2 - y1) * (x3 - x1));</span>
+<span class="fc" id="L72">        double d = ((x2 - x1) * (y3 - y1)) - ((y2 - y1) * (x3 - x1));</span>
 
-<span class="fc" id="L47">        return d;</span>
+<span class="fc" id="L74">        return d;</span>
     }
 
     /**
-     * calculate the direction of change for the 2 vectors
-     * P1:P2 to P1:P3  returns negative when direction is clockwise,
+     * calculate the directionCCW of change for the 2 vectors
+     * P1:P2 to P1:P3  returns negative when directionCCW is clockwise,
      * else if zero the vectors are collinear, else if positive the
-     * directions is counterclockwise.
-     * &lt;p&gt;
-     * p2
+     * directionCCW is counterclockwise (CCW).
+     * &lt;pre&gt;
+     *          p2
      * p3      /
      * \    /
      * p1
+     * &lt;/pre&gt;
      *
+     * @param x1
+     * @param y1
+     * @param x2
+     * @param y2
+     * @param x3
+     * @param y3
+     * @return
+     */
+    public static double directionCW(double x1, double y1, double x2, double y2,
+                                      double x3, double y3) {
+
+<span class="nc" id="L100">        return -1. * directionCCW(x1, y1, x2, y2, x3, y3);</span>
+    }
+
+    /**
+     * calculate the directionCCW of change for the 2 vectors
+     * P1:P2 to P1:P3  returns negative when directionCCW is clockwise,
+     * else if zero the vectors are collinear, else if positive the
+     * directionCCW is counterclockwise (CCW).
+     * &lt;pre&gt;
+     *          p2
+     * p3      /
+     * \    /
+     * p1
+     * &lt;/pre&gt;
+     *
+     * @param x1
+     * @param y1
+     * @param x2
+     * @param y2
+     * @param x3
+     * @param y3
+     * @return
+     */
+    public static double directionCW(float x1, float y1, float x2, float y2,
+                                     float x3, float y3) {
+
+<span class="fc" id="L126">        return -1. * directionCCW(x1, y1, x2, y2, x3, y3);</span>
+    }
+
+
+    /**
+     * calculate the directionCCW of change for the 2 vectors
+     * P1:P2 to P1:P3  returns negative when directionCCW is clockwise,
+     * else if zero the vectors are collinear, else if positive the
+     * directions is counterclockwise.
+     * &lt;pre&gt;
+     *          p2
+     * p3      /
+     * \    /
+     * p1
+     * &lt;/pre&gt;
      * @param p1
      * @param p2
      * @param p3
      * @return
      */
-    public static &lt;T extends PairInt&gt; double direction(T p1, T p2, T p3) {
+    public static &lt;T extends PairInt&gt; double directionCCW(T p1, T p2, T p3) {
 
-<span class="fc" id="L68">        int x1 = p1.getX();</span>
-<span class="fc" id="L69">        int y1 = p1.getY();</span>
-<span class="fc" id="L70">        int x2 = p2.getX();</span>
-<span class="fc" id="L71">        int y2 = p2.getY();</span>
-<span class="fc" id="L72">        int x3 = p3.getX();</span>
-<span class="fc" id="L73">        int y3 = p3.getY();</span>
+<span class="fc" id="L148">        int x1 = p1.getX();</span>
+<span class="fc" id="L149">        int y1 = p1.getY();</span>
+<span class="fc" id="L150">        int x2 = p2.getX();</span>
+<span class="fc" id="L151">        int y2 = p2.getY();</span>
+<span class="fc" id="L152">        int x3 = p3.getX();</span>
+<span class="fc" id="L153">        int y3 = p3.getY();</span>
 
-<span class="fc" id="L75">        double d = ((x2 - x1) * (y3 - y1)) - ((y2 - y1) * (x3 - x1));</span>
+<span class="fc" id="L155">        double d = ((x2 - x1) * (y3 - y1)) - ((y2 - y1) * (x3 - x1));</span>
 
-<span class="fc" id="L77">        return d;</span>
+<span class="fc" id="L157">        return d;</span>
     }
 
     /**
      * calculate the direction of change for the 2 vectors
-     * P1:P2 to P1:P3  returns negative when direction is clockwise,
+     * P1:P2 to P1:P3  returns negative when directionCCW is clockwise,
      * else if zero the vectors are collinear, else if positive the
      * directions is counterclockwise.
-     * &lt;p&gt;
-     * p2
+     * &lt;pre&gt;
+     *  counter-clockwise angle:
+     *          p2
      * p3      /
      * \    /
      * p1
-     *
+     *&lt;/pre&gt;
      * @param p1
      * @param p2
      * @param p3
-     * @return
+     * @return positive number for direction CCW, 0 for co-linear, negative for CW.
      */
-    public static double direction(PairIntWithIndex p1, PairIntWithIndex p2,
-                                   PairIntWithIndex p3) {
+    public static double directionCCW(PairIntWithIndex p1, PairIntWithIndex p2,
+                                      PairIntWithIndex p3) {
 
-<span class="nc" id="L99">        double d = ((p2.getX() - p1.getX()) * (p3.getY() - p1.getY())) -</span>
-<span class="nc" id="L100">                ((p2.getY() - p1.getY()) * (p3.getX() - p1.getX()));</span>
-
-<span class="nc" id="L102">        return d;</span>
+<span class="nc" id="L180">        return directionCCW(p1.getX(), p1.getY(), p2.getX(), p2.getY(), p3.getX(), p3.getY());</span>
     }
 
     /**
@@ -131,7 +209,7 @@ import algorithms.util.PairInt;
     public static double crossProduct(double x1, double y1, double x2,
                                       double y2) {
 
-<span class="fc" id="L134">        return ((x1 * y2) - (x2 * y1));</span>
+<span class="fc" id="L212">        return ((x1 * y2) - (x2 * y1));</span>
     }
 
     /**
@@ -163,39 +241,42 @@ import algorithms.util.PairInt;
          *   \    /
          *     p1
         */
-<span class="nc" id="L166">        int d1 = direction(x3, y3, x4, y4, x1, y1);</span>
-<span class="nc" id="L167">        int d2 = direction(x3, y3, x4, y4, x2, y2);</span>
-<span class="nc" id="L168">        int d3 = direction(x1, y1, x2, y2, x3, y3);</span>
-<span class="nc" id="L169">        int d4 = direction(x1, y1, x2, y2, x4, y4);</span>
+<span class="nc" id="L244">        int d1 = directionCW(x3, y3, x4, y4, x1, y1);</span>
+<span class="nc" id="L245">        int d2 = directionCW(x3, y3, x4, y4, x2, y2);</span>
+<span class="nc" id="L246">        int d3 = directionCW(x1, y1, x2, y2, x3, y3);</span>
+<span class="nc" id="L247">        int d4 = directionCW(x1, y1, x2, y2, x4, y4);</span>
 
-<span class="nc bnc" id="L171" title="All 16 branches missed.">        if (</span>
+<span class="nc bnc" id="L249" title="All 16 branches missed.">        if (</span>
                 (((d1 &gt; 0) &amp;&amp; (d2 &lt; 0)) || ((d1 &lt; 0) &amp;&amp; (d2 &gt; 0)))
                         &amp;&amp;
                         (((d3 &gt; 0) &amp;&amp; (d4 &lt; 0)) || ((d3 &lt; 0) &amp;&amp; (d4 &gt; 0)))
         ) {
-<span class="nc" id="L176">            return true;</span>
-<span class="nc bnc" id="L177" title="All 4 branches missed.">        } else if ((d1 == 0) &amp;&amp; onSegment(x3, y3, x4, y4, x1, y1)) {</span>
-<span class="nc" id="L178">            return true;</span>
-<span class="nc bnc" id="L179" title="All 4 branches missed.">        } else if ((d2 == 0) &amp;&amp; onSegment(x3, y3, x4, y4, x2, y2)) {</span>
-<span class="nc" id="L180">            return true;</span>
-<span class="nc bnc" id="L181" title="All 4 branches missed.">        } else if ((d3 == 0) &amp;&amp; onSegment(x1, y1, x2, y2, x3, y3)) {</span>
-<span class="nc" id="L182">            return true;</span>
-<span class="nc bnc" id="L183" title="All 4 branches missed.">        } else if ((d4 == 0) &amp;&amp; onSegment(x1, y1, x2, y2, x4, y4)) {</span>
-<span class="nc" id="L184">            return true;</span>
+<span class="nc" id="L254">            return true;</span>
+<span class="nc bnc" id="L255" title="All 4 branches missed.">        } else if ((d1 == 0) &amp;&amp; onSegment(x3, y3, x4, y4, x1, y1)) {</span>
+<span class="nc" id="L256">            return true;</span>
+<span class="nc bnc" id="L257" title="All 4 branches missed.">        } else if ((d2 == 0) &amp;&amp; onSegment(x3, y3, x4, y4, x2, y2)) {</span>
+<span class="nc" id="L258">            return true;</span>
+<span class="nc bnc" id="L259" title="All 4 branches missed.">        } else if ((d3 == 0) &amp;&amp; onSegment(x1, y1, x2, y2, x3, y3)) {</span>
+<span class="nc" id="L260">            return true;</span>
+<span class="nc bnc" id="L261" title="All 4 branches missed.">        } else if ((d4 == 0) &amp;&amp; onSegment(x1, y1, x2, y2, x4, y4)) {</span>
+<span class="nc" id="L262">            return true;</span>
         }
-<span class="nc" id="L186">        return false;</span>
+<span class="nc" id="L264">        return false;</span>
     }
 
     /**
      * calculate the direction of change for the 2 vectors
-     * P1:P2 to P1:P3  returns positive when direction is clockwise,
+     * P1:P2 to P1:P3.
+     * returns positive when direction is clockwise (CW),
      * else if zero the vectors are collinear, else if negative the
-     * direction is counterclockwise.
-     * &lt;p&gt;
-     * p2
+     * direction is counterclockwise (CCW).
+     * &lt;pre&gt;
+     *  counter-clockwise:
+     *          p2
      * p3      /
      * \    /
      * p1
+     * &lt;/pre&gt;
      *
      * @param x1
      * @param y1
@@ -205,17 +286,17 @@ import algorithms.util.PairInt;
      * @param y3
      * @return
      */
-    public static int direction(int x1, int y1, int x2, int y2, int x3, int y3) {
+    public static int directionCW(int x1, int y1, int x2, int y2, int x3, int y3) {
 
-<span class="fc" id="L210">        int x31 = x3 - x1;</span>
-<span class="fc" id="L211">        int y31 = y3 - y1;</span>
+<span class="fc" id="L291">        int x31 = x3 - x1;</span>
+<span class="fc" id="L292">        int y31 = y3 - y1;</span>
 
-<span class="fc" id="L213">        int x21 = x2 - x1;</span>
-<span class="fc" id="L214">        int y21 = y2 - y1;</span>
+<span class="fc" id="L294">        int x21 = x2 - x1;</span>
+<span class="fc" id="L295">        int y21 = y2 - y1;</span>
 
-<span class="fc" id="L216">        int cp = ((x31 * y21) - (x21 * y31));</span>
+<span class="fc" id="L297">        int cp = ((x31 * y21) - (x21 * y31));</span>
 
-<span class="fc" id="L218">        return cp;</span>
+<span class="fc" id="L299">        return cp;</span>
     }
 
     /**
@@ -244,7 +325,7 @@ import algorithms.util.PairInt;
      * @return
      */
     public static int crossProduct(int x1, int y1, int x2, int y2) {
-<span class="nc" id="L247">        return ((x1 * y2) - (x2 * y1));</span>
+<span class="nc" id="L328">        return ((x1 * y2) - (x2 * y1));</span>
     }
 
     /**
@@ -253,16 +334,16 @@ import algorithms.util.PairInt;
     static boolean onSegment(int x1, int y1,
                              int x2, int y2, int x3, int y3) {
 
-<span class="nc bnc" id="L256" title="All 2 branches missed.">        int minx12 = (x1 &lt; x2) ? x1 : x2;</span>
-<span class="nc bnc" id="L257" title="All 2 branches missed.">        int miny12 = (y1 &lt; y2) ? y1 : y2;</span>
+<span class="nc bnc" id="L337" title="All 2 branches missed.">        int minx12 = (x1 &lt; x2) ? x1 : x2;</span>
+<span class="nc bnc" id="L338" title="All 2 branches missed.">        int miny12 = (y1 &lt; y2) ? y1 : y2;</span>
 
-<span class="nc bnc" id="L259" title="All 2 branches missed.">        int maxx12 = (x1 &gt; x2) ? x1 : x2;</span>
-<span class="nc bnc" id="L260" title="All 2 branches missed.">        int maxy12 = (y1 &gt; y2) ? y1 : y2;</span>
+<span class="nc bnc" id="L340" title="All 2 branches missed.">        int maxx12 = (x1 &gt; x2) ? x1 : x2;</span>
+<span class="nc bnc" id="L341" title="All 2 branches missed.">        int maxy12 = (y1 &gt; y2) ? y1 : y2;</span>
 
-<span class="nc bnc" id="L262" title="All 8 branches missed.">        if ((minx12 &lt;= x3) &amp;&amp; (x3 &lt;= maxx12) &amp;&amp; (miny12 &lt;= y3) &amp;&amp; (y3 &lt;= maxy12)) {</span>
-<span class="nc" id="L263">            return true;</span>
+<span class="nc bnc" id="L343" title="All 8 branches missed.">        if ((minx12 &lt;= x3) &amp;&amp; (x3 &lt;= maxx12) &amp;&amp; (miny12 &lt;= y3) &amp;&amp; (y3 &lt;= maxy12)) {</span>
+<span class="nc" id="L344">            return true;</span>
         } else {
-<span class="nc" id="L265">            return false;</span>
+<span class="nc" id="L346">            return false;</span>
         }
     }
 
@@ -285,27 +366,27 @@ import algorithms.util.PairInt;
     public static boolean linesIntersect(float x1, float y1,
                                          float x2, float y2, float x3, float y3, float x4, float y4) {
 
-<span class="nc" id="L288">        double d1 = -1 * direction(x3, y3, x4, y4, x1, y1);</span>
-<span class="nc" id="L289">        double d2 = -1 * direction(x3, y3, x4, y4, x2, y2);</span>
-<span class="nc" id="L290">        double d3 = -1 * direction(x1, y1, x2, y2, x3, y3);</span>
-<span class="nc" id="L291">        double d4 = -1 * direction(x1, y1, x2, y2, x4, y4);</span>
+<span class="fc" id="L369">        double d1 = -1 * directionCW(x3, y3, x4, y4, x1, y1);</span>
+<span class="fc" id="L370">        double d2 = -1 * directionCW(x3, y3, x4, y4, x2, y2);</span>
+<span class="fc" id="L371">        double d3 = -1 * directionCW(x1, y1, x2, y2, x3, y3);</span>
+<span class="fc" id="L372">        double d4 = -1 * directionCW(x1, y1, x2, y2, x4, y4);</span>
 
-<span class="nc bnc" id="L293" title="All 16 branches missed.">        if (</span>
+<span class="pc bpc" id="L374" title="10 of 16 branches missed.">        if (</span>
                 (((d1 &gt; 0) &amp;&amp; (d2 &lt; 0)) || ((d1 &lt; 0) &amp;&amp; (d2 &gt; 0)))
                         &amp;&amp;
                         (((d3 &gt; 0) &amp;&amp; (d4 &lt; 0)) || ((d3 &lt; 0) &amp;&amp; (d4 &gt; 0)))
         ) {
-<span class="nc" id="L298">            return true;</span>
-<span class="nc bnc" id="L299" title="All 4 branches missed.">        } else if ((d1 == 0) &amp;&amp; onSegment(x3, y3, x4, y4, x1, y1)) {</span>
-<span class="nc" id="L300">            return true;</span>
-<span class="nc bnc" id="L301" title="All 4 branches missed.">        } else if ((d2 == 0) &amp;&amp; onSegment(x3, y3, x4, y4, x2, y2)) {</span>
-<span class="nc" id="L302">            return true;</span>
-<span class="nc bnc" id="L303" title="All 4 branches missed.">        } else if ((d3 == 0) &amp;&amp; onSegment(x1, y1, x2, y2, x3, y3)) {</span>
-<span class="nc" id="L304">            return true;</span>
-<span class="nc bnc" id="L305" title="All 4 branches missed.">        } else if ((d4 == 0) &amp;&amp; onSegment(x1, y1, x2, y2, x4, y4)) {</span>
-<span class="nc" id="L306">            return true;</span>
+<span class="fc" id="L379">            return true;</span>
+<span class="pc bpc" id="L380" title="3 of 4 branches missed.">        } else if ((d1 == 0) &amp;&amp; onSegment(x3, y3, x4, y4, x1, y1)) {</span>
+<span class="nc" id="L381">            return true;</span>
+<span class="pc bpc" id="L382" title="3 of 4 branches missed.">        } else if ((d2 == 0) &amp;&amp; onSegment(x3, y3, x4, y4, x2, y2)) {</span>
+<span class="nc" id="L383">            return true;</span>
+<span class="pc bpc" id="L384" title="3 of 4 branches missed.">        } else if ((d3 == 0) &amp;&amp; onSegment(x1, y1, x2, y2, x3, y3)) {</span>
+<span class="nc" id="L385">            return true;</span>
+<span class="pc bpc" id="L386" title="3 of 4 branches missed.">        } else if ((d4 == 0) &amp;&amp; onSegment(x1, y1, x2, y2, x4, y4)) {</span>
+<span class="nc" id="L387">            return true;</span>
         }
-<span class="nc" id="L308">        return false;</span>
+<span class="fc" id="L389">        return false;</span>
     }
 
     /**
@@ -334,59 +415,59 @@ import algorithms.util.PairInt;
      * @return
      */
     public static float crossProduct(float x1, float y1, float x2, float y2) {
-<span class="nc" id="L337">        return ((x1 * y2) - (x2 * y1));</span>
+<span class="nc" id="L418">        return ((x1 * y2) - (x2 * y1));</span>
     }
 
     static boolean onSegment(float x1, float y1,
                              float x2, float y2, float x3, float y3) {
 
-<span class="nc bnc" id="L343" title="All 2 branches missed.">        float minx12 = (x1 &lt; x2) ? x1 : x2;</span>
-<span class="nc bnc" id="L344" title="All 2 branches missed.">        float miny12 = (y1 &lt; y2) ? y1 : y2;</span>
+<span class="nc bnc" id="L424" title="All 2 branches missed.">        float minx12 = (x1 &lt; x2) ? x1 : x2;</span>
+<span class="nc bnc" id="L425" title="All 2 branches missed.">        float miny12 = (y1 &lt; y2) ? y1 : y2;</span>
 
-<span class="nc bnc" id="L346" title="All 2 branches missed.">        float maxx12 = (x1 &gt; x2) ? x1 : x2;</span>
-<span class="nc bnc" id="L347" title="All 2 branches missed.">        float maxy12 = (y1 &gt; y2) ? y1 : y2;</span>
+<span class="nc bnc" id="L427" title="All 2 branches missed.">        float maxx12 = (x1 &gt; x2) ? x1 : x2;</span>
+<span class="nc bnc" id="L428" title="All 2 branches missed.">        float maxy12 = (y1 &gt; y2) ? y1 : y2;</span>
 
-<span class="nc bnc" id="L349" title="All 8 branches missed.">        if ((minx12 &lt;= x3) &amp;&amp; (x3 &lt;= maxx12) &amp;&amp; (miny12 &lt;= y3) &amp;&amp; (y3 &lt;= maxy12)) {</span>
-<span class="nc" id="L350">            return true;</span>
+<span class="nc bnc" id="L430" title="All 8 branches missed.">        if ((minx12 &lt;= x3) &amp;&amp; (x3 &lt;= maxx12) &amp;&amp; (miny12 &lt;= y3) &amp;&amp; (y3 &lt;= maxy12)) {</span>
+<span class="nc" id="L431">            return true;</span>
         } else {
-<span class="nc" id="L352">            return false;</span>
+<span class="nc" id="L433">            return false;</span>
         }
     }
 
     public static boolean pointIsInLine(int xPt, int yPt, int x2, int y2, int x3, int y3) {
 
-<span class="fc" id="L358">        int diffY = y3 - y2;</span>
-<span class="fc" id="L359">        int diffX = x3 - x2;</span>
+<span class="fc" id="L439">        int diffY = y3 - y2;</span>
+<span class="fc" id="L440">        int diffX = x3 - x2;</span>
 
-<span class="fc" id="L361">        int numer = (diffY * xPt) - (diffX * yPt) + (x3 * y2) - (y3 * x2);</span>
+<span class="fc" id="L442">        int numer = (diffY * xPt) - (diffX * yPt) + (x3 * y2) - (y3 * x2);</span>
 
         //double denom = Math.sqrt((diffX*diffX) + (diffY*diffY));
         //double dist = Math.abs(numer)/denom;
 
-<span class="fc bfc" id="L366" title="All 2 branches covered.">        if (numer != 0) {</span>
-<span class="fc" id="L367">            return false;</span>
+<span class="fc bfc" id="L447" title="All 2 branches covered.">        if (numer != 0) {</span>
+<span class="fc" id="L448">            return false;</span>
         }
 
         // check that pt is between bounds
-<span class="fc bfc" id="L371" title="All 2 branches covered.">        if (x2 &lt; x3) {</span>
-<span class="pc bpc" id="L372" title="2 of 4 branches missed.">            if (xPt &lt; x2 || xPt &gt; x3) {</span>
-<span class="nc" id="L373">                return false;</span>
+<span class="fc bfc" id="L452" title="All 2 branches covered.">        if (x2 &lt; x3) {</span>
+<span class="pc bpc" id="L453" title="2 of 4 branches missed.">            if (xPt &lt; x2 || xPt &gt; x3) {</span>
+<span class="nc" id="L454">                return false;</span>
             }
-<span class="pc bpc" id="L375" title="1 of 2 branches missed.">        } else if (x2 &gt; x3) {</span>
-<span class="nc bnc" id="L376" title="All 4 branches missed.">            if (xPt &gt; x2 || xPt &lt; x3) {</span>
-<span class="nc" id="L377">                return false;</span>
-            }
-        }
-<span class="fc bfc" id="L380" title="All 2 branches covered.">        if (y2 &lt; y3) {</span>
-<span class="pc bpc" id="L381" title="2 of 4 branches missed.">            if (yPt &lt; y2 || yPt &gt; y3) {</span>
-<span class="nc" id="L382">                return false;</span>
-            }
-<span class="pc bpc" id="L384" title="1 of 2 branches missed.">        } else if (y2 &gt; y3) {</span>
-<span class="nc bnc" id="L385" title="All 4 branches missed.">            if (yPt &gt; y2 || yPt &lt; y3) {</span>
-<span class="nc" id="L386">                return false;</span>
+<span class="pc bpc" id="L456" title="1 of 2 branches missed.">        } else if (x2 &gt; x3) {</span>
+<span class="nc bnc" id="L457" title="All 4 branches missed.">            if (xPt &gt; x2 || xPt &lt; x3) {</span>
+<span class="nc" id="L458">                return false;</span>
             }
         }
-<span class="fc" id="L389">        return true;</span>
+<span class="fc bfc" id="L461" title="All 2 branches covered.">        if (y2 &lt; y3) {</span>
+<span class="pc bpc" id="L462" title="2 of 4 branches missed.">            if (yPt &lt; y2 || yPt &gt; y3) {</span>
+<span class="nc" id="L463">                return false;</span>
+            }
+<span class="pc bpc" id="L465" title="1 of 2 branches missed.">        } else if (y2 &gt; y3) {</span>
+<span class="nc bnc" id="L466" title="All 4 branches missed.">            if (yPt &gt; y2 || yPt &lt; y3) {</span>
+<span class="nc" id="L467">                return false;</span>
+            }
+        }
+<span class="fc" id="L470">        return true;</span>
     }
 
     public static boolean pointIsInLine(float xPt, float yPt, float x2, float y2,
@@ -394,38 +475,38 @@ import algorithms.util.PairInt;
 
         //TODO: this one needs a tolerance
 
-<span class="fc" id="L397">        float diffY = y3 - y2;</span>
-<span class="fc" id="L398">        float diffX = x3 - x2;</span>
+<span class="fc" id="L478">        float diffY = y3 - y2;</span>
+<span class="fc" id="L479">        float diffX = x3 - x2;</span>
 
-<span class="fc" id="L400">        float numer = (diffY * xPt) - (diffX * yPt) + (x3 * y2) - (y3 * x2);</span>
+<span class="fc" id="L481">        float numer = (diffY * xPt) - (diffX * yPt) + (x3 * y2) - (y3 * x2);</span>
 
         //double denom = Math.sqrt((diffX*diffX) + (diffY*diffY));
         //double dist = Math.abs(numer)/denom;
 
-<span class="pc bpc" id="L405" title="1 of 2 branches missed.">        if (numer != 0) {</span>
-<span class="nc" id="L406">            return false;</span>
+<span class="pc bpc" id="L486" title="1 of 2 branches missed.">        if (numer != 0) {</span>
+<span class="nc" id="L487">            return false;</span>
         }
 
         // check that pt is between bounds
-<span class="pc bpc" id="L410" title="1 of 2 branches missed.">        if (x2 &lt; x3) {</span>
-<span class="nc bnc" id="L411" title="All 4 branches missed.">            if (xPt &lt; x2 || xPt &gt; x3) {</span>
-<span class="nc" id="L412">                return false;</span>
+<span class="pc bpc" id="L491" title="1 of 2 branches missed.">        if (x2 &lt; x3) {</span>
+<span class="nc bnc" id="L492" title="All 4 branches missed.">            if (xPt &lt; x2 || xPt &gt; x3) {</span>
+<span class="nc" id="L493">                return false;</span>
             }
-<span class="pc bpc" id="L414" title="1 of 2 branches missed.">        } else if (x2 &gt; x3) {</span>
-<span class="nc bnc" id="L415" title="All 4 branches missed.">            if (xPt &gt; x2 || xPt &lt; x3) {</span>
-<span class="nc" id="L416">                return false;</span>
-            }
-        }
-<span class="pc bpc" id="L419" title="1 of 2 branches missed.">        if (y2 &lt; y3) {</span>
-<span class="pc bpc" id="L420" title="2 of 4 branches missed.">            if (yPt &lt; y2 || yPt &gt; y3) {</span>
-<span class="nc" id="L421">                return false;</span>
-            }
-<span class="nc bnc" id="L423" title="All 2 branches missed.">        } else if (y2 &gt; y3) {</span>
-<span class="nc bnc" id="L424" title="All 4 branches missed.">            if (yPt &gt; y2 || yPt &lt; y3) {</span>
-<span class="nc" id="L425">                return false;</span>
+<span class="pc bpc" id="L495" title="1 of 2 branches missed.">        } else if (x2 &gt; x3) {</span>
+<span class="nc bnc" id="L496" title="All 4 branches missed.">            if (xPt &gt; x2 || xPt &lt; x3) {</span>
+<span class="nc" id="L497">                return false;</span>
             }
         }
-<span class="fc" id="L428">        return true;</span>
+<span class="pc bpc" id="L500" title="1 of 2 branches missed.">        if (y2 &lt; y3) {</span>
+<span class="pc bpc" id="L501" title="2 of 4 branches missed.">            if (yPt &lt; y2 || yPt &gt; y3) {</span>
+<span class="nc" id="L502">                return false;</span>
+            }
+<span class="nc bnc" id="L504" title="All 2 branches missed.">        } else if (y2 &gt; y3) {</span>
+<span class="nc bnc" id="L505" title="All 4 branches missed.">            if (yPt &gt; y2 || yPt &lt; y3) {</span>
+<span class="nc" id="L506">                return false;</span>
+            }
+        }
+<span class="fc" id="L509">        return true;</span>
     }
 
     /**
@@ -433,7 +514,7 @@ import algorithms.util.PairInt;
      * to segment P3:P2.
      * &lt;p&gt;
      * Internally, the method uses the law of cosines and
-     * the direction method.
+     * the directionCCW method.
      * &lt;pre&gt;
      *   P1     P2
      *
@@ -452,15 +533,52 @@ import algorithms.util.PairInt;
     public static double calcClockwiseAngle(int x1, int y1,
                                             int x2, int y2, int x3, int y3) {
 
-<span class="fc" id="L455">        double d = direction(x3, y3, x2, y2, x1, y1);</span>
+        //P1:P2 to P1:P3
+<span class="nc" id="L537">        double d = directionCW(x3, y3, x2, y2, x1, y1);</span>
 
-<span class="fc" id="L457">        double angleA = calcAngle(x1, y1, x2, y2, x3, y3);</span>
+<span class="nc" id="L539">        double angleA = calcAngle(x1, y1, x2, y2, x3, y3);</span>
 
-<span class="fc bfc" id="L459" title="All 2 branches covered.">        if (d &gt; 0) {</span>
-<span class="fc" id="L460">            angleA = 2. * Math.PI - angleA;</span>
+<span class="nc bnc" id="L541" title="All 2 branches missed.">        if (d &gt; 0) {</span>
+<span class="nc" id="L542">            angleA += (2. * Math.PI);</span>
         }
 
-<span class="fc" id="L463">        return angleA;</span>
+<span class="nc" id="L545">        return angleA;</span>
+    }
+
+
+    /**
+     * Calculate the angle of segment P3:P1 sweeping clockwise
+     * to segment P3:P2.
+     * &lt;p&gt;
+     * Internally, the method uses the law of cosines and
+     * the directionCCW method.
+     * &lt;pre&gt;
+     *   P1     P2
+     *
+     *      P3
+     * &lt;/pre&gt;
+     * NOTE that if given a single point, it will return NaN
+     *
+     * @param x1
+     * @param y1
+     * @param x2
+     * @param y2
+     * @param x3
+     * @param y3
+     * @return
+     */
+    public static double calcClockwiseAngle(float x1, float y1,
+                                            float x2, float y2, float x3, float y3) {
+
+<span class="fc" id="L573">        double d = directionCW(x3, y3, x2, y2, x1, y1);</span>
+
+<span class="fc" id="L575">        double angleA = calcAngle(x1, y1, x2, y2, x3, y3);</span>
+
+<span class="fc bfc" id="L577" title="All 6 branches covered.">        if ((d &gt; 0) || (d == 0 &amp;&amp; angleA &lt; 0)) {</span>
+<span class="fc" id="L578">            angleA += (2. * Math.PI);</span>
+        }
+
+<span class="fc" id="L581">        return angleA;</span>
     }
 
     /**
@@ -468,7 +586,42 @@ import algorithms.util.PairInt;
      * to segment P3:P2.
      * &lt;p&gt;
      * Internally, the method uses the law of cosines and
-     * the direction method.
+     * the directionCCW method.
+     * &lt;pre&gt;
+     *   P1     P2
+     *
+     *      P3
+     * &lt;/pre&gt;
+     * NOTE that if given a single point, it will return NaN
+     *
+     * @param x1
+     * @param y1
+     * @param x2
+     * @param y2
+     * @param x3
+     * @param y3
+     * @return
+     */
+    public static double calcClockwiseAngle(double x1, double y1,
+                                            double x2, double y2, double x3, double y3) {
+
+<span class="nc" id="L608">        double d = directionCCW(x3, y3, x2, y2, x1, y1);</span>
+
+<span class="nc" id="L610">        double angleA = calcAngle(x1, y1, x2, y2, x3, y3);</span>
+
+<span class="nc bnc" id="L612" title="All 4 branches missed.">        if (d &gt; 0 &amp;&amp; angleA &lt; (2.*Math.PI)) {</span>
+<span class="nc" id="L613">            angleA = 2. * Math.PI + angleA;</span>
+        }
+
+<span class="nc" id="L616">        return angleA;</span>
+    }
+
+    /**
+     * Calculate the angle of segment P3:P1 sweeping clockwise
+     * to segment P3:P2.
+     * &lt;p&gt;
+     * Internally, the method uses the law of cosines and
+     * the directionCCW method.
      * &lt;pre&gt;
      *   P1     P2
      *
@@ -486,30 +639,87 @@ import algorithms.util.PairInt;
     public static double calcAngle(int x1, int y1,
                                    int x2, int y2, int x3, int y3) {
 
-        // c
-<span class="fc" id="L490">        int d1d3 = distanceSqEucl(x1, y1, x3, y3);</span>
+<span class="nc" id="L642">        return calcAngle((double)x1, (double)y1, (double)x2, (double)y2, (double)x3, (double)y3);</span>
+    }
 
-        // b
-<span class="fc" id="L493">        int d2d3 = distanceSqEucl(x2, y2, x3, y3);</span>
+    /**
+     * Calculate the angle of segment P3:P1 sweeping clockwise
+     * to segment P3:P2.
+     * &lt;p&gt;
+     * Internally, the method uses the law of cosines and
+     * the directionCCW method.
+     * &lt;pre&gt;
+     *   P1     P2
+     *
+     *      P3
+     * &lt;/pre&gt;
+     *
+     * @param x1
+     * @param y1
+     * @param x2
+     * @param y2
+     * @param x3
+     * @param y3
+     * @return angle between segment P1P3 and P2P3 in radians.
+     */
+    public static double calcAngle(float x1, float y1,
+                                   float x2, float y2, float x3, float y3) {
 
-        // a
-<span class="fc" id="L496">        int d1d2 = distanceSqEucl(x1, y1, x2, y2);</span>
+<span class="fc" id="L668">        return calcAngle((double)x1, (double)y1, (double)x2, (double)y2, (double)x3, (double)y3);</span>
+    }
 
-        //cosine A = (b^2 + c^2 - a^2)/2bc
-<span class="fc" id="L499">        double cosA = (d1d3 + d2d3 - d1d2)</span>
-<span class="fc" id="L500">                / (2 * Math.sqrt((double) d1d3 * (double) d2d3));</span>
-
-<span class="fc" id="L502">        double angleA = Math.acos(cosA);</span>
-
-<span class="fc" id="L504">        return angleA;</span>
+    /**
+     * Calculate the angle of segment P3:P1 sweeping clockwise
+     * to segment P3:P2.
+     * &lt;p&gt;
+     * Internally, the method uses the law of cosines and
+     * the directionCCW method.
+     * &lt;pre&gt;
+     *   P1     P2
+     *
+     *      P3
+     * &lt;/pre&gt;
+     *
+     * @param x1
+     * @param y1
+     * @param x2
+     * @param y2
+     * @param x3
+     * @param y3
+     * @return angle in radians
+     */
+    public static double calcAngle(double x1, double y1,
+                                   double x2, double y2, double x3, double y3) {
+        // subtract P3 from P1 and P2
+<span class="fc" id="L694">        double _p1x = x1 - x3;</span>
+<span class="fc" id="L695">        double _p1y = y1 - y3;</span>
+<span class="fc" id="L696">        double _p2x = x2 - x3;</span>
+<span class="fc" id="L697">        double _p2y = y2 - y3;</span>
+<span class="fc" id="L698">        double y = _p1y * _p2x - _p1x * _p2y; // cross product</span>
+<span class="fc" id="L699">        double x = _p1x * _p2x + _p1y * _p2y; // dot product</span>
+<span class="fc" id="L700">        return Math.atan2(y, x);</span>
     }
 
     protected static int distanceSqEucl(int x1, int y1,
                                         int x2, int y2) {
 
-<span class="fc" id="L510">        int diffX = x1 - x2;</span>
-<span class="fc" id="L511">        int diffY = y1 - y2;</span>
-<span class="fc" id="L512">        return (diffX * diffX + diffY * diffY);</span>
+<span class="nc" id="L706">        int diffX = x1 - x2;</span>
+<span class="nc" id="L707">        int diffY = y1 - y2;</span>
+<span class="nc" id="L708">        return (diffX * diffX + diffY * diffY);</span>
+    }
+    protected static float distanceSqEucl(float x1, float y1,
+                                        float x2, float y2) {
+
+<span class="nc" id="L713">        float diffX = x1 - x2;</span>
+<span class="nc" id="L714">        float diffY = y1 - y2;</span>
+<span class="nc" id="L715">        return (diffX * diffX + diffY * diffY);</span>
+    }
+    protected static double distanceSqEucl(double x1, double y1,
+                                        double x2, double y2) {
+
+<span class="nc" id="L720">        double diffX = x1 - x2;</span>
+<span class="nc" id="L721">        double diffY = y1 - y2;</span>
+<span class="nc" id="L722">        return (diffX * diffX + diffY * diffY);</span>
     }
 
     /**
@@ -526,77 +736,77 @@ import algorithms.util.PairInt;
     public static int[] calcPolarLineEndPoints(int thetaDegrees, int radius,
                                                int imageWidth, int imageHeight) {
 
-<span class="fc bfc" id="L529" title="All 2 branches covered.">        if (thetaDegrees == 0) {</span>
-<span class="fc" id="L530">            return new int[]{radius, 0, radius, imageHeight - 1};</span>
-<span class="fc bfc" id="L531" title="All 2 branches covered.">        } else if (thetaDegrees == 180) {</span>
-<span class="fc" id="L532">            return new int[]{-radius, 0, -radius, imageHeight - 1};</span>
-<span class="fc bfc" id="L533" title="All 2 branches covered.">        } else if (thetaDegrees == 90) {</span>
-<span class="fc" id="L534">            return new int[]{0, radius, imageWidth - 1, radius};</span>
-<span class="fc bfc" id="L535" title="All 2 branches covered.">        } else if (thetaDegrees == 270) {</span>
-<span class="fc" id="L536">            return new int[]{0, -radius, imageWidth - 1, -radius};</span>
-<span class="fc bfc" id="L537" title="All 2 branches covered.">        } else if (thetaDegrees &lt; 90) {</span>
-<span class="fc" id="L538">            return calcPolarLineEndPointsForThetaLT90(thetaDegrees, radius,</span>
+<span class="fc bfc" id="L739" title="All 2 branches covered.">        if (thetaDegrees == 0) {</span>
+<span class="fc" id="L740">            return new int[]{radius, 0, radius, imageHeight - 1};</span>
+<span class="fc bfc" id="L741" title="All 2 branches covered.">        } else if (thetaDegrees == 180) {</span>
+<span class="fc" id="L742">            return new int[]{-radius, 0, -radius, imageHeight - 1};</span>
+<span class="fc bfc" id="L743" title="All 2 branches covered.">        } else if (thetaDegrees == 90) {</span>
+<span class="fc" id="L744">            return new int[]{0, radius, imageWidth - 1, radius};</span>
+<span class="fc bfc" id="L745" title="All 2 branches covered.">        } else if (thetaDegrees == 270) {</span>
+<span class="fc" id="L746">            return new int[]{0, -radius, imageWidth - 1, -radius};</span>
+<span class="fc bfc" id="L747" title="All 2 branches covered.">        } else if (thetaDegrees &lt; 90) {</span>
+<span class="fc" id="L748">            return calcPolarLineEndPointsForThetaLT90(thetaDegrees, radius,</span>
                     imageWidth, imageHeight);
-<span class="fc bfc" id="L540" title="All 2 branches covered.">        } else if (thetaDegrees &lt; 180) {</span>
-<span class="fc" id="L541">            int[] ep = calcPolarLineEndPointsForThetaLT90(</span>
+<span class="fc bfc" id="L750" title="All 2 branches covered.">        } else if (thetaDegrees &lt; 180) {</span>
+<span class="fc" id="L751">            int[] ep = calcPolarLineEndPointsForThetaLT90(</span>
                     180 - thetaDegrees, radius,
                     imageWidth, imageHeight);
-<span class="fc" id="L544">            ep[0] *= -1;</span>
-<span class="fc" id="L545">            ep[2] *= -1;</span>
-<span class="fc" id="L546">            return ep;</span>
-<span class="fc bfc" id="L547" title="All 2 branches covered.">        } else if (thetaDegrees &lt; 270) {</span>
-<span class="fc" id="L548">            int[] ep = calcPolarLineEndPointsForThetaLT90(</span>
+<span class="fc" id="L754">            ep[0] *= -1;</span>
+<span class="fc" id="L755">            ep[2] *= -1;</span>
+<span class="fc" id="L756">            return ep;</span>
+<span class="fc bfc" id="L757" title="All 2 branches covered.">        } else if (thetaDegrees &lt; 270) {</span>
+<span class="fc" id="L758">            int[] ep = calcPolarLineEndPointsForThetaLT90(</span>
                     thetaDegrees - 180, radius,
                     imageWidth, imageHeight);
-<span class="fc bfc" id="L551" title="All 2 branches covered.">            for (int i = 0; i &lt; ep.length; ++i) {</span>
-<span class="fc" id="L552">                ep[i] *= -1;</span>
+<span class="fc bfc" id="L761" title="All 2 branches covered.">            for (int i = 0; i &lt; ep.length; ++i) {</span>
+<span class="fc" id="L762">                ep[i] *= -1;</span>
             }
-<span class="fc" id="L554">            return ep;</span>
+<span class="fc" id="L764">            return ep;</span>
         } else {
-<span class="fc" id="L556">            int[] ep = calcPolarLineEndPointsForThetaLT90(</span>
+<span class="fc" id="L766">            int[] ep = calcPolarLineEndPointsForThetaLT90(</span>
                     360 - thetaDegrees, radius,
                     imageWidth, imageHeight);
-<span class="fc" id="L559">            ep[1] *= -1;</span>
-<span class="fc" id="L560">            ep[3] *= -1;</span>
-<span class="fc" id="L561">            return ep;</span>
+<span class="fc" id="L769">            ep[1] *= -1;</span>
+<span class="fc" id="L770">            ep[3] *= -1;</span>
+<span class="fc" id="L771">            return ep;</span>
         }
     }
 
     private static int[] calcPolarLineEndPointsForThetaLT90(int thetaDegrees,
                                                             int radius, int imageWidth, int imageHeight) {
 
-<span class="fc" id="L568">        int lx = imageWidth - 1;</span>
-<span class="fc" id="L569">        int ly = imageHeight - 1;</span>
+<span class="fc" id="L778">        int lx = imageWidth - 1;</span>
+<span class="fc" id="L779">        int ly = imageHeight - 1;</span>
 
-<span class="fc" id="L571">        double a = (double) thetaDegrees * Math.PI / 180.;</span>
-<span class="fc" id="L572">        double b = (Math.PI / 2.) - a;</span>
+<span class="fc" id="L781">        double a = (double) thetaDegrees * Math.PI / 180.;</span>
+<span class="fc" id="L782">        double b = (Math.PI / 2.) - a;</span>
 
-<span class="fc" id="L574">        double xInter1 = (double) radius / Math.cos(a);</span>
-<span class="fc" id="L575">        double yInter1 = xInter1 * Math.tan(b);</span>
-<span class="fc bfc" id="L576" title="All 2 branches covered.">        if (xInter1 &lt; imageWidth) {</span>
-<span class="fc bfc" id="L577" title="All 2 branches covered.">            if (yInter1 &lt; imageHeight) {</span>
-<span class="fc" id="L578">                return new int[]{0, (int) Math.round(yInter1),</span>
-<span class="fc" id="L579">                        (int) Math.round(xInter1), 0};</span>
+<span class="fc" id="L784">        double xInter1 = (double) radius / Math.cos(a);</span>
+<span class="fc" id="L785">        double yInter1 = xInter1 * Math.tan(b);</span>
+<span class="fc bfc" id="L786" title="All 2 branches covered.">        if (xInter1 &lt; imageWidth) {</span>
+<span class="fc bfc" id="L787" title="All 2 branches covered.">            if (yInter1 &lt; imageHeight) {</span>
+<span class="fc" id="L788">                return new int[]{0, (int) Math.round(yInter1),</span>
+<span class="fc" id="L789">                        (int) Math.round(xInter1), 0};</span>
             }
-<span class="fc" id="L581">            double y2 = yInter1 - ly;</span>
+<span class="fc" id="L791">            double y2 = yInter1 - ly;</span>
             // yInter1/y2 = xInter1/x2 ==&gt; x2 = xInter1 * y2 / yInter1
-<span class="fc" id="L583">            double x2 = (y2 * xInter1) / (yInter1);</span>
-<span class="fc" id="L584">            return new int[]{(int) Math.round(x2), ly,</span>
-<span class="fc" id="L585">                    (int) Math.round(xInter1), 0};</span>
+<span class="fc" id="L793">            double x2 = (y2 * xInter1) / (yInter1);</span>
+<span class="fc" id="L794">            return new int[]{(int) Math.round(x2), ly,</span>
+<span class="fc" id="L795">                    (int) Math.round(xInter1), 0};</span>
         }
         // xInt &gt; imageWidth - 1
-<span class="fc" id="L588">        double x2 = xInter1 - lx;</span>
-<span class="fc" id="L589">        double y2 = x2 * Math.tan(b);</span>
-<span class="fc bfc" id="L590" title="All 2 branches covered.">        if (yInter1 &lt; imageHeight) {</span>
-<span class="fc" id="L591">            return new int[]{0, (int) Math.round(yInter1),</span>
-<span class="fc" id="L592">                    lx, (int) Math.round(y2)};</span>
+<span class="fc" id="L798">        double x2 = xInter1 - lx;</span>
+<span class="fc" id="L799">        double y2 = x2 * Math.tan(b);</span>
+<span class="fc bfc" id="L800" title="All 2 branches covered.">        if (yInter1 &lt; imageHeight) {</span>
+<span class="fc" id="L801">            return new int[]{0, (int) Math.round(yInter1),</span>
+<span class="fc" id="L802">                    lx, (int) Math.round(y2)};</span>
         }
         // yInt &gt; imageHeight - 1
-<span class="fc" id="L595">        double y3 = yInter1 - ly;</span>
-<span class="fc" id="L596">        double x3 = (y3 * xInter1) / (yInter1);</span>
+<span class="fc" id="L805">        double y3 = yInter1 - ly;</span>
+<span class="fc" id="L806">        double x3 = (y3 * xInter1) / (yInter1);</span>
 
-<span class="fc" id="L598">        return new int[]{(int) Math.round(x3), ly,</span>
-<span class="fc" id="L599">                lx, (int) Math.round(y2)};</span>
+<span class="fc" id="L808">        return new int[]{(int) Math.round(x3), ly,</span>
+<span class="fc" id="L809">                lx, (int) Math.round(y2)};</span>
     }
 
     /**
@@ -608,17 +818,17 @@ import algorithms.util.PairInt;
      * @return area of polygon.
      */
     public static double areaPolygon(double[] x, double[] y) {
-<span class="fc" id="L611">        double area = 0;</span>
-<span class="fc" id="L612">        int n = x.length;</span>
-<span class="fc bfc" id="L613" title="All 2 branches covered.">        for (int i = 0; i &lt; n-1; ++i) {</span>
-<span class="fc" id="L614">            area += ((x[i] * y[i+1]) - (x[i+1] * y[i]));</span>
+<span class="fc" id="L821">        double area = 0;</span>
+<span class="fc" id="L822">        int n = x.length;</span>
+<span class="fc bfc" id="L823" title="All 2 branches covered.">        for (int i = 0; i &lt; n-1; ++i) {</span>
+<span class="fc" id="L824">            area += ((x[i] * y[i+1]) - (x[i+1] * y[i]));</span>
         }
         // last and first
-<span class="fc" id="L617">        area += ((x[n-1] * y[0]) - (x[0] * y[n-1]));</span>
+<span class="fc" id="L827">        area += ((x[n-1] * y[0]) - (x[0] * y[n-1]));</span>
 
-<span class="fc" id="L619">        area /= 2;</span>
+<span class="fc" id="L829">        area /= 2;</span>
 
-<span class="fc" id="L621">        return Math.abs(area);</span>
+<span class="fc" id="L831">        return Math.abs(area);</span>
     }
 
     /**
@@ -638,9 +848,9 @@ import algorithms.util.PairInt;
     public static double areaTriangle(double x1, double y1, double x2, double y2, double x3, double y3) {
 
         //( (p2 - p1) X (p3 - p1) ) / 2
-<span class="fc" id="L641">        double area = (x2 - x1) * (y3 - y1) - (x3 - x1)*(y2 - y1);</span>
-<span class="fc" id="L642">        area /= 2;</span>
-<span class="fc" id="L643">        return area;</span>
+<span class="fc" id="L851">        double area = (x2 - x1) * (y3 - y1) - (x3 - x1)*(y2 - y1);</span>
+<span class="fc" id="L852">        area /= 2;</span>
+<span class="fc" id="L853">        return area;</span>
     }
 
     public static double minDistPointToLine(double px, double py,
@@ -652,9 +862,9 @@ import algorithms.util.PairInt;
         where base = |S1 S2| and height is d which we want to calculate
         (½)*|s2 − s1|d and (½)*((s1 − p) × (s2 − p)).
          */
-<span class="fc" id="L655">        double d = crossProduct(s1x - px, s1y-py, s2x - px, s2y - py);</span>
-<span class="fc" id="L656">        d /= Math.abs(Math.sqrt(distSquared(s1x, s1y, s2x, s2y)));</span>
-<span class="fc" id="L657">        return d;</span>
+<span class="fc" id="L865">        double d = crossProduct(s1x - px, s1y-py, s2x - px, s2y - py);</span>
+<span class="fc" id="L866">        d /= Math.abs(Math.sqrt(distSquared(s1x, s1y, s2x, s2y)));</span>
+<span class="fc" id="L867">        return d;</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
