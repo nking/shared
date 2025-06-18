@@ -51,8 +51,13 @@ public class CurveResampler {
 
         double[][] xy2 = new double[2][n2];
         for (int i = 0; i < n2; i++) {
-            xy2[0][i] = xInterp.value(x2Line[i]);
-            xy2[1][i] = yInterp.value(x2Line[i]);
+            // numerical resolution sometimes puts this over the limit of bounds of n1, even by amount as small as 1E-14.
+            double x2 = x2Line[i];
+            if (x2 > xInterp.getN()) {
+                x2 -= (x2 - xInterp.getN());
+            }
+            xy2[0][i] = xInterp.value(x2);
+            xy2[1][i] = yInterp.value(x2);
         }
         return xy2;
     }
