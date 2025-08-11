@@ -420,7 +420,7 @@ import java.util.concurrent.ThreadLocalRandom;
         do {
 <span class="fc" id="L421">            q = generateRandomOdd(bitLength, rand);</span>
 <span class="fc" id="L422">            nIter++;</span>
-<span class="pc bpc" id="L423" title="1 of 2 branches missed.">        } while ( !probablyPrime(q, s));</span>
+<span class="fc bfc" id="L423" title="All 2 branches covered.">        } while ( !probablyPrime(q, s));</span>
         
 <span class="fc" id="L425">        System.out.printf(&quot;nIter=%d, max expected=%d prime=%d\n&quot;, nIter, maxIter, q);</span>
         

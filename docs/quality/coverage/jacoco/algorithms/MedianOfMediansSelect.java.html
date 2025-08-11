@@ -53,9 +53,9 @@ import java.util.Arrays;
         }
 
 <span class="fc" id="L55">        int n = (idxHi - idxLo + 1);</span>
-<span class="pc bpc" id="L56" title="1 of 2 branches missed.">        if (n &lt;= 5) {</span>
-<span class="nc" id="L57">            Arrays.sort(a, idxLo, idxHi + 1);</span>
-<span class="nc" id="L58">            return a[idxLo + i];</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        if (n &lt;= 5) {</span>
+<span class="fc" id="L57">            Arrays.sort(a, idxLo, idxHi + 1);</span>
+<span class="fc" id="L58">            return a[idxLo + i];</span>
         }
 <span class="fc" id="L60">        double result = select(a, idxLo, idxHi, i);</span>
         //System.out.printf(&quot;Do these agree? %f, and a[i]=%f?\n&quot;, result, a[i]);

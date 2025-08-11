@@ -122,8 +122,8 @@
 <span class="fc" id="L122">        delta = Math.min(xHigh - x, x - xLow);</span>
 <span class="fc" id="L123">        delta /= 2;</span>
         
-<span class="pc bpc" id="L125" title="1 of 2 branches missed.">        if ((x + delta) &lt; xHigh) {</span>
-<span class="nc bnc" id="L126" title="All 2 branches missed.">            if (Math.abs(cdf(x + delta, shape, scale) - alpha) &lt; diffP) {</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">        if ((x + delta) &lt; xHigh) {</span>
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">            if (Math.abs(cdf(x + delta, shape, scale) - alpha) &lt; diffP) {</span>
 <span class="nc" id="L127">                minX = x + delta;</span>
             }
         }
