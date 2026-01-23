@@ -72,9 +72,9 @@ public abstract class AbstractBinarySearchTree
         // is left node
         BinaryTreeNode<T> node = top;
         while (node.left != null) {
-            node = (node.left == null) ? null : node.left;
+            node = node.left;
         }
-        return (node == null) ? null : (S)node;
+        return (S)node;
     }
 
     /**
@@ -89,7 +89,7 @@ public abstract class AbstractBinarySearchTree
         while (node.right != null) {
             node = node.right;
         }
-        return (node == null) ? null : (S)node;
+        return (S)node;
     }
 
     /**
@@ -131,7 +131,7 @@ public abstract class AbstractBinarySearchTree
                         21
          */
         if (node.left != null) {
-            return maximum(node.right);
+            return maximum(node.left);
         }
         // find lowest ancestor of node whose right child is an ancestor of node
         BinaryTreeNode<T> p = node.parent;
