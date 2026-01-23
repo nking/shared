@@ -111,7 +111,8 @@ public abstract class AbstractBinarySearchTree
         // find lowest ancestor of node whose left child is an ancestor of node
         BinaryTreeNode<T> p = node.parent;
         while (p != null && p.right != null && p.right.equals(node)) {
-            p = p.parent;
+            node = p;
+            p = node.parent;
         }
         return (p == null) ? null : (S)p;
     }
@@ -135,7 +136,8 @@ public abstract class AbstractBinarySearchTree
         // find lowest ancestor of node whose right child is an ancestor of node
         BinaryTreeNode<T> p = node.parent;
         while (p != null && p.left != null && p.left.equals(node)) {
-            p = p.parent;
+            node = p;
+            p = node.parent;
         }
         return (p == null) ? null : (S)p;
     }

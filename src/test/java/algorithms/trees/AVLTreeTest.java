@@ -23,7 +23,10 @@ public class AVLTreeTest extends TestCase {
         bst.insert(2);
         bst.insert(5);
         bst.insert(4);
-        bst.insert(6);
+        BinaryTreeNode<Integer> node6 = bst.insert(6);
+
+        BinaryTreeNode<Integer> successor = bst.successor(node6);
+        assertEquals(10, successor.data.intValue());
 
         assertEquals(10, bst.root.data.intValue());
         assertEquals(3, bst.root.left.data.intValue());

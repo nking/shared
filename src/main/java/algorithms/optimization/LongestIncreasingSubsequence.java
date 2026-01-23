@@ -64,7 +64,7 @@ import java.util.stream.IntStream;
  That means we can store each pile representative in a a single list and
  the length of that list is the length of the longest increasing aubsequence
  and we replace the representative with the new number that would be added to the pile.
- We find the leftmost pile that a number belongs to by  using a pileary search
+ We find the leftmost pile that a number belongs to by  using a binary search
  of type floor if the resulting series should be monontonic (increasing but equal values
  are in same piles) or type ceiling if
  the resulting series should be strictly monotonic (equal values are in different piles).
@@ -81,7 +81,7 @@ import java.util.stream.IntStream;
  and if the sort is ascending of a[i][0], the tie breakers must be descending on a[i][1].
 
  <pre>
- a = [ [4,1], [2,3], [2,2], [5,3] ]
+ a = [ [4,1], [2,3], [2,2], [6,3] ]
 
  the longest sequence wherein the first and second column values of a[i] are GEQ the
  values in a[i+1]
@@ -154,7 +154,7 @@ public class LongestIncreasingSubsequence {
 
     /**
      * given a list of integers, return the indexes of the longest increasing subsequence
-     * where increasing is defind as stricly increasing.  If there is more than one sequence
+     * where increasing is defind as strictly increasing.  If there is more than one sequence
      * with same max length, returns one of them.
      <pre>
      a = new int[]{2,2,1,7,6};
