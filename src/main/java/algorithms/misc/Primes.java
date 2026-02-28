@@ -429,7 +429,7 @@ public class Primes {
     
     static long generateRandomOdd(int bitlength, ThreadLocalRandom rand) {
         // for bit length n=3:  [(1<<(n-1)), (1<<n)-1 ] 4 thru 7, '100' thru '111'
-        long q = rand.nextLong((1<<(bitlength - 1)), (1 << bitlength) - 1) ;
+        long q = rand.nextLong((1L<<(bitlength - 1)), (1L << bitlength) - 1) ;
         System.out.printf("bitlength=%d rand=%d\n", bitlength, q);
         q <<= 1L;
         q |= 1;
@@ -487,9 +487,9 @@ public class Primes {
         
         if (is32Bit) {
             //Integer.MAX_VALUE is prime
-            return 2147483647l;
+            return 2147483647L;
         } else {
-            return 9223372036854775783l;
+            return 9223372036854775783L;
         }
     }
 

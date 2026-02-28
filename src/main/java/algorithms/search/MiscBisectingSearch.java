@@ -501,8 +501,6 @@ public class MiscBisectingSearch {
      </pre>
      * @param a an ascending ordered list (non-decreasing, adjacent values can be ==).
      * @param srch the value to search for in a
-     * @param lo smallest index of search range
-     * @param hi largest index of search range
      * @return
      the greatest index i for which a[i] == srch, else if no such value exists,
      the index for the smallest value GT srch.

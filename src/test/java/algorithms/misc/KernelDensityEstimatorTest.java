@@ -80,6 +80,9 @@ public class KernelDensityEstimatorTest extends TestCase {
         double r0 = mADMinMax[1] - 3 * s;
         double r1 = mADMinMax[1] + 3 * s;
 
+        // bandwidth from Kevin Murphy's "Prbablistic Machine Learning", Book1, section 16.3.3
+        double h = KernelDensityEstimator.optimalBandwidthGaussianKernel(data);
+
         double[] medianAndIQR = MiscMath0.calcMedianAndIQR(data);
 
         double bw0 = KernelDensityEstimator.optimalBandwidthGaussianKernel(meanStDev[1], data.length);
@@ -92,6 +95,7 @@ public class KernelDensityEstimatorTest extends TestCase {
 
         assertTrue(bw0 > bwRT0);
         assertTrue(bw1 > bwRT1);
+        assertTrue(Math.abs(bw1 - h) < 0.01);
     }
 
     private double[] calcH(double[] data) {

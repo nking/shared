@@ -6,6 +6,7 @@ minimum number of items for capacity:
     determine the number of each item to include in a collection
     so that the total weight W is less than or equal to a given limit
     capacity and the total number of items is as small as possible.
+    int[] weights, int capacity
   
 basic outline for all capacity methods:
 
@@ -18,7 +19,7 @@ basic outline for all capacity methods:
     for (i = 0; i < n; i++) {
         ... specialized weight logic for each knapsack type ...
     }
-
+    // then read out result:
     int i = capacity;
     while (i > 0 && tab[i] == sentinel) {
         --i;

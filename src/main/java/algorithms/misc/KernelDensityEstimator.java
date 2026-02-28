@@ -46,6 +46,22 @@ public class KernelDensityEstimator {
     }
 
     /**
+     *
+     * <pre>
+     *     Kevin Murphy's "Prbablistic Machine Learning", Book1, section 16.3.3
+     * </pre>
+     @param data
+     @return
+     */
+    public static double optimalBandwidthGaussianKernel(double [] data) {
+        double[] mADMinMax = MiscMath0.calculateMedianOfAbsoluteDeviation(data);
+        double kMAD = 1.4826;
+        double s = kMAD * mADMinMax[0];
+
+        return s * Math.pow(4./(3.*data.length), 1./5.);
+    }
+
+    /**
      * assuming a zero-centered mean gaussian kernel, return Silverman's "rule of thumb" bandwidth.
      * This is considered an improvement over the optimal bandwidth for gaussian kernels.
      * <pre>

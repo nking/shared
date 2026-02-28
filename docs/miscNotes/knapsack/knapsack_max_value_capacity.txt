@@ -5,6 +5,7 @@ max value for capacity:
     Given a set of n items, each with a mass and a value,
     calculate and return the max total value for a total mass 
     LEQ capacity.
+    int[] values, int[] weights, int capacity
   
 basic outline for all capacity methods:
 

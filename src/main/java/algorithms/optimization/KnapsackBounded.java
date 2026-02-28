@@ -16,7 +16,7 @@ public class KnapsackBounded {
      *
      * @param values   values for items. values and weights describe the same items.
      * @param weights  non-negative array of weights for items
-     * @param the      non-negative quantities of each item available.
+     * @param quantities      non-negative quantities of each item available.
      * @param capacity upper limit to the sum of weights for bounded quantities of items
      * @return
      */
